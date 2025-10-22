@@ -6,7 +6,8 @@ const {
   safeSetItem,
   formatTanggal,
   formatTanggalRelative,
-  debounce
+  debounce,
+  awardXP
 } = AbelionUtils;
 
 // --- Live time pojok kanan atas ---
@@ -67,6 +68,7 @@ function renderMoodGraph() {
 
 // --- Search Functionality ---
 let searchQuery = '';
+let filterByTag = '';
 function renderSearchBar() {
   let searchDiv = document.getElementById('search-bar');
   if(!searchDiv) {
@@ -86,8 +88,57 @@ function renderSearchBar() {
 }
 
 // --- Notes Card (klik ke note.html?id=..., pin/delete interaktif, search) ---
+function renderTagCloud() {
+  const tags = new Set();
+  notes.forEach(note => {
+    if (note.label) tags.add(note.label);
+  });
+
+  let tagCloud = document.getElementById('tag-cloud');
+  if (!tags.size) {
+    if (filterByTag) filterByTag = '';
+    if (tagCloud) tagCloud.remove();
+    return;
+  }
+
+  const searchBar = document.getElementById('search-bar');
+  if (!searchBar) return;
+
+  if (!tagCloud) {
+    tagCloud = document.createElement('div');
+    tagCloud.id = 'tag-cloud';
+    tagCloud.className = 'tag-cloud';
+    searchBar.parentNode.insertBefore(tagCloud, searchBar.nextSibling);
+  }
+
+  const normalizedFilter = (filterByTag || '').toLowerCase();
+  const tagButtons = Array.from(tags).map(tag => {
+    const safeTag = sanitizeText(tag);
+    const isActive = normalizedFilter && safeTag.toLowerCase() === normalizedFilter;
+    return `<button class="tag-filter${isActive ? ' tag-filter--active' : ''}" data-tag="${safeTag}">${safeTag}</button>`;
+  }).join('');
+
+  tagCloud.innerHTML = `
+    <div class="tag-cloud-title">Filter by tag:</div>
+    <div class="tag-cloud-items">
+      <button class="tag-filter${normalizedFilter ? '' : ' tag-filter--active'}" data-tag="">Semua</button>
+      ${tagButtons}
+    </div>
+  `;
+
+  tagCloud.querySelectorAll('.tag-filter').forEach(btn => {
+    btn.onclick = function() {
+      filterByTag = sanitizeText(this.dataset.tag || '');
+      tagCloud.querySelectorAll('.tag-filter').forEach(b => b.classList.remove('tag-filter--active'));
+      this.classList.add('tag-filter--active');
+      renderNotes();
+    };
+  });
+}
+
 function renderNotes() {
   let grid = document.getElementById("notes-grid");
+  renderTagCloud();
   if (!notes.length) {
     grid.innerHTML = `
       <div class="notes-empty">
@@ -99,10 +150,15 @@ function renderNotes() {
     `;
     return;
   }
+  const normalizedFilter = (filterByTag || '').toLowerCase();
   let filtered = notes.filter(n => {
-    if(!searchQuery) return true;
-    let contentText = (n.content || '').replace(/<[^>]+>/g, '').toLowerCase();
-    return (n.title || '').toLowerCase().includes(searchQuery) || contentText.includes(searchQuery);
+    const titleMatch = (n.title || '').toLowerCase().includes(searchQuery);
+    const contentText = (n.content || '').replace(/<[^>]+>/g, '').toLowerCase();
+    const searchMatch = !searchQuery || titleMatch || contentText.includes(searchQuery);
+    if (!searchMatch) return false;
+    if (!normalizedFilter) return true;
+    const labelText = sanitizeText(n.label || '').toLowerCase();
+    return labelText === normalizedFilter;
   });
   let sorted = [...filtered].sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
@@ -232,6 +288,7 @@ document.getElementById('add-note-btn').onclick = function() {
     pinned: false
   });
   persistNotes();
+  awardXP(10);
   renderNotes();
 };
 
