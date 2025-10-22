@@ -2,155 +2,46 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Version Info – Abelion Notes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      background: linear-gradient(135deg, #9cc7ff 0%, #6cadf9 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      font-family: 'Inter', Arial, sans-serif;
-    }
-    .version-card {
-      background: #6cadf9;
-      max-width: 410px;
-      margin: 44px auto;
-      padding: 36px 20px;
-      border-radius: 36px;
-      color: #fff;
-      box-shadow: 0 18px 32px rgba(25, 71, 147, 0.28);
-    }
-    .version-header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .version-header h1 {
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .version-number {
-      font-size: 3em;
-      font-weight: bold;
-      color: #fff;
-      margin: 16px 0;
-    }
-    .version-section {
-      background: rgba(255,255,255,0.15);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-    .version-section h3 {
-      color: #1b3556;
-      margin-bottom: 12px;
-      font-weight: 700;
-      font-size: 1.05em;
-    }
-    .version-section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .version-section li {
-      padding: 6px 0;
-      color: #132b4b;
-      font-weight: 600;
-    }
-    .version-section li b {
-      color: #0b1a32;
-    }
-    .version-section li:before {
-      content: "✓ ";
-      color: #10b981;
-      font-weight: bold;
-    }
-    .back-btn {
-      display: block;
-      background: #2070ea;
-      color: #fff;
-      text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 24px;
-      box-shadow: 0 16px 30px rgba(32, 112, 234, 0.22);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-    .back-btn:hover,
-    .back-btn:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 28px rgba(32, 112, 234, 0.28);
-    }
-    @media (max-width: 520px) {
-      .version-card {
-        margin: 24px auto;
-        padding: 28px 18px;
-      }
-      .version-number {
-        font-size: 2.4em;
-      }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="version-card">
-    <div class="version-header">
-      <h1>📱 Abelion Notes</h1>
-      <div class="version-number">v1.1.0</div>
-      <p>Release Date: 22 Oktober 2025</p>
-    </div>
+<body class="page-shell">
+  <main class="panel" id="version-panel">
+    <header class="panel-header">
+      <button type="button" class="ghost-btn" id="version-back">← Kembali</button>
+      <button type="button" class="ghost-btn" id="version-home">🏠 Ke Beranda</button>
+    </header>
 
-    <div class="version-section">
-      <h3>✨ Fitur Baru (v1.1.0)</h3>
-      <ul>
-        <li>Interactive mood tracker dengan emoji picker</li>
-        <li>Profile system dengan avatar upload &amp; compression</li>
-        <li>Search dengan debouncing untuk performa lebih baik</li>
-        <li>Label/tag system untuk kategorisasi notes</li>
-        <li>XSS protection dengan input sanitization</li>
-      </ul>
-    </div>
+    <h1 class="panel-title">Versioning System</h1>
+    <p class="panel-subtitle">Lacak rilis Abelion Notes dan highlight peningkatan terbaru.</p>
 
-    <div class="version-section">
-      <h3>🔧 Perbaikan (v1.1.0)</h3>
-      <ul>
-        <li>Error handling untuk localStorage QuotaExceeded</li>
-        <li>Code organization dengan utils.js module</li>
-        <li>Relative date formatting (jam lalu, hari lalu)</li>
-        <li>Mobile safe area untuk iPhone notch</li>
-        <li>Accessibility improvements (focus states, ARIA)</li>
-      </ul>
-    </div>
+    <section class="panel-section">
+      <h2>Ringkasan Versi</h2>
+      <div class="section-card" id="version-summary">
+        <p><strong>Versi:</strong> <span id="version-name">—</span></p>
+        <p><strong>Codename:</strong> <span id="version-codename">—</span></p>
+        <p><strong>Tanggal Rilis:</strong> <span id="version-date">—</span></p>
+        <p><strong>Lingkungan:</strong> <span id="version-env">—</span></p>
+      </div>
+    </section>
 
-    <div class="version-section">
-      <h3>📝 Changelog Sebelumnya</h3>
-      <ul>
-        <li><b>v1.0.0</b> (15 Juni 2025) - Initial release</li>
-        <li>Basic note CRUD operations</li>
-        <li>Pin &amp; delete functionality</li>
-        <li>Static mood graph</li>
-        <li>Simple profile page</li>
-      </ul>
-    </div>
+    <section class="panel-section" id="changelog-section">
+      <h2>Changelog</h2>
+      <div class="settings-grid" id="changelog-list">
+        <div class="section-card">
+          <p>Belum ada catatan rilis.</p>
+        </div>
+      </div>
+    </section>
 
-    <div class="version-section">
-      <h3>🚀 Roadmap</h3>
-      <ul>
-        <li>Export/Import data (JSON, PDF)</li>
-        <li>Auto XP system berdasarkan aktivitas</li>
-        <li>Dark mode support</li>
-        <li>PWA offline support</li>
-        <li>Cloud sync (Firebase)</li>
-      </ul>
-    </div>
+    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
+  </main>
 
-    <a href="javascript:history.back()" class="back-btn">← Kembali</a>
-  </div>
+  <script src="utils.js"></script>
+  <script src="version-info.js"></script>
 </body>
 </html>

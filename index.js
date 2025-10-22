@@ -10,6 +10,8 @@ const {
   awardXP
 } = AbelionUtils;
 
+const Gamification = window.AbelionGamification || null;
+
 // --- Live time pojok kanan atas ---
 function updateTime() {
   const el = document.getElementById('top-time');
@@ -23,6 +25,10 @@ updateTime();
 
 // --- Notes: localStorage
 const notes = safeGetItem(STORAGE_KEYS.NOTES, []);
+
+if (Gamification) {
+  Gamification.trackDailyLogin();
+}
 
 function persistNotes() {
   safeSetItem(STORAGE_KEYS.NOTES, notes);
@@ -223,8 +229,17 @@ function renderNotes() {
           ],{duration:200});
         } else if(this.dataset.action==="delete") {
           if(confirm('Hapus catatan ini?')) {
+            const deletedAt = new Date().toISOString();
+            const createdAt = note.createdAt || note.date;
             notes.splice(idx,1);
             persistNotes();
+            if (Gamification) {
+              Gamification.recordNoteDeleted({
+                id,
+                createdAt,
+                deletedAt
+              });
+            }
           }
         }
         renderNotes();
@@ -279,16 +294,21 @@ document.getElementById('add-note-btn').onclick = function() {
   htmlList = sanitizeRichContent(htmlList);
   let now = new Date();
   let tgl = now.toISOString().slice(0,10);
+  const id = String(Date.now());
+  const createdAt = now.toISOString();
   notes.unshift({
-    id: String(Date.now()),
+    id,
     icon,
     title,
     content: htmlList,
     date: tgl,
+    createdAt,
     pinned: false
   });
   persistNotes();
-  awardXP(10);
+  if (Gamification) {
+    Gamification.recordNoteCreated({ id, createdAt });
+  }
   renderNotes();
 };
 

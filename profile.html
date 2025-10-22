@@ -24,8 +24,9 @@
 
     <div class="profile-meta" aria-live="polite">
       <span class="meta-chip" id="profile-title">Explorer</span>
+      <span class="meta-chip" id="profile-tier">Novice</span>
       <span class="meta-chip" id="profile-level">Level 1</span>
-      <span class="meta-chip" id="profile-streak">XP 0</span>
+      <span class="meta-chip" id="profile-total-xp">Total XP 500</span>
     </div>
 
     <section class="panel-section">
@@ -42,6 +43,7 @@
           <div class="xp-progress-meta">
             <span id="xp-hint">Tetap semangat, XP akan naik konsisten!</span>
             <span id="xp-counter">0 / 100 XP</span>
+            <span id="xp-next">Perlu 100 XP lagi untuk naik level.</span>
           </div>
         </div>
       </div>
@@ -72,6 +74,7 @@
   </main>
 
   <script src="utils.js"></script>
+  <script src="gamification.js"></script>
   <script src="profile.js"></script>
 </body>
 </html>

@@ -109,6 +109,16 @@
       transition: box-shadow .13s, border .13s, background .13s;
     }
     .badge-box--active { border:2px solid #ffd800; background: #fffae6; }
+    .badge-empty {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: #1b3556;
+      font-weight: 600;
+      text-align: center;
+      border: 2px dashed rgba(255, 255, 255, 0.5);
+    }
     .btn-row {
       display:flex; gap:18px; justify-content:center; margin:41px 0 0 0;
       width:100%; max-width:340px;
@@ -161,12 +171,7 @@
         <br>
         <small>• Link Sosial user (IG, GitHub, dll)</small>
       </div>
-      <div class="badge-row">
-        <div class="badge-box badge-box--active">🪜</div>
-        <div class="badge-box">🌿</div>
-        <div class="badge-box">🔧</div>
-        <div class="badge-box"></div>
-      </div>
+      <div class="badge-row" id="badge-list"></div>
       <div class="btn-row">
         <button class="btn" style="background:#fff;color:#2f88ff;font-weight:700;" onclick="resetProfile()">reset profile</button>
         <button class="btn" onclick="saveProfile()">save profile</button>
@@ -177,14 +182,14 @@
     </div>
   </div>
   <script src="utils.js"></script>
+  <script src="gamification.js"></script>
   <script>
     const { STORAGE_KEYS, sanitizeText, safeGetItem, safeSetItem } = AbelionUtils;
+    const Gamification = window.AbelionGamification || null;
 
     const DEFAULT_PROFILE = {
       name: 'Abelion',
       photo: '',
-      level: 3,
-      xp: 52,
       title: 'Explorer',
       badges: ['🪜','🌿','🔧',''],
       activeBadge: '🪜'
@@ -198,40 +203,68 @@
 
     let profileState = loadProfile();
 
+    function computeBadgeOptions() {
+      if (Gamification) {
+        const summary = Gamification.getProfileSummary();
+        if (summary?.badges?.length) {
+          return summary.badges.map(item => ({ icon: item.icon, name: item.name }));
+        }
+      }
+      const stored = Array.isArray(profileState.badges) ? profileState.badges.filter(Boolean) : [];
+      if (stored.length) {
+        return stored.map(icon => ({ icon, name: icon }));
+      }
+      return DEFAULT_PROFILE.badges.filter(Boolean).map(icon => ({ icon, name: icon }));
+    }
+
+    function renderBadgeOptions(activeBadge) {
+      const container = document.getElementById('badge-list');
+      if (!container) return;
+      container.innerHTML = '';
+      const options = computeBadgeOptions();
+      if (!options.length) {
+        const empty = document.createElement('div');
+        empty.className = 'badge-empty';
+        empty.textContent = 'Badge akan muncul setelah kamu membuka pencapaian.';
+        container.appendChild(empty);
+        return;
+      }
+      options.forEach(option => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'badge-box';
+        button.textContent = option.icon || '—';
+        button.title = option.name || 'Badge';
+        if (option.icon === activeBadge) {
+          button.classList.add('badge-box--active');
+        }
+        button.addEventListener('click', () => {
+          container.querySelectorAll('.badge-box').forEach(box => box.classList.remove('badge-box--active'));
+          button.classList.add('badge-box--active');
+        });
+        container.appendChild(button);
+      });
+    }
+
     function populateForm() {
       const avatar = document.getElementById('profile-avatar');
       const username = document.getElementById('username');
-      const badgeBoxes = document.querySelectorAll('.badge-box');
 
       avatar.src = profileState.photo || 'default-avatar.svg';
       avatar.classList.toggle('empty', !profileState.photo);
       username.value = profileState.name || '';
-
-      const badges = Array.isArray(profileState.badges) && profileState.badges.length ? profileState.badges : DEFAULT_PROFILE.badges;
-      badgeBoxes.forEach((box, idx) => {
-        box.textContent = badges[idx] || '';
-        box.classList.toggle('badge-box--active', badges[idx] === profileState.activeBadge);
-      });
+      renderBadgeOptions(profileState.activeBadge);
     }
 
     function getSelectedBadges() {
-      return Array.from(document.querySelectorAll('.badge-box')).map(box => box.textContent.trim());
+      return Array.from(document.querySelectorAll('#badge-list .badge-box')).map(box => box.textContent.trim()).filter(Boolean);
     }
 
     function getActiveBadge() {
-      const active = document.querySelector('.badge-box.badge-box--active');
+      const active = document.querySelector('#badge-list .badge-box.badge-box--active');
       if (active) return active.textContent.trim();
       const badges = getSelectedBadges().filter(Boolean);
       return badges[0] || DEFAULT_PROFILE.activeBadge;
-    }
-
-    function attachBadgeHandlers() {
-      document.querySelectorAll('.badge-box').forEach(box => {
-        box.addEventListener('click', () => {
-          document.querySelectorAll('.badge-box').forEach(b => b.classList.remove('badge-box--active'));
-          box.classList.add('badge-box--active');
-        });
-      });
     }
 
     async function compressImage(file) {
@@ -297,6 +330,9 @@
 
       profileState = updated;
       if (safeSetItem(STORAGE_KEYS.PROFILE, updated)) {
+        if (Gamification) {
+          Gamification.evaluateProfileCompletion(updated);
+        }
         alert('Profil disimpan!');
         window.location.href = 'profile.html';
       }
@@ -306,7 +342,6 @@
       document.querySelector('.edit-photo-label').addEventListener('click', () => document.getElementById('photo-input').click());
       document.getElementById('photo-input').addEventListener('change', handlePhotoChange);
       populateForm();
-      attachBadgeHandlers();
       window.resetProfile = resetProfile;
       window.saveProfile = saveProfile;
     });

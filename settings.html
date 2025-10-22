@@ -66,7 +66,7 @@
           <h3>Kontrol Data</h3>
           <ul class="settings-items">
             <li>Mode Privasi: Publik / Privat</li>
-            <li>Backup Data Catatan</li>
+            <li>Backup Data Catatan <strong>(Coming Soon)</strong></li>
             <li>Export / Simpan Catatan (PDF / MD)</li>
           </ul>
         </div>
@@ -78,12 +78,6 @@
           </ul>
         </div>
       </div>
-      <div class="settings-actions">
-        <button type="button" class="primary-btn" id="export-data-btn">Export Data (JSON)</button>
-        <button type="button" class="primary-btn secondary" id="import-data-btn">Import Data</button>
-        <input type="file" id="import-data-input" accept="application/json" hidden />
-      </div>
-      <p class="settings-hint" id="import-status" aria-live="polite"></p>
     </section>
 
     <section class="panel-section">
@@ -121,12 +115,7 @@
   <script src="utils.js"></script>
   <script>
     (function(){
-      const {
-        getVersionMeta,
-        STORAGE_KEYS,
-        safeGetItem,
-        safeSetItem
-      } = AbelionUtils;
+      const { getVersionMeta } = AbelionUtils;
       const back = document.getElementById('settings-back');
       if (back) back.addEventListener('click', () => window.history.back());
       const versionBtn = document.getElementById('settings-version');
@@ -137,89 +126,6 @@
       const label = document.getElementById('settings-version-label');
       if (meta?.version && label) {
         label.textContent = `${meta.version} (${meta.codename})`;
-      }
-
-      const status = document.getElementById('import-status');
-      function setStatus(message, isError = false) {
-        if (!status) return;
-        status.textContent = message;
-        status.classList.toggle('is-error', Boolean(isError));
-      }
-
-      function exportAllData() {
-        try {
-          const payload = {
-            version: '1.0',
-            exportDate: new Date().toISOString(),
-            notes: safeGetItem(STORAGE_KEYS.NOTES, []),
-            profile: safeGetItem(STORAGE_KEYS.PROFILE, {}),
-            moods: safeGetItem(STORAGE_KEYS.MOODS, {})
-          };
-          const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const anchor = document.createElement('a');
-          anchor.href = url;
-          anchor.download = `abelion-notes-backup-${new Date().toISOString().slice(0, 10)}.json`;
-          anchor.click();
-          URL.revokeObjectURL(url);
-          setStatus('Data berhasil diekspor ✅');
-        } catch (error) {
-          console.error('Export failed', error);
-          setStatus('Gagal melakukan export data.', true);
-        }
-      }
-
-      function handleImport(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const parsed = JSON.parse(reader.result);
-            if (parsed && typeof parsed === 'object') {
-              if (Array.isArray(parsed.notes)) {
-                safeSetItem(STORAGE_KEYS.NOTES, parsed.notes);
-              }
-              if (parsed.profile && typeof parsed.profile === 'object') {
-                safeSetItem(STORAGE_KEYS.PROFILE, parsed.profile);
-              }
-              if (parsed.moods && typeof parsed.moods === 'object') {
-                safeSetItem(STORAGE_KEYS.MOODS, parsed.moods);
-              }
-              setStatus('Import berhasil! Buka kembali halaman utama untuk melihat data terbaru.');
-            } else {
-              setStatus('Format file tidak dikenal.', true);
-            }
-          } catch (error) {
-            console.error('Import failed', error);
-            setStatus('Gagal membaca file import.', true);
-          }
-        };
-        reader.onerror = () => {
-          setStatus('Gagal membaca file import.', true);
-        };
-        reader.readAsText(file);
-      }
-
-      const exportBtn = document.getElementById('export-data-btn');
-      if (exportBtn) {
-        exportBtn.addEventListener('click', () => {
-          setStatus('');
-          exportAllData();
-        });
-      }
-
-      const importBtn = document.getElementById('import-data-btn');
-      const importInput = document.getElementById('import-data-input');
-      if (importBtn && importInput) {
-        importBtn.addEventListener('click', () => {
-          setStatus('');
-          importInput.click();
-        });
-        importInput.addEventListener('change', (event) => {
-          const file = event.target.files && event.target.files[0];
-          handleImport(file);
-          importInput.value = '';
-        });
       }
     })();
   </script>

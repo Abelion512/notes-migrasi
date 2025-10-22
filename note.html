@@ -67,6 +67,7 @@
     </form>
   </div>
   <script src="utils.js"></script>
+  <script src="gamification.js"></script>
   <script>
     // Top waktu
     function updateTime() {
@@ -79,6 +80,7 @@
     setInterval(updateTime, 1000); updateTime();
 
     const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, safeGetItem, safeSetItem, formatTanggal } = AbelionUtils;
+    const Gamification = window.AbelionGamification || null;
     function loadNotes() { return safeGetItem(STORAGE_KEYS.NOTES, []); }
     function saveNotes(notes) { safeSetItem(STORAGE_KEYS.NOTES, notes); }
     // Baca id note dari url
@@ -99,6 +101,9 @@
         val = Array.from(temp.querySelectorAll('li')).map(li=>li.textContent).join('\n');
       }
       document.getElementById('edit-content').value = val;
+      if (!note.createdAt) {
+        note.createdAt = note.date;
+      }
       document.getElementById('edit-label').value = note.label||"";
       document.getElementById('note-detail-date').textContent = "Ditulis: "+(formatTanggal(note.date) || '');
     }
@@ -116,7 +121,16 @@
       note.title = title;
       note.content = sanitizeRichContent(htmlContent);
       note.label = label;
+      const updatedAt = new Date().toISOString();
+      note.updatedAt = updatedAt;
       saveNotes(notes);
+      if (Gamification) {
+        Gamification.recordNoteUpdated({
+          id: note.id,
+          updatedAt,
+          createdAt: note.createdAt || note.date
+        });
+      }
       alert("Catatan telah disimpan!");
       window.location.href="index.html";
     };

@@ -2,7 +2,8 @@
   const STORAGE_KEYS = {
     NOTES: 'abelion-notes-v2',
     PROFILE: 'abelion-profile',
-    MOODS: 'abelion-moods'
+    MOODS: 'abelion-moods',
+    GAMIFICATION: 'abelion-gamification'
   };
 
   const APP_META = Object.freeze({
@@ -112,51 +113,36 @@
     };
   }
 
+  function isSameDay(a, b) {
+    if (!a || !b) return false;
+    const first = new Date(a);
+    const second = new Date(b);
+    return first.getFullYear() === second.getFullYear()
+      && first.getMonth() === second.getMonth()
+      && first.getDate() === second.getDate();
+  }
+
+  function differenceInDays(later, earlier) {
+    if (!later || !earlier) return Number.POSITIVE_INFINITY;
+    const end = new Date(later);
+    const start = new Date(earlier);
+    if (Number.isNaN(end.getTime()) || Number.isNaN(start.getTime())) return Number.POSITIVE_INFINITY;
+    const diff = end.setHours(0, 0, 0, 0) - start.setHours(0, 0, 0, 0);
+    return Math.round(diff / (24 * 60 * 60 * 1000));
+  }
+
+  function clamp(value, min, max) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return min;
+    return Math.min(max, Math.max(min, number));
+  }
+
   function getVersionMeta() {
     return { ...APP_META };
   }
 
   function getVersionChangelog() {
     return APP_META.changelog.map(item => ({ ...item, highlights: [...item.highlights] }));
-  }
-
-  function showLevelUpNotification(level) {
-    if (typeof document === 'undefined') return;
-    const toast = document.createElement('div');
-    toast.className = 'level-up-toast';
-    toast.innerHTML = `🎉 Level Up! Sekarang kamu Level ${level}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-
-  function awardXP(points) {
-    const profile = safeGetItem(STORAGE_KEYS.PROFILE, {}) || {};
-    const safePoints = Number.isFinite(points) ? Math.max(0, Math.round(points)) : 0;
-    const currentXP = (profile.totalXP || 0) + safePoints;
-    const target = 100;
-    const level = Math.floor(currentXP / target) + 1;
-    const xpInLevel = currentXP % target;
-    const nextLevelHint = `${target - xpInLevel || target} XP lagi untuk level ${level + 1}!`;
-    const updated = {
-      ...profile,
-      level,
-      xp: xpInLevel,
-      totalXP: currentXP,
-      nextLevelHint,
-      gamification: {
-        current: xpInLevel,
-        target,
-        percent: Math.round((xpInLevel / target) * 100)
-      }
-    };
-
-    safeSetItem(STORAGE_KEYS.PROFILE, updated);
-
-    if ((profile.level || 1) < level) {
-      showLevelUpNotification(level);
-    }
-
-    return updated;
   }
 
   global.AbelionUtils = {
@@ -169,9 +155,10 @@
     formatTanggal,
     formatTanggalRelative,
     debounce,
+    isSameDay,
+    differenceInDays,
+    clamp,
     getVersionMeta,
-    getVersionChangelog,
-    awardXP,
-    showLevelUpNotification
+    getVersionChangelog
   };
 })(window);
