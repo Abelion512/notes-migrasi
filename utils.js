@@ -5,6 +5,24 @@
     MOODS: 'abelion-moods'
   };
 
+  const APP_META = Object.freeze({
+    version: '2025.06.0-design-preview',
+    build: '2025-06-15',
+    codename: 'Lavender Dawn',
+    environment: 'prototype',
+    changelog: Object.freeze([
+      {
+        version: '2025.06.0-design-preview',
+        releasedAt: '2025-06-15',
+        highlights: [
+          'Penyegaran tampilan profil agar selaras dengan halaman beranda.',
+          'Penambahan sistem meta versi yang siap untuk riwayat rilis.',
+          'Fondasi gamifikasi XP & badge secara realtime (sinkron dengan penyimpanan lokal).'
+        ]
+      }
+    ])
+  });
+
   function sanitizeHTML(input) {
     const temp = document.createElement('div');
     temp.textContent = input == null ? '' : String(input);
@@ -94,6 +112,14 @@
     };
   }
 
+  function getVersionMeta() {
+    return { ...APP_META };
+  }
+
+  function getVersionChangelog() {
+    return APP_META.changelog.map(item => ({ ...item, highlights: [...item.highlights] }));
+  }
+
   global.AbelionUtils = {
     STORAGE_KEYS,
     sanitizeHTML,
@@ -103,6 +129,8 @@
     safeSetItem,
     formatTanggal,
     formatTanggalRelative,
-    debounce
+    debounce,
+    getVersionMeta,
+    getVersionChangelog
   };
 })(window);

@@ -2,139 +2,132 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings – Abelion Notes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --blue1: #2f88ff;
-      --blue2: #7fd7ff;
-      --blue3: #a0bbff;
-      --blue-bg: #252f46;
-      --blue-card: #6cadf9;
-      --blue-grad: linear-gradient(120deg, #43c6ff 0%, #6cadf9 100%);
-      --footer-height: 56px;
-      --border-radius: 36px;
-      --shadow: 0 8px 38px #2f88ff1e, 0 1.5px 8px #0002;
-      --font-main: 'Inter', Arial, sans-serif;
-    }
-    html, body {
-      background: var(--blue-bg);
-      min-height: 100vh;
-      font-family: var(--font-main);
-      color: #fff;
-      padding: 0; margin: 0;
-      height: 100%;
-    }
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-      background: var(--blue-bg);
-    }
-    .card {
-      background: var(--blue-card);
-      width: 100%;
-      max-width: 410px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      padding: 36px 20px 84px 20px;
-      text-align: left;
-      margin: 44px 0 18px 0;
-      position: relative;
-      min-height: calc(100vh - 120px);
-      z-index: 2;
-      overflow: visible;
-    }
-    .nav-head {
-      position: absolute; top: 18px; left: 0; right: 0;
-      display: flex; justify-content: space-between; align-items:center; z-index:5;
-      padding: 0 18px;
-    }
-    .nav-btn, .nav-info-btn {
-      background: var(--blue-grad);
-      color: #fff; border: none;
-      border-radius: 15px; padding: 7px 20px; font-weight: 700; font-size: 1em;
-      cursor: pointer; outline: none; margin:0 2px; box-shadow:0 1.5px 8px #2f88ff18;
-      transition: filter .14s;
-      font-family: var(--font-main);
-      letter-spacing: .01em;
-    }
-    .settings-title {
-      font-weight: 700;
-      color: #194987;
-      font-size: 1.07em;
-      margin: 25px 0 10px 0;
-    }
-    .settings-list {
-      color: #132b4b;
-      font-size: 1.04em;
-      line-height: 1.6;
-      margin-bottom: 32px;
-      margin-top: 0;
-    }
-    .settings-list li { margin-bottom: 0.1em; }
-    .footer {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      height: var(--footer-height);
-      line-height: var(--footer-height);
-      background: transparent;
-      text-align: center;
-      z-index: 10;
-      pointer-events: none;
-      user-select: none;
-      font-weight: 500;
-      font-size:1.03em;
-      color:#e6f7ff;
-      letter-spacing: 0.01em;
-    }
-    @media (max-width: 540px){
-      .card { padding: 12px 2vw 85px 2vw; max-width: 99vw; border-radius: 19px; }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengaturan – Abelion Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="container">
-    <div class="card">
-      <div class="nav-head">
-        <button class="nav-btn" onclick="window.history.back()">&lt; Back</button>
-        <button class="nav-info-btn" onclick="window.location.href='version-info.html'">Version info</button>
+<body class="page-shell">
+  <main class="panel">
+    <header class="panel-header">
+      <button type="button" class="ghost-btn" id="settings-back">← Kembali</button>
+      <button type="button" class="ghost-btn" id="settings-version">ℹ️ Version info</button>
+    </header>
+
+    <h1 class="panel-title">⚙️ Settings</h1>
+    <p class="panel-subtitle">Atur preferensi tampilan, navigasi, dan sistem Abelion Notes.</p>
+
+    <section class="panel-section">
+      <h2>Tampilan &amp; Bahasa</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Theme</h3>
+          <ul class="settings-items">
+            <li>Light / Dark / Lavender / Abelion Mode</li>
+          </ul>
+        </div>
+        <div class="settings-section">
+          <h3>Typography</h3>
+          <ul class="settings-items">
+            <li>Font Catatan</li>
+            <li>Ukuran Font</li>
+            <li>Bahasa Antarmuka</li>
+          </ul>
+        </div>
       </div>
-      <div class="settings-title">⚙️ Settings (Preferensi & Sistem)</div>
-      <ul class="settings-list">
-        <li><b>Tampilan & Bahasa</b></li>
-        <li>• Tema: Light / Dark / Lavender / Abelion Mode</li>
-        <li>• Font Catatan</li>
-        <li>• Bahasa Antarmuka</li>
-        <li>• Ukuran Font</li>
-        <li><b>Catatan & Navigasi</b></li>
-        <li>• Tampilan Default: Grid / List</li>
-        <li>• Auto Save: Aktif/Nonaktif</li>
-        <li>• Shortcut Tombol (Jika tersedia)</li>
-        <li>• Reminder menulis: Jam & frekuensi</li>
-        <li><b>Privasi & Data</b></li>
-        <li>• Mode Privasi: Publik / Privat</li>
-        <li>• Backup Data Catatan (Coming Soon)</li>
-        <li>• Export/Simpan Catatan (PDF / MD)</li>
-        <li>• Reset Semua Data</li>
-        <li>• Hapus Akun</li>
-        <li><b>Notifikasi</b></li>
-        <li>• Notif motivasi harian</li>
-        <li>• Notif pengingat menulis</li>
-        <li>• Push / Email notifikasi</li>
-        <li><b>Tentang Aplikasi</b></li>
-        <li>• Versi App</li>
-        <li>• Lihat Changelog</li>
-        <li>• Kontak Developer: agen.salva@gmail.com / ig: ihsanovid</li>
-      </ul>
-      <div class="footer">
-        © 2025 Abelion Notes. All rights reserved.
+    </section>
+
+    <section class="panel-section">
+      <h2>Catatan &amp; Navigasi</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Preferensi</h3>
+          <ul class="settings-items">
+            <li>Tampilan Default: Grid / List</li>
+            <li>Auto Save: Aktif / Nonaktif</li>
+            <li>Shortcut Tombol (jika tersedia)</li>
+          </ul>
+        </div>
+        <div class="settings-section">
+          <h3>Produktivitas</h3>
+          <ul class="settings-items">
+            <li>Reminder menulis: Jam &amp; frekuensi</li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section class="panel-section">
+      <h2>Privasi &amp; Data</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Kontrol Data</h3>
+          <ul class="settings-items">
+            <li>Mode Privasi: Publik / Privat</li>
+            <li>Backup Data Catatan <strong>(Coming Soon)</strong></li>
+            <li>Export / Simpan Catatan (PDF / MD)</li>
+          </ul>
+        </div>
+        <div class="settings-section">
+          <h3>Keamanan</h3>
+          <ul class="settings-items">
+            <li>Reset Semua Data</li>
+            <li>Hapus Akun</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-section">
+      <h2>Notifikasi</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Preferensi Notif</h3>
+          <ul class="settings-items">
+            <li>Notif motivasi harian</li>
+            <li>Notif pengingat menulis</li>
+            <li>Push / Email notifikasi</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-section">
+      <h2>Tentang Aplikasi</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Informasi</h3>
+          <ul class="settings-items">
+            <li>Versi App: <span id="settings-version-label">—</span></li>
+            <li>Lihat Changelog</li>
+            <li>Kontak Developer: <a href="mailto:agen.salva@gmail.com">agen.salva@gmail.com</a> / <a href="https://instagram.com/ihsanovid" target="_blank" rel="noopener">ig: ihsanovid</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="settings-meta">Versioning system aktif. Pantau perubahan terbaru melalui halaman Version info.</div>
+    </section>
+
+    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
+  </main>
+
+  <script src="utils.js"></script>
+  <script>
+    (function(){
+      const { getVersionMeta } = AbelionUtils;
+      const back = document.getElementById('settings-back');
+      if (back) back.addEventListener('click', () => window.history.back());
+      const versionBtn = document.getElementById('settings-version');
+      if (versionBtn) versionBtn.addEventListener('click', () => {
+        window.location.href = 'version-info.html';
+      });
+      const meta = getVersionMeta();
+      const label = document.getElementById('settings-version-label');
+      if (meta?.version && label) {
+        label.textContent = `${meta.version} (${meta.codename})`;
+      }
+    })();
+  </script>
 </body>
 </html>

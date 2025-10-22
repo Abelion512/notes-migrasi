@@ -198,10 +198,15 @@ function showMiniProfile() {
   let data = safeGetItem(STORAGE_KEYS.PROFILE, {});
   const avatar = document.getElementById('profile-mini-avatar');
   const name = document.getElementById('profile-mini-name');
-  if (avatar) avatar.src = data?.photo || 'default-avatar.png';
+  if (avatar) avatar.src = data?.photo || 'default-avatar.svg';
   if (name) name.textContent = data?.name ? sanitizeText(data.name) : 'Profile';
 }
 window.addEventListener('DOMContentLoaded', showMiniProfile);
+window.addEventListener('storage', (event) => {
+  if (event.key === STORAGE_KEYS.PROFILE) {
+    showMiniProfile();
+  }
+});
 // --- Tambah catatan baru ---
 document.getElementById('add-note-btn').onclick = function() {
   let titleInput = prompt("Judul catatan:");
