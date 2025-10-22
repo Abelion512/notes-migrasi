@@ -15,8 +15,7 @@ import {
   loadDraft,
   saveDraft,
   clearDraft,
-  getProfileSnapshot,
-  DEFAULT_AVATAR
+  getProfileSnapshot
 } from './data.js';
 import { applyTranslations } from './i18n.js';
 
@@ -270,7 +269,7 @@ function updateProfileBadge() {
     const profile = getProfileSnapshot();
     const avatar = document.getElementById('header-avatar');
     const nameEl = document.getElementById('header-name');
-    if (avatar) avatar.src = profile.photo || DEFAULT_AVATAR;
+    if (avatar) avatar.src = profile.photo || 'default-avatar.svg';
     if (nameEl) {
       const base = profile.name || translations.get('profile') || 'Profil';
       nameEl.textContent = profile.highlightBadge ? `${base} • ${profile.highlightBadge}` : base;

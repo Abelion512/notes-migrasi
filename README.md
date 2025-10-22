@@ -28,22 +28,16 @@ Abelion Notes adalah aplikasi catatan berbasis web dengan sentuhan gamifikasi ya
 
 ```
 Notes/
-├── index.html              # Landing page & board catatan
-├── profile.html            # Halaman profil dan pengaturan pengguna
-├── assets/
-│   ├── css/
-│   │   └── style.css       # Gaya global dan komponen
-│   ├── js/
-│   │   ├── data.js         # Utilitas penyimpanan terenkripsi & helper
-│   │   ├── i18n.js         # Definisi string dan utilitas translasi
-│   │   ├── index.js        # Logika utama aplikasi catatan
-│   │   ├── profile.js      # Logika halaman profil
-│   │   └── script.js       # Prototipe grouping catatan sederhana
-│   └── images/
-│       ├── default-avatar.svg  # Avatar bawaan
-│       └── olivx-logo.png      # Ikon aplikasi
-├── service-worker.js       # Caching aset & dukungan offline
-└── manifest.json           # Konfigurasi PWA
+├── index.html          # Landing page & board catatan
+├── profile.html        # Halaman profil dan pengaturan pengguna
+├── index.js            # Logika utama aplikasi catatan
+├── profile.js          # Logika halaman profil
+├── data.js             # Utilitas penyimpanan terenkripsi & helper
+├── i18n.js             # Definisi string dan utilitas translasi
+├── style.css           # Gaya global dan komponen
+├── service-worker.js   # Caching aset & dukungan offline
+├── manifest.json       # Konfigurasi PWA
+└── default-avatar.svg  # Avatar bawaan
 ```
 
 ## Pengujian manual yang disarankan

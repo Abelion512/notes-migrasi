@@ -2,15 +2,15 @@ const CACHE_NAME = 'abelion-notes-cache-v2';
 const ASSETS = [
   '/',
   '/index.html',
-  '/assets/css/style.css',
-  '/assets/js/index.js',
+  '/style.css',
+  '/index.js',
   '/profile.html',
-  '/assets/js/profile.js',
-  '/assets/js/data.js',
-  '/assets/js/i18n.js',
+  '/profile.js',
+  '/data.js',
+  '/i18n.js',
   '/manifest.json',
-  '/assets/images/default-avatar.svg',
-  '/assets/images/olivx-logo.png',
+  '/default-avatar.svg',
+  '/OlivX logo.png',
   'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js',
   'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css'
 ];
