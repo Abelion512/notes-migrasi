@@ -1,0 +1,22 @@
+{
+  "name": "Abelion Notes",
+  "short_name": "Notes",
+  "description": "Catat ide, lacak XP, dan kumpulkan badge untuk motivasi harian.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#2070ea",
+  "theme_color": "#2070ea",
+  "icons": [
+    {
+      "src": "OlivX logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "OlivX logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

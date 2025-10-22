@@ -1,0 +1,24 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="avatarTitle avatarDesc">
+  <title id="avatarTitle">Default user avatar</title>
+  <desc id="avatarDesc">Circular avatar with binary inspired accents.</desc>
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <clipPath id="clipCircle">
+      <circle cx="64" cy="64" r="56"/>
+    </clipPath>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="56" fill="url(#bgGradient)"/>
+  <g clip-path="url(#clipCircle)" opacity="0.2">
+    <text x="22" y="46" font-family="'Fira Code', 'Courier New', monospace" font-size="20" fill="#F8FAFC">0101</text>
+    <text x="48" y="74" font-family="'Fira Code', 'Courier New', monospace" font-size="20" fill="#F8FAFC">1010</text>
+    <text x="16" y="102" font-family="'Fira Code', 'Courier New', monospace" font-size="20" fill="#F8FAFC">0110</text>
+  </g>
+  <circle cx="64" cy="56" r="26" fill="#F1F5F9"/>
+  <path d="M30 110c6-20 22-34 34-34s28 14 34 34" stroke="#E2E8F0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="52" cy="54" r="6" fill="#0F172A"/>
+  <circle cx="76" cy="54" r="6" fill="#0F172A"/>
+  <path d="M52 72c4 6 20 6 24 0" stroke="#0F172A" stroke-width="4" stroke-linecap="round"/>
+</svg>
