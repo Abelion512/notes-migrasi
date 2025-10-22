@@ -9,12 +9,12 @@
   "theme_color": "#2070ea",
   "icons": [
     {
-      "src": "OlivX logo.png",
+      "src": "assets/images/olivx-logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "OlivX logo.png",
+      "src": "assets/images/olivx-logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
