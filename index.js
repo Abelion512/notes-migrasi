@@ -1,3 +1,14 @@
+const {
+  STORAGE_KEYS,
+  sanitizeText,
+  sanitizeRichContent,
+  safeGetItem,
+  safeSetItem,
+  formatTanggal,
+  formatTanggalRelative,
+  debounce
+} = AbelionUtils;
+
 // --- Live time pojok kanan atas ---
 function updateTime() {
   const el = document.getElementById('top-time');
@@ -10,43 +21,48 @@ setInterval(updateTime, 1000);
 updateTime();
 
 // --- Notes: localStorage
-const LS_KEY = 'abelion-notes-v2';
-function loadNotes() {
-  try {
-    return JSON.parse(localStorage.getItem(LS_KEY)) || [];
-  } catch { return []; }
-}
-function saveNotes() {
-  localStorage.setItem(LS_KEY, JSON.stringify(notes));
-}
+const notes = safeGetItem(STORAGE_KEYS.NOTES, []);
 
-// Tidak ada notes dummy untuk pengguna baru!
-let notes = loadNotes();
-
-// Mood harian dummy
-const moods = [
-  {day:"Sen",emoji:"😄"}, {day:"Sel",emoji:"😄"},
-  {day:"Rab",emoji:"😐"}, {day:"Kam",emoji:"😄"},
-  {day:"Jum",emoji:"😢"}, {day:"Sab",emoji:"😐"},
-  {day:"Min",emoji:"😄"}
-];
+function persistNotes() {
+  safeSetItem(STORAGE_KEYS.NOTES, notes);
+}
 
 // --- Mood Graph harian (centered) ---
+function loadMoods() {
+  return safeGetItem(STORAGE_KEYS.MOODS, {});
+}
+
+function saveMoods(data) {
+  safeSetItem(STORAGE_KEYS.MOODS, data);
+}
+
+function getPastSevenDays() {
+  const days = [];
+  const formatter = new Intl.DateTimeFormat('id-ID', { weekday: 'short' });
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const iso = date.toISOString().split('T')[0];
+    days.push({ iso, label: formatter.format(date).replace(/\.$/, '') });
+  }
+  return days;
+}
+
 function renderMoodGraph() {
-  let el = document.getElementById("mood-graph");
-  el.innerHTML = moods.map(m=>`
+  const el = document.getElementById('mood-graph');
+  if (!el) return;
+  const stored = loadMoods();
+  const fallback = ['😄','🙂','😐','😊','😢','😐','😴'];
+  const items = getPastSevenDays().map((day, idx) => ({
+    emoji: stored?.[day.iso] || fallback[idx % fallback.length],
+    day: day.label
+  }));
+  el.innerHTML = items.map(m => `
     <div class="mood-bar">
       <div class="mood-emoji">${m.emoji}</div>
       <div class="mood-date">${m.day}</div>
     </div>
-  `).join("");
-}
-
-// --- Format tanggal Indonesia ---
-function formatTanggal(tglStr) {
-  const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  const d = new Date(tglStr);
-  return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+  `).join('');
 }
 
 // --- Search Functionality ---
@@ -61,10 +77,11 @@ function renderSearchBar() {
     `;
     const notesGrid = document.getElementById('notes-grid');
     notesGrid.parentNode.insertBefore(searchDiv, notesGrid);
-    document.getElementById('search-input').addEventListener('input', function(){
+    const handleSearch = debounce(function(){
       searchQuery = this.value.trim().toLowerCase();
       renderNotes();
-    });
+    }, 250);
+    document.getElementById('search-input').addEventListener('input', handleSearch);
   }
 }
 
@@ -72,13 +89,20 @@ function renderSearchBar() {
 function renderNotes() {
   let grid = document.getElementById("notes-grid");
   if (!notes.length) {
-    grid.innerHTML = `<div style="color:#aaa;text-align:center;margin:38px auto 0 auto;font-size:1.1em;">Belum ada catatan.<br>Yuk tambah catatan baru!</div>`;
+    grid.innerHTML = `
+      <div class="notes-empty">
+        <div class="notes-empty-emoji">📝</div>
+        <h3>Belum ada catatan</h3>
+        <p>Mulai catat ide, goals, atau apa saja yang ingin kamu ingat!</p>
+        <button class="btn-blue" type="button" onclick="document.getElementById('add-note-btn').click()">Buat catatan pertama</button>
+      </div>
+    `;
     return;
   }
   let filtered = notes.filter(n => {
     if(!searchQuery) return true;
-    let contentText = n.content.replace(/<[^>]+>/g, '').toLowerCase();
-    return n.title.toLowerCase().includes(searchQuery) || contentText.includes(searchQuery);
+    let contentText = (n.content || '').replace(/<[^>]+>/g, '').toLowerCase();
+    return (n.title || '').toLowerCase().includes(searchQuery) || contentText.includes(searchQuery);
   });
   let sorted = [...filtered].sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
@@ -89,7 +113,13 @@ function renderNotes() {
     grid.innerHTML = `<div style="color:#aaa;text-align:center;margin:38px auto 0 auto;font-size:1.1em;">Catatan tidak ditemukan.</div>`;
     return;
   }
-  grid.innerHTML = sorted.map(n=>`
+  grid.innerHTML = sorted.map(n=>{
+    const safeTitle = sanitizeText(n.title || '');
+    const safeIcon = sanitizeText(n.icon || '').slice(0, 2);
+    const label = sanitizeText(n.label || '');
+    const content = sanitizeRichContent(n.content || '');
+    const dateLabel = formatTanggalRelative(n.date || '') || '';
+    return `
     <div class="note-card" data-id="${n.id}" tabindex="0" role="link">
       <div class="note-actions">
         <button class="action-btn pin${n.pinned?' pin-active':''}" data-action="pin" title="Pin/Unpin" aria-label="Pin/Unpin catatan">
@@ -100,12 +130,13 @@ function renderNotes() {
         </button>
       </div>
       <div class="note-title">
-        ${n.icon?`<span class="icon">${n.icon}</span>`:""}${n.title}
+        ${safeIcon?`<span class="icon">${safeIcon}</span>`:""}${safeTitle}
       </div>
-      <div class="note-content">${n.content}</div>
-      <div class="note-date">Ditulis: ${formatTanggal(n.date)}</div>
+      ${label?`<div class="note-label">${label}</div>`:''}
+      <div class="note-content">${content}</div>
+      <div class="note-date">${dateLabel ? `Ditulis: ${dateLabel}` : ''}</div>
     </div>
-  `).join("");
+  `;}).join("");
 
   // Interaktif event
   grid.querySelectorAll('.note-card').forEach(card => {
@@ -130,14 +161,14 @@ function renderNotes() {
         const note = notes[idx];
         if(this.dataset.action==="pin") {
           note.pinned = !note.pinned;
-          saveNotes();
+          persistNotes();
           this.querySelector('.pin-inner').animate([
             {transform:'scale(1.2)'},{transform:'scale(1)'}
           ],{duration:200});
         } else if(this.dataset.action==="delete") {
           if(confirm('Hapus catatan ini?')) {
             notes.splice(idx,1);
-            saveNotes();
+            persistNotes();
           }
         }
         renderNotes();
@@ -164,21 +195,27 @@ window.onclick = function(e) {
 };
 // Di index.js
 function showMiniProfile() {
-  let data = {};
-  try { data = JSON.parse(localStorage.getItem('abelion-profile')) || {}; } catch { data = {}; }
-  document.getElementById('profile-mini-avatar').src = data.photo || 'default-avatar.png';
-  document.getElementById('profile-mini-name').textContent = data.name || 'Profile';
+  let data = safeGetItem(STORAGE_KEYS.PROFILE, {});
+  const avatar = document.getElementById('profile-mini-avatar');
+  const name = document.getElementById('profile-mini-name');
+  if (avatar) avatar.src = data?.photo || 'default-avatar.png';
+  if (name) name.textContent = data?.name ? sanitizeText(data.name) : 'Profile';
 }
 window.addEventListener('DOMContentLoaded', showMiniProfile);
 // --- Tambah catatan baru ---
 document.getElementById('add-note-btn').onclick = function() {
-  let title = prompt("Judul catatan:");
-  if(!title) return;
-  let content = prompt("Isi catatan (boleh pakai - untuk membuat list):");
-  if(!content) return;
-  let icon = prompt("Emoji/icon catatan (boleh kosong):") || "";
-  let lines = content.split('\n');
-  let htmlList = lines.length > 1 ? '<ul>' + lines.map(x=>`<li>${x}</li>`).join('') + '</ul>' : content;
+  let titleInput = prompt("Judul catatan:");
+  if(!titleInput) return;
+  let contentInput = prompt("Isi catatan (boleh pakai baris baru untuk membuat list):");
+  if(!contentInput) return;
+  let iconInput = prompt("Emoji/icon catatan (boleh kosong):") || "";
+  let title = sanitizeText(titleInput.trim());
+  let icon = sanitizeText(iconInput.trim()).slice(0, 2);
+  let lines = contentInput.split('\n');
+  let htmlList = lines.length > 1
+    ? '<ul>' + lines.map(x=>`<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
+    : sanitizeText(contentInput);
+  htmlList = sanitizeRichContent(htmlList);
   let now = new Date();
   let tgl = now.toISOString().slice(0,10);
   notes.unshift({
@@ -189,9 +226,53 @@ document.getElementById('add-note-btn').onclick = function() {
     date: tgl,
     pinned: false
   });
-  saveNotes();
+  persistNotes();
   renderNotes();
 };
+
+// --- Mood selector ---
+function openMoodSelector() {
+  const modalId = 'mood-modal';
+  if (document.getElementById(modalId)) return;
+  const moods = ['😄','🙂','😐','😢','😠','😴'];
+  const modal = document.createElement('div');
+  modal.id = modalId;
+  modal.className = 'mood-modal';
+  modal.innerHTML = `
+    <div class="mood-modal-content" role="dialog" aria-modal="true" aria-labelledby="mood-modal-title">
+      <h3 id="mood-modal-title">Bagaimana mood kamu hari ini?</h3>
+      <div class="mood-modal-options">
+        ${moods.map(emoji => `<button type="button" class="mood-option" data-emoji="${emoji}">${emoji}</button>`).join('')}
+      </div>
+      <button type="button" class="mood-modal-close" id="mood-modal-close">Batal</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (event) => {
+    if (event.target.id === 'mood-modal-close' || event.target === modal) {
+      modal.remove();
+    }
+  });
+  modal.querySelectorAll('.mood-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      saveTodayMood(btn.dataset.emoji);
+      modal.remove();
+    });
+  });
+}
+
+function saveTodayMood(emoji) {
+  const data = loadMoods();
+  const today = new Date().toISOString().split('T')[0];
+  data[today] = emoji;
+  saveMoods(data);
+  renderMoodGraph();
+}
+
+const updateMoodBtn = document.getElementById('update-mood-btn');
+if (updateMoodBtn) {
+  updateMoodBtn.addEventListener('click', openMoodSelector);
+}
 // --- Entrance: skip animasi jika dari note.html (back) ---
 window.addEventListener('DOMContentLoaded', ()=>{
   renderMoodGraph(); renderSearchBar(); renderNotes();
