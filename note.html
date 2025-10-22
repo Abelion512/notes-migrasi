@@ -66,6 +66,7 @@
       <div class="note-detail-date" id="note-detail-date"></div>
     </form>
   </div>
+  <script src="utils.js"></script>
   <script>
     // Top waktu
     function updateTime() {
@@ -77,14 +78,9 @@
     }
     setInterval(updateTime, 1000); updateTime();
 
-    const LS_KEY = 'abelion-notes-v2';
-    function loadNotes() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; } }
-    function saveNotes(notes) { localStorage.setItem(LS_KEY, JSON.stringify(notes)); }
-    function formatTanggal(tglStr) {
-      const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-      const d = new Date(tglStr);
-      return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
-    }
+    const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, safeGetItem, safeSetItem, formatTanggal } = AbelionUtils;
+    function loadNotes() { return safeGetItem(STORAGE_KEYS.NOTES, []); }
+    function saveNotes(notes) { safeSetItem(STORAGE_KEYS.NOTES, notes); }
     // Baca id note dari url
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -104,19 +100,21 @@
       }
       document.getElementById('edit-content').value = val;
       document.getElementById('edit-label').value = note.label||"";
-      document.getElementById('note-detail-date').textContent = "Ditulis: "+formatTanggal(note.date);
+      document.getElementById('note-detail-date').textContent = "Ditulis: "+(formatTanggal(note.date) || '');
     }
     // Simpan perubahan
     document.getElementById('note-edit-form').onsubmit = function(e) {
       e.preventDefault();
-      let icon = document.getElementById('edit-icon').value.trim();
-      let title = document.getElementById('edit-title').value.trim();
+      let icon = sanitizeText(document.getElementById('edit-icon').value.trim()).slice(0, 2);
+      let title = sanitizeText(document.getElementById('edit-title').value.trim());
       let content = document.getElementById('edit-content').value.trim();
-      let label = document.getElementById('edit-label').value.trim();
-      let htmlContent = content.includes('\n')?'<ul>'+content.split('\n').map(x=>`<li>${x}</li>`).join('')+'</ul>':content;
+      let label = sanitizeText(document.getElementById('edit-label').value.trim());
+      let htmlContent = content.includes('\n')
+        ? '<ul>' + content.split('\n').map(x=>`<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
+        : sanitizeText(content);
       note.icon = icon;
       note.title = title;
-      note.content = htmlContent;
+      note.content = sanitizeRichContent(htmlContent);
       note.label = label;
       saveNotes(notes);
       alert("Catatan telah disimpan!");

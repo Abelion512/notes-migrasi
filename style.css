@@ -1,11 +1,16 @@
 /* Reset */
+html { scroll-behavior: smooth; }
 body, h1, h2, h3, p, ul, li, button, input { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background: #faf6ee;
   font-family: 'Inter', Arial, sans-serif;
   color: #222;
   min-height: 100vh;
-  padding-bottom: 80px;
+  padding-bottom: max(80px, env(safe-area-inset-bottom));
+}
+*:focus-visible {
+  outline: 2px solid #2070ea;
+  outline-offset: 2px;
 }
 /* Top time */
 .top-time {
@@ -62,6 +67,12 @@ body {
   transition: background .16s;
 }
 .btn-blue:hover { background: #4498f7;}
+.btn-blue:active { transform: scale(0.98); }
+.mood-update-btn {
+  margin: 16px auto 0 auto;
+  display: block;
+  max-width: 240px;
+}
 /* Mood Graph */
 .mood-graph-section { margin: 38px 0 0 0;}
 .mood-graph-title { text-align: center; font-weight: bold; font-size: 1.17em; margin-bottom: 7px;}
@@ -97,6 +108,23 @@ body {
   flex-direction: column;
   gap: 22px;
 }
+.notes-empty {
+  text-align: center;
+  margin: 60px auto 0 auto;
+  max-width: 320px;
+}
+.notes-empty-emoji {
+  font-size: 4em;
+  margin-bottom: 16px;
+}
+.notes-empty h3 {
+  color: #444;
+  margin-bottom: 10px;
+}
+.notes-empty p {
+  color: #777;
+  margin-bottom: 18px;
+}
 .note-card {
   background: #fff;
   border-radius: 17px;
@@ -113,6 +141,15 @@ body {
   font-weight: bold;
   margin-bottom: 7px;
   display: flex; gap: 7px; align-items: center;
+}
+.note-label {
+  display: inline-block;
+  font-size: 0.9em;
+  color: #4267b2;
+  background: #e5f0ff;
+  border-radius: 12px;
+  padding: 3px 10px;
+  margin-bottom: 8px;
 }
 .note-content { margin-bottom: 10px; }
 .note-date {
@@ -158,12 +195,63 @@ body {
 .nav-bottom {
   position: fixed; left:0; bottom:0; width:100vw; background: #fff;
   border-top: 1.5px solid #eee; display: flex; justify-content: center; gap: 29px; padding: 12px 0 10px 0; z-index: 22;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 .nav-item {
   text-decoration: none; color: #333;
   font-weight: 500;
   font-size: 1.09em;
   opacity: .85;
+}
+.mood-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+}
+.mood-modal-content {
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px 28px;
+  text-align: center;
+  max-width: 320px;
+  width: calc(100% - 40px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+}
+.mood-modal-content h3 {
+  margin-bottom: 18px;
+  color: #1b3556;
+}
+.mood-modal-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.mood-option {
+  font-size: 1.9em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.mood-option:hover,
+.mood-option:focus-visible {
+  transform: scale(1.15);
+}
+.mood-modal-close {
+  background: #f1f5ff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #2d5b9f;
+  cursor: pointer;
 }
 .nav-item.active { color: #2070ea; opacity: 1;}
 @media (max-width: 600px) {

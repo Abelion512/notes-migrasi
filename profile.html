@@ -241,18 +241,73 @@
       </div>
     </div>
   </div>
+  <script src="utils.js"></script>
   <script>
-    // Demo animasi progress bar smooth
-    let percent = 52;
-    gsap.to("#xp-bar-inner", {width: percent+"%", duration: 1, ease:"power2.out"});
-    gsap.to("#xp-bar-percent", {
-      innerText: percent,
-      duration: 1,
-      snap: "innerText",
-      onUpdate: function() {
-        document.getElementById("xp-bar-percent").innerText = Math.round(this.targets()[0].innerText) + "%";
-      }
-    });
+    const { STORAGE_KEYS, sanitizeText, safeGetItem } = AbelionUtils;
+
+    const DEFAULT_PROFILE = {
+      name: 'Abelion',
+      photo: '',
+      level: 3,
+      xp: 52,
+      title: 'Explorer',
+      badges: ['🪜','🌿','🔧',''],
+      activeBadge: '🪜'
+    };
+
+    function loadProfile() {
+      const stored = safeGetItem(STORAGE_KEYS.PROFILE, null);
+      if (!stored) return { ...DEFAULT_PROFILE };
+      return { ...DEFAULT_PROFILE, ...stored };
+    }
+
+    function greetingForNow(name) {
+      const hour = new Date().getHours();
+      let greeting = 'Selamat malam';
+      if (hour >= 5 && hour < 11) greeting = 'Selamat pagi';
+      else if (hour >= 11 && hour < 15) greeting = 'Selamat siang';
+      else if (hour >= 15 && hour < 19) greeting = 'Selamat sore';
+      return `${greeting}, <b id="profile-username">${name}</b> 👋`;
+    }
+
+    function applyProfile() {
+      const data = loadProfile();
+      const avatar = document.getElementById('profile-avatar');
+      const greeting = document.getElementById('greeting');
+      const levelBtn = document.getElementById('xp-level-btn');
+      const titleBtn = document.getElementById('xp-title-btn');
+      const xpPercent = document.getElementById('xp-bar-percent');
+      const xpInner = document.getElementById('xp-bar-inner');
+      const countdown = document.getElementById('xp-countdown');
+
+      const safeName = sanitizeText(data.name || DEFAULT_PROFILE.name);
+      avatar.src = data.photo || 'default-avatar.png';
+      avatar.classList.toggle('empty', !data.photo);
+      greeting.innerHTML = greetingForNow(safeName);
+      levelBtn.textContent = `level ${data.level || 1}`;
+      titleBtn.textContent = data.title ? sanitizeText(data.title) : '✨ Title';
+
+      const xp = Math.max(0, Math.min(100, Number(data.xp) || 0));
+      gsap.to(xpInner, { width: xp + '%', duration: 1, ease: 'power2.out' });
+      gsap.to(xpPercent, {
+        innerText: xp,
+        duration: 1,
+        snap: 'innerText',
+        onUpdate: function () {
+          xpPercent.innerText = Math.round(this.targets()[0].innerText) + '%';
+        }
+      });
+      countdown.textContent = data.nextLevelHint ? sanitizeText(data.nextLevelHint) : '(tetap semangat, XP akan naik dengan konsisten!)';
+
+      const badgeBoxes = document.querySelectorAll('.badge-box');
+      const savedBadges = Array.isArray(data.badges) && data.badges.length ? data.badges : DEFAULT_PROFILE.badges;
+      badgeBoxes.forEach((box, idx) => {
+        box.textContent = savedBadges[idx] || '';
+        box.classList.toggle('badge-box--active', savedBadges[idx] === data.activeBadge);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', applyProfile);
   </script>
 </body>
 </html>
