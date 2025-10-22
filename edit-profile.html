@@ -203,7 +203,7 @@
       const username = document.getElementById('username');
       const badgeBoxes = document.querySelectorAll('.badge-box');
 
-      avatar.src = profileState.photo || 'default-avatar.png';
+      avatar.src = profileState.photo || 'default-avatar.svg';
       avatar.classList.toggle('empty', !profileState.photo);
       username.value = profileState.name || '';
 
