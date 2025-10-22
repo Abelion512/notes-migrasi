@@ -2,8 +2,27 @@
   const STORAGE_KEYS = {
     NOTES: 'abelion-notes-v2',
     PROFILE: 'abelion-profile',
-    MOODS: 'abelion-moods'
+    MOODS: 'abelion-moods',
+    GAMIFICATION: 'abelion-gamification'
   };
+
+  const APP_META = Object.freeze({
+    version: '2025.06.0-design-preview',
+    build: '2025-06-15',
+    codename: 'Lavender Dawn',
+    environment: 'prototype',
+    changelog: Object.freeze([
+      {
+        version: '2025.06.0-design-preview',
+        releasedAt: '2025-06-15',
+        highlights: [
+          'Penyegaran tampilan profil agar selaras dengan halaman beranda.',
+          'Penambahan sistem meta versi yang siap untuk riwayat rilis.',
+          'Fondasi gamifikasi XP & badge secara realtime (sinkron dengan penyimpanan lokal).'
+        ]
+      }
+    ])
+  });
 
   function sanitizeHTML(input) {
     const temp = document.createElement('div');
@@ -94,6 +113,38 @@
     };
   }
 
+  function isSameDay(a, b) {
+    if (!a || !b) return false;
+    const first = new Date(a);
+    const second = new Date(b);
+    return first.getFullYear() === second.getFullYear()
+      && first.getMonth() === second.getMonth()
+      && first.getDate() === second.getDate();
+  }
+
+  function differenceInDays(later, earlier) {
+    if (!later || !earlier) return Number.POSITIVE_INFINITY;
+    const end = new Date(later);
+    const start = new Date(earlier);
+    if (Number.isNaN(end.getTime()) || Number.isNaN(start.getTime())) return Number.POSITIVE_INFINITY;
+    const diff = end.setHours(0, 0, 0, 0) - start.setHours(0, 0, 0, 0);
+    return Math.round(diff / (24 * 60 * 60 * 1000));
+  }
+
+  function clamp(value, min, max) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return min;
+    return Math.min(max, Math.max(min, number));
+  }
+
+  function getVersionMeta() {
+    return { ...APP_META };
+  }
+
+  function getVersionChangelog() {
+    return APP_META.changelog.map(item => ({ ...item, highlights: [...item.highlights] }));
+  }
+
   global.AbelionUtils = {
     STORAGE_KEYS,
     sanitizeHTML,
@@ -103,6 +154,11 @@
     safeSetItem,
     formatTanggal,
     formatTanggalRelative,
-    debounce
+    debounce,
+    isSameDay,
+    differenceInDays,
+    clamp,
+    getVersionMeta,
+    getVersionChangelog
   };
 })(window);

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Version Info – Abelion Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-shell">
+  <main class="panel" id="version-panel">
+    <header class="panel-header">
+      <button type="button" class="ghost-btn" id="version-back">← Kembali</button>
+      <button type="button" class="ghost-btn" id="version-home">🏠 Ke Beranda</button>
+    </header>
+
+    <h1 class="panel-title">Versioning System</h1>
+    <p class="panel-subtitle">Lacak rilis Abelion Notes dan highlight peningkatan terbaru.</p>
+
+    <section class="panel-section">
+      <h2>Ringkasan Versi</h2>
+      <div class="section-card" id="version-summary">
+        <p><strong>Versi:</strong> <span id="version-name">—</span></p>
+        <p><strong>Codename:</strong> <span id="version-codename">—</span></p>
+        <p><strong>Tanggal Rilis:</strong> <span id="version-date">—</span></p>
+        <p><strong>Lingkungan:</strong> <span id="version-env">—</span></p>
+      </div>
+    </section>
+
+    <section class="panel-section" id="changelog-section">
+      <h2>Changelog</h2>
+      <div class="settings-grid" id="changelog-list">
+        <div class="section-card">
+          <p>Belum ada catatan rilis.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
+  </main>
+
+  <script src="utils.js"></script>
+  <script src="version-info.js"></script>
+</body>
+</html>
