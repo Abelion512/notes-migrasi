@@ -6,7 +6,7 @@ const LEGACY_KEY = 'abelion-notes-v2';
 const KEY_STORAGE = 'abelion-key';
 const MOOD_KEY = 'abelion-mood-log-v1';
 const DRAFT_KEY = 'abelion-note-draft-v1';
-export const DEFAULT_AVATAR = 'default-avatar.svg';
+export const DEFAULT_AVATAR = 'assets/images/default-avatar.svg';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
