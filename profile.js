@@ -5,6 +5,27 @@
 
   const dom = {};
 
+  function animateNumber(element, start, end, duration, suffix = '') {
+    if (!element) return;
+    const startValue = Number(start);
+    const endValue = Number(end);
+    const totalChange = endValue - startValue;
+    const startTime = performance.now();
+
+    function step(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(startValue + totalChange * eased);
+      element.textContent = `${current}${suffix}`;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
   function cacheDom() {
     dom.avatar = document.getElementById('profile-avatar');
     dom.greeting = document.getElementById('profile-greeting');
@@ -41,9 +62,16 @@
 
     if (!badges.length) {
       const empty = document.createElement('div');
-      empty.className = 'badge-item is-empty';
-      empty.textContent = '—';
-      empty.title = 'Belum ada badge yang terbuka.';
+      empty.className = 'badge-empty-state';
+      empty.innerHTML = `
+        <div style="text-align:center;padding:28px 16px;">
+          <div style="font-size:3em;margin-bottom:12px;opacity:0.6;">🎖️</div>
+          <p style="margin:0;color:var(--text-muted);font-size:0.95em;">
+            Belum ada badge.<br>
+            <small>Tulis catatan untuk unlock pencapaian!</small>
+          </p>
+        </div>
+      `;
       fragment.appendChild(empty);
     } else {
       badges.slice(-12).reverse().forEach(badge => {
@@ -66,7 +94,18 @@
             // ignore parsing failure
           }
         }
-        cell.title = details.join(' • ') || 'Badge';
+        const label = details.join(' • ') || 'Badge';
+        cell.title = label;
+        cell.tabIndex = 0;
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('aria-label', label);
+        cell.addEventListener('click', () => showBadgeDetail(badge));
+        cell.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            showBadgeDetail(badge);
+          }
+        });
         fragment.appendChild(cell);
       });
     }
@@ -91,8 +130,21 @@
     if (dom.level) dom.level.textContent = `Level ${summary.level}`;
     if (dom.totalXp) dom.totalXp.textContent = `Total ${formatNumber(summary.totalXp)} XP`;
 
-    if (dom.xpPercent) dom.xpPercent.textContent = `${summary.xpPercent}%`;
-    if (dom.xpBar) dom.xpBar.style.width = `${summary.xpPercent}%`;
+    if (dom.xpBar && dom.xpPercent) {
+      const previousPercent = Number(dom.xpBar.dataset.currentPercent || 0);
+      const start = Number.isFinite(previousPercent) ? previousPercent : 0;
+      const target = Math.max(0, Math.min(100, Number(summary.xpPercent) || 0));
+      dom.xpBar.style.width = `${start}%`;
+      dom.xpPercent.textContent = `${Math.round(start)}%`;
+      requestAnimationFrame(() => {
+        dom.xpBar.style.width = `${target}%`;
+      });
+      animateNumber(dom.xpPercent, start, target, 1000, '%');
+      dom.xpBar.dataset.currentPercent = target;
+    } else {
+      if (dom.xpBar) dom.xpBar.style.width = `${summary.xpPercent}%`;
+      if (dom.xpPercent) dom.xpPercent.textContent = `${summary.xpPercent}%`;
+    }
     if (dom.xpHint) dom.xpHint.textContent = summary.nextLevelHint;
     if (dom.xpCounter) dom.xpCounter.textContent = `${formatNumber(summary.xpCurrent)} / ${formatNumber(summary.xpTarget)} XP`;
     if (dom.xpNext) {
@@ -115,6 +167,63 @@
     }
     dom.versionText.textContent = `${meta.version} • ${meta.codename}`;
     dom.versionPill.hidden = false;
+  }
+
+  function showBadgeDetail(badge) {
+    if (!badge || !document || !document.body) return;
+    const catalog = gamification && typeof gamification.getBadgeCatalog === 'function'
+      ? gamification.getBadgeCatalog()
+      : [];
+    const definition = catalog.find(item => item.id === badge.id);
+
+    const existing = document.querySelector('.badge-detail-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.className = 'badge-detail-modal';
+
+    const earnedDate = badge.earnedAt ? new Date(badge.earnedAt) : null;
+    const earnedLabel = earnedDate && !Number.isNaN(earnedDate.getTime())
+      ? earnedDate.toLocaleDateString('id-ID')
+      : '-';
+    const rewardNumber = Number(badge.xpReward);
+    const definitionReward = Number(definition?.xp);
+    const xpReward = Number.isFinite(rewardNumber)
+      ? rewardNumber
+      : (Number.isFinite(definitionReward) ? definitionReward : 0);
+    const description = definition?.description || 'Badge pencapaian';
+
+    modal.innerHTML = `
+      <div class="badge-detail-content" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close" aria-label="Tutup">×</button>
+        <div class="badge-detail-icon">${badge.icon || '🎖️'}</div>
+        <h2>${badge.name || 'Badge'}</h2>
+        <p>${description}</p>
+        <div class="badge-detail-meta">
+          <div><strong>+${xpReward} XP</strong></div>
+          <div>Diraih: ${earnedLabel}</div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => modal.remove(), 200);
+    };
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    const closeButton = modal.querySelector('.modal-close');
+    if (closeButton) {
+      closeButton.addEventListener('click', closeModal);
+    }
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('show'));
   }
 
   function wireInteractions() {
@@ -143,6 +252,8 @@
         applyProfile();
       }
     });
+
+    window.addEventListener('abelion-xp-update', () => applyProfile());
   }
 
   document.addEventListener('DOMContentLoaded', () => {

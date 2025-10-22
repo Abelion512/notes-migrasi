@@ -223,10 +223,15 @@
       container.innerHTML = '';
       const options = computeBadgeOptions();
       if (!options.length) {
-        const empty = document.createElement('div');
-        empty.className = 'badge-empty';
-        empty.textContent = 'Badge akan muncul setelah kamu membuka pencapaian.';
-        container.appendChild(empty);
+        container.innerHTML = `
+          <div class="badge-empty" style="flex:1;">
+            <div style="font-size:2.5em;margin-bottom:12px;">🎖️</div>
+            <p style="margin:0;font-size:0.95em;line-height:1.4;">
+              Badge akan muncul setelah kamu membuka pencapaian.<br>
+              <small style="opacity:0.7;">Tulis 7 catatan berturut-turut untuk badge pertama!</small>
+            </p>
+          </div>
+        `;
         return;
       }
       options.forEach(option => {

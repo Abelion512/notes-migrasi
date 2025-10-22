@@ -26,8 +26,42 @@ updateTime();
 // --- Notes: localStorage
 const notes = safeGetItem(STORAGE_KEYS.NOTES, []);
 
+function showXPToast({ xp, message, streak }) {
+  if (!xp) return;
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.innerHTML = `
+    <div class="xp-toast-icon">⭐</div>
+    <div class="xp-toast-content">
+      <strong>+${xp} XP</strong>
+      <span>${message}</span>
+      ${streak > 1 ? `<small>🔥 ${streak} hari berturut-turut!</small>` : ''}
+    </div>
+  `;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
 if (Gamification) {
-  Gamification.trackDailyLogin();
+  const loginResult = Gamification.trackDailyLogin();
+  if (loginResult && loginResult.xp > 0) {
+    const bonusMessage = loginResult.bonus > 0
+      ? `🎉 Streak bonus! +${loginResult.bonus} XP`
+      : `+${loginResult.xp} XP dari login harian`;
+    showXPToast({
+      xp: loginResult.xp,
+      message: bonusMessage,
+      streak: loginResult.streak || 0
+    });
+  }
 }
 
 function persistNotes() {
@@ -278,6 +312,18 @@ window.addEventListener('storage', (event) => {
     showMiniProfile();
   }
 });
+
+let lastScrollY = window.scrollY;
+window.addEventListener('scroll', debounce(() => {
+  const nav = document.querySelector('.nav-bottom');
+  if (!nav) return;
+  if (window.scrollY < lastScrollY) {
+    nav.classList.add('show-on-scroll');
+  } else {
+    nav.classList.remove('show-on-scroll');
+  }
+  lastScrollY = window.scrollY;
+}, 100));
 // --- Tambah catatan baru ---
 document.getElementById('add-note-btn').onclick = function() {
   let titleInput = prompt("Judul catatan:");
