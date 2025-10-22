@@ -120,6 +120,45 @@
     return APP_META.changelog.map(item => ({ ...item, highlights: [...item.highlights] }));
   }
 
+  function showLevelUpNotification(level) {
+    if (typeof document === 'undefined') return;
+    const toast = document.createElement('div');
+    toast.className = 'level-up-toast';
+    toast.innerHTML = `🎉 Level Up! Sekarang kamu Level ${level}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  function awardXP(points) {
+    const profile = safeGetItem(STORAGE_KEYS.PROFILE, {}) || {};
+    const safePoints = Number.isFinite(points) ? Math.max(0, Math.round(points)) : 0;
+    const currentXP = (profile.totalXP || 0) + safePoints;
+    const target = 100;
+    const level = Math.floor(currentXP / target) + 1;
+    const xpInLevel = currentXP % target;
+    const nextLevelHint = `${target - xpInLevel || target} XP lagi untuk level ${level + 1}!`;
+    const updated = {
+      ...profile,
+      level,
+      xp: xpInLevel,
+      totalXP: currentXP,
+      nextLevelHint,
+      gamification: {
+        current: xpInLevel,
+        target,
+        percent: Math.round((xpInLevel / target) * 100)
+      }
+    };
+
+    safeSetItem(STORAGE_KEYS.PROFILE, updated);
+
+    if ((profile.level || 1) < level) {
+      showLevelUpNotification(level);
+    }
+
+    return updated;
+  }
+
   global.AbelionUtils = {
     STORAGE_KEYS,
     sanitizeHTML,
@@ -131,6 +170,8 @@
     formatTanggalRelative,
     debounce,
     getVersionMeta,
-    getVersionChangelog
+    getVersionChangelog,
+    awardXP,
+    showLevelUpNotification
   };
 })(window);

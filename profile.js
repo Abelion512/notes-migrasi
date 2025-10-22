@@ -2,7 +2,8 @@
   const {
     STORAGE_KEYS,
     safeGetItem,
-    getVersionMeta
+    getVersionMeta,
+    sanitizeText
   } = AbelionUtils;
 
   const clone = value => (typeof structuredClone === 'function'
@@ -14,10 +15,12 @@
     photo: '',
     title: 'Explorer',
     level: 1,
+    xp: 0,
+    totalXP: 0,
     nextLevelHint: 'Tetap semangat, XP akan naik dengan konsisten!',
     badges: ['🪜', '🌿', '🔧', ''],
     activeBadge: '🪜',
-    gamification: Object.freeze({ current: 0, target: 100 })
+    gamification: Object.freeze({ current: 0, target: 100, percent: 0 })
   });
 
   const dom = {};
@@ -50,13 +53,16 @@
     profile.name = typeof raw?.name === 'string' && raw.name.trim() ? raw.name.trim() : base.name;
     profile.photo = typeof raw?.photo === 'string' ? raw.photo : base.photo;
     profile.title = typeof raw?.title === 'string' && raw.title.trim() ? raw.title.trim() : base.title;
-    profile.level = Number.isFinite(Number(raw?.level)) ? Math.max(1, parseInt(raw.level, 10)) : base.level;
-    profile.nextLevelHint = typeof raw?.nextLevelHint === 'string' && raw.nextLevelHint.trim()
-      ? raw.nextLevelHint.trim()
-      : base.nextLevelHint;
-
-    const gamification = normaliseGamification(raw);
-    profile.gamification = gamification;
+    const progress = deriveProgress(raw);
+    profile.level = progress.level;
+    profile.xp = progress.xpInLevel;
+    profile.totalXP = progress.totalXP;
+    profile.nextLevelHint = progress.nextLevelHint;
+    profile.gamification = {
+      current: progress.xpInLevel,
+      target: progress.target,
+      percent: progress.percent
+    };
 
     const badges = Array.isArray(raw?.badges) && raw.badges.length ? raw.badges : base.badges;
     profile.badges = badges.slice(0, 12).map(item => (typeof item === 'string' ? item : ''));
@@ -66,12 +72,29 @@
     return profile;
   }
 
-  function normaliseGamification(raw){
-    const source = raw?.gamification || {};
-    const current = Math.max(0, Math.round(toNumber(source.current, toNumber(raw?.xp, DEFAULT_PROFILE.gamification.current))));
-    const target = Math.max(1, Math.round(toNumber(source.target ?? source.next, DEFAULT_PROFILE.gamification.target)));
-    const percent = Math.max(0, Math.min(100, Math.round((current / target) * 100)));
-    return { current, target, percent };
+  function deriveProgress(raw){
+    const target = Math.max(1, Math.round(toNumber(raw?.gamification?.target, 100)));
+    const xpRaw = Math.max(0, Math.round(toNumber(raw?.xp, raw?.gamification?.current ?? 0)));
+    const totalRaw = Math.max(0, Math.round(toNumber(raw?.totalXP, xpRaw)));
+    const levelFromTotal = Math.floor(totalRaw / target) + 1;
+    const levelCandidate = Math.max(1, Math.round(toNumber(raw?.level, levelFromTotal)));
+    const level = Math.max(levelCandidate, levelFromTotal);
+    const xpFromLevel = (level - 1) * target + (xpRaw % target);
+    const totalXP = Math.max(totalRaw, xpFromLevel);
+    const xpInLevel = totalXP % target;
+    const percent = Math.max(0, Math.min(100, Math.round((xpInLevel / target) * 100)));
+    const hint = typeof raw?.nextLevelHint === 'string' && raw.nextLevelHint.trim()
+      ? raw.nextLevelHint.trim()
+      : `${target - xpInLevel || target} XP lagi untuk level ${level + 1}!`;
+
+    return {
+      level,
+      xpInLevel,
+      totalXP,
+      target,
+      percent,
+      nextLevelHint: hint
+    };
   }
 
   function toNumber(value, fallback){
@@ -81,11 +104,21 @@
 
   function greetingMessage(name){
     const hour = new Date().getHours();
-    let message = 'Selamat malam';
-    if (hour >= 5 && hour < 11) message = 'Selamat pagi';
-    else if (hour >= 11 && hour < 15) message = 'Selamat siang';
-    else if (hour >= 15 && hour < 19) message = 'Selamat sore';
-    return `${message}, ${name} 👋`;
+    const greetings = [
+      { min: 5, max: 11, text: 'Selamat pagi' },
+      { min: 11, max: 15, text: 'Selamat siang' },
+      { min: 15, max: 19, text: 'Selamat sore' },
+      { min: 19, max: 5, text: 'Selamat malam' }
+    ];
+
+    const greeting = greetings.find(range => (
+      range.min < range.max
+        ? hour >= range.min && hour < range.max
+        : hour >= range.min || hour < range.max
+    )) || greetings[greetings.length - 1];
+
+    const safeName = sanitizeText(name || DEFAULT_PROFILE.name);
+    return `${greeting.text}, <b>${safeName}</b> 👋`;
   }
 
   function renderBadges(profile){
@@ -117,10 +150,10 @@
       dom.avatar.classList.toggle('is-empty', !profile.photo);
     }
 
-    if (dom.greeting) dom.greeting.textContent = greetingMessage(displayName);
+    if (dom.greeting) dom.greeting.innerHTML = greetingMessage(displayName);
     if (dom.title) dom.title.textContent = profile.title || DEFAULT_PROFILE.title;
     if (dom.level) dom.level.textContent = `Level ${profile.level}`;
-    if (dom.streak) dom.streak.textContent = `${profile.gamification.current} XP`;
+    if (dom.streak) dom.streak.textContent = `${profile.totalXP ?? profile.gamification.current} XP`;
 
     if (dom.xpPercent) dom.xpPercent.textContent = `${profile.gamification.percent}%`;
     if (dom.xpBar) dom.xpBar.style.width = `${profile.gamification.percent}%`;
