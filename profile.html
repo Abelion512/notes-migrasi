@@ -2,108 +2,257 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profil – Abelion Notes</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile – Abelion Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --blue1: #2f88ff;
+      --blue2: #7fd7ff;
+      --blue3: #a0bbff;
+      --blue-bg: #252f46;
+      --blue-card: #6cadf9;
+      --blue-grad: linear-gradient(120deg, #43c6ff 0%, #6cadf9 100%);
+      --blue-grad-dark: linear-gradient(120deg, #2f88ff 0%, #354d7f 100%);
+      --footer-height: 56px;
+      --border-radius: 36px;
+      --shadow: 0 8px 38px #2f88ff28, 0 1.5px 8px #0002;
+      --btn-radius: 18px;
+      --font-main: 'Inter', Arial, sans-serif;
+    }
+    html, body {
+      background: var(--blue-bg);
+      min-height: 100vh;
+      font-family: var(--font-main);
+      color: #fff;
+      padding: 0; margin: 0;
+      height: 100%;
+    }
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      background: var(--blue-bg);
+    }
+    .card {
+      background: var(--blue-card);
+      width: 100%;
+      max-width: 410px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 36px 20px 84px 20px;
+      text-align: center;
+      margin: 44px 0 18px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      min-height: calc(100vh - 120px);
+      z-index: 2;
+      overflow: visible;
+    }
+    .nav-head {
+      position: absolute; top: 18px; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items:center; z-index:5;
+      padding: 0 18px;
+    }
+    .nav-btn, .nav-info-btn {
+      background: var(--blue-grad-dark);
+      color: #fff; border: none;
+      border-radius: 15px; padding: 7px 20px; font-weight: 700; font-size: 1em;
+      cursor: pointer; outline: none; margin:0 2px; box-shadow:0 1.5px 8px #2f88ff18;
+      transition: filter .14s;
+      font-family: var(--font-main);
+      letter-spacing: .01em;
+    }
+    .avatar { width: 102px; height: 102px; background: #d0eaff; border-radius:50%; margin:0 auto 13px; object-fit:cover; box-shadow: 0 2px 14px #2f88ff33; border: 4px solid #fff;}
+    .avatar.empty { background: #eee; border: 4px solid #b2ceea;}
+    .edit-photo-label {
+      display:block; color: #2f88ff; background: #fff; font-weight:700;
+      border-radius: 99px; padding:9px 27px; font-size:1.12em; margin:0 auto 20px auto;
+      box-shadow:0 1px 5px #6cadf953;
+      cursor:not-allowed; opacity:.6; pointer-events:none;
+    }
+    .greeting { font-size:1.07em; margin-bottom:24px; margin-top:10px; color: #1b3556; font-weight: 700; }
+    .level-row {
+      display: flex; justify-content:center; gap:12px; align-items:center; margin-bottom:16px;
+    }
+    .xp-title-btn, .xp-level-btn {
+      background: var(--blue-grad-dark);
+      color: #fff; border: none;
+      border-radius: 14px; padding: 7px 19px; font-weight:700; font-size:1.01em;
+      letter-spacing:.01em; box-shadow:0 1.5px 8px #2f88ff18; margin:0;
+      cursor: pointer;
+      font-family: var(--font-main);
+    }
+    .xp-label {
+      font-size:1.01em; color: #1b3556; margin-bottom:2px; margin-top:7px;
+      letter-spacing: 0.01em; font-weight: 700;
+    }
+    /* XP Bar */
+    .xp-bar-wrap { width: 100%; }
+    .xp-bar {
+      background: #2e4575;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 320px;
+      height: 17px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 9px;
+      margin-top:3px;
+      box-shadow:0 3px 18px #39b2ff33;
+    }
+    .xp-bar-inner {
+      position: absolute; left: 0; top: 0; height: 100%;
+      background: var(--blue-grad);
+      border-radius: 14px 0 0 14px;
+      width: 0%;
+      transition: width .7s cubic-bezier(.65,0,.35,1.06);
+      z-index: 1;
+    }
+    .xp-bar-percent {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-weight: 800; color: #fff;
+      font-size: 1.04em;
+      z-index: 2;
+      text-shadow: 0 1px 6px #39b2ff99;
+      letter-spacing: 0.01em;
+      background: transparent;
+      min-width: 34px;
+      text-align: left;
+    }
+    .xp-countdown {
+      color:#1b3556;
+      font-size: .98em;
+      min-height:1em;
+      letter-spacing:0.01em;
+      text-align: center;
+      width:100%;
+      font-weight:600;
+      margin-bottom: 18px;
+    }
+    .badge-panel {
+      background: var(--blue-grad);
+      padding:15px 6px 13px 6px;
+      border-radius: 22px;
+      margin: 4px 0 32px 0;
+      display: flex; flex-direction: column; align-items:center;
+      box-shadow:0 2px 16px #2f88ff24;
+      width:100%; max-width:290px;
+      min-height: 92px;
+      position:relative;
+    }
+    .badge-panel-title {
+      font-weight: 700; margin-bottom: 13px; font-size: 1.09em; letter-spacing:0.01em;
+      color: #154891;
+    }
+    .badges-row {
+      display: flex; gap:11px; justify-content:center; flex-wrap: wrap;
+      margin-bottom:0; margin-top:4px;
+      width:100%;
+      z-index:2;
+    }
+    .badge-box {
+      width:43px; height:43px; background:#e3e8f5;
+      border-radius: 13px; display:flex; align-items:center; justify-content:center;
+      font-size:1.36em; color:#458bfd;
+      border:2px solid #c1cffe;
+      font-weight: 700;
+    }
+    .btn-row {
+      display:flex; gap:22px; justify-content:center; margin:21px 0 0 0;
+      width:100%; max-width:340px;
+    }
+    .btn {
+      background: var(--blue-grad); color:#fff; border:none;
+      border-radius: var(--btn-radius);
+      font-size:1.04em; font-weight:700;
+      padding:13px 0; width:100%; min-width:133px;
+      box-shadow:0 1.5px 8px #39b2ff18;
+      cursor:pointer; transition:filter .14s;
+      font-family: var(--font-main);
+    }
+    .btn:active { filter:brightness(0.96);}
+    .footer {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: var(--footer-height);
+      line-height: var(--footer-height);
+      background: transparent;
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+      user-select: none;
+      font-weight: 500;
+      font-size:1.03em;
+      color:#e6f7ff;
+      letter-spacing: 0.01em;
+    }
+    @media (max-width: 540px){
+      .card { padding: 12px 2vw 83px 2vw; max-width: 99vw; border-radius: 19px; }
+      .btn-row{ max-width: 99vw; flex-direction: column; gap: 13px; }
+      .badge-panel { max-width: 97vw; }
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <nav class="top-nav">
-      <a class="brand" href="index.html" data-i18n="brand">Abelion Notes</a>
-      <div class="nav-actions">
-        <button class="lang-toggle" id="lang-toggle" aria-label="Toggle language">EN</button>
-        <a class="nav-link" href="index.html">
-          <img src="default-avatar.svg" alt="Avatar" class="nav-avatar" id="header-avatar" />
-          <span id="header-name" data-i18n="profile">Profil</span>
-        </a>
+  <div class="container">
+    <div class="card" id="card">
+      <div class="nav-head">
+        <button class="nav-btn" onclick="window.history.back()">&lt; Back</button>
+        <button class="nav-info-btn" onclick="window.location.href='version-info.html'">Version info</button>
       </div>
-    </nav>
-  </header>
-
-  <main class="profile-main">
-    <section class="profile-hero">
-      <div class="profile-card">
-        <div class="profile-card-media">
-          <img src="default-avatar.svg" alt="Foto profil" class="profile-avatar" id="profile-photo" />
-          <div class="profile-avatar-actions">
-            <button type="button" class="btn-secondary" id="profile-upload" data-i18n="profileUploadLabel">Ganti foto</button>
-            <button type="button" class="profile-remove" id="profile-remove" data-i18n="profileRemovePhoto">Hapus foto</button>
-            <input type="file" accept="image/*" id="profile-file" hidden />
-          </div>
-        </div>
-        <div class="profile-card-copy">
-          <h1 data-i18n="profilePageTitle">Profil &amp; preferensi</h1>
-          <p data-i18n="profilePageSubtitle">Kelola identitas, tampilkan badge, dan pantau progres produktivitasmu.</p>
-          <p class="profile-highlight" id="profile-highlight"></p>
+      <img src="" alt="Foto Profil" class="avatar empty" id="profile-avatar"/>
+      <label class="edit-photo-label">Edit photo</label>
+      <div class="greeting" id="greeting">Selamat pagi, <b id="profile-username">Abelion</b> 👋</div>
+      <div class="level-row">
+        <button class="xp-title-btn" id="xp-title-btn">✨ Title</button>
+        <button class="xp-level-btn" id="xp-level-btn">level 3</button>
+      </div>
+      <div class="xp-label">% xp</div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar">
+          <div class="xp-bar-inner" id="xp-bar-inner" style="width:52%"></div>
+          <span class="xp-bar-percent" id="xp-bar-percent">52%</span>
         </div>
       </div>
-    </section>
-
-    <section class="profile-grid">
-      <article class="profile-panel">
-        <h2 data-i18n="profileStatsTitle">Statistik utama</h2>
-        <div class="profile-stats">
-          <div>
-            <span class="profile-stat-value" id="profile-notes">0</span>
-            <span class="profile-stat-label" data-i18n="profileNotesLabel">Total catatan</span>
-          </div>
-          <div>
-            <span class="profile-stat-value" id="profile-level">1</span>
-            <span class="profile-stat-label" data-i18n="profileLevelLabel">Level saat ini</span>
-          </div>
-          <div>
-            <span class="profile-stat-value" id="profile-xp">0</span>
-            <span class="profile-stat-label" data-i18n="profileXpLabel">Total XP</span>
-          </div>
+      <div class="xp-countdown" id="xp-countdown">(countdown xp untuk naik level)</div>
+      <div class="badge-panel">
+        <div class="badge-panel-title">Badge</div>
+        <div class="badges-row">
+          <div class="badge-box"></div>
+          <div class="badge-box"></div>
+          <div class="badge-box"></div>
+          <div class="badge-box"></div>
         </div>
-        <div class="profile-progress">
-          <div class="profile-progress-bar" id="profile-progress-bar"></div>
-        </div>
-      </article>
-
-      <article class="profile-panel">
-        <h2 data-i18n="profileMoodTitle">Mood mingguan</h2>
-        <p class="profile-panel-sub" data-i18n="profileMoodSub">Catat mood harian untuk melihat pola produktivitas.</p>
-        <ul class="profile-mood-list" id="profile-mood-list"></ul>
-        <p class="profile-panel-empty" id="profile-mood-empty" data-i18n="profileMoodEmpty">Belum ada log mood. Simpan catatan baru untuk memulai.</p>
-      </article>
-
-      <article class="profile-panel">
-        <h2 data-i18n="profileBadgesTitle">Badge yang kamu miliki</h2>
-        <div class="profile-badges" id="profile-badges"></div>
-      </article>
-
-      <article class="profile-panel">
-        <h2 data-i18n="profileFormTitle">Pengaturan profil</h2>
-        <form id="profile-form" class="profile-form">
-          <label class="profile-label" for="display-name" data-i18n="profileNameLabel">Nama tampilan</label>
-          <input id="display-name" class="profile-input" type="text" maxlength="48" placeholder="Abelion" />
-
-          <label class="profile-label" for="profile-tagline" data-i18n="profileTaglineLabel">Bio singkat</label>
-          <textarea id="profile-tagline" class="profile-input" rows="3" placeholder="Penulis catatan andal"></textarea>
-
-          <label class="profile-label" for="profile-social" data-i18n="profileSocialLabel">Link sosial (opsional)</label>
-          <input id="profile-social" class="profile-input" type="url" placeholder="https://" />
-
-          <label class="profile-label" for="profile-badge" data-i18n="profileBadgeLabel">Badge utama</label>
-          <select id="profile-badge" class="profile-input">
-            <option value="" data-i18n="profileBadgePlaceholder">Pilih salah satu badge favoritmu</option>
-          </select>
-
-          <div class="profile-form-actions">
-            <button type="button" class="btn-secondary" id="profile-reset" data-i18n="profileReset">Reset profil</button>
-            <button type="submit" class="btn-primary" data-i18n="profileSave">Simpan perubahan</button>
-          </div>
-        </form>
-      </article>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <p data-i18n="footer">Dibuat dengan semangat belajar oleh Abelion. Instal ke layar utama untuk pengalaman terbaik.</p>
-  </footer>
-
-  <script type="module" src="profile.js"></script>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="window.location.href='edit-profile.html'">Edit Profile</button>
+        <button class="btn" onclick="window.location.href='settings.html'">Settings</button>
+      </div>
+      <div class="footer">
+        © 2025 Abelion Notes. All rights reserved.
+      </div>
+    </div>
+  </div>
+  <script>
+    // Demo animasi progress bar smooth
+    let percent = 52;
+    gsap.to("#xp-bar-inner", {width: percent+"%", duration: 1, ease:"power2.out"});
+    gsap.to("#xp-bar-percent", {
+      innerText: percent,
+      duration: 1,
+      snap: "innerText",
+      onUpdate: function() {
+        document.getElementById("xp-bar-percent").innerText = Math.round(this.targets()[0].innerText) + "%";
+      }
+    });
+  </script>
 </body>
 </html>
