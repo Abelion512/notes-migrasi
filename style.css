@@ -126,6 +126,45 @@ body {
   outline: none;
   transition: border .18s;
 }
+.tag-cloud {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.tag-cloud-title {
+  font-size: 0.95em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.tag-cloud-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tag-filter {
+  background: #e5f0ff;
+  color: #2070ea;
+  border: 1.5px solid transparent;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tag-filter:hover {
+  background: #d0e7ff;
+}
+
+.tag-filter--active {
+  background: #2070ea;
+  color: #fff;
+  border-color: #2070ea;
+}
 .notes-grid {
   display: flex;
   flex-direction: column;
