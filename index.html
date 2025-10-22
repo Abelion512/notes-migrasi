@@ -3,60 +3,262 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Catat ide, lacak progress, dan raih badge lewat Abelion Notes."/>
+  <meta name="theme-color" content="#2070ea"/>
   <title>Abelion Notes</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div class="top-time" id="top-time"></div>
-  <div id="intro-anim">
-    <div class="progress-circle">
-      <span id="progress-text">0%</span>
-    </div>
-  </div>
-  <div id="main-content" class="main-content hidden">
-    <header class="hero-section">
-      <h1 class="title-abelion animated">Abelion Notes</h1>
-      <p class="subtitle">Catat. Pahami. Eksekusi.</p>
-      <blockquote class="motto">“Gagal sekali bukan berarti gagal selamanya.”</blockquote>
-      <button class="btn-blue" id="add-note-btn">+ Tulis Catatan Baru</button>
-    </header>
-    <section class="mood-graph-section">
-      <div class="mood-graph-title">Mood Harian</div>
-      <div class="mood-graph-center">
-        <div class="mood-graph" id="mood-graph"></div>
+  <header class="site-header" id="site-header">
+    <nav class="top-nav">
+      <a class="brand" href="#hero" data-i18n="brand">Abelion Notes</a>
+      <div class="nav-actions">
+        <button class="lang-toggle" id="lang-toggle" aria-label="Toggle language">EN</button>
+        <a class="nav-link" href="profile.html" id="header-profile">
+          <img src="default-avatar.svg" alt="Avatar" class="nav-avatar" id="header-avatar"/>
+          <span id="header-name" data-i18n="profile">Profil</span>
+        </a>
       </div>
-    </section>
-    <section>
-      <h2 class="catatan-heading">Catatan Anda</h2>
-      <div class="notes-grid" id="notes-grid"></div>
-    </section>
-  </div>
-<nav class="nav-bottom">
-  <a href="#" class="nav-item active" id="nav-home">
-    <span class="nav-txt">Home</span>
-  </a>
-  <a href="#" class="nav-item" id="nav-about">
-    <span class="nav-txt">About</span>
-  </a>
-  <a href="profile.html" class="nav-item" id="nav-profile">
-    <img src="default-avatar.png" id="profile-mini-avatar" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:5px;">
-    <span class="nav-txt" id="profile-mini-name">Profile</span>
-  </a>
-</nav>
-  <div id="about-modal" class="about-modal">
-    <div class="about-modal-content">
-      <button class="about-close" id="about-close">&times;</button>
-      <div class="about-abelink">
-        <div class="about-text">
-          <h3>About</h3>
-          <p>
-            Abelion membuat aplikasi catatan ini untuk belajar, mencatat, dan terus berkembang menggapai cita-cita. 
-          </p>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-copy">
+        <h1 class="hero-title" data-i18n="heroTitle">Catatan pintar yang memotivasimu setiap hari</h1>
+        <p class="hero-sub" data-i18n="heroSub">Catat ide, lacak progres dengan XP, dan kumpulkan badge eksklusif saat produktivitasmu meningkat.</p>
+        <div class="hero-cta">
+          <button class="btn-primary" id="open-note-modal" data-i18n="ctaButton">Mulai menulis catatan</button>
+          <a class="btn-link" href="#how-it-works" data-i18n="ctaSecondary">Pelajari cara kerjanya</a>
         </div>
-        <img src="OlivX logo.png" alt="Abelion" class="about-img">
+        <div class="hero-metrics">
+          <div class="metric">
+            <span class="metric-value" id="metric-notes">0</span>
+            <span class="metric-label" data-i18n="metricNotes">catatan aktif</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value" id="metric-streak">0</span>
+            <span class="metric-label" data-i18n="metricStreak">hari berturut-turut</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value" id="metric-badges">0</span>
+            <span class="metric-label" data-i18n="metricBadges">badge diraih</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <script src="index.js"></script>
+      <div class="hero-preview" aria-hidden="true">
+        <div class="preview-card">
+          <div class="preview-card-head">
+            <span>🚀</span>
+            <h3>Rencana Peluncuran</h3>
+            <span class="preview-label">#kerja</span>
+          </div>
+          <ul>
+            <li>Riset kompetitor selesai</li>
+            <li>Draft deck investor</li>
+            <li>Latihan pitch</li>
+          </ul>
+          <footer>
+            <span>Ditulis 12 Jun 2025</span>
+            <span>+10 XP</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <h2 data-i18n="featuresTitle">Semua yang kamu butuhkan untuk fokus</h2>
+      <div class="features-grid">
+        <article class="feature-card">
+          <h3 data-i18n="featureEditorTitle">Editor kaya fitur</h3>
+          <p data-i18n="featureEditorCopy">Gunakan bold, italic, checklist, dan bullet agar catatan tetap rapi dengan editor Quill.</p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="featureTagsTitle">Tag &amp; pencarian</h3>
+          <p data-i18n="featureTagsCopy">Kelompokkan catatan dengan tag seperti #kerja atau #jurnal, lalu temukan kembali dalam hitungan detik.</p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="featureExportTitle">Ekspor fleksibel</h3>
+          <p data-i18n="featureExportCopy">Unduh catatan sebagai Markdown untuk backup atau dibagikan ke tim.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="gamification" id="gamification">
+      <div class="gamification-content">
+        <h2 data-i18n="gamiTitle">Gamifikasi yang transparan</h2>
+        <p data-i18n="gamiCopy">Setiap aksi produktif memberi XP, membuka level baru, dan menghadiahkan badge unik. Tidak ada rahasia—semuanya terlihat.</p>
+        <ul class="gami-rules">
+          <li data-i18n="ruleCreate">Tulis catatan baru = +10 XP</li>
+          <li data-i18n="ruleStreak">Catat 3 hari beruntun = +30 XP bonus</li>
+          <li data-i18n="ruleBadge">Level 3 ke atas membuka tema dan badge baru</li>
+        </ul>
+      </div>
+      <div class="xp-panel">
+        <div class="xp-header">
+          <h3 data-i18n="xpHeading">Perjalanan XP</h3>
+          <span id="xp-level">Lv. 1</span>
+        </div>
+        <div class="xp-progress">
+          <div class="xp-progress-bar" id="xp-progress"></div>
+        </div>
+        <p class="xp-percent"><span id="xp-percent">0%</span> <span data-i18n="xpToNext">menuju level selanjutnya</span></p>
+        <div class="badge-collection">
+          <h4 data-i18n="badgeHeading">Badge terbaru</h4>
+          <div id="badge-list" class="badge-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+      <h2 data-i18n="howTitle">Cara kerjanya</h2>
+      <ol class="steps">
+        <li>
+          <span class="step-number">1</span>
+          <h3 data-i18n="stepOneTitle">Tulis catatan dengan cepat</h3>
+          <p data-i18n="stepOneCopy">Tekan tombol "Mulai menulis catatan" lalu gunakan editor kaya fitur untuk menyimpan ide.</p>
+        </li>
+        <li>
+          <span class="step-number">2</span>
+          <h3 data-i18n="stepTwoTitle">Tambahkan tag &amp; mood</h3>
+          <p data-i18n="stepTwoCopy">Beri tag untuk memudahkan pencarian dan catat suasana hati untuk refleksi harian.</p>
+        </li>
+        <li>
+          <span class="step-number">3</span>
+          <h3 data-i18n="stepThreeTitle">Level-up otomatis</h3>
+          <p data-i18n="stepThreeCopy">Setiap catatan menambah XP, membuka badge, dan menampilkan statistik perjalananmu.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="tutorial" id="quick-tutorial">
+      <div class="tutorial-header">
+        <h2 data-i18n="tutorialTitle">Panduan singkat</h2>
+        <p data-i18n="tutorialCopy">Ikuti langkah cepat ini untuk memahami fitur utama Abelion Notes.</p>
+      </div>
+      <div class="tutorial-body">
+        <div class="tutorial-steps" id="tutorial-steps">
+          <button type="button" class="tutorial-step active" data-tutorial-step="0">
+            <span class="tutorial-step-number">1</span>
+            <span data-i18n="tutorialStep1Title">Buat catatan perdana</span>
+          </button>
+          <button type="button" class="tutorial-step" data-tutorial-step="1">
+            <span class="tutorial-step-number">2</span>
+            <span data-i18n="tutorialStep2Title">Pantau mood harian</span>
+          </button>
+          <button type="button" class="tutorial-step" data-tutorial-step="2">
+            <span class="tutorial-step-number">3</span>
+            <span data-i18n="tutorialStep3Title">Raih XP &amp; badge</span>
+          </button>
+        </div>
+        <div class="tutorial-detail">
+          <h3 id="tutorial-step-title">Buat catatan perdana</h3>
+          <p id="tutorial-step-body">Klik tombol utama, tulis ide pentingmu, lalu tambahkan tag agar mudah ditemukan kembali.</p>
+          <div class="tutorial-controls">
+            <span class="tutorial-indicator" id="tutorial-indicator">Langkah 1 dari 3</span>
+            <div class="tutorial-nav">
+              <button type="button" class="btn-secondary" id="tutorial-prev" data-i18n="tutorialPrev" disabled>Langkah sebelumnya</button>
+              <button type="button" class="btn-primary" id="tutorial-next" data-i18n="tutorialNext">Langkah selanjutnya</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mood-tracker" id="mood-tracker">
+      <div class="mood-card">
+        <header>
+          <h2 data-i18n="moodSectionTitle">Mood tracker</h2>
+          <p class="mood-sub" data-i18n="profileMoodSub">Catat mood harian untuk melihat pola produktivitas.</p>
+        </header>
+        <div class="mood-grid">
+          <div class="mood-today">
+            <h3 data-i18n="moodTodayTitle">Mood hari ini</h3>
+            <p class="mood-value" id="mood-today-value">—</p>
+            <p class="mood-empty" id="mood-today-empty" data-i18n="moodTodayEmpty">Belum ada mood tersimpan hari ini.</p>
+          </div>
+          <div class="mood-week">
+            <h3 data-i18n="moodWeekTitle">Mood 7 hari terakhir</h3>
+            <ul class="mood-week-list" id="mood-week-list"></ul>
+            <p class="mood-empty" id="mood-week-empty" data-i18n="moodWeekEmpty">Catatan mood akan muncul setelah kamu menyimpan beberapa hari berturut-turut.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo" id="demo">
+      <h2 data-i18n="demoTitle">Demo singkat</h2>
+      <p data-i18n="demoCopy">Pilih catatan di bawah untuk melihat detail, edit dengan bebas, atau ekspor sebagai Markdown.</p>
+      <div class="toolbar">
+        <input id="search-input" class="search-input" type="search" autocomplete="off" data-i18n-placeholder="searchPlaceholder" placeholder="Cari catatan atau tag"/>
+        <div class="tag-filter" id="tag-filter"></div>
+      </div>
+      <div class="notes-grid" id="notes-grid"></div>
+      <p class="empty-state" id="notes-empty" hidden data-i18n="emptyNotes">Belum ada catatan. Mulai tulis satu sekarang!</p>
+    </section>
+
+    <section class="faq" id="faq">
+      <h2 data-i18n="faqTitle">Pertanyaan yang sering diajukan</h2>
+      <div class="faq-grid">
+        <article>
+          <h3 data-i18n="faqOfflineTitle">Bisakah dipakai offline?</h3>
+          <p data-i18n="faqOfflineCopy">Ya. Instal sebagai PWA di perangkatmu dan catatan akan tersimpan di penyimpanan lokal.</p>
+        </article>
+        <article>
+          <h3 data-i18n="faqPrivacyTitle">Di mana data saya disimpan?</h3>
+          <p data-i18n="faqPrivacyCopy">Catatan tersimpan di browser kamu. Jika login ke backend pilihanmu, semua data dienkripsi end-to-end.</p>
+        </article>
+        <article>
+          <h3 data-i18n="faqExportTitle">Bagaimana cara ekspor?</h3>
+          <p data-i18n="faqExportCopy">Buka catatan dan klik "Ekspor" untuk mengunduh file Markdown atau langsung salin ke clipboard.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="privacy" id="privacy">
+      <h2 data-i18n="privacyTitle">Privasi &amp; keamanan</h2>
+      <ul>
+        <li data-i18n="privacyLocal">Catatan disimpan di perangkatmu menggunakan enkripsi Web Crypto.</li>
+        <li data-i18n="privacyPolicy">Baca kebijakan privasi lengkap di bagian pengaturan aplikasi.</li>
+        <li data-i18n="privacyAnon">Dukung login anonim atau Google sesuai preferensi pengguna.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p data-i18n="footer">Dibuat dengan semangat belajar oleh Abelion. Instal ke layar utama untuk pengalaman terbaik.</p>
+  </footer>
+
+  <dialog id="note-modal" class="note-modal">
+    <form method="dialog" class="note-modal-body" id="note-form">
+      <header>
+        <h2 data-i18n="modalTitle">Catatan baru</h2>
+        <button type="button" class="modal-close" id="close-modal" aria-label="Tutup">&times;</button>
+      </header>
+      <label class="modal-label" for="note-title" data-i18n="modalTitleLabel">Judul</label>
+      <input id="note-title" class="modal-input" maxlength="100" required placeholder="Contoh: Ide produk Q3" data-i18n-placeholder="modalTitlePlaceholder"/>
+      <label class="modal-label" data-i18n="modalContentLabel">Isi catatan</label>
+      <div id="editor" class="modal-editor"></div>
+      <label class="modal-label" for="note-tags" data-i18n="modalTagsLabel">Tag (pisahkan dengan koma)</label>
+      <input id="note-tags" class="modal-input" placeholder="#kerja, #jurnal" data-i18n-placeholder="modalTagsPlaceholder"/>
+      <label class="modal-label" for="note-mood" data-i18n="modalMoodLabel">Mood hari ini</label>
+      <select id="note-mood" class="modal-input">
+        <option value="senang" data-i18n="moodHappy">Senang</option>
+        <option value="fokus" data-i18n="moodFocus">Fokus</option>
+        <option value="tenang" data-i18n="moodCalm">Tenang</option>
+        <option value="lelah" data-i18n="moodTired">Lelah</option>
+      </select>
+      <p class="autosave-status" id="autosave-status" aria-live="polite"></p>
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary" id="save-note" data-i18n="modalSave">Simpan &amp; tambah XP</button>
+        <button type="button" class="btn-secondary" id="cancel-note" data-i18n="modalCancel">Batal</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+  <script src="index.js" type="module"></script>
 </body>
 </html>
