@@ -80,15 +80,16 @@
   <script>
     const { STORAGE_KEYS, sanitizeText, safeGetItem, safeSetItem } = AbelionUtils;
     const Gamification = window.AbelionGamification || null;
+    const XP_GUIDE_URL = 'https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp';
 
     const DEFAULT_PROFILE = {
-      name: 'Abelion',
-      title: 'Explorer',
+      name: 'username',
+      title: '',
       bio: '',
       link: '',
       photo: '',
-      badges: ['🪜', '🌿', '🔧'],
-      activeBadge: '🪜'
+      badges: ['🪔', '🪶', '📚'],
+      activeBadge: '🪔'
     };
 
     function cloneDefaultProfile() {
@@ -126,38 +127,78 @@
 
     function computeBadgeOptions() {
       const map = new Map();
-      const addOption = (icon, name, meta = {}) => {
+      const summary = Gamification && typeof Gamification.getProfileSummary === 'function'
+        ? Gamification.getProfileSummary()
+        : null;
+      const catalog = Gamification && typeof Gamification.getBadgeCatalog === 'function'
+        ? Gamification.getBadgeCatalog()
+        : [];
+      const catalogById = new Map(catalog.map(item => [item.id, item]));
+
+      const addOption = (option) => {
+        if (!option) return;
+        const icon = option.icon ? option.icon.trim() : '';
         if (!icon) return;
-        const key = icon;
+        const key = option.key || `${option.id || 'icon'}-${icon}-${option.meta?.tier || 0}`;
         if (!map.has(key)) {
           map.set(key, {
-            icon: key,
-            name: name && name.trim() ? name.trim() : key,
-            meta
+            id: option.id || null,
+            icon,
+            name: option.name && option.name.trim() ? option.name.trim() : icon,
+            meta: option.meta || {}
           });
         }
       };
 
-      if (Gamification && typeof Gamification.getProfileSummary === 'function') {
-        const summary = Gamification.getProfileSummary();
-        if (summary?.badges?.length) {
-          summary.badges.forEach(item => {
-            addOption(item.icon, item.name, {
-              tier: item.tier,
-              earnedAt: item.earnedAt
-            });
+      if (summary?.badges?.length) {
+        summary.badges.forEach(item => {
+          if (!item?.icon) return;
+          const definition = catalogById.get(item.id);
+          addOption({
+            key: `${item.id || item.icon}-${item.tier || 0}`,
+            id: item.id || null,
+            icon: item.icon,
+            name: item.name || definition?.name || item.icon,
+            meta: {
+              tier: item.tier || null,
+              earnedAt: item.earnedAt || '',
+              xp: item.xpReward || definition?.xp || '',
+              criteria: definition?.criteria || definition?.description || ''
+            }
           });
-        }
+        });
       }
 
       if (Array.isArray(profileState.badges)) {
-        profileState.badges.forEach(icon => addOption(icon, icon));
+        profileState.badges
+          .map(icon => sanitizeText(String(icon || '').trim()))
+          .filter(Boolean)
+          .forEach(icon => {
+            addOption({
+              key: `profile-${icon}`,
+              icon,
+              name: icon,
+              meta: {}
+            });
+          });
       }
 
-      DEFAULT_PROFILE.badges.forEach(icon => addOption(icon, icon));
+      DEFAULT_PROFILE.badges.forEach(icon => {
+        addOption({
+          key: `default-${icon}`,
+          icon,
+          name: icon,
+          meta: {}
+        });
+      });
 
-      if (profileState.activeBadge && !map.has(profileState.activeBadge)) {
-        addOption(profileState.activeBadge, profileState.activeBadge);
+      if (profileState.activeBadge && !Array.from(map.values()).some(option => option.icon === profileState.activeBadge)) {
+        addOption({
+          key: `active-${profileState.activeBadge}`,
+          icon: profileState.activeBadge,
+          name: profileState.activeBadge,
+          meta: {}
+        });
       }
 
       return Array.from(map.values());
@@ -174,6 +215,17 @@
         avatar.src = 'default-avatar.svg';
         avatar.classList.add('is-empty');
         avatar.alt = 'Belum ada foto profil';
+      }
+    }
+
+    function formatEarnedDate(isoDate) {
+      if (!isoDate) return '';
+      try {
+        const parsed = new Date(isoDate);
+        if (Number.isNaN(parsed.getTime())) return '';
+        return parsed.toLocaleDateString('id-ID');
+      } catch (error) {
+        return '';
       }
     }
 
@@ -197,15 +249,44 @@
       button.dataset.icon = option.icon || '';
       button.dataset.label = option.name || '';
       button.dataset.tier = option.meta?.tier ? String(option.meta.tier) : '';
-      const iconLabel = option.icon || '—';
-      const badgeLabel = option.icon ? (option.name || 'Badge') : 'Tanpa badge';
-      const tierLabel = option.meta?.tier ? `Tier ${option.meta.tier}` : '';
-      button.innerHTML = `
-        <span class="badge-choice-icon">${iconLabel}</span>
-        <span class="badge-choice-label">${badgeLabel}</span>
-        ${tierLabel ? `<span class="badge-choice-meta">${tierLabel}</span>` : ''}
-      `;
+      button.dataset.xp = option.meta?.xp ? String(option.meta.xp) : '';
+      button.dataset.criteria = option.meta?.criteria || '';
+      button.dataset.earnedAt = option.meta?.earnedAt || '';
       button.setAttribute('role', 'option');
+
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'badge-choice-icon';
+      iconSpan.textContent = option.icon || '—';
+
+      const info = document.createElement('div');
+      info.className = 'badge-choice-info';
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'badge-choice-title';
+      titleSpan.textContent = option.icon ? (option.name || 'Badge') : 'Tanpa badge';
+      info.appendChild(titleSpan);
+
+      const metaParts = [];
+      if (option.meta?.xp) metaParts.push(`+${option.meta.xp} XP`);
+      if (option.meta?.tier) metaParts.push(`Tier ${option.meta.tier}`);
+      if (option.meta?.criteria) metaParts.push(option.meta.criteria);
+      if (metaParts.length) {
+        const meta = document.createElement('span');
+        meta.className = 'badge-choice-meta';
+        meta.textContent = metaParts.join(' • ');
+        info.appendChild(meta);
+      }
+
+      const earnedLabel = formatEarnedDate(option.meta?.earnedAt);
+      if (earnedLabel) {
+        const earned = document.createElement('span');
+        earned.className = 'badge-choice-earned';
+        earned.textContent = `Diraih ${earnedLabel}`;
+        info.appendChild(earned);
+      }
+
+      button.append(iconSpan, info);
+
       const isActive = (option.icon || '') === (activeBadge || '');
       if (isActive) {
         button.classList.add('is-active');
@@ -213,14 +294,19 @@
       } else {
         button.setAttribute('aria-selected', 'false');
       }
+
       if (!option.icon) {
         button.classList.add('is-neutral');
       }
+
       const titleParts = [];
       if (option.icon) titleParts.push(`Badge ${option.icon}`);
       if (option.name && option.name !== option.icon) titleParts.push(option.name);
       if (option.meta?.tier) titleParts.push(`Tier ${option.meta.tier}`);
+      if (option.meta?.xp) titleParts.push(`+${option.meta.xp} XP`);
+      if (option.meta?.criteria) titleParts.push(option.meta.criteria);
       button.title = titleParts.join(' • ') || 'Tidak ada badge';
+
       button.addEventListener('click', () => handleBadgeSelect(button));
       button.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -243,10 +329,10 @@
         const empty = document.createElement('div');
         empty.className = 'badge-empty-state badge-empty-state--compact';
         empty.innerHTML = `
-          <div>
-            <div style="font-size:2.4rem;margin-bottom:8px;">🎖️</div>
-            <p style="margin:0;">Badge akan muncul setelah kamu membuka pencapaian.</p>
-            <small style="color:var(--text-muted);">Tulis 7 catatan berturut-turut untuk badge pertama!</small>
+          <div class="badge-empty-copy">
+            <div class="badge-empty-icon">🎖️</div>
+            <p>Badge akan muncul setelah kamu membuka pencapaian.</p>
+            <a href="${XP_GUIDE_URL}" class="badge-guide-link" target="_blank" rel="noopener">Pelajari cara klaim XP & badge</a>
           </div>
         `;
         container.appendChild(empty);
@@ -324,12 +410,16 @@
       if (!hint) return;
       const active = document.querySelector('#badge-list .badge-choice.is-active');
       if (!active || !(active.dataset.icon || '')) {
-        hint.textContent = 'Profil akan disimpan tanpa badge aktif. Title tetap ditampilkan.';
+        hint.textContent = 'Profil akan disimpan tanpa badge aktif. Kamu bisa fokus mengejar XP terlebih dahulu.';
         return;
       }
       const label = active.dataset.label || active.dataset.icon;
-      const tier = active.dataset.tier ? ` • Tier ${active.dataset.tier}` : '';
-      hint.textContent = `Badge ${label}${tier} akan tampil di profil.`;
+      const detailParts = [];
+      if (active.dataset.tier) detailParts.push(`Tier ${active.dataset.tier}`);
+      if (active.dataset.xp) detailParts.push(`+${active.dataset.xp} XP`);
+      if (active.dataset.criteria) detailParts.push(active.dataset.criteria);
+      const detailText = detailParts.length ? ` (${detailParts.join(' • ')})` : '';
+      hint.textContent = `Badge ${label}${detailText} akan tampil di profil.`;
     }
 
     function populateForm() {

@@ -41,6 +41,9 @@
     dom.badgeGrid = document.getElementById('badge-grid');
     dom.versionPill = document.getElementById('profile-version-pill');
     dom.versionText = document.getElementById('profile-version');
+    dom.tierHint = document.getElementById('profile-tier-hint');
+    dom.titleHint = document.getElementById('profile-title-hint');
+    dom.xpGuide = document.getElementById('xp-guide');
   }
 
   function formatNumber(value) {
@@ -58,18 +61,25 @@
   function renderBadges(summary) {
     if (!dom.badgeGrid) return;
     const badges = summary?.badges || [];
+    const catalog = gamification && typeof gamification.getBadgeCatalog === 'function'
+      ? gamification.getBadgeCatalog()
+      : [];
     const fragment = document.createDocumentFragment();
 
     if (!badges.length) {
       const empty = document.createElement('div');
       empty.className = 'badge-empty-state';
+      const guideUrl = summary?.xpGuideUrl
+        || (gamification && gamification.xpGuideUrl)
+        || 'https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp';
       empty.innerHTML = `
-        <div style="text-align:center;padding:28px 16px;">
-          <div style="font-size:3em;margin-bottom:12px;opacity:0.6;">🎖️</div>
+        <div class="badge-empty-copy">
+          <div class="badge-empty-icon">🎖️</div>
           <p style="margin:0;color:var(--text-muted);font-size:0.95em;">
             Belum ada badge.<br>
-            <small>Tulis catatan untuk unlock pencapaian!</small>
+            <small>Mulai kumpulkan XP untuk membuka pencapaian.</small>
           </p>
+          <a class="badge-guide-link" href="${guideUrl}" target="_blank" rel="noopener">Panduan klaim XP</a>
         </div>
       `;
       fragment.appendChild(empty);
@@ -81,9 +91,11 @@
         if (badge.icon && summary.activeBadge && badge.icon === summary.activeBadge) {
           cell.classList.add('is-active');
         }
+        const definition = catalog.find(item => item.id === badge.id);
         const details = [];
         if (badge.name) details.push(badge.name);
         if (badge.tier) details.push(`Tier ${badge.tier}`);
+        if (badge.xpReward) details.push(`+${badge.xpReward} XP`);
         if (badge.earnedAt) {
           try {
             const date = new Date(badge.earnedAt);
@@ -93,6 +105,9 @@
           } catch (error) {
             // ignore parsing failure
           }
+        }
+        if (definition?.criteria) {
+          details.push(definition.criteria);
         }
         const label = details.join(' • ') || 'Badge';
         cell.title = label;
@@ -125,10 +140,36 @@
     }
 
     if (dom.greeting) dom.greeting.textContent = greetingMessage(summary.name);
-    if (dom.title) dom.title.textContent = summary.title || 'Explorer';
-    if (dom.tier) dom.tier.textContent = summary.tier || 'Novice';
+    if (dom.title) {
+      dom.title.textContent = summary.title || 'Explorer';
+      if (summary.titleHint) {
+        dom.title.title = summary.titleHint;
+        dom.title.setAttribute('aria-label', `${summary.title} – ${summary.titleHint}`);
+      } else {
+        dom.title.removeAttribute('title');
+        dom.title.removeAttribute('aria-label');
+      }
+    }
+    if (dom.tier) {
+      dom.tier.textContent = summary.tier || 'Novice';
+      if (summary.tierHint) {
+        dom.tier.title = summary.tierHint;
+        dom.tier.setAttribute('aria-label', `${summary.tier} – ${summary.tierHint}`);
+      } else {
+        dom.tier.removeAttribute('title');
+        dom.tier.removeAttribute('aria-label');
+      }
+    }
     if (dom.level) dom.level.textContent = `Level ${summary.level}`;
     if (dom.totalXp) dom.totalXp.textContent = `Total ${formatNumber(summary.totalXp)} XP`;
+
+    if (dom.tierHint) {
+      dom.tierHint.textContent = summary.tierHint || '';
+    }
+
+    if (dom.titleHint) {
+      dom.titleHint.textContent = summary.titleHint || '';
+    }
 
     if (dom.xpBar && dom.xpPercent) {
       const previousPercent = Number(dom.xpBar.dataset.currentPercent || 0);
@@ -155,6 +196,15 @@
       }
     }
 
+    if (dom.xpGuide) {
+      if (summary.xpGuideUrl) {
+        dom.xpGuide.href = summary.xpGuideUrl;
+        dom.xpGuide.style.display = 'inline-block';
+      } else {
+        dom.xpGuide.style.display = 'none';
+      }
+    }
+
     renderBadges(summary);
   }
 
@@ -165,7 +215,14 @@
       dom.versionPill.hidden = true;
       return;
     }
-    dom.versionText.textContent = `${meta.version} • ${meta.codename}`;
+    const versionLabel = meta.codename ? `${meta.version} • ${meta.codename}` : meta.version;
+    dom.versionText.textContent = versionLabel;
+    if (meta.versioning) {
+      const { major, minor, patch } = meta.versioning;
+      dom.versionPill.title = `Major ${major} • Minor ${minor} • Patch ${patch}`;
+    } else {
+      dom.versionPill.removeAttribute('title');
+    }
     dom.versionPill.hidden = false;
   }
 
@@ -192,6 +249,8 @@
       ? rewardNumber
       : (Number.isFinite(definitionReward) ? definitionReward : 0);
     const description = definition?.description || 'Badge pencapaian';
+    const criteria = definition?.criteria || '';
+    const criteriaMarkup = criteria ? `<p class="badge-detail-criteria">${criteria}</p>` : '';
 
     modal.innerHTML = `
       <div class="badge-detail-content" role="dialog" aria-modal="true">
@@ -199,6 +258,7 @@
         <div class="badge-detail-icon">${badge.icon || '🎖️'}</div>
         <h2>${badge.name || 'Badge'}</h2>
         <p>${description}</p>
+        ${criteriaMarkup}
         <div class="badge-detail-meta">
           <div><strong>+${xpReward} XP</strong></div>
           <div>Diraih: ${earnedLabel}</div>

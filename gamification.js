@@ -23,27 +23,98 @@
     return Number.isFinite(num) ? num : fallback;
   };
 
+  const XP_GUIDE_URL = 'https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp';
+
+  const admin = Object.freeze({
+    name: 'Abelion Lavv',
+    email: 'agen.salva@gmail.com',
+    privileges: Object.freeze({
+      level: true,
+      title: true,
+      theme: true,
+      background: true,
+      badges: true
+    })
+  });
+
+  const TITLE_PROGRESSION = Object.freeze([
+    {
+      id: 'explorer',
+      level: 1,
+      name: 'Explorer',
+      description: 'Menjelajah ide dan membangun kebiasaan menulis.'
+    },
+    {
+      id: 'trailblazer',
+      level: 500,
+      name: 'Trailblazer',
+      description: 'Memimpin komunitas dengan konsistensi menulis tinggi.'
+    }
+  ]);
+
   const TIER_DEFINITIONS = [
-    { id: 'novice', name: 'Novice', min: 1, max: 20, hint: 'Bangun rutinitas menulis untuk menembus Apprentice.' },
-    { id: 'apprentice', name: 'Apprentice', min: 21, max: 50, hint: 'Eksplor variasi catatan untuk memperkaya pengalaman.' },
-    { id: 'scholar', name: 'Scholar', min: 51, max: 100, hint: 'Gabungkan eksperimen dengan konsistensi untuk naik ke Archivist.' },
-    { id: 'archivist', name: 'Archivist', min: 101, max: 200, hint: 'Optimalkan organisasi catatan untuk menuju Grand Master.' },
-    { id: 'grandmaster', name: 'Grand Master', min: 201, max: Number.POSITIVE_INFINITY, hint: 'Bagikan ilmu dan jaga ritme produktifmu.' }
+    {
+      id: 'novice',
+      name: 'Novice',
+      label: 'Novice (Pemula)',
+      min: 1,
+      max: 100,
+      summary: 'Fokus membangun kebiasaan menulis harian.',
+      hint: 'Pertahankan ritme mencatat untuk menembus Apprentice.'
+    },
+    {
+      id: 'apprentice',
+      name: 'Apprentice',
+      label: 'Apprentice (Magang)',
+      min: 101,
+      max: 300,
+      summary: 'Eksplorasi fitur catatan untuk memperkaya proses belajar.',
+      hint: 'Gunakan variasi catatan untuk menuju Scholar.'
+    },
+    {
+      id: 'scholar',
+      name: 'Scholar',
+      label: 'Scholar (Cendekia)',
+      min: 301,
+      max: 900,
+      summary: 'Satukan pola dan insight untuk mempercepat peningkatan level.',
+      hint: 'Optimalkan konsistensi untuk menembus Archivist.'
+    },
+    {
+      id: 'archivist',
+      name: 'Archivist',
+      label: 'Archivist (Arsiparis)',
+      min: 901,
+      max: 1800,
+      summary: 'Kurasi catatanmu dan bantu diri masa depan menemukan referensi.',
+      hint: 'Bersiap menuju tier puncak dengan menjaga kualitas catatan.'
+    },
+    {
+      id: 'luminary',
+      name: 'Luminary',
+      label: 'Luminary',
+      min: 1801,
+      max: Number.POSITIVE_INFINITY,
+      summary: 'Legenda catatan yang terus berbagi wawasan.',
+      hint: 'Terus eksplorasi tantangan baru untuk mempertahankan status.'
+    }
   ];
 
   const BADGE_DEFINITIONS = {
     patcher: {
       id: 'patcher',
-      icon: '🔥',
+      icon: '🪔',
       baseName: 'The Patcher',
-      description: 'Mencatat selama 7 hari berturut-turut.',
+      description: 'Apresiasi konsistensi streak catatan selama sepekan penuh.',
+      criteria: 'Mencatat selama 7 hari berturut-turut (streak 7 hari).',
       xp: 50
     },
     artisan: {
       id: 'artisan',
-      icon: '🖋️',
+      icon: '🪶',
       baseName: 'The Artisan',
-      description: 'Merayakan pencapaian jumlah catatan yang ditulis.',
+      description: 'Menghargai ketekunan dalam menyelesaikan banyak catatan.',
+      criteria: 'Menuntaskan 100 catatan. Ulangi untuk setiap tier lanjutan.',
       tiers: [
         { threshold: 100, xp: 100, suffix: 'I' },
         { threshold: 200, xp: 150, suffix: 'II' },
@@ -54,49 +125,56 @@
       id: 'archivist',
       icon: '📚',
       baseName: 'The Archivist',
-      description: 'Aktif menggunakan 5 fitur pengorganisasian dalam satu hari.',
+      description: 'Simbol kerapian mengorganisasi catatan.',
+      criteria: 'Menggunakan 5 fitur pengorganisasian (Folder, Tag, Warna, Pin, Search) dalam 1 hari.',
       xp: 75
     },
     projectTamer: {
       id: 'projectTamer',
       icon: '🎯',
       baseName: 'The Project Tamer',
-      description: 'Menyelesaikan 10 checklist di 10 catatan berbeda.',
+      description: 'Perayaan keberhasilan menaklukkan to-do lintas catatan.',
+      criteria: 'Menyelesaikan 10 daftar checklist/to-do di 10 catatan yang berbeda.',
       xp: 150
     },
     nightOwl: {
       id: 'nightOwl',
       icon: '🌙',
       baseName: 'The Night Owl',
-      description: 'Membuat catatan pada pukul 00:00 - 04:00.',
+      description: 'Penghargaan untuk penulis malam.',
+      criteria: 'Membuat catatan pada pukul 00:00 - 04:00.',
       xp: 30
     },
     earlyBird: {
       id: 'earlyBird',
       icon: '🌅',
       baseName: 'The Early Bird',
-      description: 'Membuat catatan pada pukul 05:00 - 08:00.',
+      description: 'Bonus bagi penyambut pagi.',
+      criteria: 'Membuat catatan pada pukul 05:00 - 08:00.',
       xp: 30
     },
     purist: {
       id: 'purist',
-      icon: '🔒',
+      icon: '🔐',
       baseName: 'The Purist',
-      description: 'Mengamankan 5 catatan dengan proteksi.',
+      description: 'Pengingat pentingnya keamanan catatan.',
+      criteria: 'Menggunakan fitur enkripsi/password pada 5 catatan sensitif.',
       xp: 100
     },
     reviewer: {
       id: 'reviewer',
-      icon: '🔍',
+      icon: '🔎',
       baseName: 'The Reviewer',
-      description: 'Menghidupkan kembali catatan lama (30+ hari) sebanyak 5 kali dalam seminggu.',
+      description: 'Apresiasi untuk rutin merefleksikan catatan lama.',
+      criteria: 'Membuka dan mengedit catatan berusia 30 hari sebanyak 5 kali dalam seminggu.',
       xp: 60
     },
     veteran: {
       id: 'veteran',
-      icon: '🌳',
+      icon: '🌲',
       baseName: 'The Veteran',
-      description: 'Aktif selama 1 tahun dengan minimal 100 login.',
+      description: 'Penghormatan bagi pengguna jangka panjang.',
+      criteria: 'Menjadi pengguna aktif selama 1 tahun dengan minimal 100 hari login.',
       xp: 200
     }
   };
@@ -236,12 +314,97 @@
     return TIER_DEFINITIONS.find(tier => level >= tier.min && level <= tier.max) || TIER_DEFINITIONS[TIER_DEFINITIONS.length - 1];
   }
 
+  function formatTierRange(tier) {
+    if (!tier) return '';
+    if (tier.max === Number.POSITIVE_INFINITY) {
+      return `Level ${tier.min}+`;
+    }
+    return `Level ${tier.min}-${tier.max}`;
+  }
+
   function buildNextLevelHint(progress) {
+    const tier = getTier(progress.level);
     if (progress.xpToNext <= 50 && progress.xpForNext) {
       return `Hanya ${progress.xpToNext} XP lagi menuju Level ${progress.level + 1}!`;
     }
-    const tier = getTier(progress.level);
-    return tier.hint;
+    const nextTier = getTier(progress.level + 1);
+    if (nextTier && tier && nextTier.id !== tier.id) {
+      const range = nextTier.max === Number.POSITIVE_INFINITY
+        ? `Level ${nextTier.min}+`
+        : `Level ${nextTier.min}`;
+      return `Siap menuju ${nextTier.label || nextTier.name} di ${range}.`;
+    }
+    return tier?.hint || tier?.summary || '';
+  }
+
+  function resolveTitleInfo(level, customTitleRaw) {
+    const customTitle = customTitleRaw && typeof customTitleRaw === 'string'
+      ? customTitleRaw.trim()
+      : '';
+    const sorted = TITLE_PROGRESSION.slice().sort((a, b) => a.level - b.level);
+    let active = sorted[0] || { name: 'Explorer', description: '' };
+    let next = null;
+
+    for (let i = 0; i < sorted.length; i++) {
+      const candidate = sorted[i];
+      if (level >= candidate.level) {
+        active = candidate;
+        next = sorted[i + 1] || null;
+      } else {
+        next = candidate;
+        break;
+      }
+    }
+
+    if (customTitle) {
+      return {
+        title: customTitle,
+        description: 'Title kustom milikmu.',
+        source: 'custom',
+        nextTitle: next
+      };
+    }
+
+    return {
+      title: active.name,
+      description: active.description || '',
+      source: 'system',
+      nextTitle: next
+    };
+  }
+
+  function buildTierHint(tier, progress) {
+    if (!tier) return '';
+    const range = formatTierRange(tier);
+    let hint = `${tier.label || tier.name} mencakup ${range}. ${tier.summary}`.trim();
+    const nextTier = getTier(progress.level + 1);
+    if (nextTier && nextTier.id !== tier.id) {
+      hint = `${hint} Level ${nextTier.min} membuka ${nextTier.label || nextTier.name}.`;
+    }
+    return hint.trim();
+  }
+
+  function buildTitleHint(info) {
+    if (!info) return '';
+    if (info.source === 'custom') {
+      let message = info.description || 'Title kustom milikmu.';
+      if (info.nextTitle) {
+        message = `${message} Level ${info.nextTitle.level} akan membuka gelar sistem ${info.nextTitle.name}.`;
+      }
+      return message.trim();
+    }
+
+    let message = info.description || '';
+    if (info.nextTitle) {
+      message = `${message} Level ${info.nextTitle.level} akan membuka gelar ${info.nextTitle.name}.`.trim();
+    }
+    return message.trim();
+  }
+
+  function refreshStateCache() {
+    const stored = safeGetItem(STORAGE_KEY, null);
+    ensureState.cache = normalizeState(stored);
+    return ensureState.cache;
   }
 
   function refreshStateCache() {
@@ -437,6 +600,7 @@
     const profile = typeof profileRaw === 'object' && profileRaw ? { ...profileRaw } : {};
     const progress = resolveProgress(state.totalXp);
     const tier = getTier(progress.level);
+    const titleInfo = resolveTitleInfo(progress.level, profile.title);
     const badges = state.badges
       .slice()
       .sort((a, b) => new Date(a.earnedAt || 0) - new Date(b.earnedAt || 0))
@@ -449,7 +613,10 @@
       }));
 
     profile.level = progress.level;
-    profile.tier = tier.name;
+    profile.title = titleInfo.title;
+    profile.titleHint = buildTitleHint(titleInfo);
+    profile.tier = tier.label || tier.name;
+    profile.tierHint = buildTierHint(tier, progress);
     profile.xp = progress.totalXp;
     profile.nextLevelHint = buildNextLevelHint(progress);
     profile.gamification = {
@@ -463,6 +630,7 @@
     if (!profile.activeBadge || !profile.badges.includes(profile.activeBadge)) {
       profile.activeBadge = profile.badges[profile.badges.length - 1] || profile.badges[0] || '';
     }
+    profile.xpGuideUrl = XP_GUIDE_URL;
     profile.updatedAt = new Date().toISOString();
     safeSetItem(STORAGE_KEYS.PROFILE, profile);
   }
@@ -615,6 +783,7 @@
       icon: def.icon,
       name: def.baseName,
       description: def.description,
+      criteria: def.criteria || null,
       tiers: def.tiers ? def.tiers.map(t => ({ threshold: t.threshold, xp: t.xp, suffix: t.suffix })) : null,
       xp: def.xp || null
     }));
@@ -641,12 +810,24 @@
       ? profileRaw.activeBadge
       : (badgeIcons[badgeIcons.length - 1] || badgeIcons[0] || '');
 
+    const profileName = profileRaw?.name && profileRaw.name.trim() ? profileRaw.name.trim() : 'username';
+    const titleInfo = resolveTitleInfo(progress.level, profileRaw?.title);
+    const tierLabel = tier.label || tier.name;
+    const tierHint = buildTierHint(tier, progress);
+    const titleHint = buildTitleHint(titleInfo);
+
     return {
-      name: profileRaw?.name && profileRaw.name.trim() ? profileRaw.name.trim() : 'Abelion',
-      title: profileRaw?.title && profileRaw.title.trim() ? profileRaw.title.trim() : tier.name,
+      name: profileName,
+      title: titleInfo.title,
+      titleSource: titleInfo.source,
+      titleHint,
+      titleNext: titleInfo.nextTitle ? { ...titleInfo.nextTitle } : null,
       photo: profileRaw?.photo || '',
       level: progress.level,
-      tier: tier.name,
+      tier: tierLabel,
+      tierId: tier.id,
+      tierHint,
+      tierRange: { min: tier.min, max: tier.max },
       totalXp: progress.totalXp,
       xpCurrent: progress.xpInLevel,
       xpTarget: progress.xpForNext || progress.xpInLevel,
@@ -656,8 +837,50 @@
       badges,
       badgeIcons: badgeIcons.slice(0, 12),
       activeBadge,
-      stats: clone(state.stats)
+      stats: clone(state.stats),
+      xpGuideUrl: XP_GUIDE_URL
     };
+  }
+
+  function showLevelUpCelebration(newLevel) {
+    if (typeof document === 'undefined') return;
+    const existing = document.querySelector('.level-up-modal');
+    if (existing) {
+      existing.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'level-up-modal';
+    modal.innerHTML = `
+      <div class="level-up-content">
+        <div class="level-up-confetti">🎊</div>
+        <h2>Level Up!</h2>
+        <div class="level-up-number">${newLevel}</div>
+        <p>Kamu telah mencapai level ${newLevel}!</p>
+        <button class="primary-btn" type="button">Lanjutkan</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => modal.remove(), 250);
+    };
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    const button = modal.querySelector('button');
+    if (button) {
+      button.addEventListener('click', closeModal);
+    }
+
+    requestAnimationFrame(() => {
+      modal.classList.add('show');
+    });
   }
 
   function showLevelUpCelebration(newLevel) {
@@ -710,6 +933,8 @@
     evaluateProfileCompletion,
     getBadgeCatalog,
     getProfileSummary,
-    refreshStateCache
+    refreshStateCache,
+    admin,
+    xpGuideUrl: XP_GUIDE_URL
   };
 })(window);
