@@ -194,8 +194,20 @@
 
   function xpRequiredForLevel(level) {
     if (level <= 1) return 0;
-    const base = 50 * level;
-    return level % 100 === 0 ? base + 100 : base;
+
+    if (level <= 10) {
+      return 50 * level;
+    }
+
+    if (level <= 50) {
+      return 50 + (level - 10) * 75;
+    }
+
+    if (level <= 100) {
+      return 100 + (level - 50) * 100;
+    }
+
+    return 150 + Math.floor((level - 100) / 10) * 50;
   }
 
   function resolveProgress(totalXp) {
@@ -230,6 +242,12 @@
     }
     const tier = getTier(progress.level);
     return tier.hint;
+  }
+
+  function refreshStateCache() {
+    const stored = safeGetItem(STORAGE_KEY, null);
+    ensureState.cache = normalizeState(stored);
+    return ensureState.cache;
   }
 
   function ensureState() {
@@ -337,18 +355,23 @@
   function checkArtisan(state) {
     const def = BADGE_DEFINITIONS.artisan;
     if (!def?.tiers) return 0;
-    const currentTier = state.artisanTier || 0;
-    if (currentTier >= def.tiers.length) return 0;
-    const nextTier = def.tiers[currentTier];
-    if (!nextTier) return 0;
-    if (state.stats.notesCreated >= nextTier.threshold) {
-      const xp = grantBadge(state, 'artisan', currentTier);
-      if (xp > 0) {
-        state.artisanTier = currentTier + 1;
+
+    let totalXP = 0;
+    const startTier = state.artisanTier || 0;
+
+    for (let tierIndex = startTier; tierIndex < def.tiers.length; tierIndex++) {
+      const tier = def.tiers[tierIndex];
+      if (!tier || state.stats.notesCreated < tier.threshold) {
+        break;
       }
-      return xp;
+      const xp = grantBadge(state, 'artisan', tierIndex);
+      if (xp > 0) {
+        totalXP += xp;
+        state.artisanTier = tierIndex + 1;
+      }
     }
-    return 0;
+
+    return totalXP;
   }
 
   function checkReviewer(state, isoDate, noteCreatedAt) {
@@ -390,11 +413,23 @@
     return 0;
   }
 
-  function persistState(state) {
+  function persistState(state, previousProgress) {
     state.updatedAt = new Date().toISOString();
     ensureState.cache = state;
-    safeSetItem(STORAGE_KEY, state);
-    syncProfileOverlay(state);
+    const success = safeSetItem(STORAGE_KEY, state);
+    if (success) {
+      syncProfileOverlay(state);
+      const currentProgress = resolveProgress(state.totalXp);
+      if (previousProgress && currentProgress.level > previousProgress.level) {
+        showLevelUpCelebration(currentProgress.level);
+      }
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('abelion-xp-update', {
+          detail: { totalXp: currentProgress.totalXp, level: currentProgress.level }
+        }));
+      }
+    }
+    return success;
   }
 
   function syncProfileOverlay(state) {
@@ -434,6 +469,7 @@
 
   function trackDailyLogin(referenceDate) {
     const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
     const now = referenceDate ? new Date(referenceDate) : new Date();
     const iso = now.toISOString();
     const lastLogin = state.streaks.login.lastDate;
@@ -450,13 +486,14 @@
     }
     bonus += applySeasonalBonus(state, iso);
     bonus += checkVeteran(state, iso);
-    persistState(state);
+    persistState(state, previousProgress);
     return { xp: gained + bonus, streak: streakCount, bonus };
   }
 
   function recordNoteCreated({ id, createdAt }) {
     if (!id) return { xp: 0 };
     const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
     const nowIso = createdAt || new Date().toISOString();
     const existing = state.notes[id] || {};
     state.notes[id] = {
@@ -475,13 +512,14 @@
     } else if (hour >= 5 && hour < 8) {
       xp += grantBadge(state, 'earlyBird');
     }
-    persistState(state);
+    persistState(state, previousProgress);
     return { xp };
   }
 
   function recordNoteUpdated({ id, updatedAt, createdAt }) {
     if (!id) return { xp: 0 };
     const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
     const note = state.notes[id] || {
       createdAt: createdAt || updatedAt,
       updatedAwarded: false,
@@ -490,7 +528,7 @@
     if (note.updatedAwarded) {
       note.lastUpdatedAt = updatedAt || new Date().toISOString();
       state.notes[id] = note;
-      persistState(state);
+      persistState(state, previousProgress);
       return { xp: 0 };
     }
     note.updatedAwarded = true;
@@ -500,13 +538,14 @@
     state.stats.notesUpdated += 1;
     let xp = addXp(state, 10);
     xp += checkReviewer(state, note.lastUpdatedAt, createdAt || note.createdAt);
-    persistState(state);
+    persistState(state, previousProgress);
     return { xp };
   }
 
   function recordNoteDeleted({ id, deletedAt, createdAt }) {
     if (!id) return { xp: 0 };
     const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
     const note = state.notes[id] || {
       createdAt: createdAt,
       updatedAwarded: false,
@@ -517,7 +556,7 @@
     const nowIso = deletedAt || new Date().toISOString();
     if (note.deleteAwarded) {
       delete state.notes[id];
-      persistState(state);
+      persistState(state, previousProgress);
       return { xp: 0 };
     }
     const created = createdAt || note.createdAt;
@@ -525,19 +564,20 @@
     const eligible = !Number.isNaN(createdDate.getTime()) && (new Date(nowIso) - createdDate) >= DAY_MS;
     if (!eligible) {
       delete state.notes[id];
-      persistState(state);
+      persistState(state, previousProgress);
       return { xp: 0 };
     }
     note.deleteAwarded = true;
     state.stats.notesDeleted += 1;
     const xp = addXp(state, 5);
     delete state.notes[id];
-    persistState(state);
+    persistState(state, previousProgress);
     return { xp };
   }
 
   function recordChecklistCompletion(count = 1) {
     const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
     const amount = Math.max(1, Math.floor(numberOr(count, 1)));
     state.checklistLog.push({ count: amount, at: new Date().toISOString() });
     state.checklistLog = state.checklistLog.slice(-100);
@@ -546,12 +586,13 @@
     if (state.stats.checklistsCompleted >= 10) {
       grantBadge(state, 'projectTamer');
     }
-    persistState(state);
+    persistState(state, previousProgress);
     return { xp };
   }
 
   function evaluateProfileCompletion(profile) {
     const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
     if (state.flags.profileCompleted) {
       return { xp: 0 };
     }
@@ -562,7 +603,7 @@
     if (nameFilled && photoFilled && badgeFilled) {
       state.flags.profileCompleted = true;
       const xp = addXp(state, 100);
-      persistState(state);
+      persistState(state, previousProgress);
       return { xp };
     }
     return { xp: 0 };
@@ -619,6 +660,47 @@
     };
   }
 
+  function showLevelUpCelebration(newLevel) {
+    if (typeof document === 'undefined') return;
+    const existing = document.querySelector('.level-up-modal');
+    if (existing) {
+      existing.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'level-up-modal';
+    modal.innerHTML = `
+      <div class="level-up-content">
+        <div class="level-up-confetti">🎊</div>
+        <h2>Level Up!</h2>
+        <div class="level-up-number">${newLevel}</div>
+        <p>Kamu telah mencapai level ${newLevel}!</p>
+        <button class="primary-btn" type="button">Lanjutkan</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => modal.remove(), 250);
+    };
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    const button = modal.querySelector('button');
+    if (button) {
+      button.addEventListener('click', closeModal);
+    }
+
+    requestAnimationFrame(() => {
+      modal.classList.add('show');
+    });
+  }
+
   global.AbelionGamification = {
     trackDailyLogin,
     recordNoteCreated,
@@ -627,6 +709,7 @@
     recordChecklistCompletion,
     evaluateProfileCompletion,
     getBadgeCatalog,
-    getProfileSummary
+    getProfileSummary,
+    refreshStateCache
   };
 })(window);

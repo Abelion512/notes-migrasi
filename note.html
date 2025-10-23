@@ -102,7 +102,12 @@
       }
       document.getElementById('edit-content').value = val;
       if (!note.createdAt) {
-        note.createdAt = note.date;
+        let fallbackDate = note.date ? new Date(`${note.date}T12:00:00`) : new Date();
+        if (Number.isNaN(fallbackDate.getTime())) {
+          fallbackDate = new Date();
+        }
+        note.createdAt = fallbackDate.toISOString();
+        saveNotes(notes);
       }
       document.getElementById('edit-label').value = note.label||"";
       document.getElementById('note-detail-date').textContent = "Ditulis: "+(formatTanggal(note.date) || '');
