@@ -5,10 +5,37 @@
   } = AbelionUtils;
 
   function populateSummary(meta){
-    document.getElementById('version-name').textContent = meta.version;
-    document.getElementById('version-codename').textContent = meta.codename || '—';
-    document.getElementById('version-date').textContent = meta.build || '—';
-    document.getElementById('version-env').textContent = meta.environment || '—';
+    const versionEl = document.getElementById('version-name');
+    const codenameEl = document.getElementById('version-codename');
+    const dateEl = document.getElementById('version-date');
+    const envEl = document.getElementById('version-env');
+    const majorEl = document.getElementById('version-major');
+    const minorEl = document.getElementById('version-minor');
+    const patchEl = document.getElementById('version-patch');
+    const channelEl = document.getElementById('version-channel');
+    const updatedEl = document.getElementById('version-updated');
+
+    if (versionEl) versionEl.textContent = meta?.version || '—';
+    if (codenameEl) codenameEl.textContent = meta?.codename || '—';
+    if (dateEl) dateEl.textContent = meta?.build || '—';
+    if (envEl) envEl.textContent = meta?.environment || '—';
+
+    const versioning = meta?.versioning || null;
+    if (majorEl) majorEl.textContent = versioning ? versioning.major : '—';
+    if (minorEl) minorEl.textContent = versioning ? versioning.minor : '—';
+    if (patchEl) patchEl.textContent = versioning ? versioning.patch : '—';
+    if (channelEl) channelEl.textContent = versioning?.channel || '—';
+
+    if (updatedEl) {
+      if (versioning?.updatedAt) {
+        const updatedDate = new Date(versioning.updatedAt);
+        updatedEl.textContent = Number.isNaN(updatedDate.getTime())
+          ? versioning.updatedAt
+          : updatedDate.toLocaleString('id-ID');
+      } else {
+        updatedEl.textContent = '—';
+      }
+    }
   }
 
   function renderChangelog(changelog){

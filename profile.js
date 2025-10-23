@@ -5,6 +5,27 @@
 
   const dom = {};
 
+  function animateNumber(element, start, end, duration, suffix = '') {
+    if (!element) return;
+    const startValue = Number(start);
+    const endValue = Number(end);
+    const totalChange = endValue - startValue;
+    const startTime = performance.now();
+
+    function step(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(startValue + totalChange * eased);
+      element.textContent = `${current}${suffix}`;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
   function cacheDom() {
     dom.avatar = document.getElementById('profile-avatar');
     dom.greeting = document.getElementById('profile-greeting');
@@ -20,6 +41,9 @@
     dom.badgeGrid = document.getElementById('badge-grid');
     dom.versionPill = document.getElementById('profile-version-pill');
     dom.versionText = document.getElementById('profile-version');
+    dom.tierHint = document.getElementById('profile-tier-hint');
+    dom.titleHint = document.getElementById('profile-title-hint');
+    dom.xpGuide = document.getElementById('xp-guide');
   }
 
   function formatNumber(value) {
@@ -37,13 +61,27 @@
   function renderBadges(summary) {
     if (!dom.badgeGrid) return;
     const badges = summary?.badges || [];
+    const catalog = gamification && typeof gamification.getBadgeCatalog === 'function'
+      ? gamification.getBadgeCatalog()
+      : [];
     const fragment = document.createDocumentFragment();
 
     if (!badges.length) {
       const empty = document.createElement('div');
-      empty.className = 'badge-item is-empty';
-      empty.textContent = '—';
-      empty.title = 'Belum ada badge yang terbuka.';
+      empty.className = 'badge-empty-state';
+      const guideUrl = summary?.xpGuideUrl
+        || (gamification && gamification.xpGuideUrl)
+        || 'https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp';
+      empty.innerHTML = `
+        <div class="badge-empty-copy">
+          <div class="badge-empty-icon">🎖️</div>
+          <p style="margin:0;color:var(--text-muted);font-size:0.95em;">
+            Belum ada badge.<br>
+            <small>Mulai kumpulkan XP untuk membuka pencapaian.</small>
+          </p>
+          <a class="badge-guide-link" href="${guideUrl}" target="_blank" rel="noopener">Panduan klaim XP</a>
+        </div>
+      `;
       fragment.appendChild(empty);
     } else {
       badges.slice(-12).reverse().forEach(badge => {
@@ -53,9 +91,11 @@
         if (badge.icon && summary.activeBadge && badge.icon === summary.activeBadge) {
           cell.classList.add('is-active');
         }
+        const definition = catalog.find(item => item.id === badge.id);
         const details = [];
         if (badge.name) details.push(badge.name);
         if (badge.tier) details.push(`Tier ${badge.tier}`);
+        if (badge.xpReward) details.push(`+${badge.xpReward} XP`);
         if (badge.earnedAt) {
           try {
             const date = new Date(badge.earnedAt);
@@ -66,7 +106,21 @@
             // ignore parsing failure
           }
         }
-        cell.title = details.join(' • ') || 'Badge';
+        if (definition?.criteria) {
+          details.push(definition.criteria);
+        }
+        const label = details.join(' • ') || 'Badge';
+        cell.title = label;
+        cell.tabIndex = 0;
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('aria-label', label);
+        cell.addEventListener('click', () => showBadgeDetail(badge));
+        cell.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            showBadgeDetail(badge);
+          }
+        });
         fragment.appendChild(cell);
       });
     }
@@ -86,13 +140,52 @@
     }
 
     if (dom.greeting) dom.greeting.textContent = greetingMessage(summary.name);
-    if (dom.title) dom.title.textContent = summary.title || 'Explorer';
-    if (dom.tier) dom.tier.textContent = summary.tier || 'Novice';
+    if (dom.title) {
+      dom.title.textContent = summary.title || 'Explorer';
+      if (summary.titleHint) {
+        dom.title.title = summary.titleHint;
+        dom.title.setAttribute('aria-label', `${summary.title} – ${summary.titleHint}`);
+      } else {
+        dom.title.removeAttribute('title');
+        dom.title.removeAttribute('aria-label');
+      }
+    }
+    if (dom.tier) {
+      dom.tier.textContent = summary.tier || 'Novice';
+      if (summary.tierHint) {
+        dom.tier.title = summary.tierHint;
+        dom.tier.setAttribute('aria-label', `${summary.tier} – ${summary.tierHint}`);
+      } else {
+        dom.tier.removeAttribute('title');
+        dom.tier.removeAttribute('aria-label');
+      }
+    }
     if (dom.level) dom.level.textContent = `Level ${summary.level}`;
     if (dom.totalXp) dom.totalXp.textContent = `Total ${formatNumber(summary.totalXp)} XP`;
 
-    if (dom.xpPercent) dom.xpPercent.textContent = `${summary.xpPercent}%`;
-    if (dom.xpBar) dom.xpBar.style.width = `${summary.xpPercent}%`;
+    if (dom.tierHint) {
+      dom.tierHint.textContent = summary.tierHint || '';
+    }
+
+    if (dom.titleHint) {
+      dom.titleHint.textContent = summary.titleHint || '';
+    }
+
+    if (dom.xpBar && dom.xpPercent) {
+      const previousPercent = Number(dom.xpBar.dataset.currentPercent || 0);
+      const start = Number.isFinite(previousPercent) ? previousPercent : 0;
+      const target = Math.max(0, Math.min(100, Number(summary.xpPercent) || 0));
+      dom.xpBar.style.width = `${start}%`;
+      dom.xpPercent.textContent = `${Math.round(start)}%`;
+      requestAnimationFrame(() => {
+        dom.xpBar.style.width = `${target}%`;
+      });
+      animateNumber(dom.xpPercent, start, target, 1000, '%');
+      dom.xpBar.dataset.currentPercent = target;
+    } else {
+      if (dom.xpBar) dom.xpBar.style.width = `${summary.xpPercent}%`;
+      if (dom.xpPercent) dom.xpPercent.textContent = `${summary.xpPercent}%`;
+    }
     if (dom.xpHint) dom.xpHint.textContent = summary.nextLevelHint;
     if (dom.xpCounter) dom.xpCounter.textContent = `${formatNumber(summary.xpCurrent)} / ${formatNumber(summary.xpTarget)} XP`;
     if (dom.xpNext) {
@@ -100,6 +193,15 @@
         dom.xpNext.textContent = 'Level saat ini sudah maksimal untuk konfigurasi ini.';
       } else {
         dom.xpNext.textContent = `Perlu ${formatNumber(summary.xpToNext)} XP lagi untuk naik level.`;
+      }
+    }
+
+    if (dom.xpGuide) {
+      if (summary.xpGuideUrl) {
+        dom.xpGuide.href = summary.xpGuideUrl;
+        dom.xpGuide.style.display = 'inline-block';
+      } else {
+        dom.xpGuide.style.display = 'none';
       }
     }
 
@@ -113,8 +215,75 @@
       dom.versionPill.hidden = true;
       return;
     }
-    dom.versionText.textContent = `${meta.version} • ${meta.codename}`;
+    const versionLabel = meta.codename ? `${meta.version} • ${meta.codename}` : meta.version;
+    dom.versionText.textContent = versionLabel;
+    if (meta.versioning) {
+      const { major, minor, patch } = meta.versioning;
+      dom.versionPill.title = `Major ${major} • Minor ${minor} • Patch ${patch}`;
+    } else {
+      dom.versionPill.removeAttribute('title');
+    }
     dom.versionPill.hidden = false;
+  }
+
+  function showBadgeDetail(badge) {
+    if (!badge || !document || !document.body) return;
+    const catalog = gamification && typeof gamification.getBadgeCatalog === 'function'
+      ? gamification.getBadgeCatalog()
+      : [];
+    const definition = catalog.find(item => item.id === badge.id);
+
+    const existing = document.querySelector('.badge-detail-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.className = 'badge-detail-modal';
+
+    const earnedDate = badge.earnedAt ? new Date(badge.earnedAt) : null;
+    const earnedLabel = earnedDate && !Number.isNaN(earnedDate.getTime())
+      ? earnedDate.toLocaleDateString('id-ID')
+      : '-';
+    const rewardNumber = Number(badge.xpReward);
+    const definitionReward = Number(definition?.xp);
+    const xpReward = Number.isFinite(rewardNumber)
+      ? rewardNumber
+      : (Number.isFinite(definitionReward) ? definitionReward : 0);
+    const description = definition?.description || 'Badge pencapaian';
+    const criteria = definition?.criteria || '';
+    const criteriaMarkup = criteria ? `<p class="badge-detail-criteria">${criteria}</p>` : '';
+
+    modal.innerHTML = `
+      <div class="badge-detail-content" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close" aria-label="Tutup">×</button>
+        <div class="badge-detail-icon">${badge.icon || '🎖️'}</div>
+        <h2>${badge.name || 'Badge'}</h2>
+        <p>${description}</p>
+        ${criteriaMarkup}
+        <div class="badge-detail-meta">
+          <div><strong>+${xpReward} XP</strong></div>
+          <div>Diraih: ${earnedLabel}</div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => modal.remove(), 200);
+    };
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    const closeButton = modal.querySelector('.modal-close');
+    if (closeButton) {
+      closeButton.addEventListener('click', closeModal);
+    }
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('show'));
   }
 
   function wireInteractions() {
@@ -143,6 +312,8 @@
         applyProfile();
       }
     });
+
+    window.addEventListener('abelion-xp-update', () => applyProfile());
   }
 
   document.addEventListener('DOMContentLoaded', () => {

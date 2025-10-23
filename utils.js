@@ -3,18 +3,28 @@
     NOTES: 'abelion-notes-v2',
     PROFILE: 'abelion-profile',
     MOODS: 'abelion-moods',
-    GAMIFICATION: 'abelion-gamification'
+    GAMIFICATION: 'abelion-gamification',
+    VERSION_META: 'abelion-version-meta'
   };
 
-  const APP_META = Object.freeze({
-    version: '2025.06.0-design-preview',
-    build: '2025-06-15',
+  const APP_VERSION_BASE = Object.freeze({
+    major: 2025,
+    minor: 6,
+    patch: 0,
+    channel: 'design-preview',
     codename: 'Lavender Dawn',
-    environment: 'prototype',
+    build: '2025-06-15',
+    environment: 'prototype'
+  });
+
+  const INITIAL_VERSION_STRING = `${APP_VERSION_BASE.major}.${String(APP_VERSION_BASE.minor).padStart(2, '0')}.${APP_VERSION_BASE.patch}-${APP_VERSION_BASE.channel}`;
+
+  const APP_META = Object.freeze({
+    versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
       {
-        version: '2025.06.0-design-preview',
-        releasedAt: '2025-06-15',
+        version: INITIAL_VERSION_STRING,
+        releasedAt: APP_VERSION_BASE.build,
         highlights: [
           'Penyegaran tampilan profil agar selaras dengan halaman beranda.',
           'Penambahan sistem meta versi yang siap untuk riwayat rilis.',
@@ -137,8 +147,81 @@
     return Math.min(max, Math.max(min, number));
   }
 
+  function resolveVersioning() {
+    const base = APP_META.versioning;
+    const stored = safeGetItem(STORAGE_KEYS.VERSION_META, null);
+
+    const parseNumeric = (value, fallback) => {
+      const number = Number.parseInt(value, 10);
+      return Number.isFinite(number) ? Math.max(0, number) : fallback;
+    };
+
+    const sanitize = (value, fallback = '') => {
+      const text = value == null ? '' : String(value);
+      const trimmed = text.trim();
+      return trimmed.length ? trimmed : fallback;
+    };
+
+    const versioning = {
+      major: parseNumeric(stored?.major, base.major),
+      minor: parseNumeric(stored?.minor, base.minor),
+      patch: parseNumeric(stored?.patch, base.patch),
+      channel: sanitize(stored?.channel, base.channel),
+      codename: sanitize(stored?.codename, base.codename),
+      build: sanitize(stored?.build, base.build),
+      environment: sanitize(stored?.environment, base.environment),
+      updatedAt: sanitize(stored?.updatedAt, base.build)
+    };
+
+    return versioning;
+  }
+
+  function computeVersionString(versioning) {
+    if (!versioning) return INITIAL_VERSION_STRING;
+    const minor = String(versioning.minor).padStart(2, '0');
+    const patch = String(versioning.patch);
+    const suffix = versioning.channel ? `-${versioning.channel}` : '';
+    return `${versioning.major}.${minor}.${patch}${suffix}`;
+  }
+
   function getVersionMeta() {
-    return { ...APP_META };
+    const versioning = resolveVersioning();
+    return {
+      version: computeVersionString(versioning),
+      codename: versioning.codename,
+      build: versioning.build,
+      environment: versioning.environment,
+      versioning: { ...versioning }
+    };
+  }
+
+  function bumpVersion(kind = 'patch', overrides = {}) {
+    const versioning = resolveVersioning();
+    switch (kind) {
+      case 'major':
+        versioning.major += 1;
+        versioning.minor = 0;
+        versioning.patch = 0;
+        break;
+      case 'minor':
+        versioning.minor += 1;
+        versioning.patch = 0;
+        break;
+      default:
+        versioning.patch += 1;
+        break;
+    }
+
+    if (overrides.codename) versioning.codename = String(overrides.codename).trim();
+    if (overrides.build) versioning.build = String(overrides.build).trim();
+    if (overrides.environment) versioning.environment = String(overrides.environment).trim();
+    if (overrides.channel !== undefined) {
+      versioning.channel = String(overrides.channel || '').trim();
+    }
+
+    versioning.updatedAt = new Date().toISOString();
+    safeSetItem(STORAGE_KEYS.VERSION_META, versioning);
+    return getVersionMeta();
   }
 
   function getVersionChangelog() {
@@ -159,6 +242,7 @@
     differenceInDays,
     clamp,
     getVersionMeta,
-    getVersionChangelog
+    getVersionChangelog,
+    bumpVersion
   };
 })(window);
