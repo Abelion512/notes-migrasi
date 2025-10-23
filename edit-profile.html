@@ -2,185 +2,79 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit Profile – Abelion Notes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --blue1: #2f88ff;
-      --blue2: #7fd7ff;
-      --blue3: #a0bbff;
-      --blue-bg: #252f46;
-      --blue-card: #6cadf9;
-      --blue-grad: linear-gradient(120deg, #43c6ff 0%, #6cadf9 100%);
-      --blue-grad-dark: linear-gradient(120deg, #2f88ff 0%, #354d7f 100%);
-      --footer-height: 56px;
-      --border-radius: 36px;
-      --shadow: 0 8px 38px #2f88ff28, 0 1.5px 8px #0002;
-      --btn-radius: 18px;
-      --font-main: 'Inter', Arial, sans-serif;
-    }
-    html, body {
-      background: var(--blue-bg);
-      min-height: 100vh;
-      font-family: var(--font-main);
-      color: #fff;
-      padding: 0; margin: 0;
-      height: 100%;
-    }
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-      background: var(--blue-bg);
-    }
-    .card {
-      background: var(--blue-card);
-      width: 100%;
-      max-width: 410px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      padding: 36px 20px 84px 20px;
-      text-align: center;
-      margin: 44px 0 18px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      min-height: calc(100vh - 120px);
-      z-index: 2;
-      overflow: visible;
-    }
-    .nav-head {
-      position: absolute; top: 18px; left: 0; right: 0;
-      display: flex; justify-content: space-between; align-items:center; z-index:5;
-      padding: 0 18px;
-    }
-    .nav-btn, .nav-info-btn {
-      background: var(--blue-grad-dark);
-      color: #fff; border: none;
-      border-radius: 15px; padding: 7px 20px; font-weight: 700; font-size: 1em;
-      cursor: pointer; outline: none; margin:0 2px; box-shadow:0 1.5px 8px #2f88ff18;
-      transition: filter .14s;
-      font-family: var(--font-main);
-      letter-spacing: .01em;
-    }
-    .avatar { width: 102px; height: 102px; background: #d0eaff; border-radius:50%; margin:0 auto 13px; object-fit:cover; box-shadow: 0 2px 14px #2f88ff33; border: 4px solid #fff;}
-    .avatar.empty { background: #eee; border: 4px solid #b2ceea;}
-    .edit-photo-label {
-      display:block; color: #2f88ff; background: #fff; font-weight:700;
-      border-radius: 99px; padding:9px 27px; font-size:1.12em; margin:0 auto 20px auto;
-      box-shadow:0 1px 5px #6cadf953;
-      cursor:pointer;
-      transition: filter .13s;
-    }
-    .edit-photo-label:hover { filter:brightness(0.97);}
-    .form-label {
-      text-align:left; font-weight:700; font-size:1.04em; color:#1b3556;
-      margin-bottom: 7px; margin-top: 15px; display: block;
-    }
-    .input, .textarea {
-      width: 100%; max-width: 320px;
-      padding: 11px; border-radius: 10px; border: 1.5px solid #5ecbff;
-      background: #e8f3fc;
-      margin-bottom: 18px; color: #222; font-size: 1.07em;
-      font-family: var(--font-main);
-      font-weight: 600;
-    }
-    .input:focus, .textarea:focus { border-color: #2f88ff;}
-    .desc {
-      font-size: 1.07em; color: #1b3556; margin: 15px 0 32px 0; text-align: left;
-      max-width: 330px;
-    }
-    .desc small { color:#3b5a9b;}
-    .badge-row {
-      display: flex; gap: 13px; justify-content:center; margin: 17px 0 19px 0;
-    }
-    .badge-box {
-      width:43px; height:43px; background:#e3e8f5;
-      border-radius: 13px; display:flex; align-items:center; justify-content:center;
-      font-size:1.36em; color:#458bfd;
-      border:2px solid #c1cffe;
-      font-weight: 700;
-      cursor: pointer;
-      transition: box-shadow .13s, border .13s, background .13s;
-    }
-    .badge-box--active { border:2px solid #ffd800; background: #fffae6; }
-    .badge-empty {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.45);
-      border-radius: 16px;
-      padding: 14px 16px;
-      color: #1b3556;
-      font-weight: 600;
-      text-align: center;
-      border: 2px dashed rgba(255, 255, 255, 0.5);
-    }
-    .btn-row {
-      display:flex; gap:18px; justify-content:center; margin:41px 0 0 0;
-      width:100%; max-width:340px;
-    }
-    .btn {
-      background: var(--blue-grad); color:#fff; border:none;
-      border-radius: var(--btn-radius);
-      font-size:1.04em; font-weight:700;
-      padding:13px 0; width:100%; min-width:133px;
-      box-shadow:0 1.5px 8px #39b2ff18;
-      cursor:pointer; transition:filter .14s;
-      font-family: var(--font-main);
-    }
-    .btn:active { filter:brightness(0.96);}
-    .footer {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      height: var(--footer-height);
-      line-height: var(--footer-height);
-      background: transparent;
-      text-align: center;
-      z-index: 10;
-      pointer-events: none;
-      user-select: none;
-      font-weight: 500;
-      font-size:1.03em;
-      color:#e6f7ff;
-      letter-spacing: 0.01em;
-    }
-    @media (max-width: 540px){
-      .card { padding: 12px 2vw 85px 2vw; max-width: 99vw; border-radius: 19px; }
-      .btn-row{ max-width: 99vw; flex-direction: column; gap: 13px; }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profil – Abelion Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="container">
-    <div class="card">
-      <div class="nav-head">
-        <button class="nav-btn" onclick="window.history.back()">&lt; Back</button>
-        <button class="nav-info-btn" onclick="window.location.href='version-info.html'">Version info</button>
+<body class="page-shell">
+  <main class="panel" id="edit-profile-panel">
+    <header class="panel-header">
+      <button type="button" class="ghost-btn" id="back-btn">← Kembali</button>
+      <button type="button" class="ghost-btn" id="version-btn">ℹ️ Version info</button>
+    </header>
+
+    <form id="profile-form" class="profile-form" novalidate>
+      <section class="panel-section">
+        <h2>Informasi Dasar</h2>
+        <div class="section-card">
+          <div class="avatar-uploader">
+            <img src="default-avatar.svg" alt="Preview foto profil" id="profile-avatar" class="profile-avatar is-empty" />
+            <div class="avatar-actions">
+              <button type="button" class="ghost-btn" id="avatar-upload-btn">Unggah foto</button>
+              <button type="button" class="ghost-btn danger" id="avatar-remove-btn">Hapus foto</button>
+            </div>
+            <input type="file" accept="image/*" id="photo-input" hidden />
+          </div>
+
+          <div class="form-grid">
+            <label class="form-field" for="profile-name">
+              <span>Nama tampilan</span>
+              <input type="text" id="profile-name" class="input-control" maxlength="40" placeholder="Tuliskan nama panggilanmu" autocomplete="name" required />
+            </label>
+
+            <label class="form-field" for="profile-title">
+              <span>Title di profil</span>
+              <input type="text" id="profile-title" class="input-control" maxlength="32" placeholder="Explorer" autocomplete="organization-title" />
+              <small>Ditampilkan di samping badge pada halaman profil.</small>
+            </label>
+
+            <label class="form-field" for="profile-bio">
+              <span>Bio singkat</span>
+              <textarea id="profile-bio" class="textarea-control" rows="3" maxlength="160" placeholder="Ceritakan fokus belajarmu"></textarea>
+              <small>Opsional, maksimal 160 karakter.</small>
+            </label>
+
+            <label class="form-field" for="profile-link">
+              <span>Link sosial</span>
+              <input type="url" id="profile-link" class="input-control" placeholder="https://instagram.com/abelion" autocomplete="url" inputmode="url" />
+              <small>Tambahkan satu tautan utama ke profilmu.</small>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>Badge aktif</h2>
+        <div class="section-card">
+          <div id="badge-list" class="badge-picker" role="listbox" aria-label="Pilih badge aktif"></div>
+          <p class="badge-hint" id="badge-hint">Pilih badge untuk ditampilkan di profil.</p>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="ghost-btn danger" id="reset-profile-btn">Reset profil</button>
+        <button type="submit" class="primary-btn">Simpan perubahan</button>
       </div>
-      <img src="" alt="Foto Profil" class="avatar empty" id="profile-avatar"/>
-      <label class="edit-photo-label" for="photo-input">Edit photo</label>
-      <input type="file" accept="image/*" id="photo-input" style="display:none"/>
-      <label class="form-label" for="username">Username:</label>
-      <input class="input" type="text" id="username" placeholder="input your username"/>
-      <div class="desc">
-        Pilih Title (Badge/Rank aktif) yang ingin ditampilkan di profile<br>
-        <br>
-        <small>• Link Sosial user (IG, GitHub, dll)</small>
-      </div>
-      <div class="badge-row" id="badge-list"></div>
-      <div class="btn-row">
-        <button class="btn" style="background:#fff;color:#2f88ff;font-weight:700;" onclick="resetProfile()">reset profile</button>
-        <button class="btn" onclick="saveProfile()">save profile</button>
-      </div>
-      <div class="footer">
-        © 2025 Abelion Notes. All rights reserved.
-      </div>
-    </div>
-  </div>
+    </form>
+
+    <footer class="panel-footer">
+      © 2025 Abelion Notes. All rights reserved.
+    </footer>
+  </main>
+
   <script src="utils.js"></script>
   <script src="gamification.js"></script>
   <script>
@@ -189,32 +83,152 @@
 
     const DEFAULT_PROFILE = {
       name: 'Abelion',
-      photo: '',
       title: 'Explorer',
-      badges: ['🪜','🌿','🔧',''],
+      bio: '',
+      link: '',
+      photo: '',
+      badges: ['🪜', '🌿', '🔧'],
       activeBadge: '🪜'
     };
 
+    function cloneDefaultProfile() {
+      return {
+        ...DEFAULT_PROFILE,
+        badges: [...DEFAULT_PROFILE.badges]
+      };
+    }
+
     function loadProfile() {
       const stored = safeGetItem(STORAGE_KEYS.PROFILE, null);
-      if (!stored) return { ...DEFAULT_PROFILE };
-      return { ...DEFAULT_PROFILE, ...stored };
+      if (!stored) return cloneDefaultProfile();
+      const badges = Array.isArray(stored.badges)
+        ? stored.badges.map(item => sanitizeText(String(item || '').trim())).filter(Boolean)
+        : [];
+      const profile = {
+        ...cloneDefaultProfile(),
+        ...stored,
+        badges,
+        activeBadge: sanitizeText(String(stored.activeBadge || '').trim()) || (badges[0] || DEFAULT_PROFILE.activeBadge)
+      };
+      if (typeof profile.photo !== 'string') {
+        profile.photo = '';
+      }
+      if (typeof profile.bio !== 'string') {
+        profile.bio = '';
+      }
+      if (typeof profile.link !== 'string') {
+        profile.link = '';
+      }
+      return profile;
     }
 
     let profileState = loadProfile();
 
     function computeBadgeOptions() {
-      if (Gamification) {
+      const map = new Map();
+      const addOption = (icon, name, meta = {}) => {
+        if (!icon) return;
+        const key = icon;
+        if (!map.has(key)) {
+          map.set(key, {
+            icon: key,
+            name: name && name.trim() ? name.trim() : key,
+            meta
+          });
+        }
+      };
+
+      if (Gamification && typeof Gamification.getProfileSummary === 'function') {
         const summary = Gamification.getProfileSummary();
         if (summary?.badges?.length) {
-          return summary.badges.map(item => ({ icon: item.icon, name: item.name }));
+          summary.badges.forEach(item => {
+            addOption(item.icon, item.name, {
+              tier: item.tier,
+              earnedAt: item.earnedAt
+            });
+          });
         }
       }
-      const stored = Array.isArray(profileState.badges) ? profileState.badges.filter(Boolean) : [];
-      if (stored.length) {
-        return stored.map(icon => ({ icon, name: icon }));
+
+      if (Array.isArray(profileState.badges)) {
+        profileState.badges.forEach(icon => addOption(icon, icon));
       }
-      return DEFAULT_PROFILE.badges.filter(Boolean).map(icon => ({ icon, name: icon }));
+
+      DEFAULT_PROFILE.badges.forEach(icon => addOption(icon, icon));
+
+      if (profileState.activeBadge && !map.has(profileState.activeBadge)) {
+        addOption(profileState.activeBadge, profileState.activeBadge);
+      }
+
+      return Array.from(map.values());
+    }
+
+    function updateAvatarPreview(source) {
+      const avatar = document.getElementById('profile-avatar');
+      if (!avatar) return;
+      if (source) {
+        avatar.src = source;
+        avatar.classList.remove('is-empty');
+        avatar.alt = 'Foto profil terkini';
+      } else {
+        avatar.src = 'default-avatar.svg';
+        avatar.classList.add('is-empty');
+        avatar.alt = 'Belum ada foto profil';
+      }
+    }
+
+    function handleBadgeSelect(button) {
+      const container = document.getElementById('badge-list');
+      if (!container || !button) return;
+      container.querySelectorAll('.badge-choice').forEach(node => {
+        node.classList.remove('is-active');
+        node.setAttribute('aria-selected', 'false');
+      });
+      button.classList.add('is-active');
+      button.setAttribute('aria-selected', 'true');
+      profileState.activeBadge = button.dataset.icon || '';
+      updateBadgeHint();
+    }
+
+    function createBadgeButton(option, activeBadge) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'badge-choice';
+      button.dataset.icon = option.icon || '';
+      button.dataset.label = option.name || '';
+      button.dataset.tier = option.meta?.tier ? String(option.meta.tier) : '';
+      const iconLabel = option.icon || '—';
+      const badgeLabel = option.icon ? (option.name || 'Badge') : 'Tanpa badge';
+      const tierLabel = option.meta?.tier ? `Tier ${option.meta.tier}` : '';
+      button.innerHTML = `
+        <span class="badge-choice-icon">${iconLabel}</span>
+        <span class="badge-choice-label">${badgeLabel}</span>
+        ${tierLabel ? `<span class="badge-choice-meta">${tierLabel}</span>` : ''}
+      `;
+      button.setAttribute('role', 'option');
+      const isActive = (option.icon || '') === (activeBadge || '');
+      if (isActive) {
+        button.classList.add('is-active');
+        button.setAttribute('aria-selected', 'true');
+      } else {
+        button.setAttribute('aria-selected', 'false');
+      }
+      if (!option.icon) {
+        button.classList.add('is-neutral');
+      }
+      const titleParts = [];
+      if (option.icon) titleParts.push(`Badge ${option.icon}`);
+      if (option.name && option.name !== option.icon) titleParts.push(option.name);
+      if (option.meta?.tier) titleParts.push(`Tier ${option.meta.tier}`);
+      button.title = titleParts.join(' • ') || 'Tidak ada badge';
+      button.addEventListener('click', () => handleBadgeSelect(button));
+      button.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          handleBadgeSelect(button);
+        }
+      });
+      return button;
     }
 
     function renderBadgeOptions(activeBadge) {
@@ -222,58 +236,43 @@
       if (!container) return;
       container.innerHTML = '';
       const options = computeBadgeOptions();
+      const defaultOption = { icon: '', name: 'Tanpa badge', meta: {} };
+      container.appendChild(createBadgeButton(defaultOption, activeBadge));
+
       if (!options.length) {
-        container.innerHTML = `
-          <div class="badge-empty" style="flex:1;">
-            <div style="font-size:2.5em;margin-bottom:12px;">🎖️</div>
-            <p style="margin:0;font-size:0.95em;line-height:1.4;">
-              Badge akan muncul setelah kamu membuka pencapaian.<br>
-              <small style="opacity:0.7;">Tulis 7 catatan berturut-turut untuk badge pertama!</small>
-            </p>
+        const empty = document.createElement('div');
+        empty.className = 'badge-empty-state badge-empty-state--compact';
+        empty.innerHTML = `
+          <div>
+            <div style="font-size:2.4rem;margin-bottom:8px;">🎖️</div>
+            <p style="margin:0;">Badge akan muncul setelah kamu membuka pencapaian.</p>
+            <small style="color:var(--text-muted);">Tulis 7 catatan berturut-turut untuk badge pertama!</small>
           </div>
         `;
+        container.appendChild(empty);
+        updateBadgeHint();
         return;
       }
+
       options.forEach(option => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'badge-box';
-        button.textContent = option.icon || '—';
-        button.title = option.name || 'Badge';
-        if (option.icon === activeBadge) {
-          button.classList.add('badge-box--active');
-        }
-        button.addEventListener('click', () => {
-          container.querySelectorAll('.badge-box').forEach(box => box.classList.remove('badge-box--active'));
-          button.classList.add('badge-box--active');
-        });
-        container.appendChild(button);
+        container.appendChild(createBadgeButton(option, activeBadge));
       });
-    }
-
-    function populateForm() {
-      const avatar = document.getElementById('profile-avatar');
-      const username = document.getElementById('username');
-
-      avatar.src = profileState.photo || 'default-avatar.svg';
-      avatar.classList.toggle('empty', !profileState.photo);
-      username.value = profileState.name || '';
-      renderBadgeOptions(profileState.activeBadge);
+      updateBadgeHint();
     }
 
     function getSelectedBadges() {
-      return Array.from(document.querySelectorAll('#badge-list .badge-box')).map(box => box.textContent.trim()).filter(Boolean);
+      return Array.from(document.querySelectorAll('#badge-list .badge-choice'))
+        .map(button => button.dataset.icon || '')
+        .filter(Boolean);
     }
 
     function getActiveBadge() {
-      const active = document.querySelector('#badge-list .badge-box.badge-box--active');
-      if (active) return active.textContent.trim();
-      const badges = getSelectedBadges().filter(Boolean);
-      return badges[0] || DEFAULT_PROFILE.activeBadge;
+      const active = document.querySelector('#badge-list .badge-choice.is-active');
+      return active ? (active.dataset.icon || '') : '';
     }
 
     async function compressImage(file) {
-      const MAX_SIZE = 200;
+      const MAX_SIZE = 240;
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = event => {
@@ -285,7 +284,7 @@
             canvas.height = Math.max(1, Math.round(img.height * ratio));
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', 0.7));
+            resolve(canvas.toDataURL('image/jpeg', 0.72));
           };
           img.onerror = reject;
           img.src = event.target.result;
@@ -301,33 +300,87 @@
       try {
         const compressed = await compressImage(file);
         profileState.photo = compressed;
-        const avatar = document.getElementById('profile-avatar');
-        avatar.src = compressed;
-        avatar.classList.remove('empty');
+        updateAvatarPreview(compressed);
       } catch (error) {
         console.error('Gagal memproses gambar', error);
         alert('Gambar tidak dapat diproses. Coba gunakan gambar lain.');
+      } finally {
+        event.target.value = '';
       }
+    }
+
+    function sanitizeLink(input) {
+      const trimmed = sanitizeText(String(input || '')).trim();
+      if (!trimmed) return '';
+      const normalized = trimmed.replace(/\s+/g, '');
+      if (!/^https?:\/\//i.test(normalized)) {
+        return `https://${normalized}`;
+      }
+      return normalized;
+    }
+
+    function updateBadgeHint() {
+      const hint = document.getElementById('badge-hint');
+      if (!hint) return;
+      const active = document.querySelector('#badge-list .badge-choice.is-active');
+      if (!active || !(active.dataset.icon || '')) {
+        hint.textContent = 'Profil akan disimpan tanpa badge aktif. Title tetap ditampilkan.';
+        return;
+      }
+      const label = active.dataset.label || active.dataset.icon;
+      const tier = active.dataset.tier ? ` • Tier ${active.dataset.tier}` : '';
+      hint.textContent = `Badge ${label}${tier} akan tampil di profil.`;
+    }
+
+    function populateForm() {
+      updateAvatarPreview(profileState.photo);
+      const nameInput = document.getElementById('profile-name');
+      const titleInput = document.getElementById('profile-title');
+      const bioInput = document.getElementById('profile-bio');
+      const linkInput = document.getElementById('profile-link');
+
+      if (nameInput) nameInput.value = profileState.name || '';
+      if (titleInput) titleInput.value = profileState.title || '';
+      if (bioInput) bioInput.value = profileState.bio || '';
+      if (linkInput) linkInput.value = profileState.link || '';
+
+      renderBadgeOptions(profileState.activeBadge);
+    }
+
+    function clearAvatar() {
+      profileState.photo = '';
+      updateAvatarPreview('');
     }
 
     function resetProfile() {
       if (!confirm('Reset semua data profil?')) return;
-      profileState = { ...DEFAULT_PROFILE };
+      profileState = cloneDefaultProfile();
       safeSetItem(STORAGE_KEYS.PROFILE, profileState);
       populateForm();
+      const photoInput = document.getElementById('photo-input');
+      if (photoInput) photoInput.value = '';
       alert('Profil telah direset.');
     }
 
     function saveProfile() {
-      const usernameEl = document.getElementById('username');
-      const nameInput = sanitizeText(usernameEl.value.trim());
-      const name = nameInput || DEFAULT_PROFILE.name;
-      const badges = getSelectedBadges();
+      const nameInput = document.getElementById('profile-name');
+      const titleInput = document.getElementById('profile-title');
+      const bioInput = document.getElementById('profile-bio');
+      const linkInput = document.getElementById('profile-link');
+
+      const name = sanitizeText((nameInput?.value || '').trim()).slice(0, 40) || DEFAULT_PROFILE.name;
+      const title = sanitizeText((titleInput?.value || '').trim()).slice(0, 32) || DEFAULT_PROFILE.title;
+      const bio = sanitizeText((bioInput?.value || '').trim()).slice(0, 160);
+      const link = sanitizeLink(linkInput?.value || '');
+      const badges = Array.from(new Set(getSelectedBadges()));
       const activeBadge = getActiveBadge();
 
       const updated = {
         ...profileState,
         name,
+        title,
+        bio,
+        link,
         badges,
         activeBadge,
         updatedAt: new Date().toISOString()
@@ -335,17 +388,58 @@
 
       profileState = updated;
       if (safeSetItem(STORAGE_KEYS.PROFILE, updated)) {
-        if (Gamification) {
+        if (Gamification && typeof Gamification.evaluateProfileCompletion === 'function') {
           Gamification.evaluateProfileCompletion(updated);
         }
         alert('Profil disimpan!');
         window.location.href = 'profile.html';
+      } else {
+        alert('Profil gagal disimpan. Coba lagi.');
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('.edit-photo-label').addEventListener('click', () => document.getElementById('photo-input').click());
-      document.getElementById('photo-input').addEventListener('change', handlePhotoChange);
+      const form = document.getElementById('profile-form');
+      const photoInput = document.getElementById('photo-input');
+      const uploadBtn = document.getElementById('avatar-upload-btn');
+      const removeBtn = document.getElementById('avatar-remove-btn');
+      const resetBtn = document.getElementById('reset-profile-btn');
+      const backBtn = document.getElementById('back-btn');
+      const versionBtn = document.getElementById('version-btn');
+
+      if (backBtn) {
+        backBtn.addEventListener('click', () => window.history.back());
+      }
+
+      if (versionBtn) {
+        versionBtn.addEventListener('click', () => {
+          window.location.href = 'version-info.html';
+        });
+      }
+
+      if (uploadBtn && photoInput) {
+        uploadBtn.addEventListener('click', () => photoInput.click());
+      }
+
+      if (photoInput) {
+        photoInput.addEventListener('change', handlePhotoChange);
+      }
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', clearAvatar);
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', resetProfile);
+      }
+
+      if (form) {
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          saveProfile();
+        });
+      }
+
       populateForm();
       window.resetProfile = resetProfile;
       window.saveProfile = saveProfile;
