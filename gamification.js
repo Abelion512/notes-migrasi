@@ -407,6 +407,12 @@
     return ensureState.cache;
   }
 
+  function refreshStateCache() {
+    const stored = safeGetItem(STORAGE_KEY, null);
+    ensureState.cache = normalizeState(stored);
+    return ensureState.cache;
+  }
+
   function ensureState() {
     if (!ensureState.cache) {
       const stored = safeGetItem(STORAGE_KEY, null);
@@ -834,6 +840,47 @@
       stats: clone(state.stats),
       xpGuideUrl: XP_GUIDE_URL
     };
+  }
+
+  function showLevelUpCelebration(newLevel) {
+    if (typeof document === 'undefined') return;
+    const existing = document.querySelector('.level-up-modal');
+    if (existing) {
+      existing.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'level-up-modal';
+    modal.innerHTML = `
+      <div class="level-up-content">
+        <div class="level-up-confetti">🎊</div>
+        <h2>Level Up!</h2>
+        <div class="level-up-number">${newLevel}</div>
+        <p>Kamu telah mencapai level ${newLevel}!</p>
+        <button class="primary-btn" type="button">Lanjutkan</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => modal.remove(), 250);
+    };
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    const button = modal.querySelector('button');
+    if (button) {
+      button.addEventListener('click', closeModal);
+    }
+
+    requestAnimationFrame(() => {
+      modal.classList.add('show');
+    });
   }
 
   function showLevelUpCelebration(newLevel) {
