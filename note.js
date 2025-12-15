@@ -1,6 +1,7 @@
 (function() {
   const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, safeGetItem, safeSetItem, formatTanggal } = AbelionUtils;
   const Gamification = window.AbelionGamification || null;
+  const NoteEditor = window.NoteEditorModal;
 
   function updateTime() {
     const el = document.getElementById('top-time');
@@ -31,6 +32,19 @@
     }
   }
 
+  function toMarkdown(note) {
+    if (note.contentMarkdown) return note.contentMarkdown;
+    if (NoteEditor && typeof NoteEditor.toMarkdown === 'function') {
+      return NoteEditor.toMarkdown(note.content || '') || '';
+    }
+    if (typeof note.content === 'string' && note.content.match(/^<ul>/)) {
+      const temp = document.createElement('div');
+      temp.innerHTML = note.content;
+      return Array.from(temp.querySelectorAll('li')).map(li => li.textContent).join('\n');
+    }
+    return note.content || '';
+  }
+
   function populateForm(note, notes) {
     const iconEl = document.getElementById('edit-icon');
     const titleEl = document.getElementById('edit-title');
@@ -41,13 +55,7 @@
     iconEl.value = note.icon || '';
     titleEl.value = note.title;
 
-    let val = note.content;
-    if (typeof val === 'string' && val.match(/^<ul>/)) {
-      const temp = document.createElement('div');
-      temp.innerHTML = val;
-      val = Array.from(temp.querySelectorAll('li')).map(li => li.textContent).join('\n');
-    }
-    contentEl.value = val;
+    contentEl.value = toMarkdown(note);
 
     if (!note.createdAt) {
       let fallbackDate = note.date ? new Date(`${note.date}T12:00:00`) : new Date();
@@ -75,13 +83,16 @@
         const title = sanitizeText(document.getElementById('edit-title').value.trim());
         const content = document.getElementById('edit-content').value.trim();
         const label = sanitizeText(document.getElementById('edit-label').value.trim());
-        const htmlContent = content.includes('\n')
-          ? '<ul>' + content.split('\n').map(x => `<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
-          : sanitizeText(content);
+        const htmlContent = NoteEditor && typeof NoteEditor.toHtml === 'function'
+          ? NoteEditor.toHtml(content)
+          : (content.includes('\n')
+            ? '<ul>' + content.split('\n').map(x => `<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
+            : sanitizeText(content));
 
         note.icon = icon;
         note.title = title;
         note.content = sanitizeRichContent(htmlContent);
+        note.contentMarkdown = content;
         note.label = label;
         const updatedAt = new Date().toISOString();
         note.updatedAt = updatedAt;

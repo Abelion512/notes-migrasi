@@ -4,6 +4,7 @@
     PROFILE: 'abelion-profile',
     MOODS: 'abelion-moods',
     GAMIFICATION: 'abelion-gamification',
+    NOTE_DRAFTS: 'abelion-note-drafts',
     VERSION_META: 'abelion-version-meta'
   };
 
@@ -48,7 +49,7 @@
     if (!html) return '';
     const template = document.createElement('template');
     template.innerHTML = html;
-    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR']);
+    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE']);
 
     const walk = (node) => {
       node.childNodes.forEach(child => {

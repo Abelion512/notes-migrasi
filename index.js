@@ -12,6 +12,8 @@ const {
 
 const Gamification = window.AbelionGamification || null;
 
+const NoteEditor = window.NoteEditorModal;
+
 // --- Live time pojok kanan atas ---
 function updateTime() {
   const el = document.getElementById('top-time');
@@ -33,6 +35,56 @@ function loadNotes() {
 }
 
 loadNotes();
+
+function noteDraftKey(id = 'new') {
+  return `note-${id}`;
+}
+
+function markdownFromNote(note) {
+  if (!note) return '';
+  if (note.contentMarkdown) return note.contentMarkdown;
+  if (NoteEditor && typeof NoteEditor.toMarkdown === 'function') {
+    return NoteEditor.toMarkdown(note.content || '') || '';
+  }
+  const temp = document.createElement('div');
+  temp.innerHTML = note.content || '';
+  return temp.textContent || '';
+}
+
+function renderMarkdown(markdown) {
+  if (NoteEditor && typeof NoteEditor.toHtml === 'function') {
+    return NoteEditor.toHtml(markdown);
+  }
+  return sanitizeRichContent(sanitizeText(markdown));
+}
+
+function ensureNoteHtml(note) {
+  if (!note) return '';
+  const html = note.content || '';
+  if (html && html.trim()) return html;
+  const markdown = markdownFromNote(note);
+  const rendered = renderMarkdown(markdown);
+  note.content = rendered;
+  note.contentMarkdown = markdown;
+  return rendered;
+}
+
+function isTypingContext(event) {
+  const target = event?.target || document.activeElement;
+  if (!target) return false;
+  return target.tagName === 'INPUT'
+    || target.tagName === 'TEXTAREA'
+    || target.isContentEditable
+    || !!target.closest('.note-editor-modal');
+}
+
+function setActiveNote(id) {
+  activeNoteId = id;
+  document.querySelectorAll('.note-card').forEach(card => {
+    const isActive = card.getAttribute('data-id') === id;
+    card.classList.toggle('note-card--active', isActive);
+  });
+}
 
 function showXPToast({ xp, message, streak }) {
   if (!xp) return;
@@ -117,6 +169,7 @@ function renderMoodGraph() {
 // --- Search Functionality ---
 let searchQuery = '';
 let filterByTag = '';
+let activeNoteId = null;
 function renderSearchBar() {
   let searchDiv = document.getElementById('search-bar');
   if(!searchDiv) {
@@ -201,7 +254,8 @@ function renderNotes() {
   const normalizedFilter = (filterByTag || '').toLowerCase();
   let filtered = notes.filter(n => {
     const titleMatch = (n.title || '').toLowerCase().includes(searchQuery);
-    const contentText = (n.content || '').replace(/<[^>]+>/g, '').toLowerCase();
+    const rawContent = n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '');
+    const contentText = rawContent.toLowerCase();
     const searchMatch = !searchQuery || titleMatch || contentText.includes(searchQuery);
     if (!searchMatch) return false;
     if (!normalizedFilter) return true;
@@ -217,14 +271,20 @@ function renderNotes() {
     grid.innerHTML = `<div style="color:#aaa;text-align:center;margin:38px auto 0 auto;font-size:1.1em;">Catatan tidak ditemukan.</div>`;
     return;
   }
+  const hasActive = sorted.some(n => n.id === activeNoteId);
+  if ((!activeNoteId || !hasActive) && sorted[0]) {
+    activeNoteId = sorted[0].id;
+  }
+
   grid.innerHTML = sorted.map(n=>{
     const safeTitle = sanitizeText(n.title || '');
     const safeIcon = sanitizeText(n.icon || '').slice(0, 2);
     const label = sanitizeText(n.label || '');
-    const content = sanitizeRichContent(n.content || '');
+    const content = renderMarkdown(n.contentMarkdown || markdownFromNote(n));
     const dateLabel = formatTanggalRelative(n.date || '') || '';
+    const isActive = activeNoteId === n.id;
     return `
-    <div class="note-card" data-id="${n.id}" tabindex="0" role="link">
+    <div class="note-card${isActive ? ' note-card--active' : ''}" data-id="${n.id}" tabindex="0" role="link">
       <div class="note-actions">
         <button class="action-btn pin${n.pinned?' pin-active':''}" data-action="pin" title="Pin/Unpin" aria-label="Pin/Unpin catatan">
           <span class="pin-inner">${n.pinned?'📌':'📍'}</span>
@@ -247,13 +307,24 @@ function renderNotes() {
     // Card click: redirect to note.html?id=...
     card.addEventListener('click', function(e) {
       if(e.target.closest('.action-btn')) return;
-      window.location.href = `note.html?id=${card.getAttribute('data-id')}`;
+      const id = card.getAttribute('data-id');
+      const note = notes.find(n => n.id === id);
+      if (note) {
+        setActiveNote(id);
+        openNoteModal('edit', note);
+      }
     });
     card.onkeydown = function(e) {
       if(e.key==='Enter' || e.key===' ') {
-        window.location.href = `note.html?id=${card.getAttribute('data-id')}`;
+        const id = card.getAttribute('data-id');
+        const note = notes.find(n => n.id === id);
+        if (note) {
+          setActiveNote(id);
+          openNoteModal('edit', note);
+        }
       }
     };
+    card.addEventListener('focus', () => setActiveNote(card.getAttribute('data-id')));
     // Pin/Delete
     card.querySelectorAll('.action-btn').forEach(btn => {
       btn.onclick = function(e) {
@@ -274,6 +345,7 @@ function renderNotes() {
             const deletedAt = new Date().toISOString();
             const createdAt = note.createdAt || note.date;
             notes.splice(idx,1);
+            if (NoteEditor) NoteEditor.clearDraft(noteDraftKey(id));
             persistNotes();
             if (Gamification) {
               Gamification.recordNoteDeleted({
@@ -289,6 +361,37 @@ function renderNotes() {
     });
   });
 }
+
+function togglePinForActiveNote() {
+  if (!activeNoteId) return;
+  const note = notes.find(n => n.id === activeNoteId);
+  if (!note) return;
+  note.pinned = !note.pinned;
+  persistNotes();
+  renderNotes();
+}
+
+document.addEventListener('keydown', (event) => {
+  const modifier = event.metaKey || event.ctrlKey;
+  if (!modifier) return;
+  const key = event.key.toLowerCase();
+  if (isTypingContext(event)) return;
+  if (key === 'k') {
+    event.preventDefault();
+    renderSearchBar();
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+  } else if (key === 'n') {
+    event.preventDefault();
+    openNoteModal('create', null);
+  } else if (key === 'p') {
+    event.preventDefault();
+    togglePinForActiveNote();
+  }
+});
 
 // --- About Modal (nav About) ---
 const aboutModal = document.getElementById("about-modal");
@@ -351,38 +454,63 @@ window.addEventListener('scroll', debounce(() => {
   }
   lastScrollY = window.scrollY;
 }, 100));
-// --- Tambah catatan baru ---
-document.getElementById('add-note-btn').onclick = function() {
-  let titleInput = prompt("Judul catatan:");
-  if(!titleInput) return;
-  let contentInput = prompt("Isi catatan (boleh pakai baris baru untuk membuat list):");
-  if(!contentInput) return;
-  let iconInput = prompt("Emoji/icon catatan (boleh kosong):") || "";
-  let title = sanitizeText(titleInput.trim());
-  let icon = sanitizeText(iconInput.trim()).slice(0, 2);
-  let lines = contentInput.split('\n');
-  let htmlList = lines.length > 1
-    ? '<ul>' + lines.map(x=>`<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
-    : sanitizeText(contentInput);
-  htmlList = sanitizeRichContent(htmlList);
-  let now = new Date();
-  let tgl = now.toISOString().slice(0,10);
-  const id = String(Date.now());
-  const createdAt = now.toISOString();
-  notes.unshift({
-    id,
-    icon,
-    title,
-    content: htmlList,
-    date: tgl,
-    createdAt,
-    pinned: false
+// --- Modal editor catatan ---
+function openNoteModal(mode = 'create', existingNote = null) {
+  if (!NoteEditor) return;
+  const draftKey = noteDraftKey(existingNote?.id || 'new');
+  NoteEditor.open({
+    mode,
+    draftKey,
+    initialValue: {
+      icon: existingNote?.icon || '',
+      title: existingNote?.title || '',
+      content: markdownFromNote(existingNote)
+    },
+    onSave: (payload) => {
+      const now = new Date();
+      const isoDate = now.toISOString();
+      if (mode === 'edit' && existingNote) {
+        existingNote.icon = payload.icon;
+        existingNote.title = payload.title;
+        existingNote.content = payload.contentHtml;
+        existingNote.contentMarkdown = payload.contentMarkdown;
+        existingNote.updatedAt = isoDate;
+        existingNote.date = existingNote.date || isoDate.slice(0,10);
+        persistNotes();
+        if (Gamification && existingNote.id) {
+          Gamification.recordNoteUpdated({
+            id: existingNote.id,
+            updatedAt: isoDate,
+            createdAt: existingNote.createdAt || existingNote.date
+          });
+        }
+        renderNotes();
+        return;
+      }
+
+      const id = String(Date.now());
+      const newNote = {
+        id,
+        icon: payload.icon,
+        title: payload.title,
+        content: payload.contentHtml,
+        contentMarkdown: payload.contentMarkdown,
+        date: isoDate.slice(0,10),
+        createdAt: isoDate,
+        pinned: false
+      };
+      notes.unshift(newNote);
+      persistNotes();
+      if (Gamification) {
+        Gamification.recordNoteCreated({ id, createdAt: isoDate });
+      }
+      renderNotes();
+    }
   });
-  persistNotes();
-  if (Gamification) {
-    Gamification.recordNoteCreated({ id, createdAt });
-  }
-  renderNotes();
+}
+
+document.getElementById('add-note-btn').onclick = function() {
+  openNoteModal('create', null);
 };
 
 // --- Mood selector ---
