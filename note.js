@@ -116,9 +116,6 @@
   }
 
   function init() {
-    updateTime();
-    setInterval(updateTime, 1000);
-
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const notes = loadNotes();
@@ -128,6 +125,9 @@
       renderMissingState();
       return;
     }
+
+    updateTime();
+    setInterval(updateTime, 1000);
 
     populateForm(note, notes);
     bindActions(note, notes);

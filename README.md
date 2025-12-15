@@ -61,7 +61,7 @@ xdg-open index.html  # Linux
 - Graceful handling of `QuotaExceededError` when localStorage fills up.
 - Safe fallbacks for missing note dates (`createdAt` or derived ISO values).
 - Default avatar fallback everywhere a profile photo is used.
-- Strict Content Security Policy applied on every entry page via `<meta http-equiv="Content-Security-Policy">` restricting assets to `self`, Google Fonts, and data URLs; inline scripts are allowed only when tagged with the shared `nonce-abelion`. New pages should mirror this policy and add `rel="noopener noreferrer"` to external links.
+- Strict Content Security Policy applied on every entry page via `<meta http-equiv="Content-Security-Policy">` restricting assets to `self`, Google Fonts, and data/blob URLs. Inline scripts have been moved to external files to keep `script-src 'self'` locked down. New pages should mirror this policy and add `rel="noopener noreferrer"` to external links.
 
 ## 📄 Roadmap Ideas
 
