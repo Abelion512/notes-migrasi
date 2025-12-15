@@ -1,5 +1,6 @@
-(function () {
-  const { STORAGE_KEYS, sanitizeText, safeGetItem, safeSetItem } = AbelionUtils;
+(async function () {
+  const { STORAGE_KEYS, sanitizeText } = AbelionUtils;
+  const Storage = window.AbelionStorage;
   const Gamification = window.AbelionGamification || null;
   const XP_GUIDE_URL = 'https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp';
 
@@ -18,8 +19,9 @@
     badges: [...DEFAULT_PROFILE.badges]
   });
 
-  function loadProfile() {
-    const stored = safeGetItem(STORAGE_KEYS.PROFILE, null);
+  async function loadProfile() {
+    await Storage.ready;
+    const stored = await Storage.getValue(STORAGE_KEYS.PROFILE, null);
     if (!stored) return cloneDefaultProfile();
 
     const badges = Array.isArray(stored.badges)
@@ -42,7 +44,7 @@
     return profile;
   }
 
-  let profileState = loadProfile();
+  let profileState = await loadProfile();
 
   function computeBadgeOptions() {
     const map = new Map();
@@ -353,17 +355,17 @@
     updateAvatarPreview('');
   }
 
-  function resetProfile() {
+  async function resetProfile() {
     if (!confirm('Reset semua data profil?')) return;
     profileState = cloneDefaultProfile();
-    safeSetItem(STORAGE_KEYS.PROFILE, profileState);
+    await Storage.setValue(STORAGE_KEYS.PROFILE, profileState);
     populateForm();
     const photoInput = document.getElementById('photo-input');
     if (photoInput) photoInput.value = '';
     alert('Profil telah direset.');
   }
 
-  function saveProfile() {
+  async function saveProfile() {
     const nameInput = document.getElementById('profile-name');
     const titleInput = document.getElementById('profile-title');
     const bioInput = document.getElementById('profile-bio');
@@ -388,15 +390,16 @@
     };
 
     profileState = updated;
-    if (safeSetItem(STORAGE_KEYS.PROFILE, updated)) {
-      if (Gamification?.evaluateProfileCompletion) {
-        Gamification.evaluateProfileCompletion(updated);
-      }
-      alert('Profil disimpan!');
-      window.location.href = 'profile.html';
-    } else {
+    const success = await Storage.setValue(STORAGE_KEYS.PROFILE, updated).then(()=>true).catch(()=>false);
+    if (!success) {
       alert('Profil gagal disimpan. Coba lagi.');
+      return;
     }
+    if (Gamification?.evaluateProfileCompletion) {
+      Gamification.evaluateProfileCompletion(updated);
+    }
+    alert('Profil disimpan!');
+    window.location.href = 'profile.html';
   }
 
   document.addEventListener('DOMContentLoaded', () => {

@@ -69,6 +69,16 @@
   }
 
   function safeGetItem(key, fallback = null) {
+    const storage = window.AbelionStorage;
+    if (storage && typeof storage.getCachedValue === 'function') {
+      try {
+        return storage.getCachedValue(key, fallback);
+      } catch (error) {
+        console.error(`Error reading storage key "${key}":`, error);
+        return fallback;
+      }
+    }
+
     try {
       const raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : fallback;
@@ -79,15 +89,26 @@
   }
 
   function safeSetItem(key, value) {
+    const storage = window.AbelionStorage;
+    if (storage && typeof storage.setValue === 'function') {
+      return storage.setValue(key, value)
+        .then(() => true)
+        .catch((error) => {
+          console.error(`Error writing storage key "${key}":`, error);
+          alert('Gagal menyimpan data. Periksa kuota penyimpanan.');
+          return false;
+        });
+    }
+
     try {
       localStorage.setItem(key, JSON.stringify(value));
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error(`Error writing localStorage key "${key}":`, error);
       if (error && error.name === 'QuotaExceededError') {
         alert('Penyimpanan penuh. Hapus beberapa catatan atau data lama untuk melanjutkan.');
       }
-      return false;
+      return Promise.resolve(false);
     }
   }
 

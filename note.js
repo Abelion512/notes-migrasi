@@ -1,5 +1,6 @@
 (function() {
-  const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, safeGetItem, safeSetItem, formatTanggal } = AbelionUtils;
+  const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, formatTanggal } = AbelionUtils;
+  const Storage = window.AbelionStorage;
   const Gamification = window.AbelionGamification || null;
 
   function updateTime() {
@@ -10,8 +11,8 @@
     el.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   }
 
-  function loadNotes() { return safeGetItem(STORAGE_KEYS.NOTES, []); }
-  function saveNotes(notes) { safeSetItem(STORAGE_KEYS.NOTES, notes); }
+  async function loadNotes() { await Storage.ready; return Storage.getNotes({ sortByUpdatedAt: true }); }
+  function saveNotes(notes) { Storage.setNotes(notes); }
 
   function renderMissingState() {
     const container = document.querySelector('.note-detail-container');
@@ -115,10 +116,11 @@
     }
   }
 
-  function init() {
+  async function init() {
+    await Storage.ready;
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    const notes = loadNotes();
+    const notes = await loadNotes();
     const note = notes.find((n) => n.id === id);
 
     if (!note) {

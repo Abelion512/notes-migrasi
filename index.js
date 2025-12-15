@@ -2,8 +2,6 @@ const {
   STORAGE_KEYS,
   sanitizeText,
   sanitizeRichContent,
-  safeGetItem,
-  safeSetItem,
   formatTanggal,
   formatTanggalRelative,
   debounce,
@@ -11,6 +9,7 @@ const {
 } = AbelionUtils;
 
 const Gamification = window.AbelionGamification || null;
+const Storage = window.AbelionStorage;
 
 // --- Live time pojok kanan atas ---
 function updateTime() {
@@ -23,11 +22,11 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// --- Notes: localStorage
+// --- Notes: Storage Abstraction
 const notes = [];
 
-function loadNotes() {
-  const storedNotes = safeGetItem(STORAGE_KEYS.NOTES, []);
+async function loadNotes() {
+  const storedNotes = await Storage.getNotes({ sortByUpdatedAt: true });
   notes.splice(0, notes.length, ...storedNotes);
   return notes;
 }
@@ -73,16 +72,16 @@ if (Gamification) {
 }
 
 function persistNotes() {
-  safeSetItem(STORAGE_KEYS.NOTES, notes);
+  Storage.setNotes(notes);
 }
 
 // --- Mood Graph harian (centered) ---
-function loadMoods() {
-  return safeGetItem(STORAGE_KEYS.MOODS, {});
+async function loadMoods() {
+  return Storage.getValue(STORAGE_KEYS.MOODS, {});
 }
 
 function saveMoods(data) {
-  safeSetItem(STORAGE_KEYS.MOODS, data);
+  Storage.setValue(STORAGE_KEYS.MOODS, data);
 }
 
 function getPastSevenDays() {
@@ -97,10 +96,10 @@ function getPastSevenDays() {
   return days;
 }
 
-function renderMoodGraph() {
+async function renderMoodGraph() {
   const el = document.getElementById('mood-graph');
   if (!el) return;
-  const stored = loadMoods();
+  const stored = await loadMoods();
   const fallback = ['😄','🙂','😐','😊','😢','😐','😴'];
   const items = getPastSevenDays().map((day, idx) => ({
     emoji: stored?.[day.iso] || fallback[idx % fallback.length],
@@ -320,24 +319,21 @@ window.onclick = function(e) {
   if(aboutModal && e.target === aboutModal) aboutModal.classList.remove("show");
 };
 // Di index.js
-function showMiniProfile() {
-  let data = safeGetItem(STORAGE_KEYS.PROFILE, {});
+async function showMiniProfile() {
+  await Storage.ready;
+  const data = await Storage.getValue(STORAGE_KEYS.PROFILE, {});
   const avatar = document.getElementById('profile-mini-avatar');
   const name = document.getElementById('profile-mini-name');
   if (avatar) avatar.src = data?.photo || 'default-avatar.svg';
   if (name) name.textContent = data?.name ? sanitizeText(data.name) : 'Profile';
 }
 window.addEventListener('DOMContentLoaded', showMiniProfile);
-window.addEventListener('storage', (event) => {
-  if (event.storageArea !== localStorage) return;
-  if (event.key === STORAGE_KEYS.PROFILE) {
-    showMiniProfile();
-  }
-  if (event.key === STORAGE_KEYS.NOTES) {
-    loadNotes();
+window.addEventListener('storage', () => {
+  showMiniProfile();
+  loadNotes().then(() => {
     renderSearchBar();
     renderNotes();
-  }
+  });
 });
 
 let lastScrollY = window.scrollY;
@@ -409,15 +405,15 @@ function openMoodSelector() {
     }
   });
   modal.querySelectorAll('.mood-option').forEach(btn => {
-    btn.addEventListener('click', () => {
-      saveTodayMood(btn.dataset.emoji);
+    btn.addEventListener('click', async () => {
+      await saveTodayMood(btn.dataset.emoji);
       modal.remove();
     });
   });
 }
 
-function saveTodayMood(emoji) {
-  const data = loadMoods();
+async function saveTodayMood(emoji) {
+  const data = await loadMoods();
   const today = new Date().toISOString().split('T')[0];
   data[today] = emoji;
   saveMoods(data);
@@ -429,8 +425,11 @@ if (updateMoodBtn) {
   updateMoodBtn.addEventListener('click', openMoodSelector);
 }
 // --- Entrance: skip animasi jika dari note.html (back) ---
-window.addEventListener('DOMContentLoaded', ()=>{
-  renderMoodGraph(); renderSearchBar(); renderNotes();
+window.addEventListener('DOMContentLoaded', async ()=>{
+  await Storage.ready;
+  await loadNotes();
+  await renderMoodGraph();
+  renderSearchBar(); renderNotes();
   if(sessionStorage.getItem('skipIntro')) {
     document.getElementById('intro-anim').style.display = 'none';
     document.getElementById('main-content').classList.remove('hidden');

@@ -60,9 +60,9 @@
       </div>
     </section>
 
-    <section class="panel-section">
-      <h2>Privasi &amp; Data</h2>
-      <div class="section-card settings-grid">
+  <section class="panel-section">
+    <h2>Privasi &amp; Data</h2>
+    <div class="section-card settings-grid">
         <div class="settings-section">
           <h3>Kontrol Data</h3>
           <ul class="settings-items">
@@ -78,6 +78,31 @@
             <li>Hapus Akun</li>
           </ul>
         </div>
+      </div>
+    </section>
+
+    <section class="panel-section">
+      <h2>Storage Health</h2>
+      <div class="section-card storage-health">
+        <div class="storage-health-grid">
+          <div>
+            <div class="storage-health-label">Active Engine</div>
+            <div class="storage-health-value" id="storage-engine-label">—</div>
+          </div>
+          <div>
+            <div class="storage-health-label">Schema</div>
+            <div class="storage-health-value" id="storage-schema-label">—</div>
+          </div>
+          <div>
+            <div class="storage-health-label">Usage</div>
+            <div class="storage-health-value" id="storage-usage-label">—</div>
+          </div>
+        </div>
+        <div class="storage-health-actions">
+          <button type="button" class="ghost-btn" id="storage-refresh-btn">↻ Refresh</button>
+          <button type="button" class="btn-blue" id="storage-vacuum-btn">Vacuum / Cleanup</button>
+        </div>
+        <div class="storage-health-footnote" id="storage-footnote">Rebuild indexes and purge drafts/cache/logs to keep things light.</div>
       </div>
     </section>
 
@@ -140,6 +165,7 @@
   </nav>
 
   <script src="utils.js"></script>
+  <script src="storage.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>
