@@ -89,7 +89,8 @@
     let notes = loadNotes();
     let note = notes.find(n=>n.id===id);
     if(!note) {
-      document.querySelector('.note-detail-container').innerHTML = "<div style='padding:40px'>Catatan tidak ditemukan.</div>";
+      document.querySelector('.note-detail-container').innerHTML = "<div style='padding:40px'>Catatan tidak ditemukan. <div style='margin-top:12px'><a href='index.html' class='back-link'>&larr; Kembali ke beranda</a></div></div>";
+      document.getElementById('top-time').textContent = '';
     } else {
       // Isi form
       document.getElementById('edit-icon').value = note.icon || "";
@@ -111,42 +112,51 @@
       }
       document.getElementById('edit-label').value = note.label||"";
       document.getElementById('note-detail-date').textContent = "Ditulis: "+(formatTanggal(note.date) || '');
-    }
-    // Simpan perubahan
-    document.getElementById('note-edit-form').onsubmit = function(e) {
-      e.preventDefault();
-      let icon = sanitizeText(document.getElementById('edit-icon').value.trim()).slice(0, 2);
-      let title = sanitizeText(document.getElementById('edit-title').value.trim());
-      let content = document.getElementById('edit-content').value.trim();
-      let label = sanitizeText(document.getElementById('edit-label').value.trim());
-      let htmlContent = content.includes('\n')
-        ? '<ul>' + content.split('\n').map(x=>`<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
-        : sanitizeText(content);
-      note.icon = icon;
-      note.title = title;
-      note.content = sanitizeRichContent(htmlContent);
-      note.label = label;
-      const updatedAt = new Date().toISOString();
-      note.updatedAt = updatedAt;
-      saveNotes(notes);
-      if (Gamification) {
-        Gamification.recordNoteUpdated({
-          id: note.id,
-          updatedAt,
-          createdAt: note.createdAt || note.date
-        });
+      // Simpan perubahan
+      const noteEditForm = document.getElementById('note-edit-form');
+      if (noteEditForm) {
+        noteEditForm.onsubmit = function(e) {
+          e.preventDefault();
+          let icon = sanitizeText(document.getElementById('edit-icon').value.trim()).slice(0, 2);
+          let title = sanitizeText(document.getElementById('edit-title').value.trim());
+          let content = document.getElementById('edit-content').value.trim();
+          let label = sanitizeText(document.getElementById('edit-label').value.trim());
+          let htmlContent = content.includes('\n')
+            ? '<ul>' + content.split('\n').map(x=>`<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
+            : sanitizeText(content);
+          note.icon = icon;
+          note.title = title;
+          note.content = sanitizeRichContent(htmlContent);
+          note.label = label;
+          const updatedAt = new Date().toISOString();
+          note.updatedAt = updatedAt;
+          saveNotes(notes);
+          if (Gamification) {
+            Gamification.recordNoteUpdated({
+              id: note.id,
+              updatedAt,
+              createdAt: note.createdAt || note.date
+            });
+          }
+          alert("Catatan telah disimpan!");
+          window.location.href="index.html";
+        };
       }
-      alert("Catatan telah disimpan!");
-      window.location.href="index.html";
-    };
-    // Batal
-    document.getElementById('cancel-edit').onclick = function(e){
-      if(confirm("Batal edit?")) window.location.href="index.html";
-    };
-    // Back: set flag agar home tidak animasi
-    document.getElementById('back-link').onclick = function(e){
-      sessionStorage.setItem('skipIntro','1');
-    };
+      // Batal
+      const cancelEditBtn = document.getElementById('cancel-edit');
+      if (cancelEditBtn) {
+        cancelEditBtn.onclick = function(e){
+          if(confirm("Batal edit?")) window.location.href="index.html";
+        };
+      }
+      // Back: set flag agar home tidak animasi
+      const backLink = document.getElementById('back-link');
+      if (backLink) {
+        backLink.onclick = function(e){
+          sessionStorage.setItem('skipIntro','1');
+        };
+      }
+    }
   </script>
 </body>
 </html>
