@@ -21,7 +21,12 @@
 
   async function loadProfile() {
     await Storage.ready;
-    const stored = await Storage.getValue(STORAGE_KEYS.PROFILE, null);
+    let stored = null;
+    try {
+      stored = await Storage.getValue(STORAGE_KEYS.PROFILE, null);
+    } catch (error) {
+      if (error?.code !== 'STORAGE_LOCKED') console.error(error);
+    }
     if (!stored) return cloneDefaultProfile();
 
     const badges = Array.isArray(stored.badges)

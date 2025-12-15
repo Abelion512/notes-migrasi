@@ -28,9 +28,15 @@ updateTime();
 const notes = [];
 
 async function loadNotes() {
-  const storedNotes = await Storage.getNotes({ sortByUpdatedAt: true });
-  notes.splice(0, notes.length, ...storedNotes);
-  return notes;
+  try {
+    const storedNotes = await Storage.getNotes({ sortByUpdatedAt: true });
+    notes.splice(0, notes.length, ...storedNotes);
+    return notes;
+  } catch (error) {
+    if (error?.code === 'STORAGE_LOCKED') return notes;
+    console.error('Gagal memuat catatan', error);
+    return notes;
+  }
 }
 
 loadNotes();
@@ -424,7 +430,12 @@ window.onclick = function(e) {
 // Di index.js
 async function showMiniProfile() {
   await Storage.ready;
-  const data = await Storage.getValue(STORAGE_KEYS.PROFILE, {});
+  let data = {};
+  try {
+    data = await Storage.getValue(STORAGE_KEYS.PROFILE, {});
+  } catch (error) {
+    if (error?.code !== 'STORAGE_LOCKED') console.error(error);
+  }
   const avatar = document.getElementById('profile-mini-avatar');
   const name = document.getElementById('profile-mini-name');
   if (avatar) avatar.src = data?.photo || 'default-avatar.svg';

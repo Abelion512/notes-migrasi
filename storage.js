@@ -7,6 +7,10 @@
     INDEXED_DB: 'indexedDB'
   });
 
+  const ENCRYPTION = Object.freeze({
+    VERSION: 'aes-gcm-v1'
+  });
+
   const DB_NAME = 'abelion-notes-db';
   const DB_VERSION = 1;
   const META_KEY = 'abelion-storage-meta';
@@ -14,6 +18,7 @@
   const DEFAULT_META = {
     schemaVersion: 1,
     engine: ENGINE.LOCAL,
+    encryption: { enabled: false, salt: null, encryptedKeys: [] },
     indexes: { updatedAt: [], pinned: [], tags: {} },
     lastMigrationAt: null,
     lastVacuumAt: null
@@ -22,8 +27,24 @@
   const CLEAN_KEYS = ['abelion-drafts', 'abelion-cache', 'abelion-logs'];
 
   const cache = {};
+  const encryptedCache = {};
   let activeEngine = ENGINE.LOCAL;
   let db = null;
+  let encryptionKey = null;
+  let isLocked = false;
+
+  const listeners = {
+    unlock: new Set(),
+    lock: new Set()
+  };
+
+  const SENSITIVE_KEYS = new Set([
+    STORAGE_KEYS.NOTES,
+    STORAGE_KEYS.PROFILE,
+    STORAGE_KEYS.MOODS,
+    STORAGE_KEYS.GAMIFICATION,
+    STORAGE_KEYS.VERSION_META
+  ].filter(Boolean));
 
   const ready = (async () => {
     await primeLocalCache();
@@ -148,10 +169,78 @@
 
     keysToPrime.forEach((key) => {
       if (!key) return;
-      const fallback = key === STORAGE_KEYS.NOTES ? [] : {};
-      cache[key] = localRead(key, fallback);
+      const value = localRead(key, null);
+      if (key === META_KEY) {
+        cache[key] = value;
+      } else {
+        encryptedCache[key] = value;
+      }
     });
     cache[META_KEY] = { ...DEFAULT_META, ...(cache[META_KEY] || {}) };
+    if (cache[META_KEY].encryption?.enabled) {
+      isLocked = true;
+    }
+  }
+
+  function emit(event) {
+    (listeners[event] || []).forEach((fn) => {
+      try { fn(); } catch (error) { console.error('Lock listener failed', error); }
+    });
+  }
+
+  function toBuffer(base64) {
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  }
+
+  function toBase64(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  }
+
+  async function deriveKey(passphrase, salt) {
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(passphrase),
+      'PBKDF2',
+      false,
+      ['deriveKey']
+    );
+
+    return crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt,
+        iterations: 250000,
+        hash: 'SHA-256'
+      },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  async function encryptValue(value) {
+    if (!encryptionKey) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(JSON.stringify(value));
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, encryptionKey, encoded);
+    return {
+      __enc: ENCRYPTION.VERSION,
+      iv: toBase64(iv),
+      data: toBase64(ciphertext)
+    };
+  }
+
+  async function decryptValue(payload) {
+    if (!payload) return payload;
+    if (payload.__enc !== ENCRYPTION.VERSION) return payload;
+    if (!encryptionKey) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
+    const iv = toBuffer(payload.iv);
+    const data = toBuffer(payload.data);
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, encryptionKey, data);
+    const text = new TextDecoder().decode(decrypted);
+    return JSON.parse(text);
   }
 
   function buildNoteIndexes(notes = []) {
@@ -203,7 +292,7 @@
     const existing = await idbGetAll('notes');
     if (!existing.length && localNotes.length) {
       await Promise.all(localNotes.map(note => idbPut('notes', note)));
-    } else if (existing.length) {
+    } else if (existing.length && !cache[META_KEY].encryption?.enabled) {
       cache[STORAGE_KEYS.NOTES] = existing;
       localWrite(STORAGE_KEYS.NOTES, existing);
     }
@@ -230,17 +319,22 @@
 
   async function getValue(key, fallback = null) {
     await ready;
+    const meta = cache[META_KEY] || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(key);
+    if (encrypted && isLocked) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
     if (cache[key] !== undefined) return cache[key];
 
     if (activeEngine === ENGINE.INDEXED_DB) {
-      const value = await idbGet('kv', key, fallback);
-      cache[key] = value;
+      const stored = await idbGet('kv', key, fallback);
+      const value = encrypted ? await decryptValue(stored) : stored;
+      cache[key] = value ?? fallback;
       return value;
     }
 
-    const value = localRead(key, fallback);
-    cache[key] = value;
-    return value;
+    const stored = encryptedCache[key] ?? localRead(key, fallback);
+    const value = encrypted ? await decryptValue(stored) : stored;
+    cache[key] = value ?? fallback;
+    return cache[key];
   }
 
   function getCachedValue(key, fallback = null) {
@@ -251,21 +345,26 @@
   async function setValue(key, value) {
     await ready;
     cache[key] = value;
+    const meta = cache[META_KEY] || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(key);
+    const payload = encrypted ? await encryptValue(value) : value;
     if (key === STORAGE_KEYS.NOTES) {
       await setNotes(value || []);
       return true;
     }
 
     if (activeEngine === ENGINE.INDEXED_DB) {
-      await idbSet('kv', key, value);
+      await idbSet('kv', key, payload);
     } else {
-      localWrite(key, value);
+      localWrite(key, payload);
     }
     return true;
   }
 
   async function getNotes(filters = {}) {
     await ready;
+    const meta = cache[META_KEY] || DEFAULT_META;
+    if (meta.encryption?.enabled && isLocked) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
     const notes = cache[STORAGE_KEYS.NOTES] || [];
     const indexes = cache[META_KEY]?.indexes || DEFAULT_META.indexes;
 
@@ -295,17 +394,115 @@
   }
 
   async function setNotes(notes = []) {
+    const meta = cache[META_KEY] || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.NOTES);
     cache[STORAGE_KEYS.NOTES] = Array.isArray(notes) ? notes : [];
+    const payload = encrypted ? await encryptValue(cache[STORAGE_KEYS.NOTES]) : cache[STORAGE_KEYS.NOTES];
     if (activeEngine === ENGINE.INDEXED_DB) {
       await idbTransaction('notes', 'readwrite', (store) => {
         store.clear();
       });
-      await Promise.all((cache[STORAGE_KEYS.NOTES] || []).map(note => idbPut('notes', note)));
+      if (encrypted) {
+        await idbTransaction('kv', 'readwrite', (store) => { store.put(payload, STORAGE_KEYS.NOTES); });
+      } else {
+        await Promise.all((cache[STORAGE_KEYS.NOTES] || []).map(note => idbPut('notes', note)));
+      }
     } else {
-      localWrite(STORAGE_KEYS.NOTES, cache[STORAGE_KEYS.NOTES]);
+      localWrite(STORAGE_KEYS.NOTES, payload);
     }
     await refreshIndexes();
     return true;
+  }
+
+  async function decryptAllSensitive() {
+    const meta = cache[META_KEY] || DEFAULT_META;
+    const keys = Array.from(SENSITIVE_KEYS);
+    for (const key of keys) {
+      if (!key) continue;
+      if (cache[key] !== undefined) continue;
+      if (activeEngine === ENGINE.INDEXED_DB) {
+        if (key === STORAGE_KEYS.NOTES) {
+          const encryptedNotes = await idbGet('kv', key, null);
+          if (encryptedNotes) {
+            cache[key] = await decryptValue(encryptedNotes);
+          }
+        } else {
+          const stored = await idbGet('kv', key, null);
+          if (stored) cache[key] = await decryptValue(stored);
+        }
+      } else {
+        const stored = encryptedCache[key] ?? localRead(key, null);
+        if (stored) cache[key] = await decryptValue(stored);
+      }
+    }
+    if (cache[STORAGE_KEYS.NOTES] === undefined) cache[STORAGE_KEYS.NOTES] = [];
+    await refreshIndexes();
+    emit('unlock');
+    return true;
+  }
+
+  async function unlock(passphrase) {
+    const meta = cache[META_KEY] || DEFAULT_META;
+    if (!meta.encryption?.enabled) return true;
+    const salt = meta.encryption.salt ? toBuffer(meta.encryption.salt) : null;
+    if (!salt) throw new Error('Missing encryption salt');
+    try {
+      encryptionKey = await deriveKey(passphrase, salt);
+      isLocked = false;
+      await decryptAllSensitive();
+      return true;
+    } catch (error) {
+      encryptionKey = null;
+      isLocked = true;
+      throw Object.assign(new Error('Passphrase salah'), { code: 'BAD_PASSPHRASE' });
+    }
+  }
+
+  function lock() {
+    const meta = cache[META_KEY] || DEFAULT_META;
+    if (!meta.encryption?.enabled) return;
+    encryptionKey = null;
+    isLocked = true;
+    Array.from(SENSITIVE_KEYS).forEach((key) => { delete cache[key]; });
+    emit('lock');
+  }
+
+  async function enableEncryption(passphrase) {
+    await ready;
+    const meta = cache[META_KEY] || DEFAULT_META;
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    encryptionKey = await deriveKey(passphrase, salt);
+    meta.encryption = {
+      enabled: true,
+      salt: toBase64(salt),
+      encryptedKeys: Array.from(SENSITIVE_KEYS)
+    };
+    cache[META_KEY] = meta;
+    isLocked = false;
+
+    for (const key of SENSITIVE_KEYS) {
+      if (!key) continue;
+      let value;
+      if (key === STORAGE_KEYS.NOTES) {
+        if (cache[key] !== undefined) {
+          value = cache[key];
+        } else if (activeEngine === ENGINE.INDEXED_DB) {
+          value = await idbGetAll('notes');
+        } else {
+          value = localRead(STORAGE_KEYS.NOTES, []);
+        }
+      } else {
+        value = cache[key] !== undefined ? cache[key] : await getValue(key, {});
+      }
+      await setValue(key, value || (key === STORAGE_KEYS.NOTES ? [] : {}));
+    }
+    await persistMeta();
+    return true;
+  }
+
+  function isEncryptionEnabled() {
+    const meta = cache[META_KEY] || DEFAULT_META;
+    return !!meta.encryption?.enabled;
   }
 
   async function getMeta() {
@@ -349,6 +546,13 @@
     setValue,
     getNotes,
     setNotes,
+    unlock,
+    lock,
+    enableEncryption,
+    isEncryptionEnabled: () => isEncryptionEnabled(),
+    isLocked: () => isLocked,
+    onUnlock: (fn) => { listeners.unlock.add(fn); return () => listeners.unlock.delete(fn); },
+    onLock: (fn) => { listeners.lock.add(fn); return () => listeners.lock.delete(fn); },
     getMeta,
     getUsage,
     vacuum
