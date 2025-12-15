@@ -72,7 +72,10 @@
 
   function wireNav(){
     const back = document.getElementById('version-back');
-    if (back) back.addEventListener('click', () => window.history.back());
+    if (back) back.addEventListener('click', () => {
+      sessionStorage.setItem('skipIntro', '1');
+      window.location.href = 'index.html';
+    });
     const home = document.getElementById('version-home');
     if (home) home.addEventListener('click', () => {
       sessionStorage.setItem('skipIntro', '1');
