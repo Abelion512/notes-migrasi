@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Version Info – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,6 +11,16 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="page-shell">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">Abelion Notes</div>
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a>
+        <a href="version-info.html" class="active">Versi</a>
+        <a href="settings.html">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
   <main class="panel" id="version-panel">
     <header class="panel-header">
       <button type="button" class="ghost-btn" id="version-back">← Kembali</button>
@@ -45,6 +56,11 @@
 
     <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
   </main>
+
+  <footer class="site-footer">
+    <small>Pantau riwayat rilis dari satu tempat.</small>
+    <a href="index.html">Beranda</a>
+  </footer>
 
   <script src="utils.js"></script>
   <script src="version-info.js"></script>

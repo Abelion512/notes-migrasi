@@ -3,53 +3,31 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Detail Catatan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css"/>
-  <style>
-    .note-detail-container {
-      max-width: 480px;
-      margin: 0 auto;
-      margin-top: 32px;
-      background: #fff;
-      border-radius: 19px;
-      box-shadow: 0 2px 18px #e0e0e055;
-      padding: 28px 18px 18px 18px;
-    }
-    .note-detail-title {
-      font-size:1.3em; font-weight:bold;margin-bottom:13px; display:flex;gap:7px;align-items:center;
-    }
-    .back-link {
-      display:inline-block;font-size:.97em;color:#2070ea;text-decoration:none;margin-bottom:8px;
-    }
-    .note-edit-row {
-      margin-bottom:13px;
-    }
-    .note-edit-row label {display:block;font-size:.97em;margin-bottom:3px;}
-    .note-edit-input, .note-edit-area {
-      width:100%;box-sizing:border-box;border-radius:8px;border:1.5px solid #e5e2d7;font-size:1em;padding:10px;margin-bottom:3px;
-    }
-    .note-edit-area {min-height:70px;resize:vertical;}
-    .note-edit-btns {display:flex; gap:12px;}
-    .btn-edit-save, .btn-edit-cancel {
-      padding:8px 20px; border:none; border-radius:8px; background:#2070ea; color:#fff; font-weight:500; cursor:pointer; font-size:1em; transition:background .16s;
-    }
-    .btn-edit-cancel {background:#aaa;}
-    .btn-edit-save:hover {background:#4498f7;}
-    .btn-edit-cancel:hover {background:#666;}
-    .edit-iconpicker {font-size:1.3em;}
-    .note-edit-label {padding:4px 10px;border-radius:6px;border:1px solid #eee;background:#faf6ee;font-size:0.98em;display:inline-block;}
-    .note-detail-date {font-size:0.97em;color:#aaa;opacity:.79;margin-top:7px;}
-    .note-edit-iconselect {font-size:1.15em;}
-  </style>
 </head>
-<body>
+<body class="page-shell">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">Abelion Notes</div>
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html" class="active">Beranda</a>
+        <a href="profile.html">Profil</a>
+        <a href="settings.html">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
   <div class="top-time" id="top-time"></div>
   <div class="note-detail-container">
     <a href="index.html" class="back-link" id="back-link">&larr; Kembali</a>
     <form id="note-edit-form" autocomplete="off">
       <div class="note-detail-title">
-        <input id="edit-icon" class="note-edit-input edit-iconpicker" style="width:2.5em;text-align:center;display:inline-block;margin-right:6px;" maxlength="2" />
-        <input id="edit-title" class="note-edit-input" style="font-weight:bold;font-size:1.13em;" required maxlength="100" />
+        <input id="edit-icon" class="note-edit-input edit-iconpicker" maxlength="2" />
+        <input id="edit-title" class="note-edit-input" required maxlength="100" />
       </div>
       <div class="note-edit-row">
         <label for="edit-content">Catatan</label>
@@ -68,95 +46,6 @@
   </div>
   <script src="utils.js"></script>
   <script src="gamification.js"></script>
-  <script>
-    // Top waktu
-    function updateTime() {
-      const el = document.getElementById('top-time');
-      if (!el) return;
-      const now = new Date();
-      const pad = n => n.toString().padStart(2, '0');
-      el.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-    }
-    setInterval(updateTime, 1000); updateTime();
-
-    const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, safeGetItem, safeSetItem, formatTanggal } = AbelionUtils;
-    const Gamification = window.AbelionGamification || null;
-    function loadNotes() { return safeGetItem(STORAGE_KEYS.NOTES, []); }
-    function saveNotes(notes) { safeSetItem(STORAGE_KEYS.NOTES, notes); }
-    // Baca id note dari url
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    let notes = loadNotes();
-    let note = notes.find(n=>n.id===id);
-    if(!note) {
-      document.querySelector('.note-detail-container').innerHTML = "<div style='padding:40px'>Catatan tidak ditemukan. <div style='margin-top:12px'><a href='index.html' class='back-link'>&larr; Kembali ke beranda</a></div></div>";
-      document.getElementById('top-time').textContent = '';
-    } else {
-      // Isi form
-      document.getElementById('edit-icon').value = note.icon || "";
-      document.getElementById('edit-title').value = note.title;
-      // Convert HTML ul ke text list
-      let val = note.content;
-      if(val.match(/^<ul>/)) {
-        const temp = document.createElement('div'); temp.innerHTML = val;
-        val = Array.from(temp.querySelectorAll('li')).map(li=>li.textContent).join('\n');
-      }
-      document.getElementById('edit-content').value = val;
-      if (!note.createdAt) {
-        let fallbackDate = note.date ? new Date(`${note.date}T12:00:00`) : new Date();
-        if (Number.isNaN(fallbackDate.getTime())) {
-          fallbackDate = new Date();
-        }
-        note.createdAt = fallbackDate.toISOString();
-        saveNotes(notes);
-      }
-      document.getElementById('edit-label').value = note.label||"";
-      document.getElementById('note-detail-date').textContent = "Ditulis: "+(formatTanggal(note.date) || '');
-      // Simpan perubahan
-      const noteEditForm = document.getElementById('note-edit-form');
-      if (noteEditForm) {
-        noteEditForm.onsubmit = function(e) {
-          e.preventDefault();
-          let icon = sanitizeText(document.getElementById('edit-icon').value.trim()).slice(0, 2);
-          let title = sanitizeText(document.getElementById('edit-title').value.trim());
-          let content = document.getElementById('edit-content').value.trim();
-          let label = sanitizeText(document.getElementById('edit-label').value.trim());
-          let htmlContent = content.includes('\n')
-            ? '<ul>' + content.split('\n').map(x=>`<li>${sanitizeText(x)}</li>`).join('') + '</ul>'
-            : sanitizeText(content);
-          note.icon = icon;
-          note.title = title;
-          note.content = sanitizeRichContent(htmlContent);
-          note.label = label;
-          const updatedAt = new Date().toISOString();
-          note.updatedAt = updatedAt;
-          saveNotes(notes);
-          if (Gamification) {
-            Gamification.recordNoteUpdated({
-              id: note.id,
-              updatedAt,
-              createdAt: note.createdAt || note.date
-            });
-          }
-          alert("Catatan telah disimpan!");
-          window.location.href="index.html";
-        };
-      }
-      // Batal
-      const cancelEditBtn = document.getElementById('cancel-edit');
-      if (cancelEditBtn) {
-        cancelEditBtn.onclick = function(e){
-          if(confirm("Batal edit?")) window.location.href="index.html";
-        };
-      }
-      // Back: set flag agar home tidak animasi
-      const backLink = document.getElementById('back-link');
-      if (backLink) {
-        backLink.onclick = function(e){
-          sessionStorage.setItem('skipIntro','1');
-        };
-      }
-    }
-  </script>
+  <script src="note.js"></script>
 </body>
 </html>

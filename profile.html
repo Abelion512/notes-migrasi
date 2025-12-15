@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Profil – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,6 +11,16 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="page-shell">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">Abelion Notes</div>
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a>
+        <a href="profile.html" class="active">Profil</a>
+        <a href="settings.html">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
   <main class="panel" id="profile-panel">
     <header class="panel-header">
       <button type="button" class="ghost-btn" id="back-btn">← Kembali</button>
@@ -46,7 +57,7 @@
             <span id="xp-hint">Tetap semangat, XP akan naik konsisten!</span>
             <span id="xp-counter">0 / 100 XP</span>
             <span id="xp-next">Perlu 100 XP lagi untuk naik level.</span>
-            <a href="https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp" id="xp-guide" class="xp-guide-link" target="_blank" rel="noopener">Panduan klaim XP</a>
+            <a href="https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp" id="xp-guide" class="xp-guide-link" target="_blank" rel="noopener noreferrer">Panduan klaim XP</a>
           </div>
         </div>
       </div>
@@ -75,6 +86,11 @@
       © 2025 Abelion Notes. All rights reserved.
     </footer>
   </main>
+
+  <footer class="site-footer">
+    <small>Selaraskan profil Anda di semua perangkat.</small>
+    <a href="index.html">Kembali ke beranda</a>
+  </footer>
 
   <script src="utils.js"></script>
   <script src="gamification.js"></script>
