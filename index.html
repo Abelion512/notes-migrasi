@@ -3,10 +3,27 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Abelion Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">Abelion Notes</div>
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="#" class="active" id="nav-home">Beranda</a>
+        <a href="#" id="nav-about">Tentang</a>
+        <a href="profile.html" id="nav-profile">
+          <img src="default-avatar.svg" alt="Foto profil mini" id="profile-mini-avatar" class="nav-avatar" />
+          <span id="profile-mini-name">Profil</span>
+        </a>
+      </nav>
+    </div>
+  </header>
   <div class="top-time" id="top-time"></div>
   <div id="intro-anim">
     <div class="progress-circle">
@@ -32,18 +49,6 @@
       <div class="notes-grid" id="notes-grid"></div>
     </section>
   </div>
-<nav class="nav-bottom">
-  <a href="#" class="nav-item active" id="nav-home">
-    <span class="nav-txt">Home</span>
-  </a>
-  <a href="#" class="nav-item" id="nav-about">
-    <span class="nav-txt">About</span>
-  </a>
-  <a href="profile.html" class="nav-item" id="nav-profile">
-    <img src="default-avatar.svg" id="profile-mini-avatar" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:5px;">
-    <span class="nav-txt" id="profile-mini-name">Profile</span>
-  </a>
-</nav>
   <div id="about-modal" class="about-modal">
     <div class="about-modal-content">
       <button class="about-close" id="about-close">&times;</button>
@@ -58,6 +63,10 @@
       </div>
     </div>
   </div>
+  <footer class="site-footer">
+    <small>© 2025 Abelion Notes</small>
+    <a href="settings.html">Pengaturan</a>
+  </footer>
   <script src="utils.js"></script>
   <script src="gamification.js"></script>
   <script src="index.js"></script>
