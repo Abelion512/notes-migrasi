@@ -1403,6 +1403,31 @@ body.modal-open {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  #intro-anim {
+    opacity: 1;
+    transition: none;
+  }
+
+  .title-abelion,
+  .title-abelion.animated {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 @media (max-width: 768px) {
   .site-header-inner {
     flex-direction: column;
