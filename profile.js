@@ -288,7 +288,10 @@
 
   function wireInteractions() {
     const backBtn = document.getElementById('back-btn');
-    if (backBtn) backBtn.addEventListener('click', () => window.history.back());
+    if (backBtn) backBtn.addEventListener('click', () => {
+      sessionStorage.setItem('skipIntro', '1');
+      window.location.href = 'index.html';
+    });
 
     const versionBtn = document.getElementById('version-btn');
     if (versionBtn) versionBtn.addEventListener('click', () => {
