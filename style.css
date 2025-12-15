@@ -1159,6 +1159,40 @@ body {
   gap: 18px;
 }
 
+.storage-health {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.storage-health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.storage-health-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.storage-health-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.storage-health-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.storage-health-footnote {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .settings-section h3 {
   font-size: 1rem;
   color: var(--text-secondary);
