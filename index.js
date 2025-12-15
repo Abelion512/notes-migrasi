@@ -24,7 +24,15 @@ setInterval(updateTime, 1000);
 updateTime();
 
 // --- Notes: localStorage
-const notes = safeGetItem(STORAGE_KEYS.NOTES, []);
+const notes = [];
+
+function loadNotes() {
+  const storedNotes = safeGetItem(STORAGE_KEYS.NOTES, []);
+  notes.splice(0, notes.length, ...storedNotes);
+  return notes;
+}
+
+loadNotes();
 
 function showXPToast({ xp, message, streak }) {
   if (!xp) return;
@@ -321,8 +329,14 @@ function showMiniProfile() {
 }
 window.addEventListener('DOMContentLoaded', showMiniProfile);
 window.addEventListener('storage', (event) => {
+  if (event.storageArea !== localStorage) return;
   if (event.key === STORAGE_KEYS.PROFILE) {
     showMiniProfile();
+  }
+  if (event.key === STORAGE_KEYS.NOTES) {
+    loadNotes();
+    renderSearchBar();
+    renderNotes();
   }
 });
 
