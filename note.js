@@ -13,7 +13,7 @@
   }
 
   async function loadNotes() { await Storage.ready; return Storage.getNotes({ sortByUpdatedAt: true }); }
-  function saveNotes(notes) { Storage.setNotes(notes); }
+  async function saveNotes(notes) { await Storage.setNotes(notes); }
 
   function renderMissingState() {
     const container = document.querySelector('.note-detail-container');
@@ -46,7 +46,7 @@
     return note.content || '';
   }
 
-  function populateForm(note, notes) {
+  async function populateForm(note, notes) {
     const iconEl = document.getElementById('edit-icon');
     const titleEl = document.getElementById('edit-title');
     const contentEl = document.getElementById('edit-content');
@@ -64,7 +64,7 @@
         fallbackDate = new Date();
       }
       note.createdAt = fallbackDate.toISOString();
-      saveNotes(notes);
+      await saveNotes(notes);
     }
 
     labelEl.value = note.label || '';
@@ -78,7 +78,7 @@
   function bindActions(note, notes) {
     const form = document.getElementById('note-edit-form');
     if (form) {
-      form.onsubmit = function(e) {
+      form.onsubmit = async function(e) {
         e.preventDefault();
         const icon = sanitizeText(document.getElementById('edit-icon').value.trim()).slice(0, 2);
         const title = sanitizeText(document.getElementById('edit-title').value.trim());
@@ -97,7 +97,7 @@
         note.label = label;
         const updatedAt = new Date().toISOString();
         note.updatedAt = updatedAt;
-        saveNotes(notes);
+        await saveNotes(notes);
 
         if (Gamification && note?.id) {
           Gamification.recordNoteUpdated({
@@ -142,7 +142,7 @@
     updateTime();
     setInterval(updateTime, 1000);
 
-    populateForm(note, notes);
+    await populateForm(note, notes);
     bindActions(note, notes);
   }
 
