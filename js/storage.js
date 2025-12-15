@@ -1,4 +1,4 @@
-(function(global){
+(function (global) {
   const utils = global.AbelionUtils || {};
   const STORAGE_KEYS = utils.STORAGE_KEYS || {};
 
@@ -111,9 +111,29 @@
     return new Promise((resolve, reject) => {
       const tx = database.transaction(store, mode);
       const objectStore = tx.objectStore(store);
-      const result = handler(objectStore);
-      tx.oncomplete = () => resolve(result);
+      let handlerResult;
+
+      tx.oncomplete = () => resolve(handlerResult);
       tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(new Error('Transaction aborted'));
+
+      try {
+        const result = handler(objectStore);
+        if (result instanceof Promise) {
+          result.then(res => { handlerResult = res; }).catch(err => {
+            // Check if transaction is still active before aborting
+            if (tx.error === null && tx.readyState !== 'finished') {
+              try { tx.abort(); } catch (e) { /* ignore */ }
+            }
+            reject(err);
+          });
+        } else {
+          handlerResult = result;
+        }
+      } catch (error) {
+        try { tx.abort(); } catch (e) { /* ignore */ }
+        reject(error);
+      }
     });
   }
 
@@ -210,7 +230,7 @@
       {
         name: 'PBKDF2',
         salt,
-        iterations: 250000,
+        iterations: 600000,
         hash: 'SHA-256'
       },
       keyMaterial,
@@ -321,20 +341,27 @@
     await ready;
     const meta = cache[META_KEY] || DEFAULT_META;
     const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(key);
-    if (encrypted && isLocked) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
+    if (encrypted && isLocked) {
+      if (key === STORAGE_KEYS.NOTES) return []; // Graceful fail for notes
+      throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
+    }
     if (cache[key] !== undefined) return cache[key];
 
-    if (activeEngine === ENGINE.INDEXED_DB) {
-      const stored = await idbGet('kv', key, fallback);
-      const value = encrypted ? await decryptValue(stored) : stored;
+    try {
+      let value;
+      if (activeEngine === ENGINE.INDEXED_DB) {
+        const stored = await idbGet('kv', key, fallback);
+        value = encrypted ? await decryptValue(stored) : stored;
+      } else {
+        const stored = encryptedCache[key] ?? localRead(key, fallback);
+        value = encrypted ? await decryptValue(stored) : stored;
+      }
       cache[key] = value ?? fallback;
-      return value;
+      return cache[key];
+    } catch (error) {
+      console.error(`Failed to retrieve/decrypt value for key ${key}:`, error);
+      return fallback;
     }
-
-    const stored = encryptedCache[key] ?? localRead(key, fallback);
-    const value = encrypted ? await decryptValue(stored) : stored;
-    cache[key] = value ?? fallback;
-    return cache[key];
   }
 
   function getCachedValue(key, fallback = null) {
@@ -399,13 +426,15 @@
     cache[STORAGE_KEYS.NOTES] = Array.isArray(notes) ? notes : [];
     const payload = encrypted ? await encryptValue(cache[STORAGE_KEYS.NOTES]) : cache[STORAGE_KEYS.NOTES];
     if (activeEngine === ENGINE.INDEXED_DB) {
-      await idbTransaction('notes', 'readwrite', (store) => {
-        store.clear();
-      });
       if (encrypted) {
-        await idbTransaction('kv', 'readwrite', (store) => { store.put(payload, STORAGE_KEYS.NOTES); });
+        await idbTransaction('kv', 'readwrite', (store) => {
+          store.put(payload, STORAGE_KEYS.NOTES);
+        });
       } else {
-        await Promise.all((cache[STORAGE_KEYS.NOTES] || []).map(note => idbPut('notes', note)));
+        await idbTransaction('notes', 'readwrite', (store) => {
+          store.clear();
+          (cache[STORAGE_KEYS.NOTES] || []).forEach(note => store.put(note));
+        });
       }
     } else {
       localWrite(STORAGE_KEYS.NOTES, payload);

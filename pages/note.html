@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Detail Catatan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
+
 <body class="page-shell">
   <div class="top-time" id="top-time"></div>
   <div class="note-detail-container">
-    <a href="index.html" class="back-link" id="back-link">&larr; Kembali</a>
+    <a href="../index.html" class="back-link" id="back-link">&larr; Kembali</a>
     <form id="note-edit-form" autocomplete="off">
       <div class="note-detail-title">
         <input id="edit-icon" class="note-edit-input edit-iconpicker" maxlength="2" />
@@ -25,7 +28,8 @@
       </div>
       <div class="note-edit-row">
         <label for="edit-label">Label/Mood (opsional)</label>
-        <input id="edit-label" class="note-edit-input note-edit-label" placeholder="Misal: mood, kerja, penting..." maxlength="20"/>
+        <input id="edit-label" class="note-edit-input note-edit-label" placeholder="Misal: mood, kerja, penting..."
+          maxlength="20" />
       </div>
       <div class="note-edit-btns">
         <button type="submit" class="btn-edit-save">Simpan</button>
@@ -36,7 +40,7 @@
   </div>
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
-      <a class="nav-button active" href="index.html" aria-label="Beranda">
+      <a class="nav-button active" href="../index.html" aria-label="Beranda">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Beranda</span>
       </a>
@@ -54,12 +58,12 @@
       </a>
     </div>
   </nav>
-  <script src="utils.js"></script>
-  <script src="storage.js"></script>
-  <script src="lock-screen.js"></script>
-  <script src="gamification.js"></script>
-  <script src="editor-modal.js"></script>
-  <script src="note.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/lock-screen.js"></script>
+  <script src="../js/gamification.js"></script>
+  <script src="../js/editor-modal.js"></script>
+  <script src="../js/note.js"></script>
 </body>
-</html>
 
+</html>

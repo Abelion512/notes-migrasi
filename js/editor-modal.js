@@ -1,4 +1,4 @@
-(function(global) {
+(function (global) {
   const {
     STORAGE_KEYS,
     sanitizeText,
@@ -53,8 +53,9 @@
 
   function htmlToMarkdown(html) {
     if (!html) return '';
-    const container = document.createElement('div');
-    container.innerHTML = html;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const container = doc.body;
     const walk = (node) => {
       if (node.nodeType === Node.TEXT_NODE) return node.textContent || '';
       if (node.nodeType !== Node.ELEMENT_NODE) return '';
@@ -227,6 +228,7 @@
   }
 
   function openModalEditor(options = {}) {
+    if (document.querySelector('.note-editor-modal')) return;
     const { mode = 'create', initialValue = {}, onSave, draftKey = 'new' } = options;
     const drafts = readDrafts();
     const draftData = drafts[draftKey] || {};
@@ -290,7 +292,7 @@
     overlay.querySelector('.editor-close').addEventListener('click', close);
     form.querySelector('[data-action="cancel"]').addEventListener('click', close);
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const payload = {
         icon: sanitizeText(iconInput.value.trim()).slice(0, 2),
@@ -299,11 +301,22 @@
       };
       if (!payload.title || !payload.contentMarkdown) return;
       payload.contentHtml = markdownToHtml(payload.contentMarkdown);
-      const nextDrafts = readDrafts();
-      delete nextDrafts[draftKey];
-      writeDrafts(nextDrafts);
-      if (typeof onSave === 'function') onSave(payload, { close });
-      close();
+
+      try {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.disabled = true;
+        if (typeof onSave === 'function') await onSave(payload, { close });
+
+        const nextDrafts = readDrafts();
+        delete nextDrafts[draftKey];
+        writeDrafts(nextDrafts);
+        close();
+      } catch (e) {
+        console.error('Save error', e);
+        alert('Gagal menyimpan: ' + (e.message || 'Error tidak diketahui'));
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.disabled = false;
+      }
     });
 
     document.body.classList.add('modal-open');

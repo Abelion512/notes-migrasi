@@ -25,12 +25,15 @@ setInterval(updateTime, 1000);
 updateTime();
 
 // --- Notes: Storage Abstraction
-const notes = [];
+// --- Notes: Storage Abstraction
+let notes = [];
+let notesLoaded = false;
 
 async function loadNotes() {
   try {
     const storedNotes = await Storage.getNotes({ sortByUpdatedAt: true });
-    notes.splice(0, notes.length, ...storedNotes);
+    notes = storedNotes;
+    notesLoaded = true;
     return notes;
   } catch (error) {
     if (error?.code === 'STORAGE_LOCKED') return notes;
@@ -38,8 +41,10 @@ async function loadNotes() {
     return notes;
   }
 }
-
-loadNotes();
+async function ensureNotesLoaded() {
+  if (!notesLoaded) await loadNotes();
+  return notes;
+}
 
 function noteDraftKey(id = 'new') {
   return `note-${id}`;
@@ -178,7 +183,7 @@ async function renderMoodGraph() {
   const el = document.getElementById('mood-graph');
   if (!el) return;
   const stored = await loadMoods();
-  const fallback = ['😄','🙂','😐','😊','😢','😐','😴'];
+  const fallback = ['😄', '🙂', '😐', '😊', '😢', '😐', '😴'];
   const items = getPastSevenDays().map((day, idx) => ({
     emoji: stored?.[day.iso] || fallback[idx % fallback.length],
     day: day.label
@@ -197,7 +202,7 @@ let filterByTag = '';
 let activeNoteId = null;
 function renderSearchBar() {
   let searchDiv = document.getElementById('search-bar');
-  if(!searchDiv) {
+  if (!searchDiv) {
     searchDiv = document.createElement('div');
     searchDiv.id = 'search-bar';
     searchDiv.innerHTML = `
@@ -205,7 +210,7 @@ function renderSearchBar() {
     `;
     const notesGrid = document.getElementById('notes-grid');
     notesGrid.parentNode.insertBefore(searchDiv, notesGrid);
-    const handleSearch = debounce(function(){
+    const handleSearch = debounce(function () {
       const normalized = sanitizeText(this.value || '').trim().toLowerCase();
       searchQuery = normalized;
       renderNotes();
@@ -254,7 +259,7 @@ function renderTagCloud() {
   `;
 
   tagCloud.querySelectorAll('.tag-filter').forEach(btn => {
-    btn.onclick = function() {
+    btn.onclick = function () {
       filterByTag = sanitizeText(this.dataset.tag || '');
       tagCloud.querySelectorAll('.tag-filter').forEach(b => b.classList.remove('tag-filter--active'));
       this.classList.add('tag-filter--active');
@@ -302,7 +307,7 @@ function renderNotes() {
     activeNoteId = sorted[0].id;
   }
 
-  grid.innerHTML = sorted.map(n=>{
+  grid.innerHTML = sorted.map(n => {
     const safeTitle = sanitizeText(n.title || '');
     const safeIcon = sanitizeText(n.icon || '').slice(0, 2);
     const label = sanitizeText(n.label || '');
@@ -312,79 +317,100 @@ function renderNotes() {
     return `
     <div class="note-card${isActive ? ' note-card--active' : ''}" data-id="${n.id}" tabindex="0" role="link">
       <div class="note-actions">
-        <button class="action-btn pin${n.pinned?' pin-active':''}" data-action="pin" title="Pin/Unpin" aria-label="Pin/Unpin catatan">
-          <span class="pin-inner">${n.pinned?'📌':'📍'}</span>
+        <button class="action-btn pin${n.pinned ? ' pin-active' : ''}" data-action="pin" title="Pin/Unpin" aria-label="Pin/Unpin catatan">
+          <span class="pin-inner">${n.pinned ? '📌' : '📍'}</span>
         </button>
         <button class="action-btn delete" data-action="delete" title="Hapus" aria-label="Hapus catatan">
           <span class="delete-inner">🗑️</span>
         </button>
       </div>
       <div class="note-title">
-        ${safeIcon?`<span class="icon">${safeIcon}</span>`:""}${safeTitle}
+        ${safeIcon ? `<span class="icon">${safeIcon}</span>` : ""}${safeTitle}
       </div>
-      ${label?`<div class="note-label">${label}</div>`:''}
+      ${label ? `<div class="note-label">${label}</div>` : ''}
       <div class="note-content">${content}</div>
       <div class="note-date">${dateLabel ? `Ditulis: ${dateLabel}` : ''}</div>
     </div>
-  `;}).join("");
+  `;
+  }).join("");
 
   // Interaktif event
-  grid.querySelectorAll('.note-card').forEach(card => {
-    // Card click: redirect to note.html?id=...
-    card.addEventListener('click', function(e) {
-      if(e.target.closest('.action-btn')) return;
+  // Listeners removed in favor of delegation
+}
+
+function setupNotesDelegation() {
+  const grid = document.getElementById("notes-grid");
+  if (!grid) return;
+
+  grid.addEventListener('click', async (e) => {
+    const actionBtn = e.target.closest('.action-btn');
+    const card = e.target.closest('.note-card');
+
+    // Handle Action Buttons (Pin/Delete)
+    if (actionBtn && card) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = card.getAttribute('data-id');
+      const idx = notes.findIndex(n => n.id === id);
+      if (idx < 0) return;
+      const note = notes[idx];
+
+      if (actionBtn.dataset.action === "pin") {
+        note.pinned = !note.pinned;
+        await persistNotes();
+        const pinInner = actionBtn.querySelector('.pin-inner');
+        if (pinInner) {
+          pinInner.animate([
+            { transform: 'scale(1.2)' }, { transform: 'scale(1)' }
+          ], { duration: 200 });
+        }
+      } else if (actionBtn.dataset.action === "delete") {
+        if (confirm('Hapus catatan ini?')) {
+          const deletedAt = new Date().toISOString();
+          const createdAt = note.createdAt || note.date;
+          notes.splice(idx, 1);
+          if (NoteEditor) NoteEditor.clearDraft(noteDraftKey(id));
+          await persistNotes();
+          if (Gamification) {
+            Gamification.recordNoteDeleted({
+              id,
+              createdAt,
+              deletedAt
+            });
+          }
+        }
+      }
+      renderNotes();
+      return;
+    }
+
+    // Handle Card Click (Open)
+    if (card) {
       const id = card.getAttribute('data-id');
       const note = notes.find(n => n.id === id);
       if (note) {
         setActiveNote(id);
         openNoteModal('edit', note);
       }
-    });
-    card.onkeydown = function(e) {
-      if(e.key==='Enter' || e.key===' ') {
-        const id = card.getAttribute('data-id');
-        const note = notes.find(n => n.id === id);
-        if (note) {
-          setActiveNote(id);
-          openNoteModal('edit', note);
-        }
+    }
+  });
+
+  grid.addEventListener('keydown', (e) => {
+    const card = e.target.closest('.note-card');
+    if (card && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      const id = card.getAttribute('data-id');
+      const note = notes.find(n => n.id === id);
+      if (note) {
+        setActiveNote(id);
+        openNoteModal('edit', note);
       }
-    };
-    card.addEventListener('focus', () => setActiveNote(card.getAttribute('data-id')));
-    // Pin/Delete
-    card.querySelectorAll('.action-btn').forEach(btn => {
-      btn.onclick = async function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const id = card.getAttribute('data-id');
-        const idx = notes.findIndex(n=>n.id===id);
-        if(idx<0) return;
-        const note = notes[idx];
-        if(this.dataset.action==="pin") {
-          note.pinned = !note.pinned;
-          await persistNotes();
-          this.querySelector('.pin-inner').animate([
-            {transform:'scale(1.2)'},{transform:'scale(1)'}
-          ],{duration:200});
-        } else if(this.dataset.action==="delete") {
-          if(confirm('Hapus catatan ini?')) {
-            const deletedAt = new Date().toISOString();
-            const createdAt = note.createdAt || note.date;
-            notes.splice(idx,1);
-            if (NoteEditor) NoteEditor.clearDraft(noteDraftKey(id));
-            await persistNotes();
-            if (Gamification) {
-              Gamification.recordNoteDeleted({
-                id,
-                createdAt,
-                deletedAt
-              });
-            }
-          }
-        }
-        renderNotes();
-      }
-    });
+    }
+  });
+
+  grid.addEventListener('focusin', (e) => {
+    const card = e.target.closest('.note-card');
+    if (card) setActiveNote(card.getAttribute('data-id'));
   });
 }
 
@@ -426,27 +452,27 @@ const aboutClose = document.getElementById("about-close");
 const navHome = document.getElementById("nav-home");
 
 if (aboutTrigger && aboutModal) {
-  aboutTrigger.onclick = function(e) {
+  aboutTrigger.onclick = function (e) {
     e.preventDefault();
     aboutModal.classList.add("show");
   };
 }
 
 if (aboutClose && aboutModal) {
-  aboutClose.onclick = function() {
+  aboutClose.onclick = function () {
     aboutModal.classList.remove("show");
   };
 }
 
 if (navHome && aboutModal) {
-  navHome.onclick = function(e) {
+  navHome.onclick = function (e) {
     e.preventDefault();
     aboutModal.classList.remove("show");
   };
 }
 
-window.onclick = function(e) {
-  if(aboutModal && e.target === aboutModal) aboutModal.classList.remove("show");
+window.onclick = function (e) {
+  if (aboutModal && e.target === aboutModal) aboutModal.classList.remove("show");
 };
 // Di index.js
 async function showMiniProfile() {
@@ -503,7 +529,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         existingNote.content = payload.contentHtml;
         existingNote.contentMarkdown = payload.contentMarkdown;
         existingNote.updatedAt = isoDate;
-        existingNote.date = existingNote.date || isoDate.slice(0,10);
+        existingNote.date = existingNote.date || isoDate.slice(0, 10);
         await persistNotes();
         if (Gamification && existingNote.id) {
           Gamification.recordNoteUpdated({
@@ -523,7 +549,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         title: payload.title,
         content: payload.contentHtml,
         contentMarkdown: payload.contentMarkdown,
-        date: isoDate.slice(0,10),
+        date: isoDate.slice(0, 10),
         createdAt: isoDate,
         pinned: false
       };
@@ -537,7 +563,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
   });
 }
 
-document.getElementById('add-note-btn').onclick = function() {
+document.getElementById('add-note-btn').onclick = function () {
   openNoteModal('create', null);
 };
 
@@ -545,7 +571,7 @@ document.getElementById('add-note-btn').onclick = function() {
 function openMoodSelector() {
   const modalId = 'mood-modal';
   if (document.getElementById(modalId)) return;
-  const moods = ['😄','🙂','😐','😢','😠','😴'];
+  const moods = ['😄', '🙂', '😐', '😢', '😠', '😴'];
   const modal = document.createElement('div');
   modal.id = modalId;
   modal.className = 'mood-modal';
@@ -585,12 +611,13 @@ if (updateMoodBtn) {
   updateMoodBtn.addEventListener('click', openMoodSelector);
 }
 // --- Entrance: skip animasi jika dari note.html (back) ---
-window.addEventListener('DOMContentLoaded', async ()=>{
+window.addEventListener('DOMContentLoaded', async () => {
   await Storage.ready;
   await loadNotes();
   await renderMoodGraph();
-  renderSearchBar(); renderNotes();
-  if(sessionStorage.getItem('skipIntro')) {
+
+  renderSearchBar(); setupNotesDelegation(); renderNotes();
+  if (sessionStorage.getItem('skipIntro')) {
     document.getElementById('intro-anim').style.display = 'none';
     document.getElementById('main-content').classList.remove('hidden');
     document.querySelector('.title-abelion').classList.add('animated');
@@ -602,17 +629,17 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   const pt = document.getElementById('progress-text');
   const intro = document.getElementById('intro-anim');
   const main = document.getElementById('main-content');
-  let interval = setInterval(()=>{
-    p = Math.min(100, p+Math.floor(Math.random()*7+1));
-    pt.textContent = p+"%";
-    if(p>=100){
+  let interval = setInterval(() => {
+    p = Math.min(100, p + Math.floor(Math.random() * 7 + 1));
+    pt.textContent = p + "%";
+    if (p >= 100) {
       clearInterval(interval);
       intro.style.opacity = 0;
-      setTimeout(()=>{
-        intro.style.display="none";
+      setTimeout(() => {
+        intro.style.display = "none";
         main.classList.remove('hidden');
-        setTimeout(()=>document.querySelector('.title-abelion').classList.add('animated'),100);
-      },1300);
+        setTimeout(() => document.querySelector('.title-abelion').classList.add('animated'), 100);
+      }, 1300);
     }
   }, 40);
 });

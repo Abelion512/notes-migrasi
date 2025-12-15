@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Edit Profil – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
+
 <body class="page-shell">
   <main class="panel" id="edit-profile-panel">
     <header class="panel-header">
@@ -22,7 +25,8 @@
         <h2>Informasi Dasar</h2>
         <div class="section-card">
           <div class="avatar-uploader">
-            <img src="default-avatar.svg" alt="Preview foto profil" id="profile-avatar" class="profile-avatar is-empty" />
+            <img src="../assets/default-avatar.svg" alt="Preview foto profil" id="profile-avatar"
+              class="profile-avatar is-empty" />
             <div class="avatar-actions">
               <button type="button" class="ghost-btn" id="avatar-upload-btn">Unggah foto</button>
               <button type="button" class="ghost-btn danger" id="avatar-remove-btn">Hapus foto</button>
@@ -33,24 +37,28 @@
           <div class="form-grid">
             <label class="form-field" for="profile-name">
               <span>Nama tampilan</span>
-              <input type="text" id="profile-name" class="input-control" maxlength="40" placeholder="Tuliskan nama panggilanmu" autocomplete="name" required />
+              <input type="text" id="profile-name" class="input-control" maxlength="40"
+                placeholder="Tuliskan nama panggilanmu" autocomplete="name" required />
             </label>
 
             <label class="form-field" for="profile-title">
               <span>Title di profil</span>
-              <input type="text" id="profile-title" class="input-control" maxlength="32" placeholder="Explorer" autocomplete="organization-title" />
+              <input type="text" id="profile-title" class="input-control" maxlength="32" placeholder="Explorer"
+                autocomplete="organization-title" />
               <small>Ditampilkan di samping badge pada halaman profil.</small>
             </label>
 
             <label class="form-field" for="profile-bio">
               <span>Bio singkat</span>
-              <textarea id="profile-bio" class="textarea-control" rows="3" maxlength="160" placeholder="Ceritakan fokus belajarmu"></textarea>
+              <textarea id="profile-bio" class="textarea-control" rows="3" maxlength="160"
+                placeholder="Ceritakan fokus belajarmu"></textarea>
               <small>Opsional, maksimal 160 karakter.</small>
             </label>
 
             <label class="form-field" for="profile-link">
               <span>Link sosial</span>
-              <input type="url" id="profile-link" class="input-control" placeholder="https://instagram.com/abelion" autocomplete="url" inputmode="url" />
+              <input type="url" id="profile-link" class="input-control" placeholder="https://instagram.com/abelion"
+                autocomplete="url" inputmode="url" />
               <small>Tambahkan satu tautan utama ke profilmu.</small>
             </label>
           </div>
@@ -71,9 +79,9 @@
       </div>
     </form>
 
-  <footer class="panel-footer">
-    © 2025 Abelion Notes. All rights reserved.
-  </footer>
+    <footer class="panel-footer">
+      © 2025 Abelion Notes. All rights reserved.
+    </footer>
   </main>
 
   <footer class="site-footer">
@@ -83,7 +91,7 @@
 
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
-      <a class="nav-button" href="index.html" aria-label="Beranda">
+      <a class="nav-button" href="../index.html" aria-label="Beranda">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Beranda</span>
       </a>
@@ -102,10 +110,11 @@
     </div>
   </nav>
 
-  <script src="utils.js"></script>
-  <script src="storage.js"></script>
-  <script src="lock-screen.js"></script>
-  <script src="gamification.js"></script>
-  <script src="edit-profile.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/lock-screen.js"></script>
+  <script src="../js/gamification.js"></script>
+  <script src="../js/edit-profile.js"></script>
 </body>
+
 </html>

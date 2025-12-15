@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Profil – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body class="page-shell">
   <main class="panel" id="profile-panel">
     <header class="panel-header">
@@ -18,7 +21,7 @@
     </header>
 
     <section class="profile-hero">
-      <img src="default-avatar.svg" alt="Foto profil" id="profile-avatar" class="profile-avatar is-empty" />
+      <img src="../assets/default-avatar.svg" alt="Foto profil" id="profile-avatar" class="profile-avatar is-empty" />
       <button type="button" class="profile-upload" disabled>Ganti foto (segera)</button>
       <p class="profile-greeting" id="profile-greeting">Selamat datang, username 👋</p>
     </section>
@@ -29,8 +32,10 @@
       <span class="meta-chip" id="profile-level">Level 1</span>
       <span class="meta-chip" id="profile-total-xp">Total XP 500</span>
     </div>
-    <p class="profile-hint" id="profile-tier-hint">Novice (Pemula) mencakup Level 1-100 dan fokus pada membangun kebiasaan menulis.</p>
-    <p class="profile-hint" id="profile-title-hint">Explorer adalah gelar awal untuk penjelajah ide. Level 500 akan membuka gelar berikutnya.</p>
+    <p class="profile-hint" id="profile-tier-hint">Novice (Pemula) mencakup Level 1-100 dan fokus pada membangun
+      kebiasaan menulis.</p>
+    <p class="profile-hint" id="profile-title-hint">Explorer adalah gelar awal untuk penjelajah ide. Level 500 akan
+      membuka gelar berikutnya.</p>
 
     <section class="panel-section">
       <h2>Perkembangan XP</h2>
@@ -47,7 +52,8 @@
             <span id="xp-hint">Tetap semangat, XP akan naik konsisten!</span>
             <span id="xp-counter">0 / 100 XP</span>
             <span id="xp-next">Perlu 100 XP lagi untuk naik level.</span>
-            <a href="https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp" id="xp-guide" class="xp-guide-link" target="_blank" rel="noopener noreferrer">Panduan klaim XP</a>
+            <a href="https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp" id="xp-guide"
+              class="xp-guide-link" target="_blank" rel="noopener noreferrer">Panduan klaim XP</a>
           </div>
         </div>
       </div>
@@ -79,12 +85,12 @@
 
   <footer class="site-footer">
     <small>Selaraskan profil Anda di semua perangkat.</small>
-    <a href="index.html">Kembali ke beranda</a>
+    <a href="../index.html">Kembali ke beranda</a>
   </footer>
 
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
-      <a class="nav-button" href="index.html" aria-label="Beranda">
+      <a class="nav-button" href="../index.html" aria-label="Beranda">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Beranda</span>
       </a>
@@ -103,11 +109,11 @@
     </div>
   </nav>
 
-  <script src="utils.js"></script>
-  <script src="storage.js"></script>
-  <script src="lock-screen.js"></script>
-  <script src="gamification.js"></script>
-  <script src="profile.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/lock-screen.js"></script>
+  <script src="../js/gamification.js"></script>
+  <script src="../js/profile.js"></script>
 </body>
-</html>
 
+</html>

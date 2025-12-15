@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Pengaturan – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
+
 <body class="page-shell">
   <main class="panel">
     <header class="panel-header">
@@ -60,9 +63,9 @@
       </div>
     </section>
 
-  <section class="panel-section">
-    <h2>Privasi &amp; Data</h2>
-    <div class="section-card settings-grid">
+    <section class="panel-section">
+      <h2>Privasi &amp; Data</h2>
+      <div class="section-card settings-grid">
         <div class="settings-section">
           <h3>Kontrol Data</h3>
           <ul class="settings-items">
@@ -89,9 +92,11 @@
           <p id="encryption-status" class="settings-items">Memeriksa status...</p>
           <form id="passphrase-form" class="settings-form">
             <label for="passphrase-input">Passphrase baru</label>
-            <input id="passphrase-input" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter" required />
+            <input id="passphrase-input" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter"
+              required />
             <label for="passphrase-confirm">Konfirmasi passphrase</label>
-            <input id="passphrase-confirm" type="password" autocomplete="new-password" placeholder="Ulangi passphrase" required />
+            <input id="passphrase-confirm" type="password" autocomplete="new-password" placeholder="Ulangi passphrase"
+              required />
             <p class="settings-hint" id="passphrase-hint">Kata kunci tidak disimpan di server mana pun.</p>
             <button type="submit" class="btn-blue">Aktifkan / Perbarui Enkripsi</button>
           </form>
@@ -125,7 +130,8 @@
           <button type="button" class="ghost-btn" id="storage-refresh-btn">↻ Refresh</button>
           <button type="button" class="btn-blue" id="storage-vacuum-btn">Vacuum / Cleanup</button>
         </div>
-        <div class="storage-health-footnote" id="storage-footnote">Rebuild indexes and purge drafts/cache/logs to keep things light.</div>
+        <div class="storage-health-footnote" id="storage-footnote">Rebuild indexes and purge drafts/cache/logs to keep
+          things light.</div>
       </div>
     </section>
 
@@ -146,29 +152,30 @@
     <section class="panel-section">
       <h2>Tentang Aplikasi</h2>
       <div class="section-card settings-grid">
-      <div class="settings-section">
-        <h3>Informasi</h3>
-        <ul class="settings-items">
-          <li>Versi App: <span id="settings-version-label">—</span></li>
-          <li>Lihat Changelog</li>
-          <li>Kontak Developer: <a href="mailto:agen.salva@gmail.com">agen.salva@gmail.com</a> / <a href="https://instagram.com/ihsanovid" target="_blank" rel="noopener noreferrer">ig: ihsanovid</a></li>
-        </ul>
+        <div class="settings-section">
+          <h3>Informasi</h3>
+          <ul class="settings-items">
+            <li>Versi App: <span id="settings-version-label">—</span></li>
+            <li>Lihat Changelog</li>
+            <li>Kontak Developer: <a href="mailto:agen.salva@gmail.com">agen.salva@gmail.com</a> / <a
+                href="https://instagram.com/ihsanovid" target="_blank" rel="noopener noreferrer">ig: ihsanovid</a></li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="settings-meta">Versioning system aktif. Pantau perubahan terbaru melalui halaman Version info.</div>
-  </section>
+      <div class="settings-meta">Versioning system aktif. Pantau perubahan terbaru melalui halaman Version info.</div>
+    </section>
 
-  <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
+    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
   </main>
 
   <footer class="site-footer">
     <small>Atur preferensi Abelion Notes sesuai kebutuhanmu.</small>
-    <a href="index.html">Beranda</a>
+    <a href="../index.html">Beranda</a>
   </footer>
 
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
-      <a class="nav-button" href="index.html" aria-label="Beranda">
+      <a class="nav-button" href="../index.html" aria-label="Beranda">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Beranda</span>
       </a>
@@ -187,9 +194,10 @@
     </div>
   </nav>
 
-  <script src="utils.js"></script>
-  <script src="storage.js"></script>
-  <script src="lock-screen.js"></script>
-  <script src="settings.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/lock-screen.js"></script>
+  <script src="../js/settings.js"></script>
 </body>
+
 </html>
