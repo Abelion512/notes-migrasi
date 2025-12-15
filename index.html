@@ -11,19 +11,6 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header-inner">
-      <div class="brand">Abelion Notes</div>
-      <nav class="site-nav" aria-label="Navigasi utama">
-        <a href="#" class="active" id="nav-home">Beranda</a>
-        <a href="#" id="nav-about">Tentang</a>
-        <a href="profile.html" id="nav-profile">
-          <img src="default-avatar.svg" alt="Foto profil mini" id="profile-mini-avatar" class="nav-avatar" />
-          <span id="profile-mini-name">Profil</span>
-        </a>
-      </nav>
-    </div>
-  </header>
   <div class="top-time" id="top-time"></div>
   <div id="intro-anim">
     <div class="progress-circle">
@@ -35,6 +22,7 @@
       <h1 class="title-abelion animated">Abelion Notes</h1>
       <p class="subtitle">Catat. Pahami. Eksekusi.</p>
       <blockquote class="motto">“Gagal sekali bukan berarti gagal selamanya.”</blockquote>
+      <button class="ghost-btn" type="button" id="nav-about">Tentang Abelion</button>
       <button class="btn-blue" id="add-note-btn">+ Tulis Catatan Baru</button>
     </header>
     <section class="mood-graph-section">
@@ -63,6 +51,26 @@
       </div>
     </div>
   </div>
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <div class="bottom-nav-shell">
+      <a class="nav-button active" href="index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Beranda</span>
+      </a>
+      <a class="nav-button" href="profile.html">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profil</span>
+      </a>
+      <a class="nav-button" href="settings.html">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Pengaturan</span>
+      </a>
+      <a class="nav-button" href="version-info.html">
+        <span class="nav-icon">ℹ️</span>
+        <span class="nav-label">Versi</span>
+      </a>
+    </div>
+  </nav>
   <footer class="site-footer">
     <small>© 2025 Abelion Notes</small>
     <a href="settings.html">Pengaturan</a>

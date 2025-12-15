@@ -284,19 +284,32 @@ function renderNotes() {
 
 // --- About Modal (nav About) ---
 const aboutModal = document.getElementById("about-modal");
-document.getElementById("nav-about").onclick = function(e) {
-  e.preventDefault();
-  aboutModal.classList.add("show");
-};
-document.getElementById("about-close").onclick = function() {
-  aboutModal.classList.remove("show");
-};
-document.getElementById("nav-home").onclick = function(e) {
-  e.preventDefault();
-  aboutModal.classList.remove("show");
-};
+const aboutTrigger = document.getElementById("nav-about");
+const aboutClose = document.getElementById("about-close");
+const navHome = document.getElementById("nav-home");
+
+if (aboutTrigger && aboutModal) {
+  aboutTrigger.onclick = function(e) {
+    e.preventDefault();
+    aboutModal.classList.add("show");
+  };
+}
+
+if (aboutClose && aboutModal) {
+  aboutClose.onclick = function() {
+    aboutModal.classList.remove("show");
+  };
+}
+
+if (navHome && aboutModal) {
+  navHome.onclick = function(e) {
+    e.preventDefault();
+    aboutModal.classList.remove("show");
+  };
+}
+
 window.onclick = function(e) {
-  if(e.target === aboutModal) aboutModal.classList.remove("show");
+  if(aboutModal && e.target === aboutModal) aboutModal.classList.remove("show");
 };
 // Di index.js
 function showMiniProfile() {

@@ -11,16 +11,6 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="page-shell">
-  <header class="site-header">
-    <div class="site-header-inner">
-      <div class="brand">Abelion Notes</div>
-      <nav class="site-nav" aria-label="Navigasi utama">
-        <a href="index.html">Beranda</a>
-        <a href="profile.html" class="active">Profil</a>
-        <a href="settings.html">Pengaturan</a>
-      </nav>
-    </div>
-  </header>
   <main class="panel" id="profile-panel">
     <header class="panel-header">
       <button type="button" class="ghost-btn" id="back-btn">← Kembali</button>
@@ -91,6 +81,27 @@
     <small>Selaraskan profil Anda di semua perangkat.</small>
     <a href="index.html">Kembali ke beranda</a>
   </footer>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <div class="bottom-nav-shell">
+      <a class="nav-button" href="index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Beranda</span>
+      </a>
+      <a class="nav-button active" href="profile.html">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profil</span>
+      </a>
+      <a class="nav-button" href="settings.html">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Pengaturan</span>
+      </a>
+      <a class="nav-button" href="version-info.html">
+        <span class="nav-icon">ℹ️</span>
+        <span class="nav-label">Versi</span>
+      </a>
+    </div>
+  </nav>
 
   <script src="utils.js"></script>
   <script src="gamification.js"></script>
