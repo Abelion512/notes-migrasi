@@ -91,18 +91,39 @@ function setActiveNote(id) {
   });
 }
 
-function showXPToast({ xp, message, streak }) {
+function showXPToast({ xp, message, streak, bonus }) {
   if (!xp) return;
   const toast = document.createElement('div');
   toast.className = 'xp-toast';
-  toast.innerHTML = `
-    <div class="xp-toast-icon">⭐</div>
-    <div class="xp-toast-content">
-      <strong>+${xp} XP</strong>
-      <span>${message}</span>
-      ${streak > 1 ? `<small>🔥 ${streak} hari berturut-turut!</small>` : ''}
-    </div>
-  `;
+
+  const icon = document.createElement('div');
+  icon.className = 'xp-toast-icon';
+  icon.textContent = '⭐';
+
+  const content = document.createElement('div');
+  content.className = 'xp-toast-content';
+
+  const title = document.createElement('strong');
+  title.textContent = `+${xp} XP`;
+
+  const messageEl = document.createElement('span');
+  messageEl.textContent = message || '';
+
+  content.append(title, messageEl);
+
+  const bonusValue = Number(bonus) || 0;
+  if (bonusValue > 0) {
+    const bonusEl = document.createElement('small');
+    const streakLabel = streak > 1 ? ` • ${streak} hari berturut-turut` : '';
+    bonusEl.textContent = `🔥 Bonus streak +${bonusValue} XP${streakLabel}`;
+    content.appendChild(bonusEl);
+  } else if (streak > 1) {
+    const streakEl = document.createElement('small');
+    streakEl.textContent = `🔥 ${streak} hari berturut-turut!`;
+    content.appendChild(streakEl);
+  }
+
+  toast.append(icon, content);
   document.body.appendChild(toast);
 
   requestAnimationFrame(() => {
@@ -118,19 +139,18 @@ function showXPToast({ xp, message, streak }) {
 if (Gamification) {
   const loginResult = Gamification.trackDailyLogin();
   if (loginResult && loginResult.xp > 0) {
-    const bonusMessage = loginResult.bonus > 0
-      ? `🎉 Streak bonus! +${loginResult.bonus} XP`
-      : `+${loginResult.xp} XP dari login harian`;
+    const baseMessage = `Login harian: +${loginResult.xp} XP`;
     showXPToast({
       xp: loginResult.xp,
-      message: bonusMessage,
-      streak: loginResult.streak || 0
+      message: baseMessage,
+      streak: loginResult.streak || 0,
+      bonus: loginResult.bonus || 0
     });
   }
 }
 
-function persistNotes() {
-  Storage.setNotes(notes);
+async function persistNotes() {
+  await Storage.setNotes(notes);
 }
 
 // --- Mood Graph harian (centered) ---
@@ -138,8 +158,8 @@ async function loadMoods() {
   return Storage.getValue(STORAGE_KEYS.MOODS, {});
 }
 
-function saveMoods(data) {
-  Storage.setValue(STORAGE_KEYS.MOODS, data);
+async function saveMoods(data) {
+  await Storage.setValue(STORAGE_KEYS.MOODS, data);
 }
 
 function getPastSevenDays() {
@@ -186,7 +206,8 @@ function renderSearchBar() {
     const notesGrid = document.getElementById('notes-grid');
     notesGrid.parentNode.insertBefore(searchDiv, notesGrid);
     const handleSearch = debounce(function(){
-      searchQuery = this.value.trim().toLowerCase();
+      const normalized = sanitizeText(this.value || '').trim().toLowerCase();
+      searchQuery = normalized;
       renderNotes();
     }, 250);
     document.getElementById('search-input').addEventListener('input', handleSearch);
@@ -332,7 +353,7 @@ function renderNotes() {
     card.addEventListener('focus', () => setActiveNote(card.getAttribute('data-id')));
     // Pin/Delete
     card.querySelectorAll('.action-btn').forEach(btn => {
-      btn.onclick = function(e) {
+      btn.onclick = async function(e) {
         e.preventDefault();
         e.stopPropagation();
         const id = card.getAttribute('data-id');
@@ -341,7 +362,7 @@ function renderNotes() {
         const note = notes[idx];
         if(this.dataset.action==="pin") {
           note.pinned = !note.pinned;
-          persistNotes();
+          await persistNotes();
           this.querySelector('.pin-inner').animate([
             {transform:'scale(1.2)'},{transform:'scale(1)'}
           ],{duration:200});
@@ -351,7 +372,7 @@ function renderNotes() {
             const createdAt = note.createdAt || note.date;
             notes.splice(idx,1);
             if (NoteEditor) NoteEditor.clearDraft(noteDraftKey(id));
-            persistNotes();
+            await persistNotes();
             if (Gamification) {
               Gamification.recordNoteDeleted({
                 id,
@@ -367,12 +388,12 @@ function renderNotes() {
   });
 }
 
-function togglePinForActiveNote() {
+async function togglePinForActiveNote() {
   if (!activeNoteId) return;
   const note = notes.find(n => n.id === activeNoteId);
   if (!note) return;
   note.pinned = !note.pinned;
-  persistNotes();
+  await persistNotes();
   renderNotes();
 }
 
@@ -473,7 +494,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
       title: existingNote?.title || '',
       content: markdownFromNote(existingNote)
     },
-    onSave: (payload) => {
+    onSave: async (payload) => {
       const now = new Date();
       const isoDate = now.toISOString();
       if (mode === 'edit' && existingNote) {
@@ -483,7 +504,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         existingNote.contentMarkdown = payload.contentMarkdown;
         existingNote.updatedAt = isoDate;
         existingNote.date = existingNote.date || isoDate.slice(0,10);
-        persistNotes();
+        await persistNotes();
         if (Gamification && existingNote.id) {
           Gamification.recordNoteUpdated({
             id: existingNote.id,
@@ -507,7 +528,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         pinned: false
       };
       notes.unshift(newNote);
-      persistNotes();
+      await persistNotes();
       if (Gamification) {
         Gamification.recordNoteCreated({ id, createdAt: isoDate });
       }
@@ -555,7 +576,7 @@ async function saveTodayMood(emoji) {
   const data = await loadMoods();
   const today = new Date().toISOString().split('T')[0];
   data[today] = emoji;
-  saveMoods(data);
+  await saveMoods(data);
   renderMoodGraph();
 }
 

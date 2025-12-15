@@ -1,6 +1,6 @@
 (function(){
   const utils = window.AbelionUtils || {};
-  const { STORAGE_KEYS = {} } = utils;
+  const { STORAGE_KEYS = {}, sanitizeText, sanitizeRichContent } = utils;
   const gamification = window.AbelionGamification || null;
 
   const dom = {};
@@ -250,21 +250,56 @@
       : (Number.isFinite(definitionReward) ? definitionReward : 0);
     const description = definition?.description || 'Badge pencapaian';
     const criteria = definition?.criteria || '';
-    const criteriaMarkup = criteria ? `<p class="badge-detail-criteria">${criteria}</p>` : '';
 
-    modal.innerHTML = `
-      <div class="badge-detail-content" role="dialog" aria-modal="true">
-        <button type="button" class="modal-close" aria-label="Tutup">×</button>
-        <div class="badge-detail-icon">${badge.icon || '🎖️'}</div>
-        <h2>${badge.name || 'Badge'}</h2>
-        <p>${description}</p>
-        ${criteriaMarkup}
-        <div class="badge-detail-meta">
-          <div><strong>+${xpReward} XP</strong></div>
-          <div>Diraih: ${earnedLabel}</div>
-        </div>
-      </div>
-    `;
+    const content = document.createElement('div');
+    content.className = 'badge-detail-content';
+    content.setAttribute('role', 'dialog');
+    content.setAttribute('aria-modal', 'true');
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'modal-close';
+    closeButton.setAttribute('aria-label', 'Tutup');
+    closeButton.textContent = '×';
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'badge-detail-icon';
+    iconEl.textContent = badge.icon || '🎖️';
+
+    const title = document.createElement('h2');
+    title.textContent = badge.name ? sanitizeText?.(badge.name) || badge.name : 'Badge';
+
+    const desc = document.createElement('p');
+    desc.textContent = sanitizeText?.(description) || description;
+
+    content.append(closeButton, iconEl, title, desc);
+
+    if (criteria) {
+      const criteriaEl = document.createElement('p');
+      criteriaEl.className = 'badge-detail-criteria';
+      if (typeof criteria === 'string' && criteria.includes('<') && typeof sanitizeRichContent === 'function') {
+        criteriaEl.innerHTML = sanitizeRichContent(criteria);
+      } else {
+        criteriaEl.textContent = sanitizeText?.(criteria) || criteria;
+      }
+      content.appendChild(criteriaEl);
+    }
+
+    const meta = document.createElement('div');
+    meta.className = 'badge-detail-meta';
+
+    const reward = document.createElement('div');
+    const rewardStrong = document.createElement('strong');
+    rewardStrong.textContent = `+${xpReward} XP`;
+    reward.appendChild(rewardStrong);
+
+    const earned = document.createElement('div');
+    earned.textContent = `Diraih: ${earnedLabel}`;
+
+    meta.append(reward, earned);
+    content.appendChild(meta);
+
+    modal.appendChild(content);
 
     const closeModal = () => {
       modal.classList.remove('show');
@@ -277,10 +312,7 @@
       }
     });
 
-    const closeButton = modal.querySelector('.modal-close');
-    if (closeButton) {
-      closeButton.addEventListener('click', closeModal);
-    }
+    closeButton.addEventListener('click', closeModal);
 
     document.body.appendChild(modal);
     requestAnimationFrame(() => modal.classList.add('show'));
