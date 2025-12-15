@@ -82,6 +82,29 @@
     </section>
 
     <section class="panel-section">
+      <h2>Enkripsi &amp; Kunci</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Lapisan Enkripsi</h3>
+          <p id="encryption-status" class="settings-items">Memeriksa status...</p>
+          <form id="passphrase-form" class="settings-form">
+            <label for="passphrase-input">Passphrase baru</label>
+            <input id="passphrase-input" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter" required />
+            <label for="passphrase-confirm">Konfirmasi passphrase</label>
+            <input id="passphrase-confirm" type="password" autocomplete="new-password" placeholder="Ulangi passphrase" required />
+            <p class="settings-hint" id="passphrase-hint">Kata kunci tidak disimpan di server mana pun.</p>
+            <button type="submit" class="btn-blue">Aktifkan / Perbarui Enkripsi</button>
+          </form>
+        </div>
+        <div class="settings-section">
+          <h3>Kontrol Akses</h3>
+          <p class="settings-items">Kunci layar akan muncul saat memuat bila enkripsi aktif.</p>
+          <button type="button" class="ghost-btn" id="secure-logout-btn">🔒 Kunci &amp; Keluar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-section">
       <h2>Storage Health</h2>
       <div class="section-card storage-health">
         <div class="storage-health-grid">
@@ -166,6 +189,7 @@
 
   <script src="utils.js"></script>
   <script src="storage.js"></script>
+  <script src="lock-screen.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>

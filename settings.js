@@ -63,6 +63,55 @@
     alert('Vacuum selesai. Draft/cache/logs dibersihkan.');
   });
 
+  async function renderEncryptionState() {
+    await Storage.ready;
+    const statusEl = document.getElementById('encryption-status');
+    if (!statusEl) return;
+    const meta = await Storage.getMeta();
+    const enabled = !!meta.encryption?.enabled;
+    statusEl.textContent = enabled
+      ? 'Enkripsi lokal aktif. Passphrase wajib untuk membuka data.'
+      : 'Enkripsi lokal belum diaktifkan. Data masih tersimpan sebagai plaintext di perangkat.';
+  }
+
+  const passphraseForm = document.getElementById('passphrase-form');
+  if (passphraseForm) {
+    passphraseForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const hint = document.getElementById('passphrase-hint');
+      const pass = (document.getElementById('passphrase-input')?.value || '').trim();
+      const confirm = (document.getElementById('passphrase-confirm')?.value || '').trim();
+      if (pass.length < 8) {
+        hint.textContent = 'Passphrase minimal 8 karakter.';
+        return;
+      }
+      if (pass !== confirm) {
+        hint.textContent = 'Konfirmasi tidak sama.';
+        return;
+      }
+      hint.textContent = 'Mengenkripsi data...';
+      try {
+        await Storage.enableEncryption(pass);
+        hint.textContent = 'Enkripsi aktif. Simpan passphrase Anda secara aman.';
+        await renderEncryptionState();
+      } catch (error) {
+        console.error(error);
+        hint.textContent = 'Gagal mengaktifkan enkripsi. Coba lagi.';
+      } finally {
+        passphraseForm.reset();
+      }
+    });
+  }
+
+  const secureLogout = document.getElementById('secure-logout-btn');
+  if (secureLogout) {
+    secureLogout.addEventListener('click', () => {
+      Storage.lock();
+      alert('Data dikunci. Muat ulang untuk membuka kembali.');
+      location.reload();
+    });
+  }
+
   const meta = getVersionMeta();
   const label = document.getElementById('settings-version-label');
   if (meta?.version && label) {
@@ -70,4 +119,5 @@
   }
 
   renderStorageHealth();
+  renderEncryptionState();
 })();
