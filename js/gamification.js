@@ -570,10 +570,10 @@
     return 0;
   }
 
-  function persistState(state, previousProgress) {
+  async function persistState(state, previousProgress) {
     state.updatedAt = new Date().toISOString();
     ensureState.cache = state;
-    const success = safeSetItem(STORAGE_KEY, state);
+    const success = await safeSetItem(STORAGE_KEY, state);
     if (success) {
       syncProfileOverlay(state);
       const currentProgress = resolveProgress(state.totalXp);
@@ -629,7 +629,7 @@
     safeSetItem(STORAGE_KEYS.PROFILE, profile);
   }
 
-  function trackDailyLogin(referenceDate) {
+  async function trackDailyLogin(referenceDate) {
     const state = ensureState();
     const previousProgress = resolveProgress(state.totalXp);
     const now = referenceDate ? new Date(referenceDate) : new Date();
@@ -648,7 +648,10 @@
     }
     bonus += applySeasonalBonus(state, iso);
     bonus += checkVeteran(state, iso);
-    persistState(state, previousProgress);
+    const persisted = await persistState(state, previousProgress);
+    if (!persisted) {
+      throw new Error('Failed to persist daily login state');
+    }
     return { xp: gained + bonus, streak: streakCount, bonus };
   }
 
