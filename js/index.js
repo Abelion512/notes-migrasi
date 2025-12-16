@@ -50,6 +50,14 @@ function noteDraftKey(id = 'new') {
   return `note-${id}`;
 }
 
+function generateNoteId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  const randomPart = Math.random().toString(16).slice(2, 10);
+  return `${Date.now()}-${randomPart}`;
+}
+
 function markdownFromNote(note) {
   if (!note) return '';
   if (note.contentMarkdown) return note.contentMarkdown;
@@ -542,7 +550,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         return;
       }
 
-      const id = String(Date.now());
+      const id = generateNoteId();
       const newNote = {
         id,
         icon: payload.icon,
