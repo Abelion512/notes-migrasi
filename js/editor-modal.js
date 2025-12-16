@@ -19,7 +19,9 @@
   const writeDrafts = (drafts) => safeSetItem(DRAFT_KEY, drafts || {});
 
   function inlineMarkdown(input) {
-    let text = sanitizeText(input || '');
+    const escapeContainer = document.createElement('div');
+    escapeContainer.textContent = input == null ? '' : String(input);
+    let text = escapeContainer.innerHTML.replace(/\u00A0/g, ' ');
     text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
