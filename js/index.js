@@ -29,17 +29,37 @@ updateTime();
 let notes = [];
 let notesLoaded = false;
 
+let loadNotesPromise = null;
+
 async function loadNotes() {
-  try {
-    const storedNotes = await Storage.getNotes({ sortByUpdatedAt: true });
-    notes = storedNotes;
-    notesLoaded = true;
-    return notes;
-  } catch (error) {
-    if (error?.code === 'STORAGE_LOCKED') return notes;
-    console.error('Gagal memuat catatan', error);
-    return notes;
-  }
+  if (loadNotesPromise) return loadNotesPromise;
+
+  loadNotesPromise = (async () => {
+    try {
+      const storedNotes = await Storage.getNotes({ sortByUpdatedAt: true });
+
+      // Build search index
+      notes = storedNotes.map(note => ({
+        ...note,
+        _searchText: [
+          note.title || '',
+          note.contentMarkdown || (note.content || '').replace(/<[^>]+>/g, ''),
+          note.label || ''
+        ].join(' ').toLowerCase()
+      }));
+
+      notesLoaded = true;
+      return notes;
+    } catch (error) {
+      if (error?.code === 'STORAGE_LOCKED') return notes;
+      console.error('Gagal memuat catatan', error);
+      return notes;
+    } finally {
+      loadNotesPromise = null;
+    }
+  })();
+
+  return loadNotesPromise;
 }
 async function ensureNotesLoaded() {
   if (!notesLoaded) await loadNotes();
@@ -298,11 +318,12 @@ function renderNotes() {
   }
   const normalizedFilter = (filterByTag || '').toLowerCase();
   let filtered = notes.filter(n => {
-    const titleMatch = (n.title || '').toLowerCase().includes(searchQuery);
-    const rawContent = n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '');
-    const contentText = rawContent.toLowerCase();
-    const searchMatch = !searchQuery || titleMatch || contentText.includes(searchQuery);
+    if (!searchQuery) return true;
+
+    // Use pre-computed search text
+    const searchMatch = (n._searchText || '').includes(searchQuery);
     if (!searchMatch) return false;
+
     if (!normalizedFilter) return true;
     const labelText = sanitizeText(n.label || '').toLowerCase();
     return labelText === normalizedFilter;
@@ -352,7 +373,12 @@ function renderNotes() {
   // Listeners removed in favor of delegation
 }
 
+let delegationSetup = false;
+
 function setupNotesDelegation() {
+  if (delegationSetup) return;
+  delegationSetup = true;
+
   const grid = document.getElementById("notes-grid");
   if (!grid) return;
 
@@ -613,11 +639,22 @@ function openMoodSelector() {
 }
 
 async function saveTodayMood(emoji) {
-  const data = await loadMoods();
-  const today = new Date().toISOString().split('T')[0];
-  data[today] = emoji;
-  await saveMoods(data);
-  renderMoodGraph();
+  try {
+    const data = await loadMoods();
+    const today = new Date().toISOString().split('T')[0];
+    data[today] = emoji;
+
+    const success = await saveMoods(data);
+    if (!success) throw new Error('Failed to save mood');
+
+    await renderMoodGraph();
+
+    // Optional: Show success feedback if you implement toasts
+    // showToast('Mood tersimpan!', 'success');
+  } catch (error) {
+    console.error('Save mood error:', error);
+    alert('Gagal menyimpan mood. Coba lagi.');
+  }
 }
 
 const updateMoodBtn = document.getElementById('update-mood-btn');

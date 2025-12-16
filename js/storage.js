@@ -111,28 +111,61 @@
     return new Promise((resolve, reject) => {
       const tx = database.transaction(store, mode);
       const objectStore = tx.objectStore(store);
+      let resolved = false;
       let handlerResult;
 
-      tx.oncomplete = () => resolve(handlerResult);
-      tx.onerror = () => reject(tx.error);
-      tx.onabort = () => reject(new Error('Transaction aborted'));
+      tx.oncomplete = () => {
+        if (!resolved) {
+          resolved = true;
+          resolve(handlerResult);
+        }
+      };
+
+      tx.onerror = () => {
+        if (!resolved) {
+          resolved = true;
+          reject(tx.error);
+        }
+      };
+
+      tx.onabort = () => {
+        if (!resolved) {
+          resolved = true;
+          reject(new Error('Transaction aborted'));
+        }
+      };
 
       try {
         const result = handler(objectStore);
         if (result instanceof Promise) {
-          result.then(res => { handlerResult = res; }).catch(err => {
-            // Check if transaction is still active before aborting
-            if (tx.error === null && tx.readyState !== 'finished') {
-              try { tx.abort(); } catch (e) { /* ignore */ }
-            }
-            reject(err);
-          });
+          result
+            .then((res) => {
+              handlerResult = res;
+              // If we are 'readwrite' and the promise resolved, the transaction might commit automatically
+              // but we don't resolve the outer promise until tx.oncomplete fires.
+            })
+            .catch((err) => {
+              if (!resolved) {
+                // Try to abort if possible
+                if (tx.readyState === 'active') {
+                  try { tx.abort(); } catch (e) { /* ignore */ }
+                }
+                resolved = true;
+                reject(err);
+              }
+            });
         } else {
           handlerResult = result;
+          // For synchronous handlers, we just wait for oncomplete
         }
       } catch (error) {
-        try { tx.abort(); } catch (e) { /* ignore */ }
-        reject(error);
+        if (!resolved) {
+          if (tx.readyState === 'active') {
+            try { tx.abort(); } catch (e) { /* ignore */ }
+          }
+          resolved = true;
+          reject(error);
+        }
       }
     });
   }
@@ -264,17 +297,34 @@
   }
 
   function buildNoteIndexes(notes = []) {
-    const byUpdated = [...notes]
-      .filter(note => note && note.updatedAt)
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    const seenIds = new Set();
+
+    // Filter valid notes with deduplication
+    const validNotes = notes.filter(note => {
+      if (!note || !note.id || seenIds.has(note.id)) return false;
+      seenIds.add(note.id);
+      return true;
+    });
+
+    const byUpdated = [...validNotes]
+      .sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.createdAt || a.date || 0);
+        const dateB = new Date(b.updatedAt || b.createdAt || b.date || 0);
+        return dateB - dateA;
+      })
       .map(note => note.id);
 
-    const pinned = notes.filter(note => note?.pinned).map(note => note.id);
-    const tags = notes.reduce((acc, note) => {
-      if (note?.label) {
-        const tag = String(note.label).toLowerCase();
-        if (!acc[tag]) acc[tag] = [];
-        acc[tag].push(note.id);
+    const pinned = validNotes.filter(note => note.pinned === true).map(note => note.id);
+
+    const tags = validNotes.reduce((acc, note) => {
+      if (note.label) {
+        const tag = String(note.label).toLowerCase().trim();
+        if (tag) {
+          if (!acc[tag]) acc[tag] = [];
+          if (!acc[tag].includes(note.id)) {
+            acc[tag].push(note.id);
+          }
+        }
       }
       return acc;
     }, {});

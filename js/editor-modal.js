@@ -19,12 +19,20 @@
   const writeDrafts = (drafts) => safeSetItem(DRAFT_KEY, drafts || {});
 
   function inlineMarkdown(input) {
-    const escapeContainer = document.createElement('div');
-    escapeContainer.textContent = input == null ? '' : String(input);
-    let text = escapeContainer.innerHTML.replace(/\u00A0/g, ' ');
+    const escapeHTML = (str) => {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    };
+
+    const escaped = escapeHTML(String(input || ''));
+    let text = escaped.replace(/\u00A0/g, ' ');
+
+    // Regex captures are already escaped
     text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
     return text;
   }
 

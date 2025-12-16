@@ -1,4 +1,4 @@
-(function(global){
+(function (global) {
   const utils = global.AbelionUtils;
   if (!utils) return;
 
@@ -447,24 +447,44 @@
   function grantBadge(state, badgeId, tierIndex) {
     const def = BADGE_DEFINITIONS[badgeId];
     if (!def) return 0;
-    const key = badgeKey(def, tierIndex);
-    const already = state.badges.some(entry => badgeKey(BADGE_DEFINITIONS[entry.id], entry.tier ? entry.tier - 1 : undefined) === key);
+
+    const targetKey = badgeKey(def, tierIndex);
+
+    // Check existing badges
+    const already = state.badges.some(entry => {
+      // If we stored the key, use it
+      if (entry.key && entry.key === targetKey) return true;
+
+      // Fallback to recalculating key
+      const entryTierIndex = entry.tier ? entry.tier - 1 : undefined;
+      const entryKey = badgeKey(BADGE_DEFINITIONS[entry.id], entryTierIndex);
+      return entryKey === targetKey;
+    });
+
     if (already) return 0;
+
     const now = new Date().toISOString();
     let xpReward = def.xp || 0;
+
     if (def.tiers && typeof tierIndex === 'number') {
       const tier = def.tiers[tierIndex];
       xpReward = tier?.xp || xpReward;
     }
-    state.badges.push({
+
+    // Create badge entry
+    const badgeEntry = {
       id: badgeId,
       tier: def.tiers && typeof tierIndex === 'number' ? tierIndex + 1 : null,
       name: buildBadgeName(def, tierIndex),
       icon: def.icon,
       earnedAt: now,
-      xpReward
-    });
-    state.badges = state.badges.slice(-48);
+      xpReward,
+      key: targetKey  // Store key for future validation
+    };
+
+    state.badges.push(badgeEntry);
+    state.badges = state.badges.slice(-48); // Keep last 48 badges
+
     return addXp(state, xpReward);
   }
 
@@ -570,23 +590,40 @@
     return 0;
   }
 
-  async function persistState(state, previousProgress) {
+  async function persistState(state, previousProgress, retries = 3) {
     state.updatedAt = new Date().toISOString();
-    ensureState.cache = state;
-    const success = await safeSetItem(STORAGE_KEY, state);
-    if (success) {
-      syncProfileOverlay(state);
-      const currentProgress = resolveProgress(state.totalXp);
-      if (previousProgress && currentProgress.level > previousProgress.level) {
-        showLevelUpCelebration(currentProgress.level);
+
+    // Deep clone before attempting persist
+    const stateClone = clone(state);
+
+    for (let attempt = 0; attempt < retries; attempt++) {
+      const success = await safeSetItem(STORAGE_KEY, stateClone);
+
+      if (success) {
+        // Only update cache after successful persist
+        ensureState.cache = stateClone;
+        syncProfileOverlay(stateClone);
+
+        const currentProgress = resolveProgress(stateClone.totalXp);
+        if (previousProgress && currentProgress.level > previousProgress.level) {
+          showLevelUpCelebration(currentProgress.level);
+        }
+
+        if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+          window.dispatchEvent(new CustomEvent('abelion-xp-update', {
+            detail: { totalXp: currentProgress.totalXp, level: currentProgress.level }
+          }));
+        }
+
+        return true;
       }
-      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
-        window.dispatchEvent(new CustomEvent('abelion-xp-update', {
-          detail: { totalXp: currentProgress.totalXp, level: currentProgress.level }
-        }));
-      }
+
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 100 * (attempt + 1)));
     }
-    return success;
+
+    console.error('Failed to persist gamification state after retries');
+    return false;
   }
 
   function syncProfileOverlay(state) {
