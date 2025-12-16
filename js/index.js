@@ -150,16 +150,22 @@ function showXPToast({ xp, message, streak, bonus }) {
 }
 
 if (Gamification) {
-  const loginResult = Gamification.trackDailyLogin();
-  if (loginResult && loginResult.xp > 0) {
-    const baseMessage = `Login harian: +${loginResult.xp} XP`;
-    showXPToast({
-      xp: loginResult.xp,
-      message: baseMessage,
-      streak: loginResult.streak || 0,
-      bonus: loginResult.bonus || 0
-    });
-  }
+  (async () => {
+    try {
+      const loginResult = await Gamification.trackDailyLogin();
+      if (loginResult && loginResult.xp > 0) {
+        const baseMessage = `Login harian: +${loginResult.xp} XP`;
+        showXPToast({
+          xp: loginResult.xp,
+          message: baseMessage,
+          streak: loginResult.streak || 0,
+          bonus: loginResult.bonus || 0
+        });
+      }
+    } catch (error) {
+      console.error('Failed to track daily login:', error);
+    }
+  })();
 }
 
 async function persistNotes() {
