@@ -12,6 +12,19 @@ const Gamification = window.AbelionGamification || null;
 const Storage = window.AbelionStorage;
 
 const NoteEditor = window.NoteEditorModal;
+const ModalManager = AbelionUtils.ModalManager;
+
+// Global Error Handling
+window.onerror = function (message, source, lineno, colno, error) {
+  console.error('Global Error:', { message, source, lineno, colno, error });
+  // Ignore resize observation errors usage
+  if (message && message.includes('ResizeObserver')) return;
+  alert('Maaf, terjadi kesalahan: ' + message);
+};
+window.addEventListener('unhandledrejection', event => {
+  console.error('Unhandled Promise Rejection:', event.reason);
+  // Don't alert on unhandled rejections to avoid spam, just log
+});
 
 // --- Live time pojok kanan atas ---
 function updateTime() {
@@ -495,6 +508,19 @@ if (aboutTrigger && aboutModal) {
   aboutTrigger.onclick = function (e) {
     e.preventDefault();
     aboutModal.classList.add("show");
+
+    // Integrate with ModalManager
+    if (ModalManager) {
+      // Create a dummy ID for about modal
+      const closeFn = ModalManager.open('about-modal', aboutModal);
+
+      // Override default close behavior to sync with manager
+      const originalRemove = aboutModal.classList.remove;
+      aboutModal.classList.remove = function (...args) {
+        if (args.includes('show')) closeFn();
+        originalRemove.apply(this, args);
+      };
+    }
   };
 }
 
@@ -625,15 +651,29 @@ function openMoodSelector() {
     </div>
   `;
   document.body.appendChild(modal);
+
+  let closeFn = () => { };
+  if (ModalManager) {
+    closeFn = ModalManager.open(modalId, modal);
+  } else {
+    document.body.classList.add('modal-open');
+  }
+
+  const safeClose = () => {
+    if (ModalManager) closeFn();
+    else document.body.classList.remove('modal-open');
+    modal.remove();
+  };
+
   modal.addEventListener('click', (event) => {
     if (event.target.id === 'mood-modal-close' || event.target === modal) {
-      modal.remove();
+      safeClose();
     }
   });
   modal.querySelectorAll('.mood-option').forEach(btn => {
     btn.addEventListener('click', async () => {
       await saveTodayMood(btn.dataset.emoji);
-      modal.remove();
+      safeClose();
     });
   });
 }

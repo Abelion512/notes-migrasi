@@ -6,6 +6,10 @@
     safeGetItem,
     safeSetItem,
     debounce
+    safeGetItem,
+    safeSetItem,
+    debounce,
+    ModalManager
   } = global.AbelionUtils || {};
 
   if (!STORAGE_KEYS || !sanitizeText || !sanitizeRichContent) {
@@ -299,6 +303,24 @@
       if (event.target === overlay) close();
     });
 
+    // Integrate ModalManager
+    let closeModalToken = () => { };
+    if (ModalManager) {
+      closeModalToken = ModalManager.open('editor-modal', overlay);
+      // Remove manual body class additions as ModalManager handles it
+      // document.body.classList.add('modal-open'); 
+    } else {
+      document.body.classList.add('modal-open');
+    }
+
+    // Override close function to use manager
+    const originalClose = close;
+    close = () => {
+      if (ModalManager) closeModalToken();
+      else document.body.classList.remove('modal-open');
+      overlay.remove();
+    };
+
     overlay.querySelector('.editor-close').addEventListener('click', close);
     form.querySelector('[data-action="cancel"]').addEventListener('click', close);
 
@@ -329,25 +351,30 @@
       }
     });
 
-    document.body.classList.add('modal-open');
-    document.body.appendChild(overlay);
-    titleInput.focus();
+  }
+});
 
-    return {
-      close,
-      updatePreview: setPreview
-    };
+if (!ModalManager) {
+  document.body.classList.add('modal-open');
+}
+document.body.appendChild(overlay);
+titleInput.focus();
+
+return {
+  close,
+  updatePreview: setPreview
+};
   }
 
-  global.NoteEditorModal = {
-    open: openModalEditor,
-    toHtml: markdownToHtml,
-    toMarkdown: htmlToMarkdown,
-    readDraft: (key) => readDrafts()[key] || null,
-    clearDraft: (key) => {
-      const drafts = readDrafts();
-      delete drafts[key];
-      writeDrafts(drafts);
-    }
-  };
-})(window);
+global.NoteEditorModal = {
+  open: openModalEditor,
+  toHtml: markdownToHtml,
+  toMarkdown: htmlToMarkdown,
+  readDraft: (key) => readDrafts()[key] || null,
+  clearDraft: (key) => {
+    const drafts = readDrafts();
+    delete drafts[key];
+    writeDrafts(drafts);
+  }
+};
+}) (window);

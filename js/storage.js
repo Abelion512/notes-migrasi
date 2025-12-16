@@ -26,8 +26,35 @@
 
   const CLEAN_KEYS = ['abelion-drafts', 'abelion-cache', 'abelion-logs'];
 
-  const cache = {};
-  const encryptedCache = {};
+  const cache = new Map();
+  const encryptedCache = new Map();
+  const MAX_CACHE_SIZE = 50;
+
+  function cacheGet(key) {
+    return cache.get(key);
+  }
+
+  function cacheSet(key, value) {
+    if (cache.size >= MAX_CACHE_SIZE && !cache.has(key)) {
+      const firstKey = cache.keys().next().value;
+      if (firstKey !== META_KEY) { // Protect meta
+        cache.delete(firstKey);
+      }
+    }
+    cache.set(key, value);
+  }
+
+  function encryptedCacheGet(key) {
+    return encryptedCache.get(key);
+  }
+
+  function encryptedCacheSet(key, value) {
+    if (encryptedCache.size >= MAX_CACHE_SIZE && !encryptedCache.has(key)) {
+      const firstKey = encryptedCache.keys().next().value;
+      encryptedCache.delete(firstKey);
+    }
+    encryptedCache.set(key, value);
+  }
   let activeEngine = ENGINE.LOCAL;
   let db = null;
   let encryptionKey = null;
@@ -224,13 +251,15 @@
       if (!key) return;
       const value = localRead(key, null);
       if (key === META_KEY) {
-        cache[key] = value;
+        cacheSet(key, value);
       } else {
-        encryptedCache[key] = value;
+        encryptedCacheSet(key, value);
       }
     });
-    cache[META_KEY] = { ...DEFAULT_META, ...(cache[META_KEY] || {}) };
-    if (cache[META_KEY].encryption?.enabled) {
+    const currentMeta = cacheGet(META_KEY) || {};
+    cacheSet(META_KEY, { ...DEFAULT_META, ...currentMeta });
+
+    if (cacheGet(META_KEY)?.encryption?.enabled) {
       isLocked = true;
     }
   }
@@ -333,19 +362,23 @@
   }
 
   async function refreshIndexes() {
-    const notes = cache[STORAGE_KEYS.NOTES] || [];
-    cache[META_KEY] = {
+    const notes = cacheGet(STORAGE_KEYS.NOTES) || [];
+    const currentMeta = cacheGet(META_KEY) || {};
+
+    const newMeta = {
       ...DEFAULT_META,
-      ...(cache[META_KEY] || {}),
+      ...currentMeta,
       engine: activeEngine,
       schemaVersion: DEFAULT_META.schemaVersion,
       indexes: buildNoteIndexes(notes)
     };
+
+    cacheSet(META_KEY, newMeta);
     await persistMeta();
   }
 
   async function persistMeta() {
-    const meta = cache[META_KEY];
+    const meta = cacheGet(META_KEY);
     if (activeEngine === ENGINE.INDEXED_DB) {
       await idbSet('meta', META_KEY, meta);
     } else {
@@ -354,48 +387,55 @@
   }
 
   async function migrateLocalToIndexedDB() {
-    const localNotes = cache[STORAGE_KEYS.NOTES] || [];
+    const localNotes = cacheGet(STORAGE_KEYS.NOTES) || [];
     const remoteMeta = await idbGet('meta', META_KEY, null);
+
+    let currentMeta = cacheGet(META_KEY) || DEFAULT_META;
+
     if (remoteMeta) {
-      cache[META_KEY] = { ...DEFAULT_META, ...remoteMeta };
+      currentMeta = { ...DEFAULT_META, ...remoteMeta };
+      cacheSet(META_KEY, currentMeta);
     }
+
     const existing = await idbGetAll('notes');
     if (!existing.length && localNotes.length) {
       await Promise.all(localNotes.map(note => idbPut('notes', note)));
-    } else if (existing.length && !cache[META_KEY].encryption?.enabled) {
-      cache[STORAGE_KEYS.NOTES] = existing;
+    } else if (existing.length && !currentMeta.encryption?.enabled) {
+      cacheSet(STORAGE_KEYS.NOTES, existing);
       localWrite(STORAGE_KEYS.NOTES, existing);
     }
 
     const kvKeys = [STORAGE_KEYS.PROFILE, STORAGE_KEYS.MOODS, STORAGE_KEYS.GAMIFICATION, STORAGE_KEYS.VERSION_META];
     for (const key of kvKeys) {
       if (!key) continue;
-      const current = cache[key];
+      const current = cacheGet(key);
       if (current) {
         await idbSet('kv', key, current);
       } else {
         const remote = await idbGet('kv', key, null);
         if (remote) {
-          cache[key] = remote;
+          cacheSet(key, remote);
           localWrite(key, remote);
         }
       }
     }
 
-    cache[META_KEY].engine = ENGINE.INDEXED_DB;
-    cache[META_KEY].lastMigrationAt = new Date().toISOString();
+    currentMeta = cacheGet(META_KEY);
+    currentMeta.engine = ENGINE.INDEXED_DB;
+    currentMeta.lastMigrationAt = new Date().toISOString();
+    cacheSet(META_KEY, currentMeta);
     await persistMeta();
   }
 
   async function getValue(key, fallback = null) {
     await ready;
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(key);
     if (encrypted && isLocked) {
       if (key === STORAGE_KEYS.NOTES) return []; // Graceful fail for notes
       throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
     }
-    if (cache[key] !== undefined) return cache[key];
+    if (cache.has(key)) return cacheGet(key);
 
     try {
       let value;
@@ -403,11 +443,12 @@
         const stored = await idbGet('kv', key, fallback);
         value = encrypted ? await decryptValue(stored) : stored;
       } else {
-        const stored = encryptedCache[key] ?? localRead(key, fallback);
+        const stored = encryptedCacheGet(key) ?? localRead(key, fallback);
         value = encrypted ? await decryptValue(stored) : stored;
       }
-      cache[key] = value ?? fallback;
-      return cache[key];
+      const result = value ?? fallback;
+      cacheSet(key, result);
+      return result;
     } catch (error) {
       console.error(`Failed to retrieve/decrypt value for key ${key}:`, error);
       return fallback;
@@ -415,14 +456,14 @@
   }
 
   function getCachedValue(key, fallback = null) {
-    if (cache[key] !== undefined) return cache[key];
+    if (cache.has(key)) return cacheGet(key);
     return fallback;
   }
 
   async function setValue(key, value) {
     await ready;
-    cache[key] = value;
-    const meta = cache[META_KEY] || DEFAULT_META;
+    cacheSet(key, value);
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(key);
     const payload = encrypted ? await encryptValue(value) : value;
     if (key === STORAGE_KEYS.NOTES) {
@@ -440,10 +481,10 @@
 
   async function getNotes(filters = {}) {
     await ready;
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     if (meta.encryption?.enabled && isLocked) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
-    const notes = cache[STORAGE_KEYS.NOTES] || [];
-    const indexes = cache[META_KEY]?.indexes || DEFAULT_META.indexes;
+    const notes = cacheGet(STORAGE_KEYS.NOTES) || [];
+    const indexes = meta.indexes || DEFAULT_META.indexes;
 
     let candidates = notes;
     if (filters.pinnedOnly) {
@@ -471,10 +512,14 @@
   }
 
   async function setNotes(notes = []) {
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.NOTES);
-    cache[STORAGE_KEYS.NOTES] = Array.isArray(notes) ? notes : [];
-    const payload = encrypted ? await encryptValue(cache[STORAGE_KEYS.NOTES]) : cache[STORAGE_KEYS.NOTES];
+
+    // Safety check: ensure notes is array
+    const newNotes = Array.isArray(notes) ? notes : [];
+    cacheSet(STORAGE_KEYS.NOTES, newNotes);
+
+    const payload = encrypted ? await encryptValue(newNotes) : newNotes;
     if (activeEngine === ENGINE.INDEXED_DB) {
       if (encrypted) {
         await idbTransaction('kv', 'readwrite', (store) => {
@@ -483,7 +528,7 @@
       } else {
         await idbTransaction('notes', 'readwrite', (store) => {
           store.clear();
-          (cache[STORAGE_KEYS.NOTES] || []).forEach(note => store.put(note));
+          (newNotes || []).forEach(note => store.put(note));
         });
       }
     } else {
@@ -494,34 +539,34 @@
   }
 
   async function decryptAllSensitive() {
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     const keys = Array.from(SENSITIVE_KEYS);
     for (const key of keys) {
       if (!key) continue;
-      if (cache[key] !== undefined) continue;
+      if (cache.has(key)) continue;
       if (activeEngine === ENGINE.INDEXED_DB) {
         if (key === STORAGE_KEYS.NOTES) {
           const encryptedNotes = await idbGet('kv', key, null);
           if (encryptedNotes) {
-            cache[key] = await decryptValue(encryptedNotes);
+            cacheSet(key, await decryptValue(encryptedNotes));
           }
         } else {
           const stored = await idbGet('kv', key, null);
-          if (stored) cache[key] = await decryptValue(stored);
+          if (stored) cacheSet(key, await decryptValue(stored));
         }
       } else {
-        const stored = encryptedCache[key] ?? localRead(key, null);
-        if (stored) cache[key] = await decryptValue(stored);
+        const stored = encryptedCacheGet(key) ?? localRead(key, null);
+        if (stored) cacheSet(key, await decryptValue(stored));
       }
     }
-    if (cache[STORAGE_KEYS.NOTES] === undefined) cache[STORAGE_KEYS.NOTES] = [];
+    if (!cache.has(STORAGE_KEYS.NOTES)) cacheSet(STORAGE_KEYS.NOTES, []);
     await refreshIndexes();
     emit('unlock');
     return true;
   }
 
   async function unlock(passphrase) {
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     if (!meta.encryption?.enabled) return true;
     const salt = meta.encryption.salt ? toBuffer(meta.encryption.salt) : null;
     if (!salt) throw new Error('Missing encryption salt');
@@ -538,17 +583,17 @@
   }
 
   function lock() {
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     if (!meta.encryption?.enabled) return;
     encryptionKey = null;
     isLocked = true;
-    Array.from(SENSITIVE_KEYS).forEach((key) => { delete cache[key]; });
+    Array.from(SENSITIVE_KEYS).forEach((key) => { cache.delete(key); });
     emit('lock');
   }
 
   async function enableEncryption(passphrase) {
     await ready;
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     const salt = crypto.getRandomValues(new Uint8Array(16));
     encryptionKey = await deriveKey(passphrase, salt);
     meta.encryption = {
@@ -556,22 +601,22 @@
       salt: toBase64(salt),
       encryptedKeys: Array.from(SENSITIVE_KEYS)
     };
-    cache[META_KEY] = meta;
+    cacheSet(META_KEY, meta);
     isLocked = false;
 
     for (const key of SENSITIVE_KEYS) {
       if (!key) continue;
       let value;
       if (key === STORAGE_KEYS.NOTES) {
-        if (cache[key] !== undefined) {
-          value = cache[key];
+        if (cache.has(key)) {
+          value = cacheGet(key);
         } else if (activeEngine === ENGINE.INDEXED_DB) {
           value = await idbGetAll('notes');
         } else {
           value = localRead(STORAGE_KEYS.NOTES, []);
         }
       } else {
-        value = cache[key] !== undefined ? cache[key] : await getValue(key, {});
+        value = cache.has(key) ? cacheGet(key) : await getValue(key, {});
       }
       await setValue(key, value || (key === STORAGE_KEYS.NOTES ? [] : {}));
     }
@@ -580,13 +625,13 @@
   }
 
   function isEncryptionEnabled() {
-    const meta = cache[META_KEY] || DEFAULT_META;
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
     return !!meta.encryption?.enabled;
   }
 
   async function getMeta() {
     await ready;
-    return { ...(cache[META_KEY] || DEFAULT_META) };
+    return { ...(cacheGet(META_KEY) || DEFAULT_META) };
   }
 
   async function getUsage() {
@@ -612,7 +657,9 @@
         await idbTransaction('kv', 'readwrite', (store) => { store.delete(key); });
       }
     }
-    cache[META_KEY].lastVacuumAt = new Date().toISOString();
+    const meta = cacheGet(META_KEY);
+    meta.lastVacuumAt = new Date().toISOString();
+    cacheSet(META_KEY, meta);
     await persistMeta();
     return true;
   }

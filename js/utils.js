@@ -1,4 +1,4 @@
-(function(global){
+(function (global) {
   const STORAGE_KEYS = {
     NOTES: 'abelion-notes-v2',
     PROFILE: 'abelion-profile',
@@ -96,7 +96,7 @@
         .then(() => true)
         .catch((error) => {
           console.error(`Error writing storage key "${key}":`, error);
-          alert('Gagal menyimpan data. Periksa kuota penyimpanan.');
+          // Alert removed to prevent spamming. Callers should handle failure.
           return false;
         });
     }
@@ -106,16 +106,14 @@
       return Promise.resolve(true);
     } catch (error) {
       console.error(`Error writing localStorage key "${key}":`, error);
-      if (error && error.name === 'QuotaExceededError') {
-        alert('Penyimpanan penuh. Hapus beberapa catatan atau data lama untuk melanjutkan.');
-      }
+      // Suppress quota alert spam, just log it.
       return Promise.resolve(false);
     }
   }
 
   function formatTanggal(tglStr) {
     if (!tglStr) return '';
-    const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     const d = new Date(tglStr);
     if (Number.isNaN(d.getTime())) return '';
     return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
@@ -141,9 +139,59 @@
     let timeoutId;
     return function debounced(...args) {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn.apply(this, args), delay);
+      timeoutId = setTimeout(() => {
+        // Arrow function preserves lexical 'this' where debounced is called
+        // If 'debounce' is called as a method, 'this' should be correct.
+        // However, safest way is to capture 'this' from the outer scope if needed, 
+        // OR rely on call/apply. 
+        fn.apply(this, args);
+      }, delay);
     };
   }
+
+  const ModalManager = {
+    stack: [],
+    baseZIndex: 1000,
+
+    open(id, element) {
+      this.close(id); // Close if already open
+
+      const index = this.stack.length;
+      const zIndex = this.baseZIndex + (index * 10);
+
+      element.style.zIndex = zIndex;
+      element.dataset.modalIndex = index;
+      this.stack.push({ id, element, zIndex });
+
+      if (this.stack.length === 1) {
+        document.body.classList.add('modal-open');
+      }
+
+      return () => this.close(id);
+    },
+
+    close(id) {
+      const idx = this.stack.findIndex(m => m.id === id);
+      if (idx === -1) return;
+
+      const modal = this.stack[idx];
+      // Note: we don't remove element here, caller handles display:none
+      // We just manage the stack state
+      this.stack.splice(idx, 1);
+
+      if (this.stack.length === 0) {
+        document.body.classList.remove('modal-open');
+      }
+    },
+
+    closeAll() {
+      // Return IDs so callers can handle cleanup
+      const ids = this.stack.map(m => m.id);
+      this.stack = [];
+      document.body.classList.remove('modal-open');
+      return ids;
+    }
+  };
 
   function isSameDay(a, b) {
     if (!a || !b) return false;
@@ -265,6 +313,7 @@
     clamp,
     getVersionMeta,
     getVersionChangelog,
-    bumpVersion
+    bumpVersion,
+    ModalManager
   };
 })(window);

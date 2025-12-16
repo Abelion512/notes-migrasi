@@ -499,17 +499,49 @@
 
   function updateStreak(streak, isoDate) {
     if (!isoDate) return streak.count;
-    const current = new Date(isoDate).toISOString().split('T')[0];
-    const last = streak.lastDate ? new Date(streak.lastDate).toISOString().split('T')[0] : null;
-    if (last && current === last) {
+
+    // Get dates in user's local timezone
+    const currentDate = new Date(isoDate);
+    const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+
+    if (!streak.lastDate) {
+      streak.count = 1;
+      streak.lastDate = currentDay.toISOString();
       return streak.count;
     }
-    if (last && differenceInDays(isoDate, streak.lastDate) === 1) {
+
+    const lastDate = new Date(streak.lastDate);
+    const lastDay = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
+
+    // Calculate difference in days (ignoring time)
+    const diffTime = currentDay.getTime() - lastDay.getTime();
+    const daysDiff = Math.floor(diffTime / (24 * 60 * 60 * 1000));
+
+    if (daysDiff === 0) {
+      // Same day, no change
+      return streak.count;
+    } else if (daysDiff === 1) {
+      // Next day, increment
       streak.count += 1;
+      streak.lastDate = currentDay.toISOString();
+    } else if (daysDiff <= 2) {
+      // 1 day grace period (missed 1 day, so difference is 2 days)
+      // Example: Mon -> Wed (missed Tue)
+      // Logic: Preserve streak count, but update date? 
+      // Review says: "Don't increment, but don't reset"
+      // Actually strictly speaking a streak is consecutive. 
+      // But let's follow the forgiving logic:
+      // If gaps is 1 day (diff=2), we allow it but don't increment?
+      // Or we reset? 
+      // The review 'Fix' code says: } else if (daysDiff <= 2) { streak.lastDate = currentDay.toISOString(); }
+      // This effectively "pauses" the streak count increment but keeps it alive.
+      streak.lastDate = currentDay.toISOString();
     } else {
+      // Streak broken
       streak.count = 1;
+      streak.lastDate = currentDay.toISOString();
     }
-    streak.lastDate = isoDate;
+
     return streak.count;
   }
 
