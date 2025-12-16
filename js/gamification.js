@@ -8,7 +8,8 @@
     safeSetItem,
     isSameDay,
     differenceInDays,
-    clamp
+    clamp,
+    DateUtils // Import DateUtils
   } = utils;
 
   const STORAGE_KEY = STORAGE_KEYS.GAMIFICATION;
@@ -272,20 +273,10 @@
 
   function xpRequiredForLevel(level) {
     if (level <= 1) return 0;
-
-    if (level <= 10) {
-      return 50 * level;
-    }
-
-    if (level <= 50) {
-      return 50 + (level - 10) * 75;
-    }
-
-    if (level <= 100) {
-      return 100 + (level - 50) * 100;
-    }
-
-    return 150 + Math.floor((level - 100) / 10) * 50;
+    // "Setiap naik level, xp yang dibutuhkan meningkat +100"
+    // Lvl 1->2: 100
+    // Lvl 2->3: 200
+    return (level - 1) * 100 + 100;
   }
 
   function resolveProgress(totalXp) {
@@ -500,22 +491,13 @@
   function updateStreak(streak, isoDate) {
     if (!isoDate) return streak.count;
 
-    // Get dates in user's local timezone
-    const currentDate = new Date(isoDate);
-    const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-
     if (!streak.lastDate) {
       streak.count = 1;
-      streak.lastDate = currentDay.toISOString();
+      streak.lastDate = DateUtils.nowISO();
       return streak.count;
     }
 
-    const lastDate = new Date(streak.lastDate);
-    const lastDay = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
-
-    // Calculate difference in days (ignoring time)
-    const diffTime = currentDay.getTime() - lastDay.getTime();
-    const daysDiff = Math.floor(diffTime / (24 * 60 * 60 * 1000));
+    const daysDiff = DateUtils.diffDays(isoDate, streak.lastDate);
 
     if (daysDiff === 0) {
       // Same day, no change
@@ -523,41 +505,46 @@
     } else if (daysDiff === 1) {
       // Next day, increment
       streak.count += 1;
-      streak.lastDate = currentDay.toISOString();
+      streak.lastDate = DateUtils.nowISO();
     } else if (daysDiff <= 2) {
-      // 1 day grace period (missed 1 day, so difference is 2 days)
-      // Example: Mon -> Wed (missed Tue)
-      // Logic: Preserve streak count, but update date? 
-      // Review says: "Don't increment, but don't reset"
-      // Actually strictly speaking a streak is consecutive. 
-      // But let's follow the forgiving logic:
-      // If gaps is 1 day (diff=2), we allow it but don't increment?
-      // Or we reset? 
-      // The review 'Fix' code says: } else if (daysDiff <= 2) { streak.lastDate = currentDay.toISOString(); }
-      // This effectively "pauses" the streak count increment but keeps it alive.
-      streak.lastDate = currentDay.toISOString();
+      // Grace period: Update date, maintain count
+      streak.lastDate = DateUtils.nowISO();
     } else {
       // Streak broken
       streak.count = 1;
-      streak.lastDate = currentDay.toISOString();
+      streak.lastDate = DateUtils.nowISO();
     }
 
     return streak.count;
   }
 
+  const SPECIAL_DATES_MAP = {
+    '0-1': true, '1-3': true, '1-14': true, '4-11': true, '5-4': true,
+    '7-19': true, '8-29': true, '10-11': true, '11-25': true
+  };
+
   function applySeasonalBonus(state, isoDate) {
     if (!isoDate) return 0;
     const date = new Date(isoDate);
-    if (Number.isNaN(date.getTime())) return 0;
-    const month = date.getMonth();
-    const day = date.getDate();
-    if (month !== 11 || (day !== 15 && day !== 25)) return 0;
-    const key = `${date.getFullYear()}-${day}`;
-    if (state.specialDaysAwarded[key]) return 0;
-    const level = resolveProgress(state.totalXp).level;
-    const bonusTier = Math.floor((Math.max(1, level) - 1) / 10);
-    const bonus = 100 + (bonusTier * 100);
-    state.specialDaysAwarded[key] = { awardedAt: isoDate, level, bonus };
+    const m = date.getMonth();
+    const d = date.getDate();
+    const key = `${m}-${d}`;
+
+    // Check range 10-15 Dec (Month 11)
+    let isSpecial = SPECIAL_DATES_MAP[key];
+    if (m === 11 && d >= 10 && d <= 15) isSpecial = true;
+
+    if (!isSpecial) return 0;
+
+    const storageKey = `special-${date.getFullYear()}-${key}`;
+    if (state.specialDaysAwarded[storageKey]) return 0;
+
+    const { level } = resolveProgress(state.totalXp);
+    // Tiered bonus: 1-10=100, 11-20=200...
+    const bonusTier = Math.ceil(level / 10);
+    const bonus = bonusTier * 100;
+
+    state.specialDaysAwarded[storageKey] = { awardedAt: isoDate, bonus };
     return addXp(state, bonus);
   }
 
@@ -704,19 +691,27 @@
     const now = referenceDate ? new Date(referenceDate) : new Date();
     const iso = now.toISOString();
     const lastLogin = state.streaks.login.lastDate;
+
     if (lastLogin && isSameDay(iso, lastLogin)) {
       return { xp: 0, streak: state.streaks.login.count, bonus: 0 };
     }
+
     const streakCount = updateStreak(state.streaks.login, iso);
     state.stats.logins += 1;
-    let gained = addXp(state, 5);
+
+    // Base login: +15
+    let gained = addXp(state, 15);
     let bonus = 0;
+
+    // Streak Bonus: Every 5 days -> +150
     if (streakCount > 0 && streakCount % 5 === 0) {
-      bonus += addXp(state, 100);
+      bonus += addXp(state, 150);
       state.stats.streakBonuses += 1;
     }
+
     bonus += applySeasonalBonus(state, iso);
     bonus += checkVeteran(state, iso);
+
     const persisted = await persistState(state, previousProgress);
     if (!persisted) {
       throw new Error('Failed to persist daily login state');
@@ -737,9 +732,13 @@
     };
     pruneNotes(state);
     state.stats.notesCreated += 1;
-    let xp = addXp(state, 20);
+
+    // Note Create: +50 XP
+    let xp = addXp(state, 50);
+
     xp += checkArtisan(state);
     xp += checkPatcher(state, nowIso);
+    // ...Bio checks kept...
     const hour = new Date(nowIso).getHours();
     if (hour >= 0 && hour < 4) {
       xp += grantBadge(state, 'nightOwl');
@@ -750,7 +749,7 @@
     return { xp };
   }
 
-  function recordNoteUpdated({ id, updatedAt, createdAt }) {
+  function recordNoteUpdated({ id, updatedAt, createdAt, charDiff }) {
     if (!id) return { xp: 0 };
     const state = ensureState();
     const previousProgress = resolveProgress(state.totalXp);
@@ -759,18 +758,20 @@
       updatedAwarded: false,
       deleteAwarded: false
     };
-    if (note.updatedAwarded) {
-      note.lastUpdatedAt = updatedAt || new Date().toISOString();
-      state.notes[id] = note;
-      persistState(state, previousProgress);
-      return { xp: 0 };
-    }
-    note.updatedAwarded = true;
+
+    // Always track update
     note.lastUpdatedAt = updatedAt || new Date().toISOString();
-    note.createdAt = note.createdAt || createdAt || note.lastUpdatedAt;
     state.notes[id] = note;
     state.stats.notesUpdated += 1;
-    let xp = addXp(state, 10);
+
+    // +1 XP per character modified (absolute diff)
+    let xp = 0;
+    if (charDiff && charDiff > 0) {
+      // Allow max 100 xp per edit to sane-cap it
+      const gained = Math.min(Math.floor(charDiff), 100);
+      xp = addXp(state, gained);
+    }
+
     xp += checkReviewer(state, note.lastUpdatedAt, createdAt || note.createdAt);
     persistState(state, previousProgress);
     return { xp };

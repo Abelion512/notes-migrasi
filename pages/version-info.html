@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Version Info – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,13 +17,13 @@
   <main class="panel" id="version-panel">
     <header class="panel-header">
       <button type="button" class="ghost-btn" id="version-back">← Kembali</button>
-      <button type="button" class="ghost-btn" id="version-home">🏠 Ke Beranda</button>
+      <button type="button" class="ghost-btn" id="version-home" title="Ke Beranda">🏠</button>
     </header>
 
     <h1 class="panel-title">Versioning System</h1>
     <p class="panel-subtitle">Lacak rilis Abelion Notes dan highlight peningkatan terbaru.</p>
 
-    <section class="panel-section">
+    <section class="panel-section" hidden>
       <h2>Ringkasan Versi</h2>
       <div class="section-card" id="version-summary">
         <p><strong>Versi:</strong> <span id="version-name">—</span></p>
@@ -50,10 +50,7 @@
     <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
   </main>
 
-  <footer class="site-footer">
-    <small>Pantau riwayat rilis dari satu tempat.</small>
-    <a href="index.html">Beranda</a>
-  </footer>
+
 
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
@@ -76,6 +73,10 @@
     </div>
   </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/env-loader.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/supabase-db.js"></script>
   <script src="../js/utils.js"></script>
   <script src="../js/storage.js"></script>
   <script src="../js/lock-screen.js"></script>

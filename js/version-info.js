@@ -1,10 +1,10 @@
-(function(){
+(function () {
   const {
     getVersionMeta,
     getVersionChangelog
   } = AbelionUtils;
 
-  function populateSummary(meta){
+  function populateSummary(meta) {
     const versionEl = document.getElementById('version-name');
     const codenameEl = document.getElementById('version-codename');
     const dateEl = document.getElementById('version-date');
@@ -38,7 +38,7 @@
     }
   }
 
-  function renderChangelog(changelog){
+  function renderChangelog(changelog) {
     const container = document.getElementById('changelog-list');
     if (!container) return;
 
@@ -70,16 +70,16 @@
     container.appendChild(fragment);
   }
 
-  function wireNav(){
+  function wireNav() {
     const back = document.getElementById('version-back');
     if (back) back.addEventListener('click', () => {
       sessionStorage.setItem('skipIntro', '1');
-      window.location.href = 'index.html';
+      window.location.href = '../index.html';
     });
     const home = document.getElementById('version-home');
     if (home) home.addEventListener('click', () => {
       sessionStorage.setItem('skipIntro', '1');
-      window.location.href = 'index.html';
+      window.location.href = '../index.html';
     });
   }
 

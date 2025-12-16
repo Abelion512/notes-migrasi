@@ -1,11 +1,11 @@
-(async function(){
+(async function () {
   const { getVersionMeta } = AbelionUtils;
   const Storage = window.AbelionStorage;
 
   function formatBytes(bytes) {
     const value = Number(bytes || 0);
     if (!Number.isFinite(value) || value <= 0) return '0 B';
-    const units = ['B','KB','MB','GB'];
+    const units = ['B', 'KB', 'MB', 'GB'];
     const idx = Math.min(Math.floor(Math.log(value) / Math.log(1024)), units.length - 1);
     const num = value / Math.pow(1024, idx);
     return `${num.toFixed(num >= 10 ? 1 : 2)} ${units[idx]}`;
@@ -45,7 +45,7 @@
   const back = document.getElementById('settings-back');
   if (back) back.addEventListener('click', () => {
     sessionStorage.setItem('skipIntro', '1');
-    window.location.href = 'index.html';
+    window.location.href = '../index.html';
   });
 
   const versionBtn = document.getElementById('settings-version');

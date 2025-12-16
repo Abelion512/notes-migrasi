@@ -1,4 +1,4 @@
-(function(){
+(function () {
   const utils = window.AbelionUtils || {};
   const { STORAGE_KEYS = {}, sanitizeText, sanitizeRichContent } = utils;
   const gamification = window.AbelionGamification || null;
@@ -197,12 +197,23 @@
     }
 
     if (dom.xpGuide) {
-      if (summary.xpGuideUrl) {
-        dom.xpGuide.href = summary.xpGuideUrl;
-        dom.xpGuide.style.display = 'inline-block';
-      } else {
-        dom.xpGuide.style.display = 'none';
-      }
+      dom.xpGuide.onclick = (e) => {
+        e.preventDefault();
+        const modal = document.getElementById('xp-rules-modal');
+        if (modal) {
+          modal.classList.add('show');
+
+          // Close handler
+          const closeBtn = document.getElementById('xp-rules-close');
+          const closeFn = () => modal.classList.remove('show');
+
+          if (closeBtn) closeBtn.onclick = closeFn;
+          modal.onclick = (ev) => {
+            if (ev.target === modal) closeFn();
+          };
+        }
+      };
+      dom.xpGuide.style.display = 'inline-block';
     }
 
     renderBadges(summary);
@@ -322,7 +333,7 @@
     const backBtn = document.getElementById('back-btn');
     if (backBtn) backBtn.addEventListener('click', () => {
       sessionStorage.setItem('skipIntro', '1');
-      window.location.href = 'index.html';
+      window.location.href = '../index.html';
     });
 
     const versionBtn = document.getElementById('version-btn');

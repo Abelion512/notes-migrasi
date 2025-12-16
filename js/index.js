@@ -28,17 +28,119 @@ window.addEventListener('unhandledrejection', event => {
 
 // --- Live time pojok kanan atas ---
 function updateTime() {
+  // Optimization: Don't update DOM if tab is hidden
+  if (document.hidden) return;
+
   const el = document.getElementById('top-time');
   if (!el) return;
   const now = new Date();
   const pad = n => n.toString().padStart(2, '0');
   el.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 }
-setInterval(updateTime, 1000);
+
+// Check every second, but updateTime internal check will skip render if hidden
+const timeInterval = setInterval(updateTime, 1000);
 updateTime();
+
+// --- Network Status & Quota ---
+window.addEventListener('load', async () => {
+  if (AbelionUtils && AbelionUtils.checkStorageQuota) {
+    const status = await AbelionUtils.checkStorageQuota();
+    if (status === 'critical') {
+      alert('Peringatan: Penyimpanan browser hampir penuh. Harap cadangkan data Anda.');
+    }
+  }
+});
+
+function updateOnlineStatus() {
+  const isOnline = navigator.onLine;
+  const statusEl = document.getElementById('network-status'); // Assume we might add this
+  if (!isOnline) {
+    document.body.classList.add('offline-mode');
+    // Create element if not exists
+    let offlineBadge = document.getElementById('offline-badge');
+    if (!offlineBadge) {
+      offlineBadge = document.createElement('div');
+      offlineBadge.id = 'offline-badge';
+      offlineBadge.className = 'offline-badge';
+      offlineBadge.textContent = 'Offline';
+      document.body.appendChild(offlineBadge);
+    }
+  } else {
+    document.body.classList.remove('offline-mode');
+    const offlineBadge = document.getElementById('offline-badge');
+    if (offlineBadge) offlineBadge.remove();
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
 
 // --- Notes: Storage Abstraction
 // --- Notes: Storage Abstraction
+// --- Version Check & Changelog ---
+async function checkAppVersion() {
+  const currentMeta = AbelionUtils.getVersionMeta();
+  const storedVersion = localStorage.getItem('abelion-last-version');
+
+  // Update UI version badge if exists
+  const versionBadge = document.querySelector('.nav-button[aria-label="Versi"] .nav-label');
+  if (versionBadge) versionBadge.textContent = 'v' + currentMeta.version;
+
+  if (storedVersion !== currentMeta.version) {
+    // Show changelog
+    showChangelog(currentMeta.version);
+    localStorage.setItem('abelion-last-version', currentMeta.version);
+  }
+}
+
+function showChangelog(version) {
+  const modal = document.getElementById('changelog-modal');
+  const verEl = document.getElementById('changelog-version');
+  const listEl = document.getElementById('changelog-list');
+  const logs = AbelionUtils.getVersionChangelog();
+
+  // Get latest log
+  const latest = logs.find(l => l.version.includes(version)) || logs[0];
+
+  if (modal && verEl && listEl && latest) {
+    verEl.textContent = latest.version;
+    listEl.innerHTML = '';
+    const ul = document.createElement('ul');
+    ul.style.display = 'flex';
+    ul.style.flexDirection = 'column';
+    ul.style.gap = '10px';
+
+    latest.highlights.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      li.style.color = 'var(--text-primary)';
+      li.style.lineHeight = '1.5';
+      ul.appendChild(li);
+    });
+    listEl.appendChild(ul);
+
+    // Open modal
+    if (ModalManager) {
+      ModalManager.open('changelog-modal', modal);
+    } else {
+      modal.classList.add('show');
+    }
+  }
+}
+
+// Bind changelog events
+const changelogClose = document.getElementById('changelog-close');
+const changelogAck = document.getElementById('changelog-ack');
+const changelogModal = document.getElementById('changelog-modal');
+
+[changelogClose, changelogAck].forEach(el => {
+  if (el) el.onclick = () => {
+    if (ModalManager) ModalManager.close('changelog-modal');
+    else changelogModal && changelogModal.classList.remove('show');
+  };
+});
+
 let notes = [];
 let notesLoaded = false;
 
@@ -84,11 +186,21 @@ function noteDraftKey(id = 'new') {
 }
 
 function generateNoteId() {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
+  if (typeof crypto !== 'undefined') {
+    if (typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    if (typeof crypto.getRandomValues === 'function') {
+      const array = new Uint8Array(16);
+      crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
   }
-  const randomPart = Math.random().toString(16).slice(2, 10);
-  return `${Date.now()}-${randomPart}`;
+  // Fallback for very old browsers (Math.random + High Res Time)
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substring(2, 10);
+  const perf = (performance && performance.now) ? performance.now().toString(36).replace('.', '') : '';
+  return `uid-${timestamp}-${randomPart}-${perf}`;
 }
 
 function markdownFromNote(note) {
@@ -598,10 +710,15 @@ function openNoteModal(mode = 'create', existingNote = null) {
         existingNote.date = existingNote.date || isoDate.slice(0, 10);
         await persistNotes();
         if (Gamification && existingNote.id) {
+          const oldContentLen = (existingNote.contentMarkdown || existingNote.content || '').length;
+          const newContentLen = (payload.contentMarkdown || payload.contentHtml || '').length;
+          const charDiff = Math.abs(newContentLen - oldContentLen);
+
           Gamification.recordNoteUpdated({
             id: existingNote.id,
             updatedAt: isoDate,
-            createdAt: existingNote.createdAt || existingNote.date
+            createdAt: existingNote.createdAt || existingNote.date,
+            charDiff: charDiff
           });
         }
         renderNotes();
@@ -705,6 +822,7 @@ if (updateMoodBtn) {
 window.addEventListener('DOMContentLoaded', async () => {
   await Storage.ready;
   await loadNotes();
+  await checkAppVersion(); // Check version on load
   await renderMoodGraph();
 
   renderSearchBar(); setupNotesDelegation(); renderNotes();

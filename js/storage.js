@@ -4,7 +4,8 @@
 
   const ENGINE = Object.freeze({
     LOCAL: 'localStorage',
-    INDEXED_DB: 'indexedDB'
+    INDEXED_DB: 'indexedDB',
+    SUPABASE: 'supabase'
   });
 
   const ENCRYPTION = Object.freeze({
@@ -74,8 +75,24 @@
   ].filter(Boolean));
 
   const ready = (async () => {
+    // 1. Wait for Supabase Env to load (optional)
+    // 1. Wait for Supabase Env to load (optional) with Timeout
+    if (global.AbelionSupabase && global.AbelionSupabase.ready) {
+      try {
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase init timeout')), 2000));
+        const client = await Promise.race([global.AbelionSupabase.ready, timeout]);
+
+        if (client) {
+          activeEngine = ENGINE.SUPABASE;
+          console.log('Storage Engine switched to SUPABASE');
+        }
+      } catch (e) {
+        console.warn('Supabase init skipped/failed (using local storage):', e.message);
+      }
+    }
+
     await primeLocalCache();
-    if (canUseIndexedDB()) {
+    if (activeEngine !== ENGINE.SUPABASE && canUseIndexedDB()) {
       activeEngine = ENGINE.INDEXED_DB;
       await ensureDatabase();
       await migrateLocalToIndexedDB();
@@ -439,7 +456,10 @@
 
     try {
       let value;
-      if (activeEngine === ENGINE.INDEXED_DB) {
+      if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
+        value = await global.AbelionSupabaseDB.getValue(key);
+        if (value === null) value = fallback; // Handle missing
+      } else if (activeEngine === ENGINE.INDEXED_DB) {
         const stored = await idbGet('kv', key, fallback);
         value = encrypted ? await decryptValue(stored) : stored;
       } else {
@@ -471,7 +491,9 @@
       return true;
     }
 
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
+      return global.AbelionSupabaseDB.setValue(key, payload);
+    } else if (activeEngine === ENGINE.INDEXED_DB) {
       await idbSet('kv', key, payload);
     } else {
       localWrite(key, payload);
@@ -483,6 +505,22 @@
     await ready;
     const meta = cacheGet(META_KEY) || DEFAULT_META;
     if (meta.encryption?.enabled && isLocked) throw Object.assign(new Error('Storage locked'), { code: 'STORAGE_LOCKED' });
+
+    // If Supabase, fetch fresh?
+    if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
+      try {
+        const remoteNotes = await global.AbelionSupabaseDB.getNotes();
+        // Update cache so UI renders fast next time?
+        if (remoteNotes) {
+          cacheSet(STORAGE_KEYS.NOTES, remoteNotes);
+          return remoteNotes;
+        }
+      } catch (err) {
+        console.error('Supabase getNotes failed', err);
+        // Fallback to cache?
+      }
+    }
+
     const notes = cacheGet(STORAGE_KEYS.NOTES) || [];
     const indexes = meta.indexes || DEFAULT_META.indexes;
 
@@ -520,7 +558,15 @@
     cacheSet(STORAGE_KEYS.NOTES, newNotes);
 
     const payload = encrypted ? await encryptValue(newNotes) : newNotes;
-    if (activeEngine === ENGINE.INDEXED_DB) {
+
+    if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
+      try {
+        await global.AbelionSupabaseDB.setNotes(payload);
+      } catch (err) {
+        console.error('Supabase setNotes failed', err);
+        return false;
+      }
+    } else if (activeEngine === ENGINE.INDEXED_DB) {
       if (encrypted) {
         await idbTransaction('kv', 'readwrite', (store) => {
           store.put(payload, STORAGE_KEYS.NOTES);

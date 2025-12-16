@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Profil – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -90,25 +90,77 @@
 
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
-      <a class="nav-button" href="../index.html" aria-label="Beranda">
+      <a class="nav-button" href="../index.html" aria-label="Beranda" title="Kembali ke Beranda Utama">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Beranda</span>
       </a>
-      <a class="nav-button active" href="profile.html" aria-label="Profil">
+      <a class="nav-button active" href="profile.html" aria-label="Profil" title="Lihat Profil & Statistik XP">
         <span class="nav-icon">👤</span>
         <span class="nav-label">Profil</span>
       </a>
-      <a class="nav-button" href="settings.html" aria-label="Pengaturan">
+      <a class="nav-button" href="settings.html" aria-label="Pengaturan" title="Konfigurasi Aplikasi & Keamanan">
         <span class="nav-icon">⚙️</span>
         <span class="nav-label">Pengaturan</span>
       </a>
-      <a class="nav-button" href="version-info.html" aria-label="Versi">
+      <a class="nav-button" href="version-info.html" aria-label="Versi" title="Informasi Versi & Changelog">
         <span class="nav-icon">ℹ️</span>
         <span class="nav-label">Versi</span>
       </a>
     </div>
   </nav>
 
+  <!-- XP Rules Modal -->
+  <div id="xp-rules-modal" class="xp-modal">
+    <div class="xp-modal-content">
+      <button class="modal-close" id="xp-rules-close">×</button>
+      <div class="xp-modal-header">
+        <h3>Cara Dapat XP</h3>
+        <p>Kumpulkan XP untuk naik level dan buka badge!</p>
+      </div>
+      <div class="xp-rules-list">
+        <div class="xp-rule-item">
+          <span class="xp-rule-icon">📅</span>
+          <div class="xp-rule-text">
+            <strong>Login Harian</strong>
+            <span>+15 XP setiap hari</span>
+          </div>
+        </div>
+        <div class="xp-rule-item">
+          <span class="xp-rule-icon">📝</span>
+          <div class="xp-rule-text">
+            <strong>Buat Catatan</strong>
+            <span>+50 XP per catatan baru</span>
+          </div>
+        </div>
+        <div class="xp-rule-item">
+          <span class="xp-rule-icon">✍️</span>
+          <div class="xp-rule-text">
+            <strong>Edit Catatan</strong>
+            <span>+1 XP per karakter yang diubah</span>
+          </div>
+        </div>
+        <div class="xp-rule-item">
+          <span class="xp-rule-icon">🔥</span>
+          <div class="xp-rule-text">
+            <strong>Streak 5 Hari</strong>
+            <span>Bonus +150 XP & Double XP Weekend</span>
+          </div>
+        </div>
+        <div class="xp-rule-item">
+          <span class="xp-rule-icon">🎁</span>
+          <div class="xp-rule-text">
+            <strong>Hari Spesial</strong>
+            <span>Bonus XP besar di tanggal cantik!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/env-loader.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/supabase-db.js"></script>
   <script src="../js/utils.js"></script>
   <script src="../js/storage.js"></script>
   <script src="../js/lock-screen.js"></script>

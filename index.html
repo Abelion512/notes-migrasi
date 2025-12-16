@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
   <title>Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
   <div class="top-time" id="top-time"></div>
   <div id="intro-anim">
@@ -44,10 +47,24 @@
         <div class="about-text">
           <h3>About</h3>
           <p>
-            Abelion membuat aplikasi catatan ini untuk belajar, mencatat, dan terus berkembang menggapai cita-cita. 
+            Abelion membuat aplikasi catatan ini untuk belajar, mencatat, dan terus berkembang menggapai cita-cita.
           </p>
         </div>
         <img src="assets/OlivX logo.png" alt="Abelion" class="about-img">
+      </div>
+    </div>
+  </div>
+
+  <div id="changelog-modal" class="about-modal">
+    <div class="about-modal-content" style="max-width: 480px;">
+      <button class="about-close" id="changelog-close">&times;</button>
+      <div style="text-align: left;">
+        <h3 style="margin-bottom: 8px; font-weight: 800; font-size: 1.4em;">Apa yang baru?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">Versi <span id="changelog-version"></span></p>
+        <div id="changelog-list" style="margin-bottom: 24px; padding-left: 18px;">
+          <!-- Items will be injected here -->
+        </div>
+        <button class="btn-blue" id="changelog-ack" style="width: 100%; margin: 0;">Keren!</button>
       </div>
     </div>
   </div>
@@ -75,6 +92,10 @@
     <small>© 2025 Abelion Notes</small>
     <a href="pages/settings.html">Pengaturan</a>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/env-loader.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/supabase-db.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/lock-screen.js"></script>
@@ -82,6 +103,5 @@
   <script src="js/editor-modal.js"></script>
   <script src="js/index.js"></script>
 </body>
+
 </html>
-
-

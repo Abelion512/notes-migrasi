@@ -24,6 +24,16 @@
     versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
       {
+        version: '2025.06.1-patch',
+        releasedAt: '2025-12-16',
+        highlights: [
+          'Redesign Profil: Tampilan lebih bersih dengan navigasi intuitif.',
+          'Gamifikasi 2.0: XP, Level, dan Badge kini tersinkronisasi realtime.',
+          'Avatar Interaktif: Ganti foto profil langsung dari halaman profil.',
+          'Smart Stats: Menyederhanakan tampilan statistik XP dan Level.',
+        ]
+      },
+      {
         version: INITIAL_VERSION_STRING,
         releasedAt: APP_VERSION_BASE.build,
         highlights: [
@@ -45,29 +55,63 @@
     return sanitizeHTML(input).replace(/\u00A0/g, ' ');
   }
 
-  function sanitizeRichContent(html) {
+  function sanitizeRichContent(html, maxDepth = 10) {
     if (!html) return '';
     const template = document.createElement('template');
     template.innerHTML = html;
-    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE']);
+    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV']);
 
-    const walk = (node) => {
-      node.childNodes.forEach(child => {
+    const walk = (node, depth) => {
+      if (depth > maxDepth) {
+        // Too deep, flatten it
+        const text = document.createTextNode(node.textContent || '');
+        node.replaceWith(text);
+        return;
+      }
+
+      Array.from(node.childNodes).forEach(child => {
         if (child.nodeType === Node.ELEMENT_NODE) {
           if (!allowed.has(child.tagName)) {
             const text = document.createTextNode(child.textContent || '');
             child.replaceWith(text);
           } else {
             Array.from(child.attributes).forEach(attr => child.removeAttribute(attr.name));
-            walk(child);
+            walk(child, depth + 1);
           }
         }
       });
     };
 
-    walk(template.content || template);
+    walk(template.content || template, 0);
     return template.innerHTML;
   }
+
+  // --- DateUtils: Centralized Date Handling ---
+  const DateUtils = {
+    nowISO: () => new Date().toISOString(),
+
+    toCalendarDay: (input) => {
+      const d = input ? new Date(input) : new Date();
+      // Reset hours to avoid timezone shifting when just needing the date part locally
+      // This creates a date at 00:00:00 local time
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    },
+
+    // Returns string 'YYYY-MM-DD' in local time
+    toLocalISODate: (input) => {
+      const d = input ? new Date(input) : new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    },
+
+    diffDays: (later, earlier) => {
+      // Calculate diff based on calendar days, ignoring time
+      const l = DateUtils.toCalendarDay(later);
+      const e = DateUtils.toCalendarDay(earlier);
+      const diffMs = l.getTime() - e.getTime();
+      return Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    }
+  };
 
   function safeGetItem(key, fallback = null) {
     const storage = window.AbelionStorage;
@@ -147,6 +191,22 @@
         fn.apply(this, args);
       }, delay);
     };
+  }
+
+  function checkStorageQuota() {
+    if (navigator.storage && navigator.storage.estimate) {
+      return navigator.storage.estimate().then(estimate => {
+        if (estimate.quota && estimate.usage) {
+          const percentUsed = (estimate.usage / estimate.quota) * 100;
+          if (percentUsed > 80) {
+            console.warn(`Storage usage is high: ${percentUsed.toFixed(1)}%`);
+            return 'critical';
+          }
+        }
+        return 'ok';
+      });
+    }
+    return Promise.resolve('unknown');
   }
 
   const ModalManager = {
@@ -314,6 +374,8 @@
     getVersionMeta,
     getVersionChangelog,
     bumpVersion,
-    ModalManager
+    ModalManager,
+    DateUtils,
+    checkStorageQuota
   };
 })(window);

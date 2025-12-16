@@ -10,21 +10,20 @@ Abelion Notes is a modern, gamified note-taking web app that runs fully in the b
 - 📌 Persistent layout that remembers state across reloads.
 - ⚡ Optimised localStorage reads/writes via safe helpers and quota handling.
 
-## 🎮 Gamification System
+## 🎮 Gamification System (v2.0)
 
-- 🆙 Progressive XP curve (50 → 75 → 100 → 150+) that scales with level.
-- 🔄 Daily login tracking with streak bonuses, seasonal rewards, and veteran checks.
-- 🏅 Nine unique badges plus multi-tier Artisan rewards granted cumulatively.
-- 🎉 Level-up celebrations, XP toasts, and cross-tab sync via custom events.
-- 🧠 Profile summary overlay that keeps the profile view in sync automatically.
+- 🆙 **Smart XP**: XP scaling based on level (Base + 100/level).
+- 🔄 **Realtime Sync**: Actions in one tab update XP/Level across all tabs instantly.
+- 📅 **Streak & Bonus**: Daily login +15 XP, Streak +150 XP, and Special Date Multipliers.
+- 🏅 **Badge System**: 12+ Badges including tiered Artisan rewards.
+- 🧠 **XP Modal**: Dynamic "Cara Dapat XP" guide injected with user's current rank stats.
 
 ## 👤 Profile Experience
 
-- 👤 Avatar upload with in-browser compression and smooth previews.
-- 🎖️ Badge picker with rich empty states, metadata, and keyboard navigation.
-- 📊 Animated XP bar, tier hints, and next-level guidance on the profile page.
-- 🔄 Real-time updates between edit, profile, and home views using storage listeners.
-- ⏰ Dynamic greetings based on local time.
+- 📸 **Interactive Avatar**: Click camera icon to upload/change photo instantly.
+- 💊 **Minimalist Stats**: Apple-style "pill" design for Level & XP.
+- 🔄 **Seamless Navigation**: Smart back-button logic and hover tooltips on nav icons.
+- ⏰ **Dynamic Greetings**: Greeting changes based on time of day (Pagi/Siang/Sore/Malam).
 
 ## 🧱 Architecture Highlights
 
@@ -32,7 +31,7 @@ Abelion Notes is a modern, gamified note-taking web app that runs fully in the b
 - **Local persistence** with typed `STORAGE_KEYS`, defensive reads, and quota fallbacks.
 - **Input sanitisation** via `sanitizeText` and `sanitizeRichContent` to mitigate XSS.
 - **Event-driven updates** (`abelion-xp-update`) so UI stays fresh without reloads.
-- **Version metadata utilities** prepared for future release tracking.
+- **Changelog System**: Built-in version history and update highlights.
 
 ## 🚀 Getting Started
 
@@ -61,7 +60,7 @@ xdg-open index.html  # Linux
 - Graceful handling of `QuotaExceededError` when localStorage fills up.
 - Safe fallbacks for missing note dates (`createdAt` or derived ISO values).
 - Default avatar fallback everywhere a profile photo is used.
-- Strict Content Security Policy applied on every entry page via `<meta http-equiv="Content-Security-Policy">` restricting assets to `self`, Google Fonts, and data/blob URLs. Inline scripts have been moved to external files to keep `script-src 'self'` locked down. New pages should mirror this policy and add `rel="noopener noreferrer"` to external links.
+- Strict Content Security Policy applied on every entry page via `<meta http-equiv="Content-Security-Policy">` restricting assets to `self`, Google Fonts, and data/blob URLs.
 
 ## 📄 Roadmap Ideas
 
