@@ -183,15 +183,30 @@
           const data = JSON.stringify({ version: '3.0', exportedAt: new Date().toISOString(), notes }, null, 2);
           downloadBlob(new Blob([data], { type: 'application/json' }), `abelion-notes-${dateStr}.json`);
         }
-        else if (format === 'md') {
+        else if (format === 'md' || format === 'txt') {
           if (typeof JSZip === 'undefined') throw new Error('JSZip not loaded');
           const zip = new JSZip();
+          const ext = format === 'md' ? '.md' : '.txt';
           notes.forEach(n => {
-            const filename = (n.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + '.md';
-            zip.file(filename, `---\ntitle: ${n.title}\ndate: ${n.date}\n---\n\n${n.contentMarkdown || n.content}`);
+            const filename = (n.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + ext;
+            const body = format === 'md'
+              ? `---\ntitle: ${n.title}\ndate: ${n.date}\n---\n\n${n.contentMarkdown || n.content}`
+              : `${n.title}\n${n.date}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}`;
+            zip.file(filename, body);
           });
           const blob = await zip.generateAsync({ type: 'blob' });
-          downloadBlob(blob, `abelion-markdown-${dateStr}.zip`);
+          downloadBlob(blob, `abelion-${format === 'md' ? 'markdown' : 'text'}-${dateStr}.zip`);
+        }
+        else if (format === 'md-single' || format === 'txt-single') {
+          const ext = format === 'md-single' ? '.md' : '.txt';
+          let combinedContent = '';
+          notes.forEach(n => {
+             const body = format === 'md-single'
+               ? `\n\n# ${n.title}\n*Tanggal: ${n.date}*\n\n${n.contentMarkdown || n.content}\n\n---\n`
+               : `\n\n${n.title.toUpperCase()}\n${n.date}\n${'-'.repeat(n.title.length)}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}\n\n====================\n`;
+             combinedContent += body;
+          });
+          downloadBlob(new Blob([combinedContent], { type: format === 'md-single' ? 'text/markdown' : 'text/plain' }), `abelion-all-notes-${dateStr}${ext}`);
         }
         else if (format === 'pdf') {
           if (typeof jspdf === 'undefined') throw new Error('jspdf not loaded');
@@ -215,8 +230,61 @@
           XLSX.writeFile(workbook, `abelion-notes-${dateStr}.xlsx`);
         }
         else if (format === 'docx') {
-          alert('Export DOCX sedang disiapkan. Library sedang dimuat.');
-          // Simple docx implementation can be added here
+          if (typeof docx === 'undefined') throw new Error('docx library not loaded');
+          const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+
+          const sections = notes.map(n => ({
+            properties: {},
+            children: [
+              new Paragraph({ text: n.title || 'Untitled', heading: HeadingLevel.HEADING_1 }),
+              new Paragraph({ children: [new TextRun({ text: `Tanggal: ${n.date}`, italics: true })] }),
+              new Paragraph({ text: "" }),
+              new Paragraph({ text: n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '') })
+            ]
+          }));
+
+          const doc = new Document({ sections });
+          const blob = await Packer.toBlob(doc);
+          downloadBlob(blob, `abelion-notes-${dateStr}.docx`);
+        }
+        else if (format === 'png') {
+          if (typeof html2canvas === 'undefined') throw new Error('html2canvas not loaded');
+          alert('Mengekspor catatan terpilih sebagai gambar. Ini mungkin memakan waktu.');
+
+          const container = document.createElement('div');
+          container.style.position = 'absolute';
+          container.style.left = '-9999px';
+          container.style.top = '0';
+          container.style.width = '800px';
+          container.style.background = '#f5f5f7';
+          container.style.padding = '40px';
+          document.body.appendChild(container);
+
+          for (const [idx, n] of notes.entries()) {
+            const page = document.createElement('div');
+            page.style.background = 'white';
+            page.style.borderRadius = '20px';
+            page.style.padding = '40px';
+            page.style.marginBottom = '40px';
+            page.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+            page.innerHTML = `
+              <h1 style="margin: 0 0 10px 0; font-family: sans-serif;">${n.title}</h1>
+              <div style="color: #888; margin-bottom: 20px;">${n.date}</div>
+              <div style="line-height: 1.6; font-family: serif; font-size: 1.2em;">${n.contentMarkdown || n.content}</div>
+            `;
+            container.appendChild(page);
+
+            if (idx < 3 || confirm(`Ekspor catatan ke-${idx+1}? (Maksimal 5 untuk demo gambar)`)) {
+              const canvas = await html2canvas(page);
+              const dataUrl = canvas.toDataURL('image/png');
+              const a = document.createElement('a');
+              a.href = dataUrl;
+              a.download = `abelion-note-${idx+1}-${dateStr}.png`;
+              a.click();
+            }
+            if (idx >= 4) break;
+          }
+          document.body.removeChild(container);
         }
       } catch (e) {
         alert('Ekspor gagal: ' + e.message);
@@ -250,13 +318,15 @@
               const existing = await Storage.getNotes();
               const existingIds = new Set(existing.map(n => n.id));
               const toAdd = importedNotes.filter(n => !existingIds.has(n.id));
-              await Storage.setNotes([...existing, ...toAdd]);
+              // Preserve order if we can
+              const combined = [...existing, ...toAdd].map((n, i) => ({ ...n, sortOrder: i }));
+              await Storage.setNotes(combined);
               alert(`Berhasil mengimpor ${toAdd.length} catatan dari JSON.`);
             }
           } else {
             // Treat as Markdown/Txt
             const newNote = {
-              id: AbelionUtils.generateId('note'),
+              id: (AbelionUtils.generateId || window.generateId)('note'),
               title: file.name.replace(/\.[^/.]+$/, ""),
               contentMarkdown: event.target.result,
               content: event.target.result,
@@ -302,6 +372,30 @@
   if (accentPicker && window.AbelionTheme) {
     accentPicker.querySelectorAll('.accent-dot').forEach(btn => {
       btn.onclick = () => window.AbelionTheme.applyAccent(btn.dataset.color);
+    });
+  }
+
+  // --- PWA Installation ---
+  let deferredPrompt;
+  const installBtn = document.getElementById('install-pwa-btn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) installBtn.style.display = 'block';
+  });
+
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      }
     });
   }
 

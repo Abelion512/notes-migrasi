@@ -223,6 +223,7 @@
 
       element.style.zIndex = zIndex;
       element.dataset.modalIndex = index;
+      element.classList.add('show');
       this.stack.push({ id, element, zIndex });
 
       if (this.stack.length === 1) {
@@ -237,8 +238,7 @@
       if (idx === -1) return;
 
       const modal = this.stack[idx];
-      // Note: we don't remove element here, caller handles display:none
-      // We just manage the stack state
+      modal.element.classList.remove('show');
       this.stack.splice(idx, 1);
 
       if (this.stack.length === 0) {

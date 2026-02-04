@@ -86,9 +86,13 @@
             <select id="export-format" class="input-control" style="width: auto;">
               <option value="json">JSON</option>
               <option value="md">Markdown (ZIP)</option>
+              <option value="txt">Plain Text (ZIP)</option>
+              <option value="md-single">Markdown (Single File)</option>
+              <option value="txt-single">Plain Text (Single File)</option>
               <option value="pdf">PDF</option>
               <option value="xlsx">Excel</option>
-              <option value="docx">Word</option>
+              <option value="docx">Word (.docx)</option>
+              <option value="png">Image (PNG)</option>
             </select>
             <button type="button" class="btn-blue" id="export-btn">Export</button>
             <label class="ghost-btn" style="cursor: pointer;">
@@ -158,6 +162,30 @@
     </section>
 
     <section class="panel-section">
+      <h2>Penyimpanan &amp; Privasi</h2>
+      <div class="section-card">
+        <h3 style="margin-bottom: 12px; font-weight: 800;">Bagaimana data saya disimpan?</h3>
+        <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 16px;">
+          Abelion Notes menggunakan teknologi <strong>IndexedDB</strong>, yaitu basis data di dalam browser Anda yang mampu menampung data dalam jumlah besar (hingga gigabytes). Berbeda dengan LocalStorage yang terbatas (hanya 5MB), IndexedDB memungkinkan Anda menyimpan ribuan catatan tanpa khawatir penuh.
+        </p>
+        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem;">
+          <li style="display: flex; gap: 10px; align-items: flex-start;">
+            <span>🛡️</span>
+            <div><strong>Privasi Lokal:</strong> Data Anda tidak dikirim ke server mana pun kecuali Anda mengaktifkan Supabase secara manual.</div>
+          </li>
+          <li style="display: flex; gap: 10px; align-items: flex-start;">
+            <span>🔑</span>
+            <div><strong>Enkripsi AES-GCM:</strong> Jika enkripsi diaktifkan, data Anda dikunci dengan standar industri sebelum ditulis ke memori perangkat.</div>
+          </li>
+          <li style="display: flex; gap: 10px; align-items: flex-start;">
+            <span>📶</span>
+            <div><strong>Offline First:</strong> Aplikasi tetap berfungsi penuh meski tanpa koneksi internet.</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel-section">
       <h2>Storage Health</h2>
       <div class="section-card storage-health">
         <div class="storage-health-grid">
@@ -198,19 +226,39 @@
     </section>
 
     <section class="panel-section">
-      <h2>Tentang Aplikasi</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Informasi</h3>
-          <ul class="settings-items">
-            <li>Versi App: <span id="settings-version-label">—</span></li>
-            <li>Lihat Changelog</li>
-            <li>Kontak Developer: <a href="mailto:agen.salva@gmail.com">agen.salva@gmail.com</a> / <a
-                href="https://instagram.com/ihsanovid" target="_blank" rel="noopener noreferrer">ig: ihsanovid</a></li>
+      <h2>Pusat Developer (Menuju Native)</h2>
+      <div class="section-card">
+        <h3 style="margin-bottom: 12px; font-weight: 800;">Ingin menjadikan aplikasi ini Native?</h3>
+        <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 16px;">
+          Stack teknologi saat ini (HTML/CSS/JS) sudah sangat optimal untuk gaya iOS. Anda tidak perlu mengubah bahasa pemrograman untuk masuk ke App Store.
+        </p>
+        <div style="background: var(--surface-alt); padding: 12px; border-radius: 12px; font-size: 0.85em; border: 1px solid var(--border-subtle);">
+          <strong>Rekomendasi:</strong> Gunakan <strong>Capacitor</strong> (oleh Ionic) atau <strong>Tauri</strong>.
+          <ul style="margin-top: 8px; padding-left: 18px;">
+            <li>Pertahankan 100% kode saat ini.</li>
+            <li>Akses fitur native (Kamera, Biometrik, Push Notif).</li>
+            <li>Build langsung menjadi file .ipa (iOS) atau .apk (Android).</li>
           </ul>
         </div>
       </div>
-      <div class="settings-meta">Versioning system aktif. Pantau perubahan terbaru melalui halaman Version info.</div>
+    </section>
+
+    <section class="panel-section">
+      <h2>Aplikasi & Mobile</h2>
+      <div class="section-card settings-grid">
+        <div class="settings-section">
+          <h3>Versi Mobile (APK)</h3>
+          <p class="settings-items">Gunakan fitur "Tambah ke Layar Utama" di browser Anda untuk menginstal Abelion sebagai aplikasi (PWA). Ini memberikan pengalaman yang sama dengan APK.</p>
+          <button type="button" class="btn-blue" id="install-pwa-btn" style="display: none; width: 100%; margin-top: 10px;">Instal Aplikasi</button>
+        </div>
+        <div class="settings-section">
+          <h3>Informasi</h3>
+          <ul class="settings-items">
+            <li><span>Versi App</span> <strong id="settings-version-label">—</strong></li>
+            <li><span>Developer</span> <strong>Abelion Lavv</strong></li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
@@ -242,19 +290,27 @@
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
       <a class="nav-button" href="../index.html" aria-label="Beranda">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </span>
         <span class="nav-label">Beranda</span>
       </a>
       <a class="nav-button" href="profile.html" aria-label="Profil">
-        <span class="nav-icon">👤</span>
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </span>
         <span class="nav-label">Profil</span>
       </a>
       <a class="nav-button active" href="settings.html" aria-label="Pengaturan">
-        <span class="nav-icon">⚙️</span>
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </span>
         <span class="nav-label">Pengaturan</span>
       </a>
       <a class="nav-button" href="version-info.html" aria-label="Versi">
-        <span class="nav-icon">ℹ️</span>
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </span>
         <span class="nav-label">Versi</span>
       </a>
     </div>
@@ -265,6 +321,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/docx@8.2.2/build/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="../js/theme.js"></script>
   <script src="../js/env-loader.js"></script>
   <script src="../js/supabase-client.js"></script>

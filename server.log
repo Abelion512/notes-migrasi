@@ -1,0 +1,23 @@
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /assets/OlivX%20logo.png HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/theme.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/env-loader.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] code 404, message File not found
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /.env HTTP/1.1" 404 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/supabase-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] code 404, message File not found
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /.env HTTP/1.1" 404 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/supabase-db.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/utils.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/storage.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/lock-screen.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/gamification.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/editor-modal.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:04] "GET /js/index.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:10] "GET /pages/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:10] code 404, message File not found
+127.0.0.1 - - [04/Feb/2026 10:24:10] "GET /.env HTTP/1.1" 404 -
+127.0.0.1 - - [04/Feb/2026 10:24:10] "GET /js/settings.js HTTP/1.1" 200 -
+127.0.0.1 - - [04/Feb/2026 10:24:10] code 404, message File not found
+127.0.0.1 - - [04/Feb/2026 10:24:10] "GET /pages/.env HTTP/1.1" 404 -

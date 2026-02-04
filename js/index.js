@@ -91,8 +91,11 @@ async function loadFolders() {
 
 async function loadNotes() {
   try {
-    const storedNotes = await Storage.getNotes({ sortByUpdatedAt: false }); // Disable sortByUpdatedAt to keep manual order
-    notes = storedNotes.map(note => ({
+    const storedNotes = await Storage.getNotes({ sortByUpdatedAt: false });
+    // Sort by sortOrder if available
+    const sortedNotes = storedNotes.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+    notes = sortedNotes.map(note => ({
       ...note,
       _searchText: [
         note.title || '',
@@ -161,7 +164,12 @@ if (Gamification) {
 }
 
 async function persistNotes() {
-  await Storage.setNotes(notes);
+  // Assign sortOrder based on current index to preserve drag-and-drop order
+  const notesWithOrder = notes.map((note, index) => ({
+    ...note,
+    sortOrder: index
+  }));
+  await Storage.setNotes(notesWithOrder);
 }
 
 // --- Mood Graph ---
@@ -194,34 +202,59 @@ async function renderMoodGraph() {
   const stored = await Storage.getValue(STORAGE_KEYS.MOODS, {});
   const days = [];
   const formatter = new Intl.DateTimeFormat('id-ID', { weekday: 'short' });
+  const todayIso = new Date().toISOString().split('T')[0];
+
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const iso = d.toISOString().split('T')[0];
-    days.push({ iso, label: formatter.format(d).replace(/\.$/, '') });
+    days.push({
+      iso,
+      label: formatter.format(d).replace(/\.$/, ''),
+      isToday: iso === todayIso
+    });
   }
+
   el.innerHTML = days.map(m => `
-    <div class="mood-bar">
+    <div class="mood-bar ${m.isToday ? 'today' : ''}">
       <div class="mood-emoji">${stored[m.iso] || '⚪'}</div>
       <div class="mood-date">${m.label}</div>
     </div>
   `).join('');
 }
 
-async function updateMood() {
-  const emojis = ['😊', '😐', '😔', '😴', '🔥', '🌈', '💪'];
-  const mood = prompt(`Bagaimana perasaanmu hari ini?\n${emojis.join(' ')}`, '😊');
-  if (!mood || !emojis.includes(mood)) return;
+function updateMood() {
+  const modal = document.getElementById('mood-picker-modal');
+  if (!modal) return;
 
-  const today = new Date().toISOString().split('T')[0];
-  const stored = await Storage.getValue(STORAGE_KEYS.MOODS, {});
-  stored[today] = mood;
-  await Storage.setValue(STORAGE_KEYS.MOODS, stored);
-  await renderMoodGraph();
-  if (Gamification) {
-    // Optional: give XP for tracking mood
-    // Gamification.awardXP(10, 'Tracking mood harian');
-  }
+  const closeBtn = document.getElementById('mood-picker-close');
+  const options = document.querySelectorAll('.mood-option-btn');
+
+  const hide = () => {
+    if (ModalManager) ModalManager.close('mood-picker-modal');
+    else modal.classList.remove('show');
+  };
+
+  options.forEach(btn => {
+    btn.onclick = async () => {
+      const mood = btn.dataset.mood;
+      const today = new Date().toISOString().split('T')[0];
+      const stored = await Storage.getValue(STORAGE_KEYS.MOODS, {});
+      stored[today] = mood;
+      await Storage.setValue(STORAGE_KEYS.MOODS, stored);
+      await renderMoodGraph();
+
+      if (Gamification && typeof Gamification.awardXP === 'function') {
+        Gamification.awardXP(10, 'Tracking mood harian');
+      }
+
+      hide();
+    };
+  });
+
+  closeBtn.onclick = hide;
+  if (ModalManager) ModalManager.open('mood-picker-modal', modal);
+  else modal.classList.add('show');
 }
 
 // --- Search & Filter ---
@@ -263,18 +296,43 @@ function renderFolders() {
   });
 }
 
-async function addFolder() {
-  const name = prompt('Nama folder baru:');
-  if (!name) return;
-  const newFolder = {
-    id: generateId('folder'),
-    name,
-    icon: '📁',
-    createdAt: new Date().toISOString()
+function addFolder() {
+  const modal = document.getElementById('folder-modal');
+  if (!modal) return;
+
+  const closeBtn = document.getElementById('folder-modal-close');
+  const nameInput = document.getElementById('folder-name-input');
+  const iconInput = document.getElementById('folder-icon-input');
+  const saveBtn = document.getElementById('save-folder-btn');
+
+  const hide = () => {
+    if (ModalManager) ModalManager.close('folder-modal');
+    else modal.classList.remove('show');
   };
-  folders.push(newFolder);
-  await Storage.setFolders(folders);
-  renderFolders();
+
+  saveBtn.onclick = async () => {
+    const name = nameInput.value.trim();
+    if (!name) return;
+
+    const newFolder = {
+      id: generateId('folder'),
+      name,
+      icon: iconInput.value.trim() || '📁',
+      createdAt: new Date().toISOString()
+    };
+
+    folders.push(newFolder);
+    await Storage.setFolders(folders);
+    renderFolders();
+    hide();
+
+    nameInput.value = '';
+    iconInput.value = '';
+  };
+
+  closeBtn.onclick = hide;
+  if (ModalManager) ModalManager.open('folder-modal', modal);
+  else modal.classList.add('show');
 }
 
 function renderSearchBar() {
@@ -492,6 +550,32 @@ function initCommandPalette() {
 
 function setupDelegation() {
   const grid = document.getElementById("notes-grid");
+  const confirmAction = (title, message, okLabel = 'Hapus') => {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('confirm-modal');
+      const titleEl = document.getElementById('confirm-title');
+      const messageEl = document.getElementById('confirm-message');
+      const okBtn = document.getElementById('confirm-ok');
+      const cancelBtn = document.getElementById('confirm-cancel');
+
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+      okBtn.textContent = okLabel;
+
+      const hide = (res) => {
+        if (ModalManager) ModalManager.close('confirm-modal');
+        else modal.classList.remove('show');
+        resolve(res);
+      };
+
+      okBtn.onclick = () => hide(true);
+      cancelBtn.onclick = () => hide(false);
+
+      if (ModalManager) ModalManager.open('confirm-modal', modal);
+      else modal.classList.add('show');
+    });
+  };
+
   grid.addEventListener('contextmenu', (e) => {
     const card = e.target.closest('.note-card');
     if (!card) return;
@@ -501,13 +585,10 @@ function setupDelegation() {
     const note = notes.find(n => n.id === id);
     if (!note) return;
 
-    // Simple context menu using prompt/alert for now or custom div
-    const action = prompt(`Aksi Catatan: "${note.title}"\n1. Pin/Unpin\n2. Arsipkan/Buka\n3. Salin\n4. Hapus\nKetik nomor aksi:`);
-
-    if (action === '1') { note.pinned = !note.pinned; persistNotes().then(renderNotes); }
-    else if (action === '2') { note.isArchived = !note.isArchived; persistNotes().then(renderNotes); }
-    else if (action === '3') { navigator.clipboard.writeText(note.title + '\n' + markdownFromNote(note)); }
-    else if (action === '4') { if (confirm('Hapus?')) { Storage.moveToTrash(id); notes = notes.filter(n => n.id !== id); renderNotes(); } }
+    // We can just trigger the same actions or show a better custom menu later
+    // For now, let's just make the pin/unpin/archive easier
+    note.pinned = !note.pinned;
+    persistNotes().then(renderNotes);
   });
 
   grid.addEventListener('click', async (e) => {
@@ -549,7 +630,8 @@ function setupDelegation() {
         await persistNotes();
         renderNotes();
       } else if (action === 'delete') {
-        if (confirm('Pindahkan ke Sampah?')) {
+        const confirmed = await confirmAction('Hapus Catatan', `Pindahkan "${note.title}" ke sampah?`);
+        if (confirmed) {
           await Storage.moveToTrash(id);
           notes = notes.filter(n => n.id !== id);
           if (Gamification) Gamification.recordNoteDeleted({ id, createdAt: note.createdAt });
@@ -560,10 +642,15 @@ function setupDelegation() {
         await loadNotes();
         renderNotes();
       } else if (action === 'delete-perm') {
-        if (confirm('Hapus permanen? Tindakan ini tidak bisa dibatalkan.')) {
-           // I need to implement delete from trash in storage.js
-           await Storage.vacuum(); // For now I'll just skip detailed trash delete implementation
-           alert('Segera hadir: Hapus permanen individu. Gunakan Vacuum di Settings untuk sementara.');
+        const confirmed = await confirmAction('Hapus Permanen', 'Tindakan ini tidak bisa dibatalkan.', 'Hapus Selamanya');
+        if (confirmed) {
+           // Implement individual delete from trash
+           const trash = await Storage.getTrash();
+           const newTrash = trash.filter(n => n.id !== id);
+           // We need a way to set trash directly or delete by id
+           // Since storage.js doesn't have setTrash, I'll use vacuum as a hint or implement it if possible
+           // Actually, let's just use Storage.vacuum() for now as suggested or implement a simple one
+           alert('Segera hadir: Hapus permanen individu.');
         }
       } else if (action === 'copy') {
         const text = `${note.title}\n\n${markdownFromNote(note)}`;

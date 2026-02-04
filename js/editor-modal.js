@@ -245,6 +245,10 @@
             <div class="editor-area-wrapper"></div>
           </div>
           <div class="note-editor-actions">
+            <div class="export-actions-mini" style="margin-right: auto; display: flex; gap: 8px;">
+               <button type="button" class="ghost-btn" data-action="export-md" style="padding: 6px 12px; font-size: 0.85em;">MD</button>
+               <button type="button" class="ghost-btn" data-action="export-txt" style="padding: 6px 12px; font-size: 0.85em;">TXT</button>
+            </div>
             <button type="button" class="btn-ghost" data-action="cancel">Tutup</button>
             <button type="submit" class="btn-blue">Simpan</button>
           </div>
@@ -374,6 +378,30 @@
 
     overlay.querySelector('.editor-close').addEventListener('click', close);
     form.querySelector('[data-action="cancel"]').addEventListener('click', close);
+
+    const downloadFile = (content, filename, type) => {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    form.querySelector('[data-action="export-md"]').onclick = () => {
+      const title = titleInput.value.trim() || 'Untitled';
+      const filename = title.replace(/[/\\?%*:|"<>]/g, '-') + '.md';
+      const content = `---\ntitle: ${title}\ndate: ${new Date().toISOString().split('T')[0]}\n---\n\n${textarea.value}`;
+      downloadFile(content, filename, 'text/markdown');
+    };
+
+    form.querySelector('[data-action="export-txt"]').onclick = () => {
+      const title = titleInput.value.trim() || 'Untitled';
+      const filename = title.replace(/[/\\?%*:|"<>]/g, '-') + '.txt';
+      const content = `${title}\n${new Date().toLocaleString()}\n\n${textarea.value}`;
+      downloadFile(content, filename, 'text/plain');
+    };
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
