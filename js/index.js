@@ -268,22 +268,22 @@ function renderFolders() {
   if (!el) return;
 
   const allActive = activeFolderId === 'all' ? ' active' : '';
-  let html = `<div class="folder-pill${allActive}" data-id="all" style="${allActive ? 'background: var(--primary); color: white;' : 'background: var(--surface-alt); color: var(--text-secondary);'} padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Semua</div>`;
+  let html = `<div class="folder-pill${allActive}" data-id="all">Semua</div>`;
 
   folders.forEach(f => {
     const active = activeFolderId === f.id ? ' active' : '';
     html += `
-      <div class="folder-pill${active}" data-id="${f.id}" style="${active ? 'background: var(--primary); color: white;' : 'background: var(--surface-alt); color: var(--text-secondary);'} padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+      <div class="folder-pill${active}" data-id="${f.id}">
         ${f.icon || '📁'} ${f.name}
       </div>
     `;
   });
 
   const archivedActive = activeFolderId === 'archived' ? ' active' : '';
-  html += `<div class="folder-pill${archivedActive}" data-id="archived" style="${archivedActive ? 'background: var(--text-secondary); color: white;' : 'background: var(--surface-alt); color: var(--text-secondary);'} padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">📦 Arsip</div>`;
+  html += `<div class="folder-pill${archivedActive}" data-id="archived">📦 Arsip</div>`;
 
   const trashActive = activeFolderId === 'trash' ? ' active' : '';
-  html += `<div class="folder-pill${trashActive}" data-id="trash" style="${trashActive ? 'background: var(--danger); color: white;' : 'background: var(--surface-alt); color: var(--text-secondary);'} padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">🗑️ Sampah</div>`;
+  html += `<div class="folder-pill${trashActive}" data-id="trash">🗑️ Sampah</div>`;
 
   el.innerHTML = html;
 
@@ -348,6 +348,18 @@ function renderSearchBar() {
       renderNotes();
     }, 250));
   }
+}
+
+function showSkeletons() {
+  const grid = document.getElementById("notes-grid");
+  if (!grid) return;
+  grid.innerHTML = Array(3).fill(0).map(() => `
+    <div class="note-card skeleton" style="height: 160px;">
+      <div class="skeleton-title" style="margin-top: 10px;"></div>
+      <div class="skeleton-text"></div>
+      <div class="skeleton-text" style="width: 80%;"></div>
+    </div>
+  `).join('');
 }
 
 async function renderNotes() {
@@ -776,6 +788,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (bar) bar.style.width = scrolled + "%";
   });
 
+  showSkeletons();
   await Storage.ready;
   await loadFolders();
   await loadNotes();

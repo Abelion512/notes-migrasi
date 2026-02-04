@@ -337,11 +337,29 @@
     const notesList = await window.AbelionStorage.getNotes();
 
     document.getElementById('total-notes-stat').textContent = notesList.length;
-    document.getElementById('streak-stat').textContent = (summary?.streak || 0) + ' hari';
+    document.getElementById('streak-stat').textContent = (summary?.stats?.logins || 0) + ' hari';
 
     // Simulated XP history for the last 7 days
     const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
     const data = [10, 25, 45, 30, 60, 90, summary?.totalXp || 100].slice(-7);
+
+    // Storage Info
+    const usage = await window.AbelionStorage.getUsage();
+    const usageValEl = document.getElementById('storage-usage-value');
+    const usageBarEl = document.getElementById('storage-usage-bar');
+
+    if (usage && usageValEl && usageBarEl) {
+       const used = usage.usage || 0;
+       const quota = usage.quota || 1;
+       const pct = Math.min(100, (used / quota) * 100);
+
+       const units = ['B', 'KB', 'MB', 'GB'];
+       let size = used, unitIdx = 0;
+       while (size > 1024 && unitIdx < units.length - 1) { size /= 1024; unitIdx++; }
+
+       usageValEl.textContent = `${size.toFixed(1)} ${units[unitIdx]}`;
+       usageBarEl.style.width = `${pct}%`;
+    }
 
     new Chart(canvas, {
       type: 'line',

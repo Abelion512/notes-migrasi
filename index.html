@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
   <title>Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -101,9 +101,9 @@
         <h3 style="font-weight: 800; font-size: 1.1em; color: var(--text-secondary);">Koleksi Folder</h3>
         <button class="ghost-btn" id="add-folder-btn" style="padding: 4px 12px; font-size: 0.85em;">+ Baru</button>
       </div>
-      <div class="folder-list" id="folder-list" style="display: flex; gap: 12px; overflow-x: auto; padding: 4px 10px 16px; scrollbar-width: none;">
+      <div class="folder-container" id="folder-list">
         <!-- Folders injected here -->
-        <div class="folder-pill active" data-id="all" style="background: var(--primary); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">Semua</div>
+        <div class="folder-pill active" data-id="all">Semua</div>
       </div>
     </section>
 

@@ -13,19 +13,16 @@
             let response = await fetch(primaryPath);
 
             if (!response.ok) {
-                // Try fallback logic
-                console.log(`Failed to load ${primaryPath}, trying fallback ${fallbackPath}`);
+                // Try fallback logic silently
                 response = await fetch(fallbackPath);
             }
 
             if (response.ok) {
                 const text = await response.text();
                 parseEnv(text);
-            } else {
-                console.warn('No .env file found via fetch. Using defaults.');
             }
         } catch (e) {
-            console.warn('Could not load .env file:', e);
+            // Silently ignore if .env cannot be fetched
         }
     }
 

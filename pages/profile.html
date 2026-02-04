@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none';" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Profil – Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -92,6 +92,20 @@
       <h2>Badge</h2>
       <div class="section-card">
         <div class="badge-grid" id="badge-grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="panel-section">
+      <h2>Status Penyimpanan</h2>
+      <div class="section-card" style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.9em; color: var(--text-secondary);">Kapasitas Terpakai</span>
+          <span id="storage-usage-value" style="font-weight: 700;">Menghitung...</span>
+        </div>
+        <div class="xp-bar" style="height: 10px; background: var(--surface-alt);">
+          <span id="storage-usage-bar" style="width: 0%; height: 100%; background: var(--success); border-radius: inherit; display: block; transition: width 0.5s;"></span>
+        </div>
+        <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 4px;">Data Anda disimpan di <strong>IndexedDB</strong> perangkat ini.</p>
       </div>
     </section>
 
