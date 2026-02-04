@@ -28,10 +28,22 @@
       <h2>Tampilan &amp; Bahasa</h2>
       <div class="section-card settings-grid">
         <div class="settings-section">
-          <h3>Theme</h3>
-          <ul class="settings-items">
-            <li>Light / Dark / Lavender / Abelion Mode</li>
-          </ul>
+          <h3>Mode Tema</h3>
+          <select id="theme-select" class="input-control">
+            <option value="auto">Otomatis (Sistem)</option>
+            <option value="light">Terang</option>
+            <option value="dark">Gelap</option>
+          </select>
+        </div>
+        <div class="settings-section">
+          <h3>Warna Aksen</h3>
+          <div id="accent-picker" style="display: flex; gap: 8px; margin-top: 8px;">
+            <button class="accent-dot" data-color="#007AFF" style="background: #007AFF; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
+            <button class="accent-dot" data-color="#34C759" style="background: #34C759; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
+            <button class="accent-dot" data-color="#AF52DE" style="background: #AF52DE; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
+            <button class="accent-dot" data-color="#FF9500" style="background: #FF9500; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
+            <button class="accent-dot" data-color="#FF3B30" style="background: #FF3B30; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
+          </div>
         </div>
         <div class="settings-section">
           <h3>Typography</h3>
@@ -71,11 +83,17 @@
           <h3>Kontrol Data</h3>
           <p class="settings-items">Simpan catatan Anda secara mandiri.</p>
           <div class="settings-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button type="button" class="btn-blue" id="export-json-btn">Export (JSON)</button>
-            <button type="button" class="ghost-btn" id="export-md-btn">Export (Markdown ZIP)</button>
+            <select id="export-format" class="input-control" style="width: auto;">
+              <option value="json">JSON</option>
+              <option value="md">Markdown (ZIP)</option>
+              <option value="pdf">PDF</option>
+              <option value="xlsx">Excel</option>
+              <option value="docx">Word</option>
+            </select>
+            <button type="button" class="btn-blue" id="export-btn">Export</button>
             <label class="ghost-btn" style="cursor: pointer;">
-              Import (JSON)
-              <input type="file" id="import-json-input" accept=".json" hidden />
+              Import (JSON/MD)
+              <input type="file" id="import-json-input" accept=".json,.md,.txt" hidden />
             </label>
           </div>
         </div>
@@ -113,8 +131,24 @@
         </div>
         <div class="settings-section">
           <h3>Cloud Sync (Supabase)</h3>
-          <p class="settings-items">Gunakan cloud untuk sinkronisasi antar perangkat.</p>
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <p class="settings-items">Gunakan cloud untuk sinkronisasi antar perangkat (Opsional).</p>
+
+          <div id="supabase-config-form" style="margin-top: 12px; display: none;">
+            <label for="supabase-url">Supabase URL</label>
+            <input type="text" id="supabase-url" placeholder="https://xyz.supabase.co" style="width: 100%; margin-bottom: 8px;" />
+
+            <label for="supabase-key">Supabase Anon Key</label>
+            <input type="password" id="supabase-key" placeholder="eyJhbGciOiJIUzI1..." style="width: 100%; margin-bottom: 8px;" />
+
+            <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; margin-bottom: 12px;">Simpan Konfigurasi</button>
+
+            <div style="background: rgba(0,0,0,0.05); padding: 12px; border-radius: 8px; font-size: 0.85em;">
+              <strong>Bantuan:</strong> Belum punya key?
+              <a href="#" id="show-supabase-guide" style="color: var(--accent-color);">Lihat Panduan</a>
+            </div>
+          </div>
+
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 12px;">
             <input type="checkbox" id="supabase-toggle" style="width: auto;" />
             <span>Aktifkan Sinkronisasi Supabase</span>
           </label>
@@ -184,6 +218,27 @@
 
 
 
+  <!-- Supabase Guide Modal -->
+  <div id="supabase-guide-modal" class="about-modal" style="display: none;">
+    <div class="about-modal-content" style="max-width: 500px; text-align: left;">
+      <button class="about-close" id="guide-close">&times;</button>
+      <h3 style="margin-bottom: 16px;">Cara Mendapatkan API Key Supabase</h3>
+      <ol style="padding-left: 20px; line-height: 1.6;">
+        <li>Buat akun di <a href="https://supabase.com" target="_blank">supabase.com</a>.</li>
+        <li>Buat Project baru (pilih nama dan password bebas).</li>
+        <li>Tunggu project selesai dibuat (1-2 menit).</li>
+        <li>Buka menu <strong>Project Settings</strong> (ikon gerigi) > <strong>API</strong>.</li>
+        <li>Salin <strong>Project URL</strong> dan masukkan ke kotak URL di atas.</li>
+        <li>Salin <strong>anon public</strong> key dan masukkan ke kotak Anon Key di atas.</li>
+        <li>Jalankan SQL Schema di menu <strong>SQL Editor</strong> jika sinkronisasi tidak berjalan (hubungi bantuan untuk script SQL).</li>
+      </ol>
+      <p style="margin-top: 16px; font-size: 0.9em; color: var(--text-secondary);">
+        *Data Anda aman. API Key disimpan secara lokal di browser Anda.
+      </p>
+      <button class="btn-blue" id="guide-ok" style="width: 100%; margin-top: 20px;">Mengerti</button>
+    </div>
+  </div>
+
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
       <a class="nav-button" href="../index.html" aria-label="Beranda">
@@ -207,6 +262,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/docx@8.2.2/build/index.js"></script>
+  <script src="../js/theme.js"></script>
   <script src="../js/env-loader.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/supabase-db.js"></script>

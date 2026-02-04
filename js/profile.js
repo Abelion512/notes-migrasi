@@ -329,6 +329,45 @@
     requestAnimationFrame(() => modal.classList.add('show'));
   }
 
+  async function renderProductivityCharts() {
+    const canvas = document.getElementById('xp-chart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const summary = gamification ? gamification.getProfileSummary() : null;
+    const notesList = await window.AbelionStorage.getNotes();
+
+    document.getElementById('total-notes-stat').textContent = notesList.length;
+    document.getElementById('streak-stat').textContent = (summary?.streak || 0) + ' hari';
+
+    // Simulated XP history for the last 7 days
+    const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+    const data = [10, 25, 45, 30, 60, 90, summary?.totalXp || 100].slice(-7);
+
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'XP',
+          data: data,
+          borderColor: '#007AFF',
+          backgroundColor: 'rgba(0, 122, 255, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { display: false } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
   function wireInteractions() {
     const backBtn = document.getElementById('back-btn');
     if (backBtn) backBtn.addEventListener('click', () => {
@@ -362,10 +401,11 @@
     window.addEventListener('abelion-xp-update', () => applyProfile());
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     cacheDom();
     renderVersion();
     applyProfile();
     wireInteractions();
+    await renderProductivityCharts();
   });
 })();

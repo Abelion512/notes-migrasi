@@ -15,7 +15,17 @@
 </head>
 
 <body>
+  <div id="reading-progress"></div>
   <div class="top-time" id="top-time"></div>
+  <div id="command-palette" class="about-modal" style="display: none; align-items: flex-start; padding-top: 10vh;">
+    <div class="about-modal-content" style="max-width: 600px; width: 90%; padding: 0; overflow: hidden;">
+      <input type="text" id="command-input" placeholder="Ketik perintah atau cari catatan... (⌘K)" style="width: 100%; border: none; padding: 20px; font-size: 1.2em; outline: none; background: var(--surface-alt); border-bottom: 1px solid var(--border-subtle);">
+      <div id="command-results" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+        <!-- Results here -->
+      </div>
+    </div>
+  </div>
+
   <div id="intro-anim">
     <div class="progress-circle">
       <span id="progress-text">0%</span>
@@ -25,8 +35,8 @@
     <header class="hero-section">
       <div id="offline-badge" class="offline-badge hidden">Offline Mode</div>
       <h1 class="title-abelion animated">Abelion Notes</h1>
-      <p class="subtitle">Catat. Pahami. Eksekusi.</p>
-      <blockquote class="motto">“Gagal sekali bukan berarti gagal selamanya.”</blockquote>
+      <p class="subtitle" id="dynamic-greeting">Catat. Pahami. Eksekusi.</p>
+      <blockquote class="motto" id="dynamic-motto">“Gagal sekali bukan berarti gagal selamanya.”</blockquote>
       <button class="ghost-btn" type="button" id="nav-about">Tentang Abelion</button>
       <button class="btn-blue" id="add-note-btn">+ Tulis Catatan Baru</button>
     </header>
@@ -37,22 +47,45 @@
       </div>
       <button class="btn-blue mood-update-btn" id="update-mood-btn" type="button">Update mood hari ini</button>
     </section>
+    <section class="folder-section" style="margin-top: 32px;">
+      <div class="folder-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 10px;">
+        <h3 style="font-weight: 800; font-size: 1.1em; color: var(--text-secondary);">Koleksi Folder</h3>
+        <button class="ghost-btn" id="add-folder-btn" style="padding: 4px 12px; font-size: 0.85em;">+ Baru</button>
+      </div>
+      <div class="folder-list" id="folder-list" style="display: flex; gap: 12px; overflow-x: auto; padding: 4px 10px 16px; scrollbar-width: none;">
+        <!-- Folders injected here -->
+        <div class="folder-pill active" data-id="all" style="background: var(--primary); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">Semua</div>
+      </div>
+    </section>
+
     <section>
-      <h2 class="catatan-heading">Catatan Anda</h2>
+      <div class="notes-header" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 24px; margin-bottom: 12px;">
+        <h2 class="catatan-heading" style="margin: 0;">Catatan Anda</h2>
+      </div>
       <div class="notes-grid" id="notes-grid"></div>
     </section>
   </div>
   <div id="about-modal" class="about-modal">
     <div class="about-modal-content">
       <button class="about-close" id="about-close">&times;</button>
-      <div class="about-abelink">
-        <div class="about-text">
-          <h3>About</h3>
-          <p>
-            Abelion membuat aplikasi catatan ini untuk belajar, mencatat, dan terus berkembang menggapai cita-cita.
-          </p>
+      <div class="about-header" style="text-align: center; margin-bottom: 24px;">
+        <img src="assets/OlivX logo.png" alt="Abelion" class="about-hero-img" style="width: 80px; height: 80px; border-radius: 20px; margin-bottom: 16px; box-shadow: var(--shadow-soft);">
+        <h2 style="font-weight: 800; font-size: 1.5rem;">Tentang Abelion</h2>
+      </div>
+      <div class="about-body" style="line-height: 1.6; color: var(--text-secondary);">
+        <p style="margin-bottom: 16px;">
+          <strong>Abelion Notes</strong> adalah ruang kreatif digital untuk menangkap ide, melacak kemajuan diri, dan mengubah pemikiran menjadi tindakan nyata.
+        </p>
+        <p style="margin-bottom: 16px;">
+          Didesain dengan filosofi <em>"Privacy First"</em>, aplikasi ini memastikan data Anda tetap menjadi milik Anda sepenuhnya.
+        </p>
+        <div style="background: var(--surface-alt); padding: 16px; border-radius: 16px; font-size: 0.9em; border: 1px solid var(--border-subtle);">
+          <h4 style="color: var(--text-primary); margin-bottom: 8px;">Misi Kami</h4>
+          Membantu individu membangun kebiasaan mencatat yang bermakna melalui sistem gamifikasi yang menyenangkan dan tampilan yang tenang.
         </div>
-        <img src="assets/OlivX logo.png" alt="Abelion" class="about-img">
+      </div>
+      <div class="about-footer" style="margin-top: 32px; text-align: center;">
+        <p style="font-size: 0.85em; opacity: 0.7;">Versi Prototype 2025.06</p>
       </div>
     </div>
   </div>
@@ -95,6 +128,8 @@
     <a href="pages/settings.html">Pengaturan</a>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/env-loader.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/supabase-db.js"></script>

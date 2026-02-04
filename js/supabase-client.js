@@ -15,8 +15,12 @@
     function initSupabase(resolve) {
         if (window.AbelionSupabase.client) return;
 
-        const url = window.PROCESS_ENV.SUPABASE_URL;
-        const key = window.PROCESS_ENV.SUPABASE_ANON_KEY || window.PROCESS_ENV.SUPABASE_KEY;
+        // Prioritize user-provided config from localStorage
+        const userUrl = localStorage.getItem('abelion-supabase-url');
+        const userKey = localStorage.getItem('abelion-supabase-key');
+
+        const url = userUrl || (window.PROCESS_ENV && window.PROCESS_ENV.SUPABASE_URL);
+        const key = userKey || (window.PROCESS_ENV && (window.PROCESS_ENV.SUPABASE_ANON_KEY || window.PROCESS_ENV.SUPABASE_KEY));
 
         if (url && key && window.supabase) {
             try {

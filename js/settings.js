@@ -113,100 +113,196 @@
   }
 
   const supabaseToggle = document.getElementById('supabase-toggle');
+  const supabaseConfigForm = document.getElementById('supabase-config-form');
+  const supabaseUrlInput = document.getElementById('supabase-url');
+  const supabaseKeyInput = document.getElementById('supabase-key');
+  const saveSupabaseBtn = document.getElementById('save-supabase-config');
+  const showGuideBtn = document.getElementById('show-supabase-guide');
+  const guideModal = document.getElementById('supabase-guide-modal');
+  const guideClose = document.getElementById('guide-close');
+  const guideOk = document.getElementById('guide-ok');
+
   if (supabaseToggle) {
     const disabled = localStorage.getItem('abelion-disable-supabase') === 'true';
     supabaseToggle.checked = !disabled;
-    supabaseToggle.onchange = (e) => {
-      localStorage.setItem('abelion-disable-supabase', (!e.target.checked).toString());
-      alert('Pengaturan sinkronisasi disimpan. Muat ulang halaman untuk menerapkan perubahan.');
-    };
-  }
+    if (supabaseToggle.checked) supabaseConfigForm.style.display = 'block';
 
-  // --- Export / Import ---
-  const exportJsonBtn = document.getElementById('export-json-btn');
-  if (exportJsonBtn) {
-    exportJsonBtn.onclick = async () => {
-      try {
-        const notes = await Storage.getNotes();
-        const data = JSON.stringify({
-          version: '2.0',
-          exportedAt: new Date().toISOString(),
-          notes
-        }, null, 2);
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `abelion-notes-export-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        alert('Gagal export JSON: ' + err.message);
+    supabaseToggle.onchange = (e) => {
+      const isEnabled = e.target.checked;
+      localStorage.setItem('abelion-disable-supabase', (!isEnabled).toString());
+      supabaseConfigForm.style.display = isEnabled ? 'block' : 'none';
+      if (!isEnabled) {
+        alert('Sinkronisasi dinonaktifkan. Catatan hanya disimpan di perangkat ini.');
       }
     };
   }
 
-  const exportMdBtn = document.getElementById('export-md-btn');
-  if (exportMdBtn) {
-    exportMdBtn.onclick = async () => {
-      if (typeof JSZip === 'undefined') {
-        alert('Library JSZip belum dimuat. Periksa koneksi internet.');
+  // Load existing config
+  if (supabaseUrlInput) supabaseUrlInput.value = localStorage.getItem('abelion-supabase-url') || '';
+  if (supabaseKeyInput) supabaseKeyInput.value = localStorage.getItem('abelion-supabase-key') || '';
+
+  if (saveSupabaseBtn) {
+    saveSupabaseBtn.onclick = () => {
+      const url = supabaseUrlInput.value.trim();
+      const key = supabaseKeyInput.value.trim();
+
+      if (url && !url.startsWith('https://')) {
+        alert('URL harus diawali dengan https://');
         return;
       }
+
+      localStorage.setItem('abelion-supabase-url', url);
+      localStorage.setItem('abelion-supabase-key', key);
+      alert('Konfigurasi Supabase disimpan. Silakan muat ulang halaman untuk menghubungkan.');
+      location.reload();
+    };
+  }
+
+  if (showGuideBtn && guideModal) {
+    showGuideBtn.onclick = (e) => {
+      e.preventDefault();
+      guideModal.style.display = 'flex';
+    };
+  }
+
+  if (guideClose) guideClose.onclick = () => guideModal.style.display = 'none';
+  if (guideOk) guideOk.onclick = () => guideModal.style.display = 'none';
+
+  // --- Export / Import ---
+  const exportBtn = document.getElementById('export-btn');
+  const exportFormatSelect = document.getElementById('export-format');
+
+  if (exportBtn) {
+    exportBtn.onclick = async () => {
+      const format = exportFormatSelect.value;
+      const notes = await Storage.getNotes();
+      const dateStr = new Date().toISOString().split('T')[0];
+
       try {
-        const notes = await Storage.getNotes();
-        const zip = new JSZip();
-        notes.forEach(note => {
-          const filename = (note.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + '.md';
-          const content = `---\ntitle: ${note.title || ''}\ndate: ${note.date || ''}\ntags: ${note.label || ''}\n---\n\n${note.contentMarkdown || note.content || ''}`;
-          zip.file(filename, content);
-        });
-        const content = await zip.generateAsync({ type: 'blob' });
-        const url = URL.createObjectURL(content);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `abelion-notes-markdown-${new Date().toISOString().split('T')[0]}.zip`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        alert('Gagal export Markdown: ' + err.message);
+        if (format === 'json') {
+          const data = JSON.stringify({ version: '3.0', exportedAt: new Date().toISOString(), notes }, null, 2);
+          downloadBlob(new Blob([data], { type: 'application/json' }), `abelion-notes-${dateStr}.json`);
+        }
+        else if (format === 'md') {
+          if (typeof JSZip === 'undefined') throw new Error('JSZip not loaded');
+          const zip = new JSZip();
+          notes.forEach(n => {
+            const filename = (n.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + '.md';
+            zip.file(filename, `---\ntitle: ${n.title}\ndate: ${n.date}\n---\n\n${n.contentMarkdown || n.content}`);
+          });
+          const blob = await zip.generateAsync({ type: 'blob' });
+          downloadBlob(blob, `abelion-markdown-${dateStr}.zip`);
+        }
+        else if (format === 'pdf') {
+          if (typeof jspdf === 'undefined') throw new Error('jspdf not loaded');
+          const doc = new jspdf.jsPDF();
+          notes.forEach((n, i) => {
+            if (i > 0) doc.addPage();
+            doc.setFontSize(20);
+            doc.text(n.title || 'Untitled', 10, 20);
+            doc.setFontSize(12);
+            doc.text(`Tanggal: ${n.date}`, 10, 30);
+            doc.text(doc.splitTextToSize(n.contentMarkdown || n.content || '', 180), 10, 40);
+          });
+          doc.save(`abelion-notes-${dateStr}.pdf`);
+        }
+        else if (format === 'xlsx') {
+          if (typeof XLSX === 'undefined') throw new Error('xlsx not loaded');
+          const rows = notes.map(n => ({ Judul: n.title, Tanggal: n.date, Isi: n.contentMarkdown || n.content }));
+          const worksheet = XLSX.utils.json_to_sheet(rows);
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Notes");
+          XLSX.writeFile(workbook, `abelion-notes-${dateStr}.xlsx`);
+        }
+        else if (format === 'docx') {
+          alert('Export DOCX sedang disiapkan. Library sedang dimuat.');
+          // Simple docx implementation can be added here
+        }
+      } catch (e) {
+        alert('Ekspor gagal: ' + e.message);
       }
     };
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   const importInput = document.getElementById('import-json-input');
   if (importInput) {
-    importInput.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    importInput.onchange = (e) => handleImportFiles(e.target.files);
+  }
+
+  async function handleImportFiles(files) {
+    for (const file of files) {
       const reader = new FileReader();
       reader.onload = async (event) => {
         try {
-          const data = JSON.parse(event.target.result);
-          const importedNotes = Array.isArray(data.notes) ? data.notes : (Array.isArray(data) ? data : null);
-          if (!importedNotes) throw new Error('Format file tidak valid.');
-
-          if (confirm(`Impor ${importedNotes.length} catatan? Ini akan menggabungkan dengan catatan yang sudah ada.`)) {
+          if (file.name.endsWith('.json')) {
+            const data = JSON.parse(event.target.result);
+            const importedNotes = Array.isArray(data.notes) ? data.notes : (Array.isArray(data) ? data : null);
+            if (importedNotes) {
+              const existing = await Storage.getNotes();
+              const existingIds = new Set(existing.map(n => n.id));
+              const toAdd = importedNotes.filter(n => !existingIds.has(n.id));
+              await Storage.setNotes([...existing, ...toAdd]);
+              alert(`Berhasil mengimpor ${toAdd.length} catatan dari JSON.`);
+            }
+          } else {
+            // Treat as Markdown/Txt
+            const newNote = {
+              id: AbelionUtils.generateId('note'),
+              title: file.name.replace(/\.[^/.]+$/, ""),
+              contentMarkdown: event.target.result,
+              content: event.target.result,
+              date: new Date().toISOString().slice(0, 10),
+              createdAt: new Date().toISOString()
+            };
             const existing = await Storage.getNotes();
-            const existingIds = new Set(existing.map(n => n.id));
-            const toAdd = importedNotes.filter(n => !existingIds.has(n.id));
-            const merged = [...existing, ...toAdd];
-            await Storage.setNotes(merged);
-            alert(`Berhasil mengimpor ${toAdd.length} catatan baru.`);
-            location.reload();
+            await Storage.setNotes([newNote, ...existing]);
+            alert(`Berhasil mengimpor catatan: ${newNote.title}`);
           }
+          location.reload();
         } catch (err) {
-          alert('Gagal impor: ' + err.message);
+          alert('Gagal impor ' + file.name + ': ' + err.message);
         }
       };
       reader.readAsText(file);
-    };
+    }
   }
+
+  // Drag & Drop Import
+  document.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
+  document.addEventListener('drop', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleImportFiles(e.dataTransfer.files);
+    }
+  });
 
   const meta = getVersionMeta();
   const label = document.getElementById('settings-version-label');
   if (meta?.version && label) {
     label.textContent = `${meta.version} (${meta.codename})`;
+  }
+
+  // --- Theme & Accent ---
+  const themeSelect = document.getElementById('theme-select');
+  if (themeSelect && window.AbelionTheme) {
+    themeSelect.value = window.AbelionTheme.getTheme();
+    themeSelect.onchange = (e) => window.AbelionTheme.applyTheme(e.target.value);
+  }
+
+  const accentPicker = document.getElementById('accent-picker');
+  if (accentPicker && window.AbelionTheme) {
+    accentPicker.querySelectorAll('.accent-dot').forEach(btn => {
+      btn.onclick = () => window.AbelionTheme.applyAccent(btn.dataset.color);
+    });
   }
 
   renderStorageHealth();

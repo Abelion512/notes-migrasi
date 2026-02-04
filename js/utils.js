@@ -1,11 +1,13 @@
 (function (global) {
   const STORAGE_KEYS = {
     NOTES: 'abelion-notes-v2',
+    FOLDERS: 'abelion-folders',
     PROFILE: 'abelion-profile',
     MOODS: 'abelion-moods',
     GAMIFICATION: 'abelion-gamification',
     NOTE_DRAFTS: 'abelion-note-drafts',
-    VERSION_META: 'abelion-version-meta'
+    VERSION_META: 'abelion-version-meta',
+    TRASH: 'abelion-trash'
   };
 
   const APP_VERSION_BASE = Object.freeze({
