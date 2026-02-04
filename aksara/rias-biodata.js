@@ -134,7 +134,7 @@
       avatar.classList.remove('is-empty');
       avatar.alt = 'Foto profil terkini';
     } else {
-      avatar.src = 'default-avatar.svg';
+      avatar.src = '../pustaka/default-avatar.svg';
       avatar.classList.add('is-empty');
       avatar.alt = 'Belum ada foto profil';
     }
@@ -435,7 +435,7 @@
       Gamification.evaluateProfileCompletion(updated);
     }
     alert('Profil disimpan!');
-    window.location.href = 'profile.html';
+    window.location.href = 'biodata.html';
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -450,13 +450,13 @@
     if (backBtn) {
       backBtn.addEventListener('click', () => {
         sessionStorage.setItem('skipIntro', '1');
-        window.location.href = 'profile.html';
+        window.location.href = 'biodata.html';
       });
     }
 
     if (versionBtn) {
       versionBtn.addEventListener('click', () => {
-        window.location.href = 'version-info.html';
+        window.location.href = 'riwayat.html';
       });
     }
 

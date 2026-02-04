@@ -50,7 +50,7 @@
 
   const versionBtn = document.getElementById('settings-version');
   if (versionBtn) versionBtn.addEventListener('click', () => {
-    window.location.href = 'version-info.html';
+    window.location.href = 'riwayat.html';
   });
 
   const refreshBtn = document.getElementById('storage-refresh-btn');

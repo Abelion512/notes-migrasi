@@ -6,74 +6,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
-  <title>Version Info – Abelion Notes</title>
+  <title>Detail Catatan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/style.css" />
-  <link rel="manifest" href="../manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../gaya/gayanya.css" />
+  <link rel="manifest" href="../izin.json" />
 </head>
 
 <body class="page-shell">
-  <main class="panel" id="version-panel">
-    <header class="panel-header">
-      <button type="button" class="ghost-btn" id="version-back">← Kembali</button>
-      <button type="button" class="ghost-btn" id="version-home" title="Ke Beranda">🏠</button>
-    </header>
-
-    <h1 class="panel-title">Versioning System</h1>
-    <p class="panel-subtitle">Lacak rilis Abelion Notes dan highlight peningkatan terbaru.</p>
-
-    <section class="panel-section" hidden>
-      <h2>Ringkasan Versi</h2>
-      <div class="section-card" id="version-summary">
-        <p><strong>Versi:</strong> <span id="version-name">—</span></p>
-        <p><strong>Codename:</strong> <span id="version-codename">—</span></p>
-        <p><strong>Tanggal Rilis:</strong> <span id="version-date">—</span></p>
-        <p><strong>Lingkungan:</strong> <span id="version-env">—</span></p>
-        <p><strong>Major:</strong> <span id="version-major">—</span></p>
-        <p><strong>Minor:</strong> <span id="version-minor">—</span></p>
-        <p><strong>Patch:</strong> <span id="version-patch">—</span></p>
-        <p><strong>Channel:</strong> <span id="version-channel">—</span></p>
-        <p><strong>Terakhir Diperbarui:</strong> <span id="version-updated">—</span></p>
+  <div class="top-time" id="top-time"></div>
+  <div class="note-detail-container">
+    <a href="../index.html" class="back-link" id="back-link">&larr; Kembali</a>
+    <form id="note-edit-form" autocomplete="off">
+      <div class="note-detail-title">
+        <input id="edit-icon" class="note-edit-input edit-iconpicker" maxlength="2" />
+        <input id="edit-title" class="note-edit-input" required maxlength="100" />
       </div>
-    </section>
-
-    <section class="panel-section" id="changelog-section">
-      <h2>Changelog</h2>
-      <div class="settings-grid" id="changelog-list">
-        <div class="section-card">
-          <p>Belum ada catatan rilis.</p>
-        </div>
+      <div class="note-edit-row">
+        <label for="edit-content">Catatan</label>
+        <textarea id="edit-content" class="note-edit-area" required maxlength="2000"></textarea>
       </div>
-    </section>
-
-    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
-  </main>
-
-
-
+      <div class="note-edit-row">
+        <label for="edit-label">Label/Mood (opsional)</label>
+        <input id="edit-label" class="note-edit-input note-edit-label" placeholder="Misal: mood, kerja, penting..."
+          maxlength="20" />
+      </div>
+      <div class="note-edit-btns">
+        <button type="submit" class="btn-edit-save">Simpan</button>
+        <button type="button" class="btn-edit-cancel" id="cancel-edit">Batal</button>
+      </div>
+      <div class="note-detail-date" id="note-detail-date"></div>
+    </form>
+  </div>
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
-      <a class="nav-button" href="../index.html" aria-label="Beranda">
+      <a class="nav-button active" href="../index.html" aria-label="Beranda">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         </span>
         <span class="nav-label">Beranda</span>
       </a>
-      <a class="nav-button" href="profile.html" aria-label="Profil">
+      <a class="nav-button" href="biodata.html" aria-label="Profil">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </span>
         <span class="nav-label">Profil</span>
       </a>
-      <a class="nav-button" href="settings.html" aria-label="Pengaturan">
+      <a class="nav-button" href="setelan.html" aria-label="Pengaturan">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </span>
         <span class="nav-label">Pengaturan</span>
       </a>
-      <a class="nav-button active" href="version-info.html" aria-label="Versi">
+      <a class="nav-button" href="riwayat.html" aria-label="Versi">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
         </span>
@@ -81,16 +67,16 @@
       </a>
     </div>
   </nav>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/theme.js"></script>
-  <script src="../js/env-loader.js"></script>
-  <script src="../js/supabase-client.js"></script>
-  <script src="../js/supabase-db.js"></script>
-  <script src="../js/utils.js"></script>
-  <script src="../js/storage.js"></script>
-  <script src="../js/lock-screen.js"></script>
-  <script src="../js/version-info.js"></script>
+  <script src="../aksara/pemuat.js"></script>
+  <script src="../aksara/utusan.js"></script>
+  <script src="../aksara/basisdata.js"></script>
+  <script src="../aksara/perkakas.js"></script>
+  <script src="../aksara/brankas.js"></script>
+  <script src="../aksara/kunci.js"></script>
+  <script src="../aksara/tangkas.js"></script>
+  <script src="../aksara/kotak-tulis.js"></script>
+  <script src="../aksara/catatan.js"></script>
 </body>
 
 </html>

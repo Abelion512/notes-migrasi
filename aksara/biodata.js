@@ -135,7 +135,7 @@
     if (!summary) return;
 
     if (dom.avatar) {
-      dom.avatar.src = summary.photo || 'default-avatar.svg';
+      dom.avatar.src = summary.photo || '../pustaka/default-avatar.svg';
       dom.avatar.classList.toggle('is-empty', !summary.photo);
     }
 
@@ -395,19 +395,19 @@
 
     const versionBtn = document.getElementById('version-btn');
     if (versionBtn) versionBtn.addEventListener('click', () => {
-      window.location.href = 'version-info.html';
+      window.location.href = 'riwayat.html';
     });
 
     const editBtn = document.getElementById('edit-profile-btn');
     if (editBtn) editBtn.addEventListener('click', () => {
       sessionStorage.setItem('skipIntro', '1');
-      window.location.href = 'edit-profile.html';
+      window.location.href = 'rias-biodata.html';
     });
 
     const settingsBtn = document.getElementById('settings-btn');
     if (settingsBtn) settingsBtn.addEventListener('click', () => {
       sessionStorage.setItem('skipIntro', '1');
-      window.location.href = 'settings.html';
+      window.location.href = 'setelan.html';
     });
 
     window.addEventListener('storage', (event) => {

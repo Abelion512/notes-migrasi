@@ -480,8 +480,8 @@ function initCommandPalette() {
 
   const commands = [
     { name: 'Tulis Catatan Baru', icon: '📝', action: () => openNoteModal('create') },
-    { name: 'Buka Pengaturan', icon: '⚙️', action: () => window.location.href = 'pages/settings.html' },
-    { name: 'Buka Profil', icon: '👤', action: () => window.location.href = 'pages/profile.html' },
+    { name: 'Buka Pengaturan', icon: '⚙️', action: () => window.location.href = 'lembaran/setelan.html' },
+    { name: 'Buka Profil', icon: '👤', action: () => window.location.href = 'lembaran/biodata.html' },
     { name: 'Lihat Arsip', icon: '📦', action: () => { activeFolderId = 'archived'; renderFolders(); renderNotes(); } },
     { name: 'Lihat Sampah', icon: '🗑️', action: () => { activeFolderId = 'trash'; renderFolders(); renderNotes(); } },
     { name: 'Ganti Tema', icon: '🌓', action: () => {
@@ -660,7 +660,7 @@ function setupDelegation() {
            const trash = await Storage.getTrash();
            const newTrash = trash.filter(n => n.id !== id);
            // We need a way to set trash directly or delete by id
-           // Since storage.js doesn't have setTrash, I'll use vacuum as a hint or implement it if possible
+           // Since brankas.js doesn't have setTrash, I'll use vacuum as a hint or implement it if possible
            // Actually, let's just use Storage.vacuum() for now as suggested or implement a simple one
            alert('Segera hadir: Hapus permanen individu.');
         }
