@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="manifest" href="../manifest.json" />
 </head>
 
 <body class="page-shell">
@@ -68,11 +69,15 @@
       <div class="section-card settings-grid">
         <div class="settings-section">
           <h3>Kontrol Data</h3>
-          <ul class="settings-items">
-            <li>Mode Privasi: Publik / Privat</li>
-            <li>Backup Data Catatan <strong>(Coming Soon)</strong></li>
-            <li>Export / Simpan Catatan (PDF / MD)</li>
-          </ul>
+          <p class="settings-items">Simpan catatan Anda secara mandiri.</p>
+          <div class="settings-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-blue" id="export-json-btn">Export (JSON)</button>
+            <button type="button" class="ghost-btn" id="export-md-btn">Export (Markdown ZIP)</button>
+            <label class="ghost-btn" style="cursor: pointer;">
+              Import (JSON)
+              <input type="file" id="import-json-input" accept=".json" hidden />
+            </label>
+          </div>
         </div>
         <div class="settings-section">
           <h3>Keamanan</h3>
@@ -105,6 +110,15 @@
           <h3>Kontrol Akses</h3>
           <p class="settings-items">Kunci layar akan muncul saat memuat bila enkripsi aktif.</p>
           <button type="button" class="ghost-btn" id="secure-logout-btn">🔒 Kunci &amp; Keluar</button>
+        </div>
+        <div class="settings-section">
+          <h3>Cloud Sync (Supabase)</h3>
+          <p class="settings-items">Gunakan cloud untuk sinkronisasi antar perangkat.</p>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="supabase-toggle" style="width: auto;" />
+            <span>Aktifkan Sinkronisasi Supabase</span>
+          </label>
+          <small id="supabase-status-hint">Mencatat hanya di perangkat ini bila dinonaktifkan.</small>
         </div>
       </div>
     </section>
@@ -192,6 +206,7 @@
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="../js/env-loader.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/supabase-db.js"></script>

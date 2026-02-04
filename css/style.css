@@ -2093,3 +2093,18 @@ body.modal-open {
   font-style: normal;
   filter: none;
 }
+
+.offline-badge {
+  background: var(--danger, #ff3b30);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.offline-badge.hidden {
+  display: none !important;
+}

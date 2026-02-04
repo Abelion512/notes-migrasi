@@ -277,6 +277,19 @@
     return Math.min(max, Math.max(min, number));
   }
 
+  function generateId(prefix = 'uid') {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    // Fallback using crypto.getRandomValues if available
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      const arr = new Uint32Array(2);
+      crypto.getRandomValues(arr);
+      return `${prefix}-${Date.now()}-${arr[0].toString(36)}${arr[1].toString(36)}`;
+    }
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  }
+
   function resolveVersioning() {
     const base = APP_META.versioning;
     const stored = safeGetItem(STORAGE_KEYS.VERSION_META, null);
@@ -376,6 +389,7 @@
     bumpVersion,
     ModalManager,
     DateUtils,
-    checkStorageQuota
+    checkStorageQuota,
+    generateId
   };
 })(window);
