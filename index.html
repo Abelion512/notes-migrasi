@@ -5,17 +5,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
   <title>Abelion Notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="gaya/gayanya.css" />
+  <link rel="manifest" href="izin.json" />
 </head>
 
 <body>
+  <div id="reading-progress"></div>
   <div class="top-time" id="top-time"></div>
+  <div id="command-palette" class="about-modal" style="display: none; align-items: flex-start; padding-top: 10vh;">
+    <div class="about-modal-content" style="max-width: 600px; width: 90%; padding: 0; overflow: hidden;">
+      <input type="text" id="command-input" placeholder="Ketik perintah atau cari catatan... (⌘K)" style="width: 100%; border: none; padding: 20px; font-size: 1.2em; outline: none; background: var(--surface-alt); border-bottom: 1px solid var(--border-subtle);">
+      <div id="command-results" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+        <!-- Results here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="mood-picker-modal" class="about-modal">
+    <div class="about-modal-content" style="max-width: 320px; text-align: center;">
+      <button class="about-close" id="mood-picker-close">&times;</button>
+      <h3 style="margin-bottom: 20px; font-weight: 800;">Mood Hari Ini</h3>
+      <div id="mood-options" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <button class="mood-option-btn" data-mood="😊">😊</button>
+        <button class="mood-option-btn" data-mood="😐">😐</button>
+        <button class="mood-option-btn" data-mood="😔">😔</button>
+        <button class="mood-option-btn" data-mood="😴">😴</button>
+        <button class="mood-option-btn" data-mood="🔥">🔥</button>
+        <button class="mood-option-btn" data-mood="🌈">🌈</button>
+        <button class="mood-option-btn" data-mood="💪">💪</button>
+        <button class="mood-option-btn" data-mood="🤔">🤔</button>
+      </div>
+      <p style="font-size: 0.85em; color: var(--text-muted);">Pilih yang paling mewakili perasaanmu.</p>
+    </div>
+  </div>
+
+  <div id="folder-modal" class="about-modal">
+    <div class="about-modal-content" style="max-width: 360px;">
+      <button class="about-close" id="folder-modal-close">&times;</button>
+      <h3 style="margin-bottom: 20px; font-weight: 800;">Folder Baru</h3>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="font-size: 0.9em; font-weight: 600; color: var(--text-secondary);">Nama Folder</label>
+          <input type="text" id="folder-name-input" class="input-control" placeholder="Misal: Kerja, Ide, Hobi..." style="width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="font-size: 0.9em; font-weight: 600; color: var(--text-secondary);">Icon (Opsional)</label>
+          <input type="text" id="folder-icon-input" class="input-control" placeholder="📁" style="width: 100%;">
+        </div>
+        <button class="btn-blue" id="save-folder-btn" style="width: 100%; margin: 0;">Simpan Folder</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirm-modal" class="about-modal">
+    <div class="about-modal-content" style="max-width: 320px; text-align: center;">
+      <h3 id="confirm-title" style="margin-bottom: 12px; font-weight: 800;">Konfirmasi</h3>
+      <p id="confirm-message" style="margin-bottom: 24px; color: var(--text-secondary);"></p>
+      <div style="display: flex; gap: 12px;">
+        <button class="ghost-btn" id="confirm-cancel" style="flex: 1;">Batal</button>
+        <button class="btn-blue" id="confirm-ok" style="flex: 1; margin: 0; background: var(--danger);">Hapus</button>
+      </div>
+    </div>
+  </div>
+
   <div id="intro-anim">
     <div class="progress-circle">
       <span id="progress-text">0%</span>
@@ -25,34 +82,59 @@
     <header class="hero-section">
       <div id="offline-badge" class="offline-badge hidden">Offline Mode</div>
       <h1 class="title-abelion animated">Abelion Notes</h1>
-      <p class="subtitle">Catat. Pahami. Eksekusi.</p>
-      <blockquote class="motto">“Gagal sekali bukan berarti gagal selamanya.”</blockquote>
+      <p class="subtitle" id="dynamic-greeting">Catat. Pahami. Eksekusi.</p>
+      <blockquote class="motto" id="dynamic-motto">“Gagal sekali bukan berarti gagal selamanya.”</blockquote>
       <button class="ghost-btn" type="button" id="nav-about">Tentang Abelion</button>
       <button class="btn-blue" id="add-note-btn">+ Tulis Catatan Baru</button>
     </header>
     <section class="mood-graph-section">
-      <div class="mood-graph-title">Mood Harian</div>
+      <div class="mood-graph-title" style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
+        <span>Mood Harian</span>
+        <button id="update-mood-btn" style="background: var(--primary-soft); color: var(--primary); border: none; padding: 4px 12px; border-radius: 999px; font-size: 0.8em; font-weight: 700; cursor: pointer;">Update</button>
+      </div>
       <div class="mood-graph-center">
         <div class="mood-graph" id="mood-graph"></div>
       </div>
-      <button class="btn-blue mood-update-btn" id="update-mood-btn" type="button">Update mood hari ini</button>
     </section>
+    <section class="folder-section" style="margin-top: 32px;">
+      <div class="folder-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 10px;">
+        <h3 style="font-weight: 800; font-size: 1.1em; color: var(--text-secondary);">Koleksi Folder</h3>
+        <button class="ghost-btn" id="add-folder-btn" style="padding: 4px 12px; font-size: 0.85em;">+ Baru</button>
+      </div>
+      <div class="folder-container" id="folder-list">
+        <!-- Folders injected here -->
+        <div class="folder-pill active" data-id="all">Semua</div>
+      </div>
+    </section>
+
     <section>
-      <h2 class="catatan-heading">Catatan Anda</h2>
+      <div class="notes-header" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 24px; margin-bottom: 12px;">
+        <h2 class="catatan-heading" style="margin: 0;">Catatan Anda</h2>
+      </div>
       <div class="notes-grid" id="notes-grid"></div>
     </section>
   </div>
   <div id="about-modal" class="about-modal">
     <div class="about-modal-content">
       <button class="about-close" id="about-close">&times;</button>
-      <div class="about-abelink">
-        <div class="about-text">
-          <h3>About</h3>
-          <p>
-            Abelion membuat aplikasi catatan ini untuk belajar, mencatat, dan terus berkembang menggapai cita-cita.
-          </p>
+      <div class="about-header" style="text-align: center; margin-bottom: 24px;">
+        <img src="pustaka/OlivX logo.png" alt="Abelion" class="about-hero-img" style="width: 80px; height: 80px; border-radius: 20px; margin-bottom: 16px; box-shadow: var(--shadow-soft);">
+        <h2 style="font-weight: 800; font-size: 1.5rem;">Tentang Abelion</h2>
+      </div>
+      <div class="about-body" style="line-height: 1.6; color: var(--text-secondary);">
+        <p style="margin-bottom: 16px;">
+          <strong>Abelion Notes</strong> adalah ruang kreatif digital untuk menangkap ide, melacak kemajuan diri, dan mengubah pemikiran menjadi tindakan nyata.
+        </p>
+        <p style="margin-bottom: 16px;">
+          Didesain dengan filosofi <em>"Privacy First"</em>, aplikasi ini memastikan data Anda tetap menjadi milik Anda sepenuhnya.
+        </p>
+        <div style="background: var(--surface-alt); padding: 16px; border-radius: 16px; font-size: 0.9em; border: 1px solid var(--border-subtle);">
+          <h4 style="color: var(--text-primary); margin-bottom: 8px;">Misi Kami</h4>
+          Membantu individu membangun kebiasaan mencatat yang bermakna melalui sistem gamifikasi yang menyenangkan dan tampilan yang tenang.
         </div>
-        <img src="assets/OlivX logo.png" alt="Abelion" class="about-img">
+      </div>
+      <div class="about-footer" style="margin-top: 32px; text-align: center;">
+        <p style="font-size: 0.85em; opacity: 0.7;">Versi Prototype 2025.06</p>
       </div>
     </div>
   </div>
@@ -73,41 +155,52 @@
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <div class="bottom-nav-shell">
       <a class="nav-button active" href="index.html" aria-label="Beranda">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </span>
         <span class="nav-label">Beranda</span>
       </a>
-      <a class="nav-button" href="pages/profile.html" aria-label="Profil">
-        <span class="nav-icon">👤</span>
+      <a class="nav-button" href="lembaran/biodata.html" aria-label="Profil">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </span>
         <span class="nav-label">Profil</span>
       </a>
-      <a class="nav-button" href="pages/settings.html" aria-label="Pengaturan">
-        <span class="nav-icon">⚙️</span>
+      <a class="nav-button" href="lembaran/setelan.html" aria-label="Pengaturan">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </span>
         <span class="nav-label">Pengaturan</span>
       </a>
-      <a class="nav-button" href="pages/version-info.html" aria-label="Versi">
-        <span class="nav-icon">ℹ️</span>
+      <a class="nav-button" href="lembaran/riwayat.html" aria-label="Versi">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </span>
         <span class="nav-label">Versi</span>
       </a>
     </div>
   </nav>
   <footer class="site-footer">
     <small>© 2025 Abelion Notes</small>
-    <a href="pages/settings.html">Pengaturan</a>
+    <a href="lembaran/setelan.html">Pengaturan</a>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/env-loader.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/supabase-db.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/lock-screen.js"></script>
-  <script src="js/gamification.js"></script>
-  <script src="js/editor-modal.js"></script>
-  <script src="js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="aksara/corak.js"></script>
+  <script src="aksara/pemuat.js"></script>
+  <script src="aksara/utusan.js"></script>
+  <script src="aksara/basisdata.js"></script>
+  <script src="aksara/perkakas.js"></script>
+  <script src="aksara/brankas.js"></script>
+  <script src="aksara/kunci.js"></script>
+  <script src="aksara/tangkas.js"></script>
+  <script src="aksara/kotak-tulis.js"></script>
+  <script src="aksara/utama.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then(reg => {
+        navigator.serviceWorker.register('./penjaga.js').then(reg => {
           console.log('SW Registered', reg.scope);
         }).catch(err => {
           console.error('SW Registration failed', err);

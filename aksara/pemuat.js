@@ -3,9 +3,9 @@
 
     async function loadEnv() {
         try {
-            // Determine path based on if we are in a subdirectory (e.g. /pages/)
-            // This is a heuristic: if path contains 'pages/', assume we need to go up.
-            const isInPages = window.location.pathname.indexOf('/pages/') !== -1;
+            // Determine path based on if we are in a subdirectory (e.g. /lembaran/)
+            // This is a heuristic: if path contains 'lembaran/', assume we need to go up.
+            const isInPages = window.location.pathname.indexOf('/lembaran/') !== -1;
 
             const primaryPath = isInPages ? '../.env' : '.env';
             const fallbackPath = isInPages ? '.env' : '../.env';
@@ -13,19 +13,16 @@
             let response = await fetch(primaryPath);
 
             if (!response.ok) {
-                // Try fallback logic
-                console.log(`Failed to load ${primaryPath}, trying fallback ${fallbackPath}`);
+                // Try fallback logic silently
                 response = await fetch(fallbackPath);
             }
 
             if (response.ok) {
                 const text = await response.text();
                 parseEnv(text);
-            } else {
-                console.warn('No .env file found via fetch. Using defaults.');
             }
         } catch (e) {
-            console.warn('Could not load .env file:', e);
+            // Silently ignore if .env cannot be fetched
         }
     }
 

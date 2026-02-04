@@ -13,7 +13,7 @@
   });
 
   const DB_NAME = 'abelion-notes-db';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const META_KEY = 'abelion-storage-meta';
 
   const DEFAULT_META = {
@@ -68,6 +68,8 @@
 
   const SENSITIVE_KEYS = new Set([
     STORAGE_KEYS.NOTES,
+    STORAGE_KEYS.FOLDERS,
+    STORAGE_KEYS.TRASH,
     STORAGE_KEYS.PROFILE,
     STORAGE_KEYS.MOODS,
     STORAGE_KEYS.GAMIFICATION,
@@ -117,7 +119,14 @@
           const store = database.createObjectStore('notes', { keyPath: 'id' });
           store.createIndex('updatedAt', 'updatedAt', { unique: false });
           store.createIndex('pinned', 'pinned', { unique: false });
+          store.createIndex('folderId', 'folderId', { unique: false });
           store.createIndex('tag', 'label', { unique: false });
+        }
+        if (!database.objectStoreNames.contains('folders')) {
+          database.createObjectStore('folders', { keyPath: 'id' });
+        }
+        if (!database.objectStoreNames.contains('trash')) {
+          database.createObjectStore('trash', { keyPath: 'id' });
         }
         if (!database.objectStoreNames.contains('kv')) {
           database.createObjectStore('kv');
@@ -419,9 +428,14 @@
     const existing = await idbGetAll('notes');
     if (!existing.length && localNotes.length) {
       await Promise.all(localNotes.map(note => idbPut('notes', note)));
+      // After migrating, we can clear the local storage copy if not encrypted
+      if (!currentMeta.encryption?.enabled) {
+        localStorage.removeItem(STORAGE_KEYS.NOTES);
+      }
     } else if (existing.length && !currentMeta.encryption?.enabled) {
       cacheSet(STORAGE_KEYS.NOTES, existing);
-      localWrite(STORAGE_KEYS.NOTES, existing);
+      // Clean up localStorage if it still exists
+      localStorage.removeItem(STORAGE_KEYS.NOTES);
     }
 
     const kvKeys = [STORAGE_KEYS.PROFILE, STORAGE_KEYS.MOODS, STORAGE_KEYS.GAMIFICATION, STORAGE_KEYS.VERSION_META];
@@ -586,6 +600,8 @@
           store.clear();
           (newNotes || []).forEach(note => store.put(note));
         });
+        // Clear from localStorage to save space if it was there
+        localStorage.removeItem(STORAGE_KEYS.NOTES);
       }
     } else {
       localWrite(STORAGE_KEYS.NOTES, payload);
@@ -703,6 +719,79 @@
     return null;
   }
 
+  async function getFolders() {
+    await ready;
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      return idbGetAll('folders');
+    }
+    return getValue(STORAGE_KEYS.FOLDERS, []);
+  }
+
+  async function setFolders(folders = []) {
+    await ready;
+    cacheSet(STORAGE_KEYS.FOLDERS, folders);
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      await idbTransaction('folders', 'readwrite', (store) => {
+        store.clear();
+        folders.forEach(f => store.put(f));
+      });
+    } else {
+      await setValue(STORAGE_KEYS.FOLDERS, folders);
+    }
+    return true;
+  }
+
+  async function getTrash() {
+    await ready;
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      return idbGetAll('trash');
+    }
+    return getValue(STORAGE_KEYS.TRASH, []);
+  }
+
+  async function moveToTrash(noteId) {
+    await ready;
+    const notes = await getNotes();
+    const noteIdx = notes.findIndex(n => n.id === noteId);
+    if (noteIdx === -1) return false;
+
+    const note = notes.splice(noteIdx, 1)[0];
+    note.deletedAt = new Date().toISOString();
+
+    await setNotes(notes);
+
+    const trash = await getTrash();
+    trash.push(note);
+
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      await idbPut('trash', note);
+    } else {
+      await setValue(STORAGE_KEYS.TRASH, trash);
+    }
+    return true;
+  }
+
+  async function restoreFromTrash(noteId) {
+    await ready;
+    const trash = await getTrash();
+    const noteIdx = trash.findIndex(n => n.id === noteId);
+    if (noteIdx === -1) return false;
+
+    const note = trash.splice(noteIdx, 1)[0];
+    delete note.deletedAt;
+
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      await idbTransaction('trash', 'readwrite', (store) => store.delete(noteId));
+    } else {
+      await setValue(STORAGE_KEYS.TRASH, trash);
+    }
+
+    const notes = await getNotes();
+    notes.unshift(note);
+    await setNotes(notes);
+    return true;
+  }
+
   async function vacuum() {
     await ready;
     CLEAN_KEYS.forEach((key) => {
@@ -737,6 +826,11 @@
     onLock: (fn) => { listeners.lock.add(fn); return () => listeners.lock.delete(fn); },
     getMeta,
     getUsage,
+    getFolders,
+    setFolders,
+    getTrash,
+    moveToTrash,
+    restoreFromTrash,
     vacuum
   };
 })(window);

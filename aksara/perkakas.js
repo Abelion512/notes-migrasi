@@ -1,11 +1,13 @@
 (function (global) {
   const STORAGE_KEYS = {
     NOTES: 'abelion-notes-v2',
+    FOLDERS: 'abelion-folders',
     PROFILE: 'abelion-profile',
     MOODS: 'abelion-moods',
     GAMIFICATION: 'abelion-gamification',
     NOTE_DRAFTS: 'abelion-note-drafts',
-    VERSION_META: 'abelion-version-meta'
+    VERSION_META: 'abelion-version-meta',
+    TRASH: 'abelion-trash'
   };
 
   const APP_VERSION_BASE = Object.freeze({
@@ -221,6 +223,7 @@
 
       element.style.zIndex = zIndex;
       element.dataset.modalIndex = index;
+      element.classList.add('show');
       this.stack.push({ id, element, zIndex });
 
       if (this.stack.length === 1) {
@@ -235,8 +238,7 @@
       if (idx === -1) return;
 
       const modal = this.stack[idx];
-      // Note: we don't remove element here, caller handles display:none
-      // We just manage the stack state
+      modal.element.classList.remove('show');
       this.stack.splice(idx, 1);
 
       if (this.stack.length === 0) {

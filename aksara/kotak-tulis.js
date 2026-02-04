@@ -33,6 +33,9 @@
     text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
 
+    // Wiki-links [[Link]]
+    text = text.replace(/\[\[(.+?)\]\]/g, '<a href="#" class="wiki-link" data-target="$1">[[$1]]</a>');
+
     return text;
   }
 
@@ -41,6 +44,22 @@
     const htmlParts = [];
     let inList = false;
     lines.forEach((line) => {
+      const headingMatch = line.match(/^(#{1,3})\s+(.*)/);
+      if (headingMatch) {
+        if (inList) { htmlParts.push('</ul>'); inList = false; }
+        const level = headingMatch[1].length;
+        htmlParts.push(`<h${level + 1}>${inlineMarkdown(headingMatch[2])}</h${level + 1}>`);
+        return;
+      }
+
+      const checkMatch = line.match(/^\s*\[([ xX])\]\s+(.*)/);
+      if (checkMatch) {
+        if (inList) { htmlParts.push('</ul>'); inList = false; }
+        const checked = checkMatch[1].toLowerCase() === 'x';
+        htmlParts.push(`<div class="checkbox-line"><input type="checkbox" ${checked ? 'checked' : ''} disabled> ${inlineMarkdown(checkMatch[2])}</div>`);
+        return;
+      }
+
       const listMatch = line.match(/^\s*[-*]\s+(.*)/);
       if (listMatch) {
         if (!inList) htmlParts.push('<ul>');
@@ -165,6 +184,8 @@
     const buttons = [
       { label: 'B', title: 'Bold (Ctrl/Cmd+B)', action: () => surroundSelection(textarea, '**', '**') },
       { label: 'I', title: 'Italic (Ctrl/Cmd+I)', action: () => surroundSelection(textarea, '*', '*') },
+      { label: 'H', title: 'Heading', action: () => surroundSelection(textarea, '# ', '') },
+      { label: '☑', title: 'Task', action: () => surroundSelection(textarea, '[ ] ', '') },
       { label: '</>', title: 'Code (Ctrl/Cmd+E)', action: () => surroundSelection(textarea, '`', '`') },
       { label: '•', title: 'List (Ctrl/Cmd+L)', action: () => toggleList(textarea) },
       { label: '↶', title: 'Undo', action: () => undoManager.undo() },
@@ -208,6 +229,12 @@
             <input name="title" maxlength="100" autocomplete="off" required />
           </div>
           <div class="note-editor-row">
+            <label>Folder</label>
+            <select name="folderId" class="input-control">
+              <option value="">(Tanpa Folder)</option>
+            </select>
+          </div>
+          <div class="note-editor-row">
              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                <input type="checkbox" name="isSecret" style="width: auto;" />
                <span>Simpan sebagai Catatan Rahasia (Secret)</span>
@@ -218,6 +245,10 @@
             <div class="editor-area-wrapper"></div>
           </div>
           <div class="note-editor-actions">
+            <div class="export-actions-mini" style="margin-right: auto; display: flex; gap: 8px;">
+               <button type="button" class="ghost-btn" data-action="export-md" style="padding: 6px 12px; font-size: 0.85em;">MD</button>
+               <button type="button" class="ghost-btn" data-action="export-txt" style="padding: 6px 12px; font-size: 0.85em;">TXT</button>
+            </div>
             <button type="button" class="btn-ghost" data-action="cancel">Tutup</button>
             <button type="submit" class="btn-blue">Simpan</button>
           </div>
@@ -256,6 +287,7 @@
     const form = overlay.querySelector('.note-editor-form');
     const iconInput = form.querySelector('input[name="icon"]');
     const titleInput = form.querySelector('input[name="title"]');
+    const folderSelect = form.querySelector('select[name="folderId"]');
     const secretInput = form.querySelector('input[name="isSecret"]');
     const areaWrapper = form.querySelector('.editor-area-wrapper');
     const previewBody = overlay.querySelector('.preview-body');
@@ -276,9 +308,31 @@
     titleInput.value = merged.title || '';
     textarea.value = merged.content || '';
     secretInput.checked = Boolean(merged.isSecret);
+    folderSelect.value = merged.folderId || '';
+
+    // Populate folders
+    if (global.AbelionStorage) {
+      global.AbelionStorage.getFolders().then(folders => {
+        while (folderSelect.options.length > 1) folderSelect.remove(1);
+        folders.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f.id;
+          opt.textContent = f.name;
+          folderSelect.appendChild(opt);
+        });
+        folderSelect.value = merged.folderId || '';
+      });
+    }
 
     const setPreview = () => {
-      previewBody.innerHTML = markdownToHtml(textarea.value);
+      const text = textarea.value;
+      const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const charCount = text.length;
+      const readTime = Math.ceil(wordCount / 200); // Avg 200 wpm
+
+      subtitle.textContent = `${mode === 'edit' ? 'Edit' : 'Baru'} • ${wordCount} kata • ${readTime} mnt baca`;
+
+      previewBody.innerHTML = markdownToHtml(text);
     };
 
     const debouncedDraft = debounce(() => {
@@ -287,7 +341,8 @@
         icon: iconInput.value,
         title: titleInput.value,
         content: textarea.value,
-        isSecret: secretInput.checked
+        isSecret: secretInput.checked,
+        folderId: folderSelect.value
       };
       writeDrafts(nextDrafts);
       setPreview();
@@ -324,11 +379,36 @@
     overlay.querySelector('.editor-close').addEventListener('click', close);
     form.querySelector('[data-action="cancel"]').addEventListener('click', close);
 
+    const downloadFile = (content, filename, type) => {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    form.querySelector('[data-action="export-md"]').onclick = () => {
+      const title = titleInput.value.trim() || 'Untitled';
+      const filename = title.replace(/[/\\?%*:|"<>]/g, '-') + '.md';
+      const content = `---\ntitle: ${title}\ndate: ${new Date().toISOString().split('T')[0]}\n---\n\n${textarea.value}`;
+      downloadFile(content, filename, 'text/markdown');
+    };
+
+    form.querySelector('[data-action="export-txt"]').onclick = () => {
+      const title = titleInput.value.trim() || 'Untitled';
+      const filename = title.replace(/[/\\?%*:|"<>]/g, '-') + '.txt';
+      const content = `${title}\n${new Date().toLocaleString()}\n\n${textarea.value}`;
+      downloadFile(content, filename, 'text/plain');
+    };
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const payload = {
         icon: sanitizeText(iconInput.value.trim()).slice(0, 2),
         title: sanitizeText(titleInput.value.trim()),
+        folderId: folderSelect.value,
         contentMarkdown: textarea.value.trim(),
         isSecret: secretInput.checked
       };
