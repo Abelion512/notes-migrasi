@@ -75,9 +75,11 @@
   ].filter(Boolean));
 
   const ready = (async () => {
-    // 1. Wait for Supabase Env to load (optional)
+    // Check if Supabase is disabled by user
+    const supabaseDisabled = localStorage.getItem('abelion-disable-supabase') === 'true';
+
     // 1. Wait for Supabase Env to load (optional) with Timeout
-    if (global.AbelionSupabase && global.AbelionSupabase.ready) {
+    if (!supabaseDisabled && global.AbelionSupabase && global.AbelionSupabase.ready) {
       try {
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase init timeout')), 2000));
         const client = await Promise.race([global.AbelionSupabase.ready, timeout]);
@@ -550,6 +552,14 @@
   }
 
   async function setNotes(notes = []) {
+    // 0. Quota check
+    if (navigator?.storage?.estimate) {
+      const { usage, quota } = await navigator.storage.estimate();
+      if (quota && usage && (usage / quota) > 0.95) {
+        throw new Error('Storage quota almost full. Please delete some notes or clear cache.');
+      }
+    }
+
     const meta = cacheGet(META_KEY) || DEFAULT_META;
     const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.NOTES);
 

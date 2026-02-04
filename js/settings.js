@@ -112,6 +112,97 @@
     });
   }
 
+  const supabaseToggle = document.getElementById('supabase-toggle');
+  if (supabaseToggle) {
+    const disabled = localStorage.getItem('abelion-disable-supabase') === 'true';
+    supabaseToggle.checked = !disabled;
+    supabaseToggle.onchange = (e) => {
+      localStorage.setItem('abelion-disable-supabase', (!e.target.checked).toString());
+      alert('Pengaturan sinkronisasi disimpan. Muat ulang halaman untuk menerapkan perubahan.');
+    };
+  }
+
+  // --- Export / Import ---
+  const exportJsonBtn = document.getElementById('export-json-btn');
+  if (exportJsonBtn) {
+    exportJsonBtn.onclick = async () => {
+      try {
+        const notes = await Storage.getNotes();
+        const data = JSON.stringify({
+          version: '2.0',
+          exportedAt: new Date().toISOString(),
+          notes
+        }, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `abelion-notes-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Gagal export JSON: ' + err.message);
+      }
+    };
+  }
+
+  const exportMdBtn = document.getElementById('export-md-btn');
+  if (exportMdBtn) {
+    exportMdBtn.onclick = async () => {
+      if (typeof JSZip === 'undefined') {
+        alert('Library JSZip belum dimuat. Periksa koneksi internet.');
+        return;
+      }
+      try {
+        const notes = await Storage.getNotes();
+        const zip = new JSZip();
+        notes.forEach(note => {
+          const filename = (note.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + '.md';
+          const content = `---\ntitle: ${note.title || ''}\ndate: ${note.date || ''}\ntags: ${note.label || ''}\n---\n\n${note.contentMarkdown || note.content || ''}`;
+          zip.file(filename, content);
+        });
+        const content = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `abelion-notes-markdown-${new Date().toISOString().split('T')[0]}.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Gagal export Markdown: ' + err.message);
+      }
+    };
+  }
+
+  const importInput = document.getElementById('import-json-input');
+  if (importInput) {
+    importInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          const importedNotes = Array.isArray(data.notes) ? data.notes : (Array.isArray(data) ? data : null);
+          if (!importedNotes) throw new Error('Format file tidak valid.');
+
+          if (confirm(`Impor ${importedNotes.length} catatan? Ini akan menggabungkan dengan catatan yang sudah ada.`)) {
+            const existing = await Storage.getNotes();
+            const existingIds = new Set(existing.map(n => n.id));
+            const toAdd = importedNotes.filter(n => !existingIds.has(n.id));
+            const merged = [...existing, ...toAdd];
+            await Storage.setNotes(merged);
+            alert(`Berhasil mengimpor ${toAdd.length} catatan baru.`);
+            location.reload();
+          }
+        } catch (err) {
+          alert('Gagal impor: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+  }
+
   const meta = getVersionMeta();
   const label = document.getElementById('settings-version-label');
   if (meta?.version && label) {

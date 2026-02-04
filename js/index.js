@@ -5,13 +5,12 @@ const {
   formatTanggal,
   formatTanggalRelative,
   debounce,
-  awardXP
+  generateId
 } = AbelionUtils;
 
 const Gamification = window.AbelionGamification || null;
 const Storage = window.AbelionStorage;
 
-const NoteEditor = window.NoteEditorModal;
 const ModalManager = AbelionUtils.ModalManager;
 
 // Global Error Handling
@@ -108,12 +107,6 @@ function noteDraftKey(id = 'new') {
   return `note-${id}`;
 }
 
-function generateNoteId() {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  return `uid-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
 
 function markdownFromNote(note) {
   if (!note) return '';
@@ -184,6 +177,22 @@ async function renderMoodGraph() {
       <div class="mood-date">${m.label}</div>
     </div>
   `).join('');
+}
+
+async function updateMood() {
+  const emojis = ['😊', '😐', '😔', '😴', '🔥', '🌈', '💪'];
+  const mood = prompt(`Bagaimana perasaanmu hari ini?\n${emojis.join(' ')}`, '😊');
+  if (!mood || !emojis.includes(mood)) return;
+
+  const today = new Date().toISOString().split('T')[0];
+  const stored = await Storage.getValue(STORAGE_KEYS.MOODS, {});
+  stored[today] = mood;
+  await Storage.setValue(STORAGE_KEYS.MOODS, stored);
+  await renderMoodGraph();
+  if (Gamification) {
+    // Optional: give XP for tracking mood
+    // Gamification.awardXP(10, 'Tracking mood harian');
+  }
 }
 
 // --- Search & Filter ---
@@ -300,7 +309,12 @@ function setupDelegation() {
 }
 
 function openNoteModal(mode = 'create', existingNote = null) {
-  if (!NoteEditor) return;
+  const NoteEditor = window.NoteEditorModal;
+  if (!NoteEditor) {
+    console.error('NoteEditorModal not loaded');
+    alert('Editor belum siap. Silakan coba lagi sebentar.');
+    return;
+  }
   NoteEditor.open({
     mode,
     initialValue: {
@@ -328,7 +342,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
           if (payload.isSecret) Gamification.recordSecretNoteUsed();
         }
       } else {
-        const id = generateNoteId();
+        const id = generateId('note');
         notes.unshift({
           id,
           ...payload,
@@ -348,9 +362,48 @@ function openNoteModal(mode = 'create', existingNote = null) {
   });
 }
 
-document.getElementById('add-note-btn').onclick = () => openNoteModal('create');
-
 window.addEventListener('DOMContentLoaded', async () => {
+  const addBtn = document.getElementById('add-note-btn');
+  if (addBtn) {
+    addBtn.onclick = () => openNoteModal('create');
+  }
+
+  const aboutBtn = document.getElementById('nav-about');
+  const aboutModal = document.getElementById('about-modal');
+  const aboutClose = document.getElementById('about-close');
+  const moodBtn = document.getElementById('update-mood-btn');
+
+  if (moodBtn) {
+    moodBtn.onclick = updateMood;
+  }
+
+  if (aboutBtn && aboutModal) {
+    aboutBtn.onclick = () => {
+      if (ModalManager) ModalManager.open('about-modal', aboutModal);
+      else aboutModal.classList.add('show');
+    };
+  }
+  if (aboutClose) {
+    aboutClose.onclick = () => {
+      if (ModalManager) ModalManager.close('about-modal');
+      else aboutModal.classList.remove('show');
+    };
+  }
+
+  function updateOnlineStatus() {
+    const badge = document.getElementById('offline-badge');
+    if (!badge) return;
+    if (navigator.onLine) {
+      badge.classList.add('hidden');
+    } else {
+      badge.classList.remove('hidden');
+    }
+  }
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
   await Storage.ready;
   await loadNotes();
   await renderMoodGraph();
