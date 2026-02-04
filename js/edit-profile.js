@@ -276,30 +276,30 @@
   }
 
   function compressImage(file) {
-    const MAX_DIMENSION = 240; // resized constant name for clarity
+    const MAX_DIMENSION = 240;
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          // Release memory
-          URL.revokeObjectURL(img.src);
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
 
-          const canvas = document.createElement('canvas');
-          const ratio = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
-          canvas.width = Math.max(1, Math.round(img.width * ratio));
-          canvas.height = Math.max(1, Math.round(img.height * ratio));
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        const ratio = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
+        canvas.width = Math.max(1, Math.round(img.width * ratio));
+        canvas.height = Math.max(1, Math.round(img.height * ratio));
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          // Use lower quality for storage efficiency
-          resolve(canvas.toDataURL('image/jpeg', 0.70));
-        };
-        img.onerror = reject;
-        img.src = event.target.result;
+        // Use lower quality for storage efficiency
+        resolve(canvas.toDataURL('image/jpeg', 0.70));
       };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Gagal memuat gambar'));
+      };
+
+      img.src = objectUrl;
     });
   }
 

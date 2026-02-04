@@ -66,4 +66,29 @@
 
   Storage.onLock(() => showLockIfNeeded());
   Storage.ready.then(showLockIfNeeded);
+
+  // Auto-lock on inactivity
+  let idleTimer;
+  const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    if (Storage.isEncryptionEnabled() && !Storage.isLocked()) {
+      idleTimer = setTimeout(() => {
+        console.log('Auto-locking due to inactivity');
+        Storage.lock();
+      }, IDLE_TIMEOUT);
+    }
+  }
+  ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(name => {
+    window.addEventListener(name, debounce(resetIdleTimer, 1000), { passive: true });
+  });
+  resetIdleTimer();
+
+  function debounce(fn, delay) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
 })(window);

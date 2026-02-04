@@ -2073,3 +2073,23 @@ body.modal-open {
   color: #64748b;
   font-size: 0.85em;
 }
+/* Secret Note Styles */
+.note-content-masked {
+  color: var(--text-secondary);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  filter: blur(3px);
+  user-select: none;
+  pointer-events: none;
+  margin-top: 8px;
+  padding: 8px 0;
+}
+.note-card--secret {
+  border-left: 4px solid #007AFF;
+}
+.lock-icon {
+  font-style: normal;
+  filter: none;
+}

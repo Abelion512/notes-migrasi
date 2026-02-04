@@ -5,9 +5,6 @@
     sanitizeRichContent,
     safeGetItem,
     safeSetItem,
-    debounce
-    safeGetItem,
-    safeSetItem,
     debounce,
     ModalManager
   } = global.AbelionUtils || {};
@@ -32,7 +29,6 @@
     const escaped = escapeHTML(String(input || ''));
     let text = escaped.replace(/\u00A0/g, ' ');
 
-    // Regex captures are already escaped
     text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -212,6 +208,12 @@
             <input name="title" maxlength="100" autocomplete="off" required />
           </div>
           <div class="note-editor-row">
+             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+               <input type="checkbox" name="isSecret" style="width: auto;" />
+               <span>Simpan sebagai Catatan Rahasia (Secret)</span>
+             </label>
+          </div>
+          <div class="note-editor-row">
             <label>Isi (Markdown ringan)</label>
             <div class="editor-area-wrapper"></div>
           </div>
@@ -254,6 +256,7 @@
     const form = overlay.querySelector('.note-editor-form');
     const iconInput = form.querySelector('input[name="icon"]');
     const titleInput = form.querySelector('input[name="title"]');
+    const secretInput = form.querySelector('input[name="isSecret"]');
     const areaWrapper = form.querySelector('.editor-area-wrapper');
     const previewBody = overlay.querySelector('.preview-body');
 
@@ -272,6 +275,7 @@
     iconInput.value = merged.icon || '';
     titleInput.value = merged.title || '';
     textarea.value = merged.content || '';
+    secretInput.checked = Boolean(merged.isSecret);
 
     const setPreview = () => {
       previewBody.innerHTML = markdownToHtml(textarea.value);
@@ -282,7 +286,8 @@
       nextDrafts[draftKey] = {
         icon: iconInput.value,
         title: titleInput.value,
-        content: textarea.value
+        content: textarea.value,
+        isSecret: secretInput.checked
       };
       writeDrafts(nextDrafts);
       setPreview();
@@ -294,8 +299,14 @@
     subtitle.textContent = mode === 'edit' ? 'Edit catatan' : 'Catatan baru';
     titleEl.textContent = mode === 'edit' ? 'Edit Catatan' : 'Catatan Baru';
 
+    let closeModalToken = () => { };
+
     const close = () => {
-      document.body.classList.remove('modal-open');
+      if (ModalManager) {
+        closeModalToken();
+      } else {
+        document.body.classList.remove('modal-open');
+      }
       overlay.remove();
     };
 
@@ -303,23 +314,12 @@
       if (event.target === overlay) close();
     });
 
-    // Integrate ModalManager
-    let closeModalToken = () => { };
+    document.body.appendChild(overlay);
     if (ModalManager) {
       closeModalToken = ModalManager.open('editor-modal', overlay);
-      // Remove manual body class additions as ModalManager handles it
-      // document.body.classList.add('modal-open'); 
     } else {
       document.body.classList.add('modal-open');
     }
-
-    // Override close function to use manager
-    const originalClose = close;
-    close = () => {
-      if (ModalManager) closeModalToken();
-      else document.body.classList.remove('modal-open');
-      overlay.remove();
-    };
 
     overlay.querySelector('.editor-close').addEventListener('click', close);
     form.querySelector('[data-action="cancel"]').addEventListener('click', close);
@@ -329,7 +329,8 @@
       const payload = {
         icon: sanitizeText(iconInput.value.trim()).slice(0, 2),
         title: sanitizeText(titleInput.value.trim()),
-        contentMarkdown: textarea.value.trim()
+        contentMarkdown: textarea.value.trim(),
+        isSecret: secretInput.checked
       };
       if (!payload.title || !payload.contentMarkdown) return;
       payload.contentHtml = markdownToHtml(payload.contentMarkdown);
@@ -351,30 +352,23 @@
       }
     });
 
-  }
-});
+    titleInput.focus();
 
-if (!ModalManager) {
-  document.body.classList.add('modal-open');
-}
-document.body.appendChild(overlay);
-titleInput.focus();
-
-return {
-  close,
-  updatePreview: setPreview
-};
+    return {
+      close,
+      updatePreview: setPreview
+    };
   }
 
-global.NoteEditorModal = {
-  open: openModalEditor,
-  toHtml: markdownToHtml,
-  toMarkdown: htmlToMarkdown,
-  readDraft: (key) => readDrafts()[key] || null,
-  clearDraft: (key) => {
-    const drafts = readDrafts();
-    delete drafts[key];
-    writeDrafts(drafts);
-  }
-};
-}) (window);
+  global.NoteEditorModal = {
+    open: openModalEditor,
+    toHtml: markdownToHtml,
+    toMarkdown: htmlToMarkdown,
+    readDraft: (key) => readDrafts()[key] || null,
+    clearDraft: (key) => {
+      const drafts = readDrafts();
+      delete drafts[key];
+      writeDrafts(drafts);
+    }
+  };
+})(window);

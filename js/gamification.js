@@ -950,11 +950,28 @@
     });
   }
 
+  function recordSecretNoteUsed() {
+    const state = ensureState();
+    const previousProgress = resolveProgress(state.totalXp);
+
+    // Logic: If user has at least 5 notes (created or updated) that are marked secret
+    // But since we don't track secret status in the gamification state's notes map yet,
+    // let's just increment a flag or count.
+    state.stats.secretNotesCreated = (state.stats.secretNotesCreated || 0) + 1;
+
+    if (state.stats.secretNotesCreated >= 5) {
+      grantBadge(state, 'purist');
+    }
+
+    persistState(state, previousProgress);
+  }
+
   global.AbelionGamification = {
     trackDailyLogin,
     recordNoteCreated,
     recordNoteUpdated,
     recordNoteDeleted,
+    recordSecretNoteUsed,
     recordChecklistCompletion,
     evaluateProfileCompletion,
     getBadgeCatalog,
