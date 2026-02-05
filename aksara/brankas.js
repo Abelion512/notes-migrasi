@@ -771,6 +771,37 @@
     return true;
   }
 
+  async function purgeOldTrash(daysThreshold = 30) {
+    await ready;
+    const trash = await getTrash();
+    const now = new Date();
+    const thresholdMs = daysThreshold * 24 * 60 * 60 * 1000;
+
+    const remaining = [];
+    const toDelete = [];
+
+    trash.forEach(note => {
+      const deletedAt = new Date(note.deletedAt || 0);
+      if (now - deletedAt > thresholdMs) {
+        toDelete.push(note.id);
+      } else {
+        remaining.push(note);
+      }
+    });
+
+    if (toDelete.length === 0) return 0;
+
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      await idbTransaction('trash', 'readwrite', (store) => {
+        toDelete.forEach(id => store.delete(id));
+      });
+    } else {
+      await setValue(STORAGE_KEYS.TRASH, remaining);
+    }
+
+    return toDelete.length;
+  }
+
   async function restoreFromTrash(noteId) {
     await ready;
     const trash = await getTrash();
@@ -831,6 +862,7 @@
     getTrash,
     moveToTrash,
     restoreFromTrash,
+    purgeOldTrash,
     vacuum
   };
 })(window);

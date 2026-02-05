@@ -59,7 +59,7 @@
       name: 'Novice',
       label: 'Novice (Pemula)',
       min: 1,
-      max: 100,
+      max: 50,
       summary: 'Fokus membangun kebiasaan menulis harian.',
       hint: 'Pertahankan ritme mencatat untuk menembus Apprentice.'
     },
@@ -67,8 +67,8 @@
       id: 'apprentice',
       name: 'Apprentice',
       label: 'Apprentice (Magang)',
-      min: 101,
-      max: 300,
+      min: 51,
+      max: 150,
       summary: 'Eksplorasi fitur catatan untuk memperkaya proses belajar.',
       hint: 'Gunakan variasi catatan untuk menuju Scholar.'
     },
@@ -76,8 +76,8 @@
       id: 'scholar',
       name: 'Scholar',
       label: 'Scholar (Cendekia)',
-      min: 301,
-      max: 900,
+      min: 151,
+      max: 400,
       summary: 'Satukan pola dan insight untuk mempercepat peningkatan level.',
       hint: 'Optimalkan konsistensi untuk menembus Archivist.'
     },
@@ -85,16 +85,16 @@
       id: 'archivist',
       name: 'Archivist',
       label: 'Archivist (Arsiparis)',
-      min: 901,
-      max: 1800,
+      min: 401,
+      max: 1000,
       summary: 'Kurasi catatanmu dan bantu diri masa depan menemukan referensi.',
       hint: 'Bersiap menuju tier puncak dengan menjaga kualitas catatan.'
     },
     {
       id: 'luminary',
       name: 'Luminary',
-      label: 'Luminary',
-      min: 1801,
+      label: 'Luminary (Legenda)',
+      min: 1001,
       max: Number.POSITIVE_INFINITY,
       summary: 'Legenda catatan yang terus berbagi wawasan.',
       hint: 'Terus eksplorasi tantangan baru untuk mempertahankan status.'
@@ -519,20 +519,71 @@
   }
 
   const SPECIAL_DATES_MAP = {
-    '0-1': true, '1-3': true, '1-14': true, '4-11': true, '5-4': true,
-    '7-19': true, '8-29': true, '10-11': true, '11-25': true
+    '0-1': 'Tahun Baru',
+    '1-14': 'Hari Kasih Sayang',
+    '3-21': 'Hari Kartini',
+    '4-1': 'Hari Buruh',
+    '4-2': 'Hari Pendidikan Nasional',
+    '4-20': 'Hari Kebangkitan Nasional',
+    '5-1': 'Hari Lahir Pancasila',
+    '7-17': 'Hari Kemerdekaan RI',
+    '9-1': 'Hari Kesaktian Pancasila',
+    '9-28': 'Hari Sumpah Pemuda',
+    '10-10': 'Hari Pahlawan',
+    '11-22': 'Hari Ibu',
+    '11-25': 'Hari Natal'
   };
 
-  function applySeasonalBonus(state, isoDate) {
+  async function getCustomSpecialDays() {
+    return safeGetItem(STORAGE_KEYS.CUSTOM_SPECIAL_DAYS, []);
+  }
+
+  async function addCustomSpecialDay(month, day, name) {
+    const days = await getCustomSpecialDays();
+    const newDay = {
+      id: utils.generateId('sd'),
+      month: parseInt(month),
+      day: parseInt(day),
+      name: name.trim()
+    };
+    days.push(newDay);
+    await safeSetItem(STORAGE_KEYS.CUSTOM_SPECIAL_DAYS, days);
+    return newDay;
+  }
+
+  async function deleteCustomSpecialDay(id) {
+    let days = await getCustomSpecialDays();
+    days = days.filter(d => d.id !== id);
+    await safeSetItem(STORAGE_KEYS.CUSTOM_SPECIAL_DAYS, days);
+    return true;
+  }
+
+  async function applySeasonalBonus(state, isoDate) {
     if (!isoDate) return 0;
     const date = new Date(isoDate);
     const m = date.getMonth();
     const d = date.getDate();
     const key = `${m}-${d}`;
 
-    // Check range 10-15 Dec (Month 11)
-    let isSpecial = SPECIAL_DATES_MAP[key];
-    if (m === 11 && d >= 10 && d <= 15) isSpecial = true;
+    // 1. Check System Special Dates
+    let specialName = SPECIAL_DATES_MAP[key] || '';
+    let isSpecial = !!specialName;
+
+    // 2. Check Range Special Dates
+    if (m === 11 && d >= 10 && d <= 15) {
+      isSpecial = true;
+      specialName = 'Pekan Menulis Akhir Tahun';
+    }
+
+    // 3. Check User Custom Special Dates
+    if (!isSpecial) {
+      const customDays = await getCustomSpecialDays();
+      const match = customDays.find(cd => cd.month === m && cd.day === d);
+      if (match) {
+        isSpecial = true;
+        specialName = match.name;
+      }
+    }
 
     if (!isSpecial) return 0;
 
@@ -676,9 +727,14 @@
       total: progress.totalXp,
       toNext: progress.xpToNext
     };
-    profile.badges = badges.map(item => item.icon).slice(0, 12);
-    if (!profile.activeBadge || !profile.badges.includes(profile.activeBadge)) {
-      profile.activeBadge = profile.badges[profile.badges.length - 1] || profile.badges[0] || '';
+    const earnedIcons = badges.map(item => item.icon).filter(Boolean);
+    profile.badges = earnedIcons.slice(0, 12);
+
+    // Default badges to ensure fallback
+    const defaults = ['🪔', '🪶', '📚'];
+
+    if (!profile.activeBadge || (!earnedIcons.includes(profile.activeBadge) && !defaults.includes(profile.activeBadge))) {
+      profile.activeBadge = earnedIcons[earnedIcons.length - 1] || earnedIcons[0] || defaults[0];
     }
     profile.xpGuideUrl = XP_GUIDE_URL;
     profile.updatedAt = new Date().toISOString();
@@ -699,8 +755,8 @@
     const streakCount = updateStreak(state.streaks.login, iso);
     state.stats.logins += 1;
 
-    // Base login: +15
-    let gained = addXp(state, 15);
+    // Base login: +25
+    let gained = addXp(state, 25);
     let bonus = 0;
 
     // Streak Bonus: Every 5 days -> +150
@@ -967,6 +1023,9 @@
   }
 
   global.AbelionGamification = {
+    getCustomSpecialDays,
+    addCustomSpecialDay,
+    deleteCustomSpecialDay,
     trackDailyLogin,
     recordNoteCreated,
     recordNoteUpdated,

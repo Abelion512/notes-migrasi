@@ -36,9 +36,12 @@
     </section>
 
     <section class="folder-section">
-      <div class="folder-container" id="folder-list">
-        <!-- Folders injected here -->
-        <div class="folder-pill active" data-id="all">Semua</div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="folder-container" id="folder-list" style="flex: 1;">
+          <!-- Folders injected here -->
+          <div class="folder-pill active" data-id="all">Semua</div>
+        </div>
+        <button id="add-folder-btn" class="ghost-btn" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--frosted); border: 0.5px solid var(--border-subtle);">＋</button>
       </div>
     </section>
 
@@ -132,6 +135,7 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="aksara/corak.js"></script>
   <script src="aksara/pemuat.js"></script>
   <script src="aksara/utusan.js"></script>

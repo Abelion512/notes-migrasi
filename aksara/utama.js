@@ -89,20 +89,24 @@ async function loadFolders() {
   renderFolders();
 }
 
+function prepareNoteForSearch(note) {
+  return {
+    ...note,
+    _searchText: [
+      note.title || '',
+      note.contentMarkdown || (note.content || '').replace(/<[^>]+>/g, ''),
+      note.label || ''
+    ].join(' ').toLowerCase()
+  };
+}
+
 async function loadNotes() {
   try {
     const storedNotes = await Storage.getNotes({ sortByUpdatedAt: false });
     // Sort by sortOrder if available
     const sortedNotes = storedNotes.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
-    notes = sortedNotes.map(note => ({
-      ...note,
-      _searchText: [
-        note.title || '',
-        note.contentMarkdown || (note.content || '').replace(/<[^>]+>/g, ''),
-        note.label || ''
-      ].join(' ').toLowerCase()
-    }));
+    notes = sortedNotes.map(prepareNoteForSearch);
     notesLoaded = true;
     return notes;
   } catch (error) {
@@ -414,6 +418,7 @@ function showSkeletons() {
 async function renderNotes() {
   const grid = document.getElementById("notes-grid");
   const header = document.getElementById("notes-list-header");
+  if (!grid || !header) return;
 
   if (activeFolderId === 'trash') {
     header.textContent = "Sampah";
@@ -946,14 +951,15 @@ function openNoteModal(mode = 'create', existingNote = null) {
     onSave: async (payload) => {
       const iso = new Date().toISOString();
       if (mode === 'edit' && existingNote) {
-        Object.assign(existingNote, {
+        Object.assign(existingNote, prepareNoteForSearch({
+          ...existingNote,
           icon: payload.icon,
           title: payload.title,
           content: payload.contentHtml,
           contentMarkdown: payload.contentMarkdown,
           isSecret: payload.isSecret,
           updatedAt: iso
-        });
+        }));
         if (Gamification) {
           const oldLen = (existingNote.contentMarkdown || existingNote.content || '').length;
           const newLen = (payload.contentMarkdown || payload.contentHtml || '').length;
@@ -963,7 +969,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         }
       } else {
         const id = generateId('note');
-        notes.unshift({
+        const newNote = prepareNoteForSearch({
           id,
           ...payload,
           content: payload.contentHtml,
@@ -971,6 +977,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
           createdAt: iso,
           pinned: false
         });
+        notes.unshift(newNote);
         if (Gamification) {
           Gamification.recordNoteCreated({ id, createdAt: iso });
           if (payload.isSecret) Gamification.recordSecretNoteUsed();
@@ -1049,6 +1056,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   await loadFolders();
   await loadNotes();
+  if (Storage.purgeOldTrash) Storage.purgeOldTrash(30).catch(console.error);
   await renderMoodGraph();
   renderHeroContent();
   renderSearchBar();

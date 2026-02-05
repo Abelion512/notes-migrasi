@@ -7,7 +7,8 @@
     GAMIFICATION: 'abelion-gamification',
     NOTE_DRAFTS: 'abelion-note-drafts',
     VERSION_META: 'abelion-version-meta',
-    TRASH: 'abelion-trash'
+    TRASH: 'abelion-trash',
+    CUSTOM_SPECIAL_DAYS: 'abelion-custom-special-days'
   };
 
   const APP_VERSION_BASE = Object.freeze({

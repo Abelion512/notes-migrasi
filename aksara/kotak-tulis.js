@@ -35,6 +35,14 @@
   }
 
   function markdownToHtml(markdown) {
+    if (typeof marked !== 'undefined') {
+      // Use marked if available
+      let html = marked.parse(String(markdown || ''));
+      // Support WikiLinks: [[Target]] -> <a href="#" class="wiki-link" data-target="Target">[[Target]]</a>
+      html = html.replace(/\[\[(.+?)\]\]/g, '<a href="#" class="wiki-link" data-target="$1">[[$1]]</a>');
+      return sanitizeRichContent(html);
+    }
+    // Fallback to basic
     const lines = String(markdown || '').split(/\n/);
     const htmlParts = [];
     let inList = false;
@@ -104,9 +112,16 @@
           <button type="submit" form="editor-form" class="done-btn">Selesai</button>
         </div>
         <div class="note-editor-content">
+          <div class="editor-tabs" style="display: flex; border-bottom: 0.5px solid var(--border-subtle); margin-bottom: 12px;">
+            <button type="button" class="editor-tab active" data-tab="write" style="flex: 1; padding: 10px; background: none; border: none; font-size: 14px; font-weight: 600; color: var(--primary);">Tulis</button>
+            <button type="button" class="editor-tab" data-tab="preview" style="flex: 1; padding: 10px; background: none; border: none; font-size: 14px; color: var(--text-secondary);">Pratinjau</button>
+          </div>
           <form id="editor-form" class="note-editor-form">
             <input name="title" class="editor-title-input" placeholder="Judul" autocomplete="off" required />
-            <textarea name="content" class="editor-textarea" placeholder="Mulai menulis..." autocomplete="off"></textarea>
+            <div id="editor-input-area">
+              <textarea name="content" class="editor-textarea" placeholder="Mulai menulis..." autocomplete="off"></textarea>
+            </div>
+            <div id="editor-preview-area" class="hidden" style="min-height: 200px; padding: 12px; font-size: 17px; line-height: 1.6; overflow-y: auto;"></div>
 
             <div id="editor-details" class="hidden" style="margin-top: 20px; border-top: 0.5px solid var(--border-subtle); padding-top: 20px;">
               <div class="list-header">Detail Catatan</div>
@@ -151,6 +166,8 @@
     const form = overlay.querySelector('#editor-form');
     const titleInput = form.querySelector('input[name="title"]');
     const textarea = form.querySelector('textarea[name="content"]');
+    const previewArea = overlay.querySelector('#editor-preview-area');
+    const inputArea = overlay.querySelector('#editor-input-area');
     const iconInput = form.querySelector('input[name="icon"]');
     const folderSelect = form.querySelector('select[name="folderId"]');
     const secretInput = form.querySelector('input[name="isSecret"]');
@@ -206,6 +223,30 @@
       detailsDiv.classList.toggle('hidden');
       toggleDetailsBtn.textContent = detailsDiv.classList.contains('hidden') ? 'Tampilkan Detail' : 'Sembunyikan Detail';
     };
+
+    const tabs = overlay.querySelectorAll('.editor-tab');
+    tabs.forEach(tab => {
+      tab.onclick = () => {
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.style.color = 'var(--text-secondary)';
+          t.style.fontWeight = '400';
+        });
+        tab.classList.add('active');
+        tab.style.color = 'var(--primary)';
+        tab.style.fontWeight = '600';
+
+        if (tab.dataset.tab === 'preview') {
+          inputArea.classList.add('hidden');
+          previewArea.classList.remove('hidden');
+          previewArea.innerHTML = markdownToHtml(textarea.value);
+        } else {
+          previewArea.classList.add('hidden');
+          inputArea.classList.remove('hidden');
+          textarea.focus();
+        }
+      };
+    });
 
     const close = () => {
       overlay.classList.remove('show');

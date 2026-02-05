@@ -333,33 +333,9 @@ h3 { font-size: 17px; font-weight: 600; }
 
 .nav-label { font-size: 10px; font-weight: 500; }
 
-/* Special "+" Button in Bottom Nav */
+/* Special "+" Button in Bottom Nav - Reverted per user request */
 .nav-button.nav-add-btn {
-  color: var(--text-muted) !important;
-}
-
-.nav-button.nav-add-btn .nav-icon {
-  background: var(--primary);
-  color: white;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -30px;
-  box-shadow: 0 4px 15px var(--primary-soft);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 3px solid var(--page-bg);
-}
-
-.nav-button.nav-add-btn .nav-icon svg {
-  width: 28px !important;
-  height: 28px !important;
-}
-
-.nav-button.nav-add-btn .nav-label {
-  margin-top: 5px;
+  /* Match other buttons */
 }
 
 /* Folder Navigation */

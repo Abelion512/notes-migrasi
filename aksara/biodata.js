@@ -346,8 +346,11 @@
     const summary = gamification ? gamification.getProfileSummary() : null;
     const notesList = await window.AbelionStorage.getNotes();
 
-    document.getElementById('total-notes-stat').textContent = notesList.length;
-    document.getElementById('streak-stat').textContent = (summary?.stats?.logins || 0) + ' hari';
+    const totalNotesEl = document.getElementById('total-notes-stat');
+    const streakStatEl = document.getElementById('streak-stat');
+
+    if (totalNotesEl) totalNotesEl.textContent = notesList.length;
+    if (streakStatEl) streakStatEl.textContent = (summary?.stats?.logins || 0) + ' hari';
 
     // Simulated XP history for the last 7 days
     const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
