@@ -3,120 +3,99 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Edit Profil – Abelion Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../gaya/gayanya.css" />
-  <link rel="manifest" href="../izin.json" />
 </head>
 
 <body class="page-shell">
-  <main class="panel" id="edit-profile-panel">
-    <header class="panel-header">
-      <button type="button" class="ghost-btn" id="back-btn">← Kembali</button>
-      <button type="button" class="ghost-btn" id="version-btn">ℹ️ Version info</button>
+  <div class="main-content">
+    <header class="secondary-header">
+      <a href="biodata.html" class="back-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Profil
+      </a>
+      <h1 class="animated">Edit Profil</h1>
+      <p class="subtitle">Perbarui informasi diri dan badge favorit.</p>
     </header>
 
-    <form id="profile-form" class="profile-form" novalidate>
-      <section class="panel-section">
-        <h2>Informasi Dasar</h2>
-        <div class="section-card">
-          <div class="avatar-uploader">
-            <img src="../pustaka/default-avatar.svg" alt="Preview foto profil" id="profile-avatar"
-              class="profile-avatar is-empty" />
-            <div class="avatar-actions">
-              <button type="button" class="ghost-btn" id="avatar-upload-btn">Unggah foto</button>
-              <button type="button" class="ghost-btn danger" id="avatar-remove-btn">Hapus foto</button>
-            </div>
-            <input type="file" accept="image/*" id="photo-input" hidden />
-          </div>
-
-          <div class="form-grid">
-            <label class="form-field" for="profile-name">
-              <span>Nama tampilan</span>
-              <input type="text" id="profile-name" class="input-control" maxlength="40"
-                placeholder="Tuliskan nama panggilanmu" autocomplete="name" required />
-            </label>
-
-            <label class="form-field" for="profile-title">
-              <span>Title di profil</span>
-              <input type="text" id="profile-title" class="input-control" maxlength="32" placeholder="Explorer"
-                autocomplete="organization-title" />
-              <small>Ditampilkan di samping badge pada halaman profil.</small>
-            </label>
-
-            <label class="form-field" for="profile-bio">
-              <span>Bio singkat</span>
-              <textarea id="profile-bio" class="textarea-control" rows="3" maxlength="160"
-                placeholder="Ceritakan fokus belajarmu"></textarea>
-              <small>Opsional, maksimal 160 karakter.</small>
-            </label>
-
-            <label class="form-field" for="profile-link">
-              <span>Link sosial</span>
-              <input type="url" id="profile-link" class="input-control" placeholder="https://instagram.com/abelion"
-                autocomplete="url" inputmode="url" />
-              <small>Tambahkan satu tautan utama ke profilmu.</small>
-            </label>
-          </div>
+    <form id="profile-form" novalidate>
+      <div class="list-header">Foto Profil</div>
+      <div class="section-card" style="padding: 20px; text-align: center;">
+        <div style="position: relative; display: inline-block; margin-bottom: 16px;">
+          <img src="../pustaka/default-avatar.svg" alt="Preview foto profil" id="profile-avatar"
+            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: var(--border-subtle);" />
         </div>
-      </section>
-
-      <section class="panel-section">
-        <h2>Badge aktif</h2>
-        <div class="section-card">
-          <div id="badge-list" class="badge-picker" role="listbox" aria-label="Pilih badge aktif"></div>
-          <p class="badge-hint" id="badge-hint">Pilih badge untuk ditampilkan di profil.</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button type="button" class="btn-blue" id="avatar-upload-btn" style="font-size: 14px; padding: 8px 16px;">Unggah</button>
+          <button type="button" class="ghost-btn" id="avatar-remove-btn" style="color: var(--danger); font-size: 14px;">Hapus</button>
         </div>
-      </section>
+        <input type="file" accept="image/*" id="photo-input" hidden />
+      </div>
 
-      <div class="form-actions">
-        <button type="button" class="ghost-btn danger" id="reset-profile-btn">Reset profil</button>
-        <button type="submit" class="primary-btn">Simpan perubahan</button>
+      <div class="list-header">Informasi Dasar</div>
+      <div class="section-card">
+        <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--primary);">NAMA TAMPILAN</label>
+          <input type="text" id="profile-name" class="input-control" placeholder="Tuliskan nama panggilanmu" autocomplete="name" required style="padding: 0; font-size: 17px;">
+        </div>
+        <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--primary);">GELAR / TITLE</label>
+          <input type="text" id="profile-title" class="input-control" placeholder="Misal: Explorer" autocomplete="organization-title" style="padding: 0; font-size: 17px;">
+        </div>
+        <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--primary);">BIO SINGKAT</label>
+          <textarea id="profile-bio" class="input-control" rows="2" placeholder="Ceritakan fokus belajarmu" style="padding: 0; font-size: 17px; resize: none;"></textarea>
+        </div>
+        <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--primary);">LINK SOSIAL</label>
+          <input type="url" id="profile-link" class="input-control" placeholder="https://instagram.com/abelion" autocomplete="url" inputmode="url" style="padding: 0; font-size: 17px;">
+        </div>
+      </div>
+
+      <div class="list-header">Badge Aktif</div>
+      <div class="section-card" style="padding: 16px;">
+        <div id="badge-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 12px; margin-bottom: 12px;">
+          <!-- Badge choices injected here -->
+        </div>
+        <p id="badge-hint" style="font-size: 13px; color: var(--text-muted);"></p>
+      </div>
+
+      <div style="padding: 20px 0;">
+        <button type="submit" class="btn-blue" style="width: 100%; margin-bottom: 12px;">Simpan Perubahan</button>
+        <button type="button" class="ghost-btn" id="reset-profile-btn" style="width: 100%; color: var(--danger);">Reset Profil ke Awal</button>
       </div>
     </form>
+  </div>
 
-    <footer class="panel-footer">
-      © 2025 Abelion Notes. All rights reserved.
-    </footer>
-  </main>
-
-  <footer class="site-footer">
-    <small>Perbarui profilmu dengan gaya baru.</small>
-    <a href="biodata.html">Kembali ke Profil</a>
-  </footer>
-
-  <nav class="bottom-nav" aria-label="Navigasi utama">
-    <div class="bottom-nav-shell">
-      <a class="nav-button" href="../index.html" aria-label="Beranda">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </span>
-        <span class="nav-label">Beranda</span>
-      </a>
-      <a class="nav-button active" href="biodata.html" aria-label="Profil">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        </span>
-        <span class="nav-label">Profil</span>
-      </a>
-      <a class="nav-button" href="setelan.html" aria-label="Pengaturan">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </span>
-        <span class="nav-label">Pengaturan</span>
-      </a>
-      <a class="nav-button" href="riwayat.html" aria-label="Versi">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </span>
-        <span class="nav-label">Versi</span>
-      </a>
-    </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a class="nav-button" href="../index.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      </span>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a class="nav-button nav-add-btn" href="../index.html?action=new">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </span>
+      <span class="nav-label">Tambah</span>
+    </a>
+    <a class="nav-button active" href="biodata.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </span>
+      <span class="nav-label">Profil</span>
+    </a>
+    <a class="nav-button" href="setelan.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </span>
+      <span class="nav-label">Setelan</span>
+    </a>
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

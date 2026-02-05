@@ -16,6 +16,8 @@
     const engineEl = document.getElementById('storage-engine-label');
     const schemaEl = document.getElementById('storage-schema-label');
     const usageEl = document.getElementById('storage-usage-label');
+    const usageValEl = document.getElementById('storage-usage-value');
+    const usageBarEl = document.getElementById('storage-usage-bar');
     const footnote = document.getElementById('storage-footnote');
 
     const meta = await Storage.getMeta();
@@ -33,6 +35,14 @@
       } else {
         usageEl.textContent = 'Not available';
       }
+    }
+
+    if (usageValEl && usageBarEl && usage?.usage) {
+      const used = usage.usage || 0;
+      const quota = usage.quota || 1;
+      const pct = Math.max(1, Math.min(100, (used / quota) * 100));
+      usageValEl.textContent = formatBytes(used);
+      usageBarEl.style.width = `${pct}%`;
     }
 
     if (footnote) {

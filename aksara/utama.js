@@ -935,11 +935,13 @@ function openNoteModal(mode = 'create', existingNote = null) {
   }
   NoteEditor.open({
     mode,
+    draftKey: existingNote ? existingNote.id : 'new',
     initialValue: {
       icon: existingNote?.icon || '',
       title: existingNote?.title || '',
       content: markdownFromNote(existingNote),
-      isSecret: existingNote?.isSecret || false
+      isSecret: existingNote?.isSecret || false,
+      folderId: existingNote?.folderId || ''
     },
     onSave: async (payload) => {
       const iso = new Date().toISOString();

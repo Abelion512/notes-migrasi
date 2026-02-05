@@ -158,10 +158,37 @@
     const detailsDiv = overlay.querySelector('#editor-details');
 
     // Populate data
-    titleInput.value = initialValue.title || '';
-    textarea.value = initialValue.content || '';
-    iconInput.value = initialValue.icon || '';
-    secretInput.checked = Boolean(initialValue.isSecret);
+    const drafts = readDrafts();
+    const draft = drafts[draftKey];
+
+    if (draft && mode === 'create') {
+      titleInput.value = draft.title || '';
+      textarea.value = draft.content || '';
+      iconInput.value = draft.icon || '';
+      secretInput.checked = Boolean(draft.isSecret);
+    } else {
+      titleInput.value = initialValue.title || '';
+      textarea.value = initialValue.content || '';
+      iconInput.value = initialValue.icon || '';
+      secretInput.checked = Boolean(initialValue.isSecret);
+    }
+
+    const saveDraft = debounce(() => {
+      const currentDrafts = readDrafts();
+      currentDrafts[draftKey] = {
+        title: titleInput.value,
+        content: textarea.value,
+        icon: iconInput.value,
+        isSecret: secretInput.checked,
+        updatedAt: new Date().toISOString()
+      };
+      writeDrafts(currentDrafts);
+    }, 1000);
+
+    titleInput.addEventListener('input', saveDraft);
+    textarea.addEventListener('input', saveDraft);
+    iconInput.addEventListener('input', saveDraft);
+    secretInput.addEventListener('change', saveDraft);
 
     if (global.AbelionStorage) {
       global.AbelionStorage.getFolders().then(folders => {
@@ -186,7 +213,22 @@
       document.body.classList.remove('modal-open');
     };
 
-    overlay.querySelector('[data-action="cancel"]').onclick = close;
+    const clearDraft = () => {
+      const currentDrafts = readDrafts();
+      delete currentDrafts[draftKey];
+      writeDrafts(currentDrafts);
+    };
+
+    overlay.querySelector('[data-action="cancel"]').onclick = () => {
+      if (textarea.value.trim() || titleInput.value.trim()) {
+        if (confirm('Simpan sebagai draft?')) {
+          saveDraft();
+        } else {
+          clearDraft();
+        }
+      }
+      close();
+    };
 
     form.onsubmit = async (e) => {
       e.preventDefault();
@@ -199,10 +241,12 @@
         contentHtml: markdownToHtml(textarea.value)
       };
       if (!payload.title && !payload.contentMarkdown) {
+          clearDraft();
           close();
           return;
       }
       if (typeof onSave === 'function') await onSave(payload);
+      clearDraft();
       close();
     };
 

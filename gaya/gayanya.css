@@ -230,6 +230,36 @@ h3 { font-size: 17px; font-weight: 600; }
   margin-bottom: 20px;
 }
 
+.mood-option-btn, .badge-choice {
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-outline);
+  border-radius: 12px;
+  font-size: 24px;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s, border-color 0.2s;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-option-btn { padding: 16px 0; }
+.badge-choice { aspect-ratio: 1; }
+
+.mood-option-btn:active, .badge-choice:active {
+  transform: scale(0.95);
+  background: var(--border-subtle);
+}
+
+.badge-choice.is-active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.badge-choice-info { display: none; }
+
 .mood-graph {
   display: flex;
   justify-content: space-between;

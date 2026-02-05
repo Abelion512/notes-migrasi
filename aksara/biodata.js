@@ -30,6 +30,9 @@
     dom.avatar = document.getElementById('profile-avatar');
     dom.greeting = document.getElementById('profile-greeting');
     dom.title = document.getElementById('profile-title');
+    dom.titleDisplay = document.getElementById('profile-title-display');
+    dom.nameDisplay = document.getElementById('profile-name-display');
+    dom.levelBadge = document.getElementById('profile-level-badge');
     dom.tier = document.getElementById('profile-tier');
     dom.level = document.getElementById('profile-level');
     dom.totalXp = document.getElementById('profile-total-xp');
@@ -44,6 +47,7 @@
     dom.tierHint = document.getElementById('profile-tier-hint');
     dom.titleHint = document.getElementById('profile-title-hint');
     dom.xpGuide = document.getElementById('xp-guide');
+    dom.xpRulesTrigger = document.getElementById('xp-rules-trigger');
   }
 
   function formatNumber(value) {
@@ -140,28 +144,18 @@
     }
 
     if (dom.greeting) dom.greeting.textContent = greetingMessage(summary.name);
-    if (dom.title) {
-      dom.title.textContent = summary.title || 'Explorer';
-      if (summary.titleHint) {
-        dom.title.title = summary.titleHint;
-        dom.title.setAttribute('aria-label', `${summary.title} – ${summary.titleHint}`);
-      } else {
-        dom.title.removeAttribute('title');
-        dom.title.removeAttribute('aria-label');
-      }
-    }
-    if (dom.tier) {
-      dom.tier.textContent = summary.tier || 'Novice';
-      if (summary.tierHint) {
-        dom.tier.title = summary.tierHint;
-        dom.tier.setAttribute('aria-label', `${summary.tier} – ${summary.tierHint}`);
-      } else {
-        dom.tier.removeAttribute('title');
-        dom.tier.removeAttribute('aria-label');
-      }
-    }
+    if (dom.nameDisplay) dom.nameDisplay.textContent = summary.name || 'Username';
+    if (dom.levelBadge) dom.levelBadge.textContent = `Lv ${summary.level}`;
+
+    const titleValue = summary.title || 'Explorer';
+    if (dom.title) dom.title.textContent = titleValue;
+    if (dom.titleDisplay) dom.titleDisplay.textContent = titleValue;
+
+    const tierValue = summary.tier || 'Novice';
+    if (dom.tier) dom.tier.textContent = tierValue;
+
     if (dom.level) dom.level.textContent = `Level ${summary.level}`;
-    if (dom.totalXp) dom.totalXp.textContent = `Total ${formatNumber(summary.totalXp)} XP`;
+    if (dom.totalXp) dom.totalXp.textContent = `${formatNumber(summary.totalXp)} XP`;
 
     if (dom.tierHint) {
       dom.tierHint.textContent = summary.tierHint || '';
@@ -196,24 +190,40 @@
       }
     }
 
-    if (dom.xpGuide) {
-      dom.xpGuide.onclick = (e) => {
-        e.preventDefault();
-        const modal = document.getElementById('xp-rules-modal');
-        if (modal) {
+    const openXpRules = (e) => {
+      if (e) e.preventDefault();
+      const modal = document.getElementById('xp-rules-modal');
+      if (modal) {
+        if (window.AbelionUtils?.ModalManager) {
+          window.AbelionUtils.ModalManager.open('xp-rules-modal', modal);
+        } else {
           modal.classList.add('show');
-
-          // Close handler
-          const closeBtn = document.getElementById('xp-rules-close');
-          const closeFn = () => modal.classList.remove('show');
-
-          if (closeBtn) closeBtn.onclick = closeFn;
-          modal.onclick = (ev) => {
-            if (ev.target === modal) closeFn();
-          };
         }
-      };
+
+        // Close handler
+        const closeBtn = document.getElementById('xp-rules-close');
+        const closeFn = () => {
+          if (window.AbelionUtils?.ModalManager) {
+            window.AbelionUtils.ModalManager.close('xp-rules-modal');
+          } else {
+            modal.classList.remove('show');
+          }
+        };
+
+        if (closeBtn) closeBtn.onclick = closeFn;
+        modal.onclick = (ev) => {
+          if (ev.target === modal) closeFn();
+        };
+      }
+    };
+
+    if (dom.xpGuide) {
+      dom.xpGuide.onclick = openXpRules;
       dom.xpGuide.style.display = 'inline-block';
+    }
+
+    if (dom.xpRulesTrigger) {
+      dom.xpRulesTrigger.onclick = openXpRules;
     }
 
     renderBadges(summary);
@@ -351,7 +361,7 @@
     if (usage && usageValEl && usageBarEl) {
        const used = usage.usage || 0;
        const quota = usage.quota || 1;
-       const pct = Math.min(100, (used / quota) * 100);
+       const pct = Math.max(1, Math.min(100, (used / quota) * 100));
 
        const units = ['B', 'KB', 'MB', 'GB'];
        let size = used, unitIdx = 0;
