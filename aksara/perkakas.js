@@ -11,37 +11,40 @@
   };
 
   const APP_VERSION_BASE = Object.freeze({
-    major: 2025,
-    minor: 6,
-    patch: 0,
-    channel: 'design-preview',
-    codename: 'Lavender Dawn',
-    build: '2025-06-15',
-    environment: 'prototype'
+    major: 2026,
+    minor: 2,
+    patch: 5,
+    channel: 'premium-release',
+    codename: 'Aurora Glass',
+    build: '2026-02-05',
+    environment: 'production'
   });
 
-  const INITIAL_VERSION_STRING = `${APP_VERSION_BASE.major}.${String(APP_VERSION_BASE.minor).padStart(2, '0')}.${APP_VERSION_BASE.patch}-${APP_VERSION_BASE.channel}`;
+  const INITIAL_VERSION_STRING = `${APP_VERSION_BASE.major}.${String(APP_VERSION_BASE.minor).padStart(2, '0')}.${APP_VERSION_BASE.patch}`;
 
   const APP_META = Object.freeze({
     versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
       {
-        version: '2025.06.1-patch',
+        version: '2026.02.5',
+        releasedAt: '2026-02-05',
+        highlights: [
+          'Premium iOS Redesign: Overhaul total UI dengan gaya iOS 17+.',
+          'Floating Navigation: Navigasi bawah melayang (pill style) untuk aksesibilitas.',
+          'Liquid Glass Effect: Implementasi glassmorphism yang lebih halus dan dinamis.',
+          'Redesain Halaman Sekunder: Profil, Setelan, dan Riwayat kini konsisten dengan Beranda.',
+          'Default Light Mode: Pengalaman visual yang lebih segar secara default.',
+          'Fix Contrast: Perbaikan kontras dan transparansi pada Dark Mode.',
+        ]
+      },
+      {
+        version: '2025.06.1',
         releasedAt: '2025-12-16',
         highlights: [
           'Redesign Profil: Tampilan lebih bersih dengan navigasi intuitif.',
           'Gamifikasi 2.0: XP, Level, dan Badge kini tersinkronisasi realtime.',
           'Avatar Interaktif: Ganti foto profil langsung dari halaman profil.',
           'Smart Stats: Menyederhanakan tampilan statistik XP dan Level.',
-        ]
-      },
-      {
-        version: INITIAL_VERSION_STRING,
-        releasedAt: APP_VERSION_BASE.build,
-        highlights: [
-          'Penyegaran tampilan profil agar selaras dengan halaman beranda.',
-          'Penambahan sistem meta versi yang siap untuk riwayat rilis.',
-          'Fondasi gamifikasi XP & badge secara realtime (sinkron dengan penyimpanan lokal).'
         ]
       }
     ])
@@ -323,10 +326,10 @@
 
   function computeVersionString(versioning) {
     if (!versioning) return INITIAL_VERSION_STRING;
+    const major = versioning.major;
     const minor = String(versioning.minor).padStart(2, '0');
-    const patch = String(versioning.patch);
-    const suffix = versioning.channel ? `-${versioning.channel}` : '';
-    return `${versioning.major}.${minor}.${patch}${suffix}`;
+    const patch = versioning.patch;
+    return `${major}.${minor}.${patch}`;
   }
 
   function getVersionMeta() {

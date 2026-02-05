@@ -3,201 +3,170 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
   <title>Profil – Abelion Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../gaya/gayanya.css">
 </head>
 
 <body class="page-shell">
-  <main class="panel" id="profile-panel">
-    <header class="panel-header">
-      <button type="button" class="ghost-btn" id="back-btn">← Kembali</button>
-      <button type="button" class="ghost-btn" id="version-btn">ℹ️ Version info</button>
+  <div class="main-content">
+    <header class="secondary-header">
+      <a href="../index.html" class="back-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Catatan
+      </a>
+      <h1 class="animated">Profil</h1>
+      <p class="subtitle" id="profile-greeting">Selamat datang kembali!</p>
     </header>
 
-    <section class="profile-hero">
-      <img src="../pustaka/default-avatar.svg" alt="Foto profil" id="profile-avatar" class="profile-avatar is-empty" />
-      <button type="button" class="profile-upload" disabled>Ganti foto (segera)</button>
-      <p class="profile-greeting" id="profile-greeting">Selamat datang, username 👋</p>
+    <section class="profile-hero-ios" style="text-align: center; padding: 20px 0;">
+      <div style="position: relative; display: inline-block;">
+        <img src="../pustaka/default-avatar.svg" alt="Foto profil" id="profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: var(--border-subtle);" />
+        <div id="profile-level-badge" style="position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 700;">Lv 1</div>
+      </div>
+      <h2 id="profile-name-display" style="margin-top: 12px;">Username</h2>
+      <p id="profile-title-display" style="color: var(--text-muted); font-size: 15px;">Explorer</p>
     </section>
 
-    <div class="profile-meta section-card" aria-live="polite" style="margin-bottom: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-      <div style="display: flex; flex-direction: column;">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Gelar</span>
-        <span id="profile-title" style="font-weight: 700;">Explorer</span>
+    <div class="list-header">Statistik & XP</div>
+    <div class="grouped-list">
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Total XP</div>
+          <div class="list-item-subtitle" id="profile-total-xp">500 XP</div>
+        </div>
       </div>
-      <div style="display: flex; flex-direction: column;">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Tier</span>
-        <span id="profile-tier" style="font-weight: 700;">Novice</span>
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Tier</div>
+          <div class="list-item-subtitle" id="profile-tier">Novice</div>
+        </div>
       </div>
-      <div style="display: flex; flex-direction: column;">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Level</span>
-        <span id="profile-level" style="font-weight: 700;">Level 1</span>
-      </div>
-      <div style="display: flex; flex-direction: column;">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">XP</span>
-        <span id="profile-total-xp" style="font-weight: 700;">500</span>
+      <div class="list-item" id="xp-rules-trigger">
+        <div class="list-item-content">
+          <div class="list-item-title">Cara Dapat XP</div>
+          <div class="list-item-subtitle">Lihat panduan gamifikasi</div>
+        </div>
+        <span class="list-item-chevron">❯</span>
       </div>
     </div>
 
-    <section class="panel-section">
-      <h2>Perkembangan XP</h2>
-      <div class="section-card">
-        <div class="xp-wrapper">
-          <div class="xp-label">
-            <span>Progress</span>
-            <span id="xp-percent">0%</span>
-          </div>
-          <div class="xp-bar" aria-hidden="true">
-            <span id="xp-bar-fill"></span>
-          </div>
-          <div class="xp-progress-meta">
-            <span id="xp-hint">Tetap semangat, XP akan naik konsisten!</span>
-            <span id="xp-counter">0 / 100 XP</span>
-            <span id="xp-next">Perlu 100 XP lagi untuk naik level.</span>
-            <a href="https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp" id="xp-guide"
-              class="xp-guide-link" target="_blank" rel="noopener noreferrer">Panduan klaim XP</a>
-          </div>
+    <div class="list-header">Progress Level</div>
+    <div class="section-card" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600;">
+        <span id="xp-counter">0 / 100 XP</span>
+        <span id="xp-percent">0%</span>
+      </div>
+      <div style="height: 8px; background: var(--border-subtle); border-radius: 4px; overflow: hidden;">
+        <div id="xp-bar-fill" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.5s ease-out;"></div>
+      </div>
+      <p id="xp-next" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">100 XP lagi untuk naik level.</p>
+    </div>
+
+    <div class="list-header">Productivity</div>
+    <div class="grouped-list">
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Total Catatan</div>
+          <div class="list-item-subtitle" id="total-notes-stat">0</div>
         </div>
       </div>
-      <div class="version-pill" id="profile-version-pill" hidden>
-        <strong>Versi</strong>
-        <span id="profile-version"></span>
-      </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Productivity Hub</h2>
-      <div class="section-card">
-        <canvas id="xp-chart" style="width: 100%; height: 200px;"></canvas>
-      </div>
-      <div class="section-card" style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <div style="text-align: center;">
-          <div style="font-size: 0.8em; color: var(--text-muted);">Total Catatan</div>
-          <div id="total-notes-stat" style="font-size: 1.5em; font-weight: 800;">0</div>
-        </div>
-        <div style="text-align: center;">
-          <div style="font-size: 0.8em; color: var(--text-muted);">Streak</div>
-          <div id="streak-stat" style="font-size: 1.5em; font-weight: 800;">0</div>
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Streak Menulis</div>
+          <div class="list-item-subtitle" id="streak-stat">0 hari</div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="panel-section">
-      <h2>Badge</h2>
-      <div class="section-card">
-        <div class="badge-grid" id="badge-grid" aria-live="polite"></div>
+    <div class="list-header">Badge Koleksi</div>
+    <div class="section-card" style="padding: 16px;">
+      <div class="badge-grid" id="badge-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+        <!-- Badges here -->
       </div>
-    </section>
+    </div>
 
-    <section class="panel-section">
-      <h2>Status Penyimpanan</h2>
-      <div class="section-card" style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 0.9em; color: var(--text-secondary);">Kapasitas Terpakai</span>
-          <span id="storage-usage-value" style="font-weight: 700;">Menghitung...</span>
+    <div class="list-header">Tindakan</div>
+    <div class="grouped-list">
+      <a href="rias-biodata.html" class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title" style="color: var(--primary);">Edit Profil</div>
         </div>
-        <div class="xp-bar" style="height: 10px; background: var(--surface-alt);">
-          <span id="storage-usage-bar" style="width: 0%; height: 100%; background: var(--success); border-radius: inherit; display: block; transition: width 0.5s;"></span>
-        </div>
-        <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 4px;">Data Anda disimpan di <strong>IndexedDB</strong> perangkat ini.</p>
-      </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Kontrol Cepat</h2>
-      <div class="profile-actions">
-        <button type="button" class="primary-btn" id="edit-profile-btn">Edit Profil</button>
-        <button type="button" class="primary-btn secondary" id="settings-btn">Pengaturan</button>
-      </div>
-    </section>
-
-    <footer class="panel-footer">
-      © 2025 Abelion Notes. All rights reserved.
-    </footer>
-  </main>
-
-  <footer class="site-footer">
-    <small>Selaraskan profil Anda di semua perangkat.</small>
-    <a href="../index.html">Kembali ke beranda</a>
-  </footer>
-
-  <nav class="bottom-nav" aria-label="Navigasi utama">
-    <div class="bottom-nav-shell">
-      <a class="nav-button" href="../index.html" aria-label="Beranda" title="Kembali ke Beranda Utama">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </span>
-        <span class="nav-label">Beranda</span>
-      </a>
-      <a class="nav-button active" href="biodata.html" aria-label="Profil" title="Lihat Profil & Statistik XP">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        </span>
-        <span class="nav-label">Profil</span>
-      </a>
-      <a class="nav-button" href="setelan.html" aria-label="Pengaturan" title="Konfigurasi Aplikasi & Keamanan">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </span>
-        <span class="nav-label">Pengaturan</span>
-      </a>
-      <a class="nav-button" href="riwayat.html" aria-label="Versi" title="Informasi Versi & Changelog">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </span>
-        <span class="nav-label">Versi</span>
+        <span class="list-item-chevron">❯</span>
       </a>
     </div>
+
+    <div class="list-header">Penyimpanan Perangkat</div>
+    <div class="section-card" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+        <span>Kapasitas Terpakai</span>
+        <span id="storage-usage-value">Menghitung...</span>
+      </div>
+      <div style="height: 8px; background: var(--border-subtle); border-radius: 4px; overflow: hidden;">
+        <div id="storage-usage-bar" style="width: 0%; height: 100%; background: var(--success); transition: width 0.5s;"></div>
+      </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 13px;">
+      <button id="version-btn" class="ghost-btn" style="font-size: 13px;">Versi <span id="profile-version"></span></button>
+      <p>© 2025 Abelion Notes</p>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a class="nav-button" href="../index.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      </span>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a class="nav-button nav-add-btn" href="../index.html?action=new">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </span>
+      <span class="nav-label">Tambah</span>
+    </a>
+    <a class="nav-button active" href="biodata.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </span>
+      <span class="nav-label">Profil</span>
+    </a>
+    <a class="nav-button" href="setelan.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </span>
+      <span class="nav-label">Setelan</span>
+    </a>
   </nav>
 
-  <!-- XP Rules Modal -->
-  <div id="xp-rules-modal" class="xp-modal">
-    <div class="xp-modal-content">
-      <button class="modal-close" id="xp-rules-close">×</button>
-      <div class="xp-modal-header">
+  <!-- XP Rules Modal (Sheet style) -->
+  <div id="xp-rules-modal" class="about-modal">
+    <div class="about-modal-content">
+      <div class="modal-header-ios">
         <h3>Cara Dapat XP</h3>
-        <p>Kumpulkan XP untuk naik level dan buka badge!</p>
+        <button class="done-btn" id="xp-rules-close">Selesai</button>
       </div>
-      <div class="xp-rules-list">
-        <div class="xp-rule-item">
-          <span class="xp-rule-icon">📅</span>
-          <div class="xp-rule-text">
-            <strong>Login Harian</strong>
-            <span>+15 XP setiap hari</span>
+      <div class="grouped-list">
+        <div class="list-item">
+          <div class="list-item-content">
+            <div class="list-item-title">Login Harian</div>
+            <div class="list-item-subtitle">+15 XP</div>
           </div>
         </div>
-        <div class="xp-rule-item">
-          <span class="xp-rule-icon">📝</span>
-          <div class="xp-rule-text">
-            <strong>Buat Catatan</strong>
-            <span>+50 XP per catatan baru</span>
+        <div class="list-item">
+          <div class="list-item-content">
+            <div class="list-item-title">Buat Catatan</div>
+            <div class="list-item-subtitle">+50 XP</div>
           </div>
         </div>
-        <div class="xp-rule-item">
-          <span class="xp-rule-icon">✍️</span>
-          <div class="xp-rule-text">
-            <strong>Edit Catatan</strong>
-            <span>+1 XP per karakter yang diubah</span>
-          </div>
-        </div>
-        <div class="xp-rule-item">
-          <span class="xp-rule-icon">🔥</span>
-          <div class="xp-rule-text">
-            <strong>Streak 5 Hari</strong>
-            <span>Bonus +150 XP & Double XP Weekend</span>
-          </div>
-        </div>
-        <div class="xp-rule-item">
-          <span class="xp-rule-icon">🎁</span>
-          <div class="xp-rule-text">
-            <strong>Hari Spesial</strong>
-            <span>Bonus XP besar di tanggal cantik!</span>
+        <div class="list-item">
+          <div class="list-item-content">
+            <div class="list-item-title">Edit Catatan</div>
+            <div class="list-item-subtitle">+1 XP per karakter</div>
           </div>
         </div>
       </div>

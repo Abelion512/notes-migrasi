@@ -1056,6 +1056,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   initCommandPalette();
   checkAppVersion();
 
+  // Handle URL actions (e.g., ?action=new)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('action') === 'new') {
+    // Small delay to ensure everything is ready
+    setTimeout(() => openNoteModal('create'), 500);
+    // Clear the param without refreshing to avoid re-opening on manual refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   const addFolderBtn = document.getElementById('add-folder-btn');
   if (addFolderBtn) addFolderBtn.onclick = addFolder;
 
