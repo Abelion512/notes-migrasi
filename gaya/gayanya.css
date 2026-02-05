@@ -3,6 +3,10 @@ html {
   scroll-behavior: smooth;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body,
 h1,
 h2,
@@ -539,10 +543,115 @@ h3 { font-size: 17px; font-weight: 600; }
   border-radius: 4px;
 }
 
+/* Badge Grid Aurora Style */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.badge-item {
+  aspect-ratio: 1;
+  background: var(--frosted);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-outline);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.badge-item:active {
+  transform: scale(0.9);
+  background: var(--border-subtle);
+}
+
+.badge-item.is-active {
+  border-color: var(--primary);
+  box-shadow: 0 0 15px var(--primary-soft);
+  background: var(--primary-soft);
+}
+
+/* Badge Detail Modal iOS Style */
+.badge-detail-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 4000;
+  padding: 20px;
+}
+
+.badge-detail-modal.show { display: flex; }
+
+.badge-detail-content {
+  background: var(--surface);
+  width: 100%;
+  max-width: 320px;
+  border-radius: 28px;
+  padding: 30px 20px;
+  text-align: center;
+  position: relative;
+  animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--shadow-soft);
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.badge-detail-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.badge-detail-criteria {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+.badge-detail-meta {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 0.5px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--border-subtle);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
 /* Mobile optimizations */
 @media (max-width: 600px) {
   h1 { font-size: 30px; }
   .note-editor-dialog { height: 100vh; border-radius: 0; }
+  .badge-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Editor Toolbar iOS */

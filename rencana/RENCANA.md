@@ -12,6 +12,8 @@
 ## Fase 2: Pengalaman Menulis & Fitur Inti (Sedang Berjalan)
 - [x] Editor gaya "Sheet" iOS.
 - [x] Sinkronisasi aksi navigasi antar halaman (Tambah dari mana saja).
+- [x] Redesain Profil & Badge (Aurora Glass).
+- [x] Optimasi Changelog & Form Pengaturan.
 - [ ] Implementasi Rich Text yang lebih baik (Markdown realtime).
 - [ ] Manajemen Media (Gambar & Lampiran).
 

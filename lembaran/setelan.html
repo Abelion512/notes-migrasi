@@ -51,7 +51,7 @@
     <div class="section-card" style="padding: 16px;">
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Simpan salinan catatan Anda secara mandiri.</p>
       <div style="display: flex; gap: 8px; flex-direction: column;">
-        <select id="export-format" class="input-control" style="background: var(--page-bg); border-radius: 10px;">
+        <select id="export-format" class="input-control" style="background: var(--surface-strong); border-radius: 10px; color: var(--text-primary);">
           <option value="json">JSON (Lengkap)</option>
           <option value="md">Markdown (ZIP)</option>
           <option value="txt">Plain Text (ZIP)</option>
@@ -78,15 +78,28 @@
     </div>
 
     <div class="list-header">Cloud Sync</div>
-    <div class="section-card" style="padding: 16px;">
-      <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-        <span style="font-size: 17px; font-weight: 600;">Sinkronisasi Supabase</span>
-        <input type="checkbox" id="supabase-toggle" style="width: 20px; height: 20px;" />
-      </label>
-      <div id="supabase-config-form" style="display: none; margin-top: 16px; border-top: 0.5px solid var(--border-subtle); padding-top: 16px;">
-        <input type="text" id="supabase-url" class="input-control" placeholder="Supabase URL" style="margin-bottom: 8px; background: var(--page-bg);" />
-        <input type="password" id="supabase-key" class="input-control" placeholder="Anon Key" style="margin-bottom: 12px; background: var(--page-bg);" />
-        <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%;">Simpan & Hubungkan</button>
+    <div class="grouped-list">
+      <div class="list-item" style="cursor: default;">
+        <div class="list-item-content">
+          <div class="list-item-title">Sinkronisasi Cloud</div>
+          <div class="list-item-subtitle">Simpan catatan di Supabase</div>
+        </div>
+        <input type="checkbox" id="supabase-toggle" style="width: 44px; height: 24px; cursor: pointer;" />
+      </div>
+    </div>
+
+    <div id="supabase-config-form" style="display: none;">
+      <div class="list-header">Konfigurasi Supabase</div>
+      <div class="grouped-list">
+        <div class="list-item">
+          <input type="text" id="supabase-url" class="input-control" placeholder="Supabase URL" style="background: transparent; color: var(--text-primary);" />
+        </div>
+        <div class="list-item">
+          <input type="password" id="supabase-key" class="input-control" placeholder="Anon Key" style="background: transparent; color: var(--text-primary);" />
+        </div>
+      </div>
+      <div style="padding: 0 4px 20px 4px;">
+        <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; justify-content: center;">Simpan & Hubungkan</button>
       </div>
     </div>
 

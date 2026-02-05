@@ -31,28 +31,64 @@
       wrapper.style.padding = '16px';
       wrapper.style.marginBottom = '16px';
 
+      const header = document.createElement('div');
+      header.style.display = 'flex';
+      header.style.justifyContent = 'space-between';
+      header.style.alignItems = 'center';
+      header.style.marginBottom = '12px';
+
       const title = document.createElement('h3');
-      title.style.marginBottom = '12px';
-      title.textContent = `${item.version} (${item.releasedAt})`;
+      title.style.margin = '0';
+      title.textContent = `${item.version}`;
+
+      const date = document.createElement('span');
+      date.style.fontSize = '12px';
+      date.style.color = 'var(--text-muted)';
+      date.textContent = item.releasedAt;
+
+      header.appendChild(title);
+      header.appendChild(date);
 
       const list = document.createElement('ul');
+      list.className = 'changelog-highlights';
       list.style.listStyle = 'none';
       list.style.display = 'flex';
       list.style.flexDirection = 'column';
       list.style.gap = '8px';
 
-      item.highlights.forEach(highlight => {
+      const MAX_VISIBLE = 2;
+      const hasMore = item.highlights.length > MAX_VISIBLE;
+
+      item.highlights.forEach((highlight, idx) => {
         const li = document.createElement('li');
         li.style.fontSize = '15px';
         li.style.color = 'var(--text-secondary)';
-        li.style.display = 'flex';
+        li.style.display = idx < MAX_VISIBLE ? 'flex' : 'none';
         li.style.gap = '8px';
+        li.className = idx >= MAX_VISIBLE ? 'extra-highlight' : '';
         li.innerHTML = `<span style="color: var(--primary);">•</span> <span>${highlight}</span>`;
         list.appendChild(li);
       });
 
-      wrapper.appendChild(title);
+      wrapper.appendChild(header);
       wrapper.appendChild(list);
+
+      if (hasMore) {
+        const moreBtn = document.createElement('button');
+        moreBtn.className = 'ghost-btn';
+        moreBtn.style.marginTop = '12px';
+        moreBtn.style.fontSize = '14px';
+        moreBtn.style.padding = '4px 0';
+        moreBtn.textContent = 'Lihat selengkapnya...';
+        moreBtn.onclick = () => {
+          const extras = wrapper.querySelectorAll('.extra-highlight');
+          const isHidden = extras[0].style.display === 'none';
+          extras.forEach(el => el.style.display = isHidden ? 'flex' : 'none');
+          moreBtn.textContent = isHidden ? 'Sembunyikan' : 'Lihat selengkapnya...';
+        };
+        wrapper.appendChild(moreBtn);
+      }
+
       fragment.appendChild(wrapper);
     });
 
