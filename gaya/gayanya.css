@@ -5,6 +5,13 @@ html {
 
 * {
   -webkit-tap-highlight-color: transparent;
+  outline: none !important;
+}
+
+/* Global focus suppression for non-keyboard users */
+:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 body,
@@ -327,8 +334,32 @@ h3 { font-size: 17px; font-weight: 600; }
 .nav-label { font-size: 10px; font-weight: 500; }
 
 /* Special "+" Button in Bottom Nav */
-.nav-add-btn {
-  color: var(--primary);
+.nav-button.nav-add-btn {
+  color: var(--text-muted) !important;
+}
+
+.nav-button.nav-add-btn .nav-icon {
+  background: var(--primary);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -30px;
+  box-shadow: 0 4px 15px var(--primary-soft);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 3px solid var(--page-bg);
+}
+
+.nav-button.nav-add-btn .nav-icon svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.nav-button.nav-add-btn .nav-label {
+  margin-top: 5px;
 }
 
 /* Folder Navigation */
@@ -536,6 +567,54 @@ h3 { font-size: 17px; font-weight: 600; }
 /* Utilities */
 .hidden { display: none !important; }
 
+/* Loader / Intro Animation */
+#intro-anim {
+  position: fixed;
+  inset: 0;
+  background: var(--page-bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.progress-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--frosted);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-outline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+
+#progress-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-circle::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 3px solid var(--primary-soft);
+  border-top-color: var(--primary);
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Skeleton */
 .skeleton {
   background: var(--border-subtle);
@@ -553,17 +632,28 @@ h3 { font-size: 17px; font-weight: 600; }
 .badge-item {
   aspect-ratio: 1;
   background: var(--frosted);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--glass-outline);
-  border-radius: 16px;
+  border-radius: 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 32px;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .badge-item:active {
@@ -573,8 +663,33 @@ h3 { font-size: 17px; font-weight: 600; }
 
 .badge-item.is-active {
   border-color: var(--primary);
-  box-shadow: 0 0 15px var(--primary-soft);
+  box-shadow: 0 0 20px var(--primary-soft);
   background: var(--primary-soft);
+}
+
+.badge-empty-state {
+  grid-column: 1 / -1;
+  padding: 30px 10px;
+  text-align: center;
+  background: var(--frosted);
+  border-radius: 20px;
+  border: 1px dashed var(--border-subtle);
+}
+
+.badge-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.badge-guide-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 /* Badge Detail Modal iOS Style */

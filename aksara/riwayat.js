@@ -56,24 +56,31 @@
       list.style.flexDirection = 'column';
       list.style.gap = '8px';
 
-      const MAX_VISIBLE = 2;
-      const hasMore = item.highlights.length > MAX_VISIBLE;
+      const hasDescriptions = item.highlights.some(h => h.includes(':'));
 
-      item.highlights.forEach((highlight, idx) => {
+      item.highlights.forEach((highlight) => {
         const li = document.createElement('li');
         li.style.fontSize = '15px';
         li.style.color = 'var(--text-secondary)';
-        li.style.display = idx < MAX_VISIBLE ? 'flex' : 'none';
+        li.style.display = 'flex';
         li.style.gap = '8px';
-        li.className = idx >= MAX_VISIBLE ? 'extra-highlight' : '';
-        li.innerHTML = `<span style="color: var(--primary);">•</span> <span>${highlight}</span>`;
+
+        const colonIndex = highlight.indexOf(':');
+        if (colonIndex !== -1) {
+          const title = highlight.substring(0, colonIndex).trim();
+          const desc = highlight.substring(colonIndex + 1).trim();
+          li.innerHTML = `<span style="color: var(--primary); flex-shrink: 0;">•</span> <span><strong>${title}</strong><span class="changelog-desc" style="display: none;">: ${desc}</span></span>`;
+        } else {
+          li.innerHTML = `<span style="color: var(--primary); flex-shrink: 0;">•</span> <span><strong>${highlight}</strong></span>`;
+        }
+
         list.appendChild(li);
       });
 
       wrapper.appendChild(header);
       wrapper.appendChild(list);
 
-      if (hasMore) {
+      if (hasDescriptions) {
         const moreBtn = document.createElement('button');
         moreBtn.className = 'ghost-btn';
         moreBtn.style.marginTop = '12px';
@@ -81,9 +88,10 @@
         moreBtn.style.padding = '4px 0';
         moreBtn.textContent = 'Lihat selengkapnya...';
         moreBtn.onclick = () => {
-          const extras = wrapper.querySelectorAll('.extra-highlight');
-          const isHidden = extras[0].style.display === 'none';
-          extras.forEach(el => el.style.display = isHidden ? 'flex' : 'none');
+          const descs = wrapper.querySelectorAll('.changelog-desc');
+          if (descs.length === 0) return;
+          const isHidden = descs[0].style.display === 'none';
+          descs.forEach(el => el.style.display = isHidden ? 'inline' : 'none');
           moreBtn.textContent = isHidden ? 'Sembunyikan' : 'Lihat selengkapnya...';
         };
         wrapper.appendChild(moreBtn);

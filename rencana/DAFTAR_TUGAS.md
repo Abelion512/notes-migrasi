@@ -5,6 +5,8 @@
 - [x] Redesain Badge Grid (Efek Aurora Glass & Responsif).
 - [x] Redesain Form Supabase (iOS Grouped List style).
 - [x] Changelog Truncation (Fitur "Lihat Selengkapnya").
+- [x] Premium Central Loader (Aurora Glass style).
+- [x] Navigation "+" Button Redesign (Action Button style).
 - [ ] Implementasi SF Pro Font (via CDN jika memungkinkan atau fallback sistem).
 - [ ] Animasi Transisi Halaman (Slide effect antara Beranda -> Profil).
 
@@ -25,4 +27,4 @@
 - [ ] Offline Map (Caching seluruh asset via Service Worker).
 
 ---
-*Terakhir diperbarui: 5 Februari 2026*
+*Terakhir diperbarui: 6 Februari 2026*

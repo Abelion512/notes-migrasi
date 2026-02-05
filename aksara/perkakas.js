@@ -13,7 +13,7 @@
   const APP_VERSION_BASE = Object.freeze({
     major: 2026,
     minor: 2,
-    patch: 5,
+    patch: 6,
     channel: 'premium-release',
     codename: 'Aurora Glass',
     build: '2026-02-05',
@@ -25,6 +25,17 @@
   const APP_META = Object.freeze({
     versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
+      {
+        version: '2026.02.6',
+        releasedAt: '2026-02-06',
+        highlights: [
+          'Premium Loader: Tampilan intro baru dengan efek Aurora Glass dan posisi sentral.',
+          'UI Refinement: Menghilangkan outline hitam pada feedback tap untuk pengalaman lebih halus.',
+          'Navigation Upgrade: Redesain tombol tambah menjadi action button yang menonjol.',
+          'Badge Aesthetics: Pembersihan teks pada grid badge untuk tampilan minimalis.',
+          'Smart Changelog: Penyingkatan otomatis catatan rilis dengan penekanan pada judul perubahan.',
+        ]
+      },
       {
         version: '2026.02.5',
         releasedAt: '2026-02-05',

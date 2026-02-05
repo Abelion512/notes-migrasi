@@ -14,6 +14,7 @@
 - [x] Sinkronisasi aksi navigasi antar halaman (Tambah dari mana saja).
 - [x] Redesain Profil & Badge (Aurora Glass).
 - [x] Optimasi Changelog & Form Pengaturan.
+- [x] Premium Loader & Tap Feedback Fix.
 - [ ] Implementasi Rich Text yang lebih baik (Markdown realtime).
 - [ ] Manajemen Media (Gambar & Lampiran).
 
