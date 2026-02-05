@@ -389,14 +389,9 @@ function openFolderModal(existingFolder = null) {
 }
 
 function renderSearchBar() {
-  let searchDiv = document.getElementById('search-bar');
-  if (!searchDiv) {
-    searchDiv = document.createElement('div');
-    searchDiv.id = 'search-bar';
-    searchDiv.innerHTML = `<input id="search-input" class="search-input" type="text" placeholder="Cari catatan..." autocomplete="off"/>`;
-    const grid = document.getElementById('notes-grid');
-    grid.parentNode.insertBefore(searchDiv, grid);
-    document.getElementById('search-input').addEventListener('input', debounce(function() {
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce(function() {
       searchQuery = sanitizeText(this.value).toLowerCase();
       renderNotes();
     }, 250));
@@ -406,41 +401,41 @@ function renderSearchBar() {
 function showSkeletons() {
   const grid = document.getElementById("notes-grid");
   if (!grid) return;
-  grid.innerHTML = Array(3).fill(0).map(() => `
-    <div class="note-card skeleton" style="height: 160px;">
-      <div class="skeleton-title" style="margin-top: 10px;"></div>
-      <div class="skeleton-text"></div>
-      <div class="skeleton-text" style="width: 80%;"></div>
+  grid.innerHTML = Array(5).fill(0).map(() => `
+    <div class="list-item">
+      <div class="list-item-content">
+        <div class="skeleton" style="height: 17px; width: 60%; margin-bottom: 8px;"></div>
+        <div class="skeleton" style="height: 15px; width: 90%;"></div>
+      </div>
     </div>
   `).join('');
 }
 
 async function renderNotes() {
   const grid = document.getElementById("notes-grid");
+  const header = document.getElementById("notes-list-header");
 
   if (activeFolderId === 'trash') {
+    header.textContent = "Sampah";
     const trash = await Storage.getTrash();
     if (!trash.length) {
-      grid.innerHTML = `<div class="notes-empty"><h3>Sampah kosong</h3></div>`;
+      grid.innerHTML = `<div class="notes-empty" style="padding: 40px; text-align: center; color: var(--text-muted);">Sampah kosong</div>`;
       return;
     }
     grid.innerHTML = trash.map(n => `
-      <div class="note-card" data-id="${n.id}" data-type="trash">
-        <div class="note-actions">
-          <button class="action-btn restore" data-action="restore" title="Pulihkan">🔄</button>
-          <button class="action-btn delete-perm" data-action="delete-perm" title="Hapus Permanen">❌</button>
+      <div class="list-item" data-id="${n.id}" data-type="trash">
+        <div class="list-item-content">
+          <div class="list-item-title">${sanitizeText(n.title || 'Tanpa Judul')}</div>
+          <div class="list-item-subtitle">Dihapus ${formatTanggalRelative(n.deletedAt)}</div>
         </div>
-        <div class="note-title">${sanitizeText(n.title)}</div>
-        <div class="note-date">Dihapus: ${formatTanggalRelative(n.deletedAt)}</div>
+        <div class="list-item-chevron">🗑️</div>
       </div>
     `).join('');
     return;
   }
 
-  if (!notes.length) {
-    grid.innerHTML = `<div class="notes-empty"><h3>Belum ada catatan</h3><button class="btn-blue" onclick="document.getElementById('add-note-btn').click()">Buat catatan</button></div>`;
-    return;
-  }
+  const folderName = activeFolderId === 'all' ? 'Semua Catatan' : (activeFolderId === 'archived' ? 'Arsip' : (folders.find(f => f.id === activeFolderId)?.name || 'Catatan'));
+  header.textContent = folderName;
 
   const filtered = notes.filter(n => {
     let matchSearch = true;
@@ -449,53 +444,35 @@ async function renderNotes() {
       matchSearch = words.every(word => (n._searchText || '').includes(word));
     }
 
-    const matchTag = !filterByTag || (n.label || '').toLowerCase() === filterByTag.toLowerCase();
+    if (activeFolderId === 'archived') return n.isArchived && matchSearch;
+    if (activeFolderId === 'all') return !n.isArchived && matchSearch;
 
-    if (activeFolderId === 'archived') return n.isArchived && matchSearch && matchTag;
-    if (activeFolderId === 'all') return !n.isArchived && matchSearch && matchTag;
-
-    const matchFolder = n.folderId === activeFolderId;
-    return matchSearch && matchTag && matchFolder && !n.isArchived;
+    return n.folderId === activeFolderId && !n.isArchived && matchSearch;
   });
 
-  // Keep manual order if no search/filter/tag active, otherwise sort by pinned/date
-  let sorted = filtered;
-  if (searchQuery || filterByTag || activeFolderId !== 'all') {
-    sorted = [...filtered].sort((a, b) => (b.pinned - a.pinned) || new Date(b.date) - new Date(a.date));
-  }
-
-  if (!sorted.length) {
-    grid.innerHTML = `<div class="notes-empty"><p>Catatan tidak ditemukan.</p></div>`;
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="notes-empty" style="padding: 40px; text-align: center; color: var(--text-muted);">Belum ada catatan</div>`;
     return;
   }
 
+  let sorted = [...filtered].sort((a, b) => (b.pinned - a.pinned) || new Date(b.date) - new Date(a.date));
+
   grid.innerHTML = sorted.map(n => {
     const isSecret = Boolean(n.isSecret);
-    // Mask in grid if it's secret (always, for privacy in list view)
-    const maskContent = isSecret;
-
-    const content = maskContent
-      ? `<div class="note-content-masked"><span class="lock-icon">🔒</span> Konten ini dirahasiakan</div>`
-      : `<div class="note-content">${renderMarkdown(n.contentMarkdown || markdownFromNote(n))}</div>`;
-
-    const activeClass = activeNoteId === n.id ? ' note-card--active' : '';
-    const secretClass = isSecret ? ' note-card--secret' : '';
+    const summary = n.contentMarkdown ? n.contentMarkdown.slice(0, 60).replace(/\n/g, ' ') : 'Tidak ada konten';
 
     return `
-      <div class="note-card${activeClass}${secretClass}" data-id="${n.id}" tabindex="0">
-        <div class="note-actions">
-          <button class="action-btn pin ${n.pinned ? 'pin-active' : ''}" data-action="pin" title="Pin">📌</button>
-          <button class="action-btn star ${n.isFavorite ? 'star-active' : ''}" data-action="star" title="Favorit">⭐</button>
-          <button class="action-btn archive" data-action="archive" title="${n.isArchived ? 'Buka Arsip' : 'Arsipkan'}">📦</button>
-          <button class="action-btn copy" data-action="copy" title="Salin">📋</button>
-          <button class="action-btn delete" data-action="delete" title="Hapus">🗑️</button>
+      <div class="list-item" data-id="${n.id}" tabindex="0">
+        <div class="list-item-content">
+          <div class="list-item-title">
+            ${n.pinned ? '📌 ' : ''}${isSecret ? '🔒 ' : ''}${n.icon ? n.icon + ' ' : ''}${sanitizeText(n.title || 'Tanpa Judul')}
+          </div>
+          <div class="list-item-subtitle">
+            <span style="color: var(--text-muted); min-width: 80px;">${formatTanggalRelative(n.date)}</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.6;">${sanitizeText(isSecret ? 'Konten dirahasiakan' : summary)}</span>
+          </div>
         </div>
-        <div class="note-title">
-          ${n.icon ? `<span class="icon">${sanitizeText(n.icon)}</span>` : ''}
-          ${sanitizeText(n.title)}
-        </div>
-        ${content}
-        <div class="note-date">Ditulis: ${formatTanggalRelative(n.date)}</div>
+        <div class="list-item-chevron">›</div>
       </div>
     `;
   }).join('');
@@ -507,9 +484,9 @@ function initSortable() {
 
   Sortable.create(grid, {
     animation: 150,
-    ghostClass: 'note-card--ghost',
+    ghostClass: 'list-item--ghost',
     onEnd: async () => {
-      const newOrderIds = Array.from(grid.querySelectorAll('.note-card')).map(el => el.dataset.id);
+      const newOrderIds = Array.from(grid.querySelectorAll('.list-item')).map(el => el.dataset.id);
 
       // Update notes array to match new order
       const orderedNotes = [];
@@ -535,6 +512,8 @@ function initCommandPalette() {
   const palette = document.getElementById('command-palette');
   const input = document.getElementById('command-input');
   const results = document.getElementById('command-results');
+
+  if (!palette || !input || !results) return;
 
   const commands = [
     { name: 'Tulis Catatan Baru', icon: '📝', action: () => openNoteModal('create') },
@@ -824,6 +803,17 @@ function setupDelegation() {
     window.ContextMenu.show(e, 'folder', { id: pill.dataset.id });
   });
 
+  // Long press for mobile context menu
+  let pressTimer;
+  grid.addEventListener('touchstart', (e) => {
+    const item = e.target.closest('.list-item');
+    if (!item) return;
+    pressTimer = setTimeout(() => {
+      window.ContextMenu.show(e, 'note', { id: item.dataset.id });
+    }, 600);
+  });
+  grid.addEventListener('touchend', () => clearTimeout(pressTimer));
+
   const confirmAction = (title, message, okLabel = 'Hapus') => {
     return new Promise((resolve) => {
       const modal = document.getElementById('confirm-modal');
@@ -851,13 +841,13 @@ function setupDelegation() {
   };
 
   grid.addEventListener('contextmenu', (e) => {
-    const card = e.target.closest('.note-card');
+    const card = e.target.closest('.list-item');
     if (!card) return;
     window.ContextMenu.show(e, 'note', { id: card.dataset.id });
   });
 
   grid.addEventListener('click', async (e) => {
-    const card = e.target.closest('.note-card');
+    const card = e.target.closest('.list-item');
     const actionBtn = e.target.closest('.action-btn');
     const wikiLink = e.target.closest('.wiki-link');
 
@@ -991,9 +981,12 @@ function openNoteModal(mode = 'create', existingNote = null) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const addBtn = document.getElementById('add-note-btn');
-  if (addBtn) {
-    addBtn.onclick = () => openNoteModal('create');
+  const addBtnNav = document.getElementById('add-note-btn-nav');
+  if (addBtnNav) {
+    addBtnNav.onclick = (e) => {
+      e.preventDefault();
+      openNoteModal('create');
+    };
   }
 
   const aboutBtn = document.getElementById('nav-about');
