@@ -155,14 +155,6 @@ function showXPToast({ xp, message, streak, bonus }) {
   }, 3500);
 }
 
-if (Gamification) {
-  Gamification.trackDailyLogin().then(res => {
-    if (res && res.xp > 0) {
-      showXPToast({ xp: res.xp, message: 'Login harian', streak: res.streak, bonus: res.bonus });
-    }
-  }).catch(console.error);
-}
-
 async function persistNotes() {
   // Assign sortOrder based on current index to preserve drag-and-drop order
   const notesWithOrder = notes.map((note, index) => ({
@@ -318,24 +310,44 @@ function renderFolders() {
 }
 
 function addFolder() {
+  openFolderModal();
+}
+
+function editFolder(folderId) {
+  const folder = folders.find(f => f.id === folderId);
+  if (folder) openFolderModal(folder);
+}
+
+function openFolderModal(existingFolder = null) {
   const modal = document.getElementById('folder-modal');
   if (!modal) return;
 
-  const closeBtn = document.getElementById('folder-modal-close');
+  const titleEl = document.getElementById('folder-modal-title');
+  const idInput = document.getElementById('folder-id-input');
   const nameInput = document.getElementById('folder-name-input');
   const iconInput = document.getElementById('folder-icon-input');
   const parentSelect = document.getElementById('folder-parent-input');
   const saveBtn = document.getElementById('save-folder-btn');
+  const closeBtn = document.getElementById('folder-modal-close');
+
+  titleEl.textContent = existingFolder ? 'Edit Folder' : 'Folder Baru';
+  idInput.value = existingFolder ? existingFolder.id : '';
+  nameInput.value = existingFolder ? existingFolder.name : '';
+  iconInput.value = existingFolder ? existingFolder.icon : '';
 
   // Populate parent select
   if (parentSelect) {
     parentSelect.innerHTML = '<option value="">(Tanpa Parent)</option>';
     folders.forEach(f => {
+      // Prevent selecting itself or its children as parent (basic check: itself)
+      if (existingFolder && f.id === existingFolder.id) return;
+
       const opt = document.createElement('option');
       opt.value = f.id;
       opt.textContent = f.name;
       parentSelect.appendChild(opt);
     });
+    parentSelect.value = existingFolder ? (existingFolder.parentId || '') : '';
   }
 
   const hide = () => {
@@ -347,22 +359,28 @@ function addFolder() {
     const name = nameInput.value.trim();
     if (!name) return;
 
-    const newFolder = {
-      id: generateId('folder'),
-      name,
-      icon: iconInput.value.trim() || '📁',
-      parentId: parentSelect ? parentSelect.value || null : null,
-      createdAt: new Date().toISOString()
-    };
+    const parentId = parentSelect ? parentSelect.value || null : null;
+    const iso = new Date().toISOString();
 
-    folders.push(newFolder);
+    if (existingFolder) {
+      existingFolder.name = name;
+      existingFolder.icon = iconInput.value.trim() || '📁';
+      existingFolder.parentId = parentId;
+      existingFolder.updatedAt = iso;
+    } else {
+      const newFolder = {
+        id: generateId('folder'),
+        name,
+        icon: iconInput.value.trim() || '📁',
+        parentId,
+        createdAt: iso
+      };
+      folders.push(newFolder);
+    }
+
     await Storage.setFolders(folders);
     renderFolders();
     hide();
-
-    nameInput.value = '';
-    iconInput.value = '';
-    if (parentSelect) parentSelect.value = '';
   };
 
   closeBtn.onclick = hide;
@@ -425,7 +443,12 @@ async function renderNotes() {
   }
 
   const filtered = notes.filter(n => {
-    const matchSearch = !searchQuery || (n._searchText || '').includes(searchQuery);
+    let matchSearch = true;
+    if (searchQuery) {
+      const words = searchQuery.split(/\s+/).filter(Boolean);
+      matchSearch = words.every(word => (n._searchText || '').includes(word));
+    }
+
     const matchTag = !filterByTag || (n.label || '').toLowerCase() === filterByTag.toLowerCase();
 
     if (activeFolderId === 'archived') return n.isArchived && matchSearch && matchTag;
@@ -573,7 +596,7 @@ function initCommandPalette() {
         const item = document.createElement('div');
         item.className = 'command-item';
         item.style = 'padding: 12px 15px; border-radius: 10px; cursor: pointer; display: flex; gap: 10px; align-items: center; transition: background 0.2s;';
-        item.innerHTML = `<span>📄</span> <span>${n.title}</span>`;
+        item.innerHTML = `<span>📄</span> <span>${sanitizeText(n.title)}</span>`;
         item.onclick = () => { openNoteModal('edit', n); hide(); };
         item.onmouseover = () => item.style.background = 'var(--surface-alt)';
         item.onmouseout = () => item.style.background = 'transparent';
@@ -672,26 +695,97 @@ window.ContextMenu = {
       this.showMoveModal(note);
     } else if (action === 'delete-folder') {
       this.handleDeleteFolder(this.activeTarget.id);
+    } else if (action === 'edit-folder') {
+      editFolder(this.activeTarget.id);
     }
     this.hide();
   },
 
   async handleDeleteFolder(id) {
     const folder = folders.find(f => f.id === id);
-    if (confirm(`Hapus folder "${folder.name}"? Catatan di dalamnya tidak akan dihapus, tapi akan kehilangan referensi folder ini.`)) {
+    if (!folder) return;
+
+    if (confirm(`Hapus folder "${folder.name}"? Catatan di dalamnya tidak akan dihapus. Sub-folder akan dipindahkan ke tingkat utama.`)) {
+      // Re-assign child folders to root or parent's parent? Let's go with parent of deleted or null.
+      const newParentId = folder.parentId || null;
+
+      folders.forEach(f => {
+        if (f.parentId === id) f.parentId = newParentId;
+      });
+
+      // Filter out the deleted folder
       folders = folders.filter(f => f.id !== id);
+
+      // Update notes that were in this folder
+      notes.forEach(n => {
+        if (n.folderId === id) n.folderId = null;
+      });
+
       await Storage.setFolders(folders);
+      await persistNotes();
       renderFolders();
+      renderNotes();
     }
   },
 
   showMoveModal(note) {
-    const options = folders.map(f => `${f.name} (ID: ${f.id})`).join('\n');
-    const folderId = prompt('Ketik ID Folder tujuan atau kosongkan untuk menghapus dari folder:\n\n' + options, note.folderId || '');
-    if (folderId !== null) {
-      note.folderId = folderId || null;
-      persistNotes().then(renderNotes);
-    }
+    const modal = document.getElementById('move-note-modal');
+    const listEl = document.getElementById('move-note-list');
+    const closeBtn = document.getElementById('move-note-close');
+    if (!modal || !listEl) return;
+
+    const hide = () => {
+      if (ModalManager) ModalManager.close('move-note-modal');
+      else modal.classList.remove('show');
+    };
+
+    const renderList = () => {
+      let html = `
+        <div class="context-menu-item" data-id="" style="border: 1px solid var(--border-subtle)">
+          <span>📁</span> (Tanpa Folder)
+        </div>
+      `;
+
+      // Use hierarchy for better UX
+      const folderMap = {};
+      folders.forEach(f => { folderMap[f.id] = { ...f, children: [] }; });
+      const roots = [];
+      folders.forEach(f => {
+        if (f.parentId && folderMap[f.parentId]) {
+          folderMap[f.parentId].children.push(folderMap[f.id]);
+        } else {
+          roots.push(folderMap[f.id]);
+        }
+      });
+
+      const addItems = (f, level = 0) => {
+        const active = note.folderId === f.id ? ' style="background: var(--primary-soft); border: 1px solid var(--primary)"' : ' style="border: 1px solid var(--border-subtle)"';
+        const indent = level > 0 ? '　'.repeat(level) + '↳ ' : '';
+        html += `
+          <div class="context-menu-item" data-id="${f.id}"${active}>
+            <span>📁</span> ${indent}${sanitizeText(f.name)}
+          </div>
+        `;
+        f.children.forEach(child => addItems(child, level + 1));
+      };
+
+      roots.forEach(root => addItems(root));
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('.context-menu-item').forEach(item => {
+        item.onclick = async () => {
+          note.folderId = item.dataset.id || null;
+          await persistNotes();
+          renderNotes();
+          hide();
+        };
+      });
+    };
+
+    renderList();
+    closeBtn.onclick = hide;
+    if (ModalManager) ModalManager.open('move-note-modal', modal);
+    else modal.classList.add('show');
   },
 
   render() {
@@ -711,7 +805,7 @@ window.ContextMenu = {
       `;
     } else if (this.activeType === 'folder') {
        this.el.innerHTML = `
-         <div class="context-menu-item" onclick="alert('Fitur edit nama folder segera hadir.')"><span>✏️</span> Ganti Nama</div>
+         <div class="context-menu-item" onclick="window.ContextMenu.handleAction('edit-folder')"><span>✏️</span> Edit Folder</div>
          <div class="context-menu-item danger" onclick="window.ContextMenu.handleAction('delete-folder')"><span>🗑️</span> Hapus Folder</div>
        `;
     }
@@ -949,6 +1043,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   showSkeletons();
   await Storage.ready;
+
+  if (Gamification) {
+    Gamification.trackDailyLogin().then(res => {
+      if (res && res.xp > 0) {
+        showXPToast({ xp: res.xp, message: 'Login harian', streak: res.streak, bonus: res.bonus });
+      }
+    }).catch(console.error);
+  }
+
   await loadFolders();
   await loadNotes();
   await renderMoodGraph();

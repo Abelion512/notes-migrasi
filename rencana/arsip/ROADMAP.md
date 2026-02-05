@@ -1,10 +1,11 @@
 # 🗺️ Roadmap Pengembangan Abelion Notes
 
-## Fase 1: Fondasi & Organisasi (Sedang Berjalan)
+## Fase 1: Fondasi & Organisasi (Selesai)
 - [x] Migrasi ke IndexedDB untuk performa lebih baik.
-- [ ] Implementasi **Nested Folders** (Folder Bertingkat).
-- [ ] Perbaikan sistem pencarian (fuzzy search).
-- [ ] Context Menu (Klik kanan/Tekan lama) pada kartu catatan.
+- [x] Implementasi **Nested Folders** (Folder Bertingkat).
+- [x] Perbaikan sistem pencarian (Multi-word search).
+- [x] Context Menu (Klik kanan/Tekan lama) pada kartu catatan & folder.
+- [x] CRUD Folder Lengkap (Create, Read, Update, Delete).
 
 ## Fase 2: Pengalaman Menulis & Portabilitas
 - [ ] Mode Fokus (Zen Mode) saat menulis.
