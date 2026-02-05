@@ -57,6 +57,12 @@
           <label style="font-size: 0.9em; font-weight: 600; color: var(--text-secondary);">Icon (Opsional)</label>
           <input type="text" id="folder-icon-input" class="input-control" placeholder="📁" style="width: 100%;">
         </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="font-size: 0.9em; font-weight: 600; color: var(--text-secondary);">Parent Folder (Opsional)</label>
+          <select id="folder-parent-input" class="input-control" style="width: 100%;">
+            <option value="">(Tanpa Parent)</option>
+          </select>
+        </div>
         <button class="btn-blue" id="save-folder-btn" style="width: 100%; margin: 0;">Simpan Folder</button>
       </div>
     </div>
@@ -180,6 +186,8 @@
       </a>
     </div>
   </nav>
+  <div id="custom-context-menu" class="context-menu"></div>
+
   <footer class="site-footer">
     <small>© 2025 Abelion Notes</small>
     <a href="lembaran/setelan.html">Pengaturan</a>

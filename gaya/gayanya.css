@@ -2238,6 +2238,63 @@ body.modal-open {
   display: none !important;
 }
 
+/* Context Menu */
+.context-menu {
+  position: fixed;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-outline);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 6px;
+  z-index: 2000;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  animation: menuFadeIn 0.2s ease-out;
+}
+
+@keyframes menuFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.context-menu-item:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.context-menu-item.danger {
+  color: var(--danger);
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--danger);
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 4px;
+}
+
 /* Folder Pills & Category Navigation */
 .folder-container {
   display: flex;

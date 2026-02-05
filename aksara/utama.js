@@ -270,13 +270,34 @@ function renderFolders() {
   const allActive = activeFolderId === 'all' ? ' active' : '';
   let html = `<div class="folder-pill${allActive}" data-id="all">Semua</div>`;
 
+  // Build hierarchy
+  const folderMap = {};
+  folders.forEach(f => { folderMap[f.id] = { ...f, children: [] }; });
+  const roots = [];
   folders.forEach(f => {
+    if (f.parentId && folderMap[f.parentId]) {
+      folderMap[f.parentId].children.push(folderMap[f.id]);
+    } else {
+      roots.push(folderMap[f.id]);
+    }
+  });
+
+  function renderFolderItem(f, level = 0) {
     const active = activeFolderId === f.id ? ' active' : '';
-    html += `
-      <div class="folder-pill${active}" data-id="${f.id}">
-        ${f.icon || '📁'} ${f.name}
+    const indent = level > 0 ? `<span style="opacity: 0.5; margin-right: 4px;">${'↳'.repeat(level)}</span>` : '';
+    let itemHtml = `
+      <div class="folder-pill${active}" data-id="${f.id}" style="margin-left: ${level * 8}px">
+        ${indent}${sanitizeText(f.icon || '📁')} ${sanitizeText(f.name)}
       </div>
     `;
+    f.children.forEach(child => {
+      itemHtml += renderFolderItem(child, level + 1);
+    });
+    return itemHtml;
+  }
+
+  roots.forEach(root => {
+    html += renderFolderItem(root);
   });
 
   const archivedActive = activeFolderId === 'archived' ? ' active' : '';
@@ -303,7 +324,19 @@ function addFolder() {
   const closeBtn = document.getElementById('folder-modal-close');
   const nameInput = document.getElementById('folder-name-input');
   const iconInput = document.getElementById('folder-icon-input');
+  const parentSelect = document.getElementById('folder-parent-input');
   const saveBtn = document.getElementById('save-folder-btn');
+
+  // Populate parent select
+  if (parentSelect) {
+    parentSelect.innerHTML = '<option value="">(Tanpa Parent)</option>';
+    folders.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = f.name;
+      parentSelect.appendChild(opt);
+    });
+  }
 
   const hide = () => {
     if (ModalManager) ModalManager.close('folder-modal');
@@ -318,6 +351,7 @@ function addFolder() {
       id: generateId('folder'),
       name,
       icon: iconInput.value.trim() || '📁',
+      parentId: parentSelect ? parentSelect.value || null : null,
       createdAt: new Date().toISOString()
     };
 
@@ -328,6 +362,7 @@ function addFolder() {
 
     nameInput.value = '';
     iconInput.value = '';
+    if (parentSelect) parentSelect.value = '';
   };
 
   closeBtn.onclick = hide;
@@ -560,8 +595,141 @@ function initCommandPalette() {
   palette.onclick = (e) => { if (e.target === palette) hide(); };
 }
 
+window.ContextMenu = {
+  el: null,
+  activeTarget: null,
+  activeType: null,
+
+  initialized: false,
+  init() {
+    if (this.initialized) return;
+    this.el = document.getElementById('custom-context-menu');
+    document.addEventListener('click', (e) => {
+      if (this.el && !this.el.contains(e.target)) this.hide();
+    });
+    window.addEventListener('scroll', () => this.hide(), { passive: true });
+    this.initialized = true;
+  },
+
+  show(e, type, target) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.activeTarget = target;
+    this.activeType = type;
+
+    this.render();
+
+    this.el.style.display = 'flex';
+
+    const { clientX: x, clientY: y } = e;
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+    const menuW = this.el.offsetWidth || 180;
+    const menuH = this.el.offsetHeight || 200;
+
+    let posX = x;
+    let posY = y;
+
+    if (x + menuW > winW) posX = winW - menuW - 10;
+    if (y + menuH > winH) posY = winH - menuH - 10;
+
+    this.el.style.left = `${posX}px`;
+    this.el.style.top = `${posY}px`;
+  },
+
+  hide() {
+    if (this.el) this.el.style.display = 'none';
+  },
+
+  async handleAction(action) {
+    const id = this.activeTarget.id;
+    const note = notes.find(n => n.id === id);
+
+    if (action === 'pin') {
+      note.pinned = !note.pinned;
+      await persistNotes();
+      renderNotes();
+    } else if (action === 'star') {
+      note.isFavorite = !note.isFavorite;
+      await persistNotes();
+      renderNotes();
+    } else if (action === 'archive') {
+      note.isArchived = !note.isArchived;
+      await persistNotes();
+      renderNotes();
+    } else if (action === 'delete') {
+      if (confirm(`Pindahkan "${note.title}" ke sampah?`)) {
+        await Storage.moveToTrash(id);
+        notes = notes.filter(n => n.id !== id);
+        renderNotes();
+      }
+    } else if (action === 'copy') {
+      const text = `${note.title}\n\n${markdownFromNote(note)}`;
+      navigator.clipboard.writeText(text);
+    } else if (action === 'edit') {
+      openNoteModal('edit', note);
+    } else if (action === 'move') {
+      this.showMoveModal(note);
+    } else if (action === 'delete-folder') {
+      this.handleDeleteFolder(this.activeTarget.id);
+    }
+    this.hide();
+  },
+
+  async handleDeleteFolder(id) {
+    const folder = folders.find(f => f.id === id);
+    if (confirm(`Hapus folder "${folder.name}"? Catatan di dalamnya tidak akan dihapus, tapi akan kehilangan referensi folder ini.`)) {
+      folders = folders.filter(f => f.id !== id);
+      await Storage.setFolders(folders);
+      renderFolders();
+    }
+  },
+
+  showMoveModal(note) {
+    const options = folders.map(f => `${f.name} (ID: ${f.id})`).join('\n');
+    const folderId = prompt('Ketik ID Folder tujuan atau kosongkan untuk menghapus dari folder:\n\n' + options, note.folderId || '');
+    if (folderId !== null) {
+      note.folderId = folderId || null;
+      persistNotes().then(renderNotes);
+    }
+  },
+
+  render() {
+    if (this.activeType === 'note') {
+      const id = this.activeTarget.id;
+      const note = notes.find(n => n.id === id);
+      this.el.innerHTML = `
+        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('edit')"><span>✏️</span> Edit Catatan</div>
+        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('move')"><span>📂</span> Pindahkan Folder</div>
+        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('pin')"><span>📌</span> ${note.pinned ? 'Lepas Pin' : 'Pin Catatan'}</div>
+        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('star')"><span>⭐</span> ${note.isFavorite ? 'Hapus Favorit' : 'Jadikan Favorit'}</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('archive')"><span>📦</span> ${note.isArchived ? 'Buka Arsip' : 'Arsipkan'}</div>
+        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('copy')"><span>📋</span> Salin Teks</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item danger" onclick="window.ContextMenu.handleAction('delete')"><span>🗑️</span> Hapus</div>
+      `;
+    } else if (this.activeType === 'folder') {
+       this.el.innerHTML = `
+         <div class="context-menu-item" onclick="alert('Fitur edit nama folder segera hadir.')"><span>✏️</span> Ganti Nama</div>
+         <div class="context-menu-item danger" onclick="window.ContextMenu.handleAction('delete-folder')"><span>🗑️</span> Hapus Folder</div>
+       `;
+    }
+  }
+};
+
 function setupDelegation() {
   const grid = document.getElementById("notes-grid");
+  const folderList = document.getElementById("folder-list");
+
+  if (window.ContextMenu) window.ContextMenu.init();
+
+  folderList.addEventListener('contextmenu', (e) => {
+    const pill = e.target.closest('.folder-pill');
+    if (!pill || pill.dataset.id === 'all' || pill.dataset.id === 'archived' || pill.dataset.id === 'trash') return;
+    window.ContextMenu.show(e, 'folder', { id: pill.dataset.id });
+  });
+
   const confirmAction = (title, message, okLabel = 'Hapus') => {
     return new Promise((resolve) => {
       const modal = document.getElementById('confirm-modal');
@@ -591,16 +759,7 @@ function setupDelegation() {
   grid.addEventListener('contextmenu', (e) => {
     const card = e.target.closest('.note-card');
     if (!card) return;
-    e.preventDefault();
-
-    const id = card.dataset.id;
-    const note = notes.find(n => n.id === id);
-    if (!note) return;
-
-    // We can just trigger the same actions or show a better custom menu later
-    // For now, let's just make the pin/unpin/archive easier
-    note.pinned = !note.pinned;
-    persistNotes().then(renderNotes);
+    window.ContextMenu.show(e, 'note', { id: card.dataset.id });
   });
 
   grid.addEventListener('click', async (e) => {

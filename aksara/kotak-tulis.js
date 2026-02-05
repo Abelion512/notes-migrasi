@@ -314,12 +314,28 @@
     if (global.AbelionStorage) {
       global.AbelionStorage.getFolders().then(folders => {
         while (folderSelect.options.length > 1) folderSelect.remove(1);
+
+        // Build hierarchy for select
+        const folderMap = {};
+        folders.forEach(f => { folderMap[f.id] = { ...f, children: [] }; });
+        const roots = [];
         folders.forEach(f => {
+          if (f.parentId && folderMap[f.parentId]) {
+            folderMap[f.parentId].children.push(folderMap[f.id]);
+          } else {
+            roots.push(folderMap[f.id]);
+          }
+        });
+
+        const addOptions = (f, level = 0) => {
           const opt = document.createElement('option');
           opt.value = f.id;
-          opt.textContent = f.name;
+          opt.textContent = (level > 0 ? '　'.repeat(level) + '↳ ' : '') + f.name;
           folderSelect.appendChild(opt);
-        });
+          f.children.forEach(child => addOptions(child, level + 1));
+        };
+
+        roots.forEach(root => addOptions(root));
         folderSelect.value = merged.folderId || '';
       });
     }
