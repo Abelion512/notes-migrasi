@@ -46,12 +46,14 @@
 
   async function populateForm(note, notes) {
     const iconEl = document.getElementById('edit-icon');
+    const iconTrigger = document.getElementById('edit-icon-trigger');
     const titleEl = document.getElementById('edit-title');
     const contentEl = document.getElementById('edit-content');
     const labelEl = document.getElementById('edit-label');
     if (!iconEl || !titleEl || !contentEl || !labelEl) return;
 
-    iconEl.value = note.icon || '';
+    iconEl.value = note.icon || '📁';
+    if (iconTrigger) iconTrigger.textContent = note.icon || '📁';
     titleEl.value = note.title;
 
     contentEl.value = toMarkdown(note);
@@ -74,6 +76,53 @@
   }
 
   function bindActions(note, notes) {
+    const iconTrigger = document.getElementById('edit-icon-trigger');
+    const iconInput = document.getElementById('edit-icon');
+
+    if (iconTrigger && iconInput) {
+      iconTrigger.onclick = (e) => {
+        e.stopPropagation();
+        let pickerContainer = document.getElementById('emoji-picker-container');
+        if (pickerContainer) {
+          pickerContainer.classList.toggle('hidden');
+          return;
+        }
+
+        pickerContainer = document.createElement('div');
+        pickerContainer.id = 'emoji-picker-container';
+        pickerContainer.style = `
+          position: absolute; top: 100%; left: 0; z-index: 1000;
+          background: var(--surface); border-radius: 12px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+          border: 0.5px solid var(--border-subtle);
+          margin-top: 8px; overflow: hidden;
+        `;
+
+        const picker = document.createElement('emoji-picker');
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+          picker.classList.add('dark');
+        }
+
+        pickerContainer.appendChild(picker);
+        iconTrigger.parentElement.appendChild(pickerContainer);
+
+        picker.addEventListener('emoji-click', event => {
+          const emoji = event.detail.unicode;
+          iconTrigger.textContent = emoji;
+          iconInput.value = emoji;
+          pickerContainer.classList.add('hidden');
+        });
+
+        const closePicker = (ev) => {
+          if (!pickerContainer.contains(ev.target) && ev.target !== iconTrigger) {
+            pickerContainer.classList.add('hidden');
+            document.removeEventListener('click', closePicker);
+          }
+        };
+        document.addEventListener('click', closePicker);
+      };
+    }
+
     const form = document.getElementById('note-edit-form');
     if (form) {
       form.onsubmit = async function(e) {

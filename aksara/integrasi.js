@@ -22,15 +22,26 @@
   const STORAGE_KEYS = AbelionUtils.STORAGE_KEYS;
   updateStatusBadges();
 
-  // Supabase Logic
-  if (supabaseToggleBtn) {
-    supabaseToggleBtn.onclick = () => {
-      const isVisible = supabaseConfigArea.style.display === 'block';
-      supabaseConfigArea.style.display = isVisible ? 'none' : 'block';
-      supabaseToggleBtn.textContent = isVisible ? 'Konfigurasi' : 'Tutup';
-    };
-  }
+  // Unified Row Logic
+  document.querySelectorAll('.integration-row').forEach(row => {
+    row.onclick = () => {
+      const target = row.dataset.target;
+      const area = document.getElementById(`${target}-config-area`);
+      const isVisible = area.style.display === 'block';
 
+      // Close all first for a clean look
+      document.querySelectorAll('[id$="-config-area"]').forEach(a => a.style.display = 'none');
+      document.querySelectorAll('.list-item-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+
+      if (!isVisible) {
+        area.style.display = 'block';
+        row.querySelector('.list-item-chevron').style.transform = 'rotate(90deg)';
+        area.style.animation = 'slideDown 0.3s ease-out';
+      }
+    };
+  });
+
+  // Supabase Logic
   if (supabaseUrlInput || supabaseKeyInput) {
     const config = await Storage.getValue(STORAGE_KEYS.SUPABASE_CONFIG, {});
     if (supabaseUrlInput) supabaseUrlInput.value = config.url || '';
@@ -56,14 +67,6 @@
   }
 
   // Notion Logic
-  if (notionToggleBtn) {
-    notionToggleBtn.onclick = () => {
-      const isVisible = notionConfigArea.style.display === 'block';
-      notionConfigArea.style.display = isVisible ? 'none' : 'block';
-      notionToggleBtn.textContent = isVisible ? 'Konfigurasi' : 'Tutup';
-    };
-  }
-
   if (notionTokenInput || notionDbInput) {
     const config = await Storage.getValue(STORAGE_KEYS.NOTION_CONFIG, {});
     if (notionTokenInput) notionTokenInput.value = config.token || '';
@@ -79,7 +82,7 @@
 
       alert('Konfigurasi Notion disimpan.');
       notionConfigArea.style.display = 'none';
-      notionToggleBtn.textContent = 'Konfigurasi';
+      document.querySelector('.integration-row[data-target="notion"] .list-item-chevron').style.transform = 'rotate(0deg)';
       updateStatusBadges();
     };
   }

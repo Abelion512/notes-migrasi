@@ -186,7 +186,11 @@
         <input type="hidden" id="folder-id-input">
         <div class="section-card">
           <input type="text" id="folder-name-input" class="input-control" placeholder="Nama Folder">
-          <input type="text" id="folder-icon-input" class="input-control" placeholder="Ikon (Misal: Folder)" style="border-top: 0.5px solid var(--border-subtle);">
+          <div style="display: flex; align-items: center; border-top: 0.5px solid var(--border-subtle); padding-right: 16px; position: relative;">
+            <div style="flex: 1; padding: 12px 16px; color: var(--text-secondary); font-size: 17px;">Ikon</div>
+            <button type="button" id="folder-icon-trigger" style="font-size: 20px; background: none; border: none; cursor: pointer;">📁</button>
+            <input type="hidden" id="folder-icon-input" value="📁">
+          </div>
         </div>
         <div class="list-header">Folder Utama (Opsional)</div>
         <div class="section-card">
@@ -206,6 +210,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docx@8.2.2/build/index.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
   <script src="aksara/corak.js"></script>
   <script src="aksara/pemuat.js"></script>
   <script src="aksara/utusan.js"></script>

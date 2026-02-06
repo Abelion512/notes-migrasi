@@ -83,7 +83,7 @@
     if (!html) return '';
     const template = document.createElement('template');
     template.innerHTML = html;
-    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV', 'INPUT']);
+    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV', 'INPUT', 'BLOCKQUOTE', 'HR', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
 
     const walk = (node, depth) => {
       if (depth > maxDepth) {

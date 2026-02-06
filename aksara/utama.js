@@ -343,7 +343,55 @@ function openFolderModal(existingFolder = null) {
   titleEl.textContent = existingFolder ? 'Edit Folder' : 'Folder Baru';
   idInput.value = existingFolder ? existingFolder.id : '';
   nameInput.value = existingFolder ? existingFolder.name : '';
-  iconInput.value = existingFolder ? existingFolder.icon : '';
+
+  const iconTrigger = document.getElementById('folder-icon-trigger');
+  const initialIcon = existingFolder ? existingFolder.icon || '📁' : '📁';
+  iconInput.value = initialIcon;
+  if (iconTrigger) iconTrigger.textContent = initialIcon;
+
+  if (iconTrigger) {
+    iconTrigger.onclick = (e) => {
+      e.stopPropagation();
+      let pickerContainer = document.getElementById('folder-emoji-picker-container');
+      if (pickerContainer) {
+        pickerContainer.classList.toggle('hidden');
+        return;
+      }
+
+      pickerContainer = document.createElement('div');
+      pickerContainer.id = 'folder-emoji-picker-container';
+      pickerContainer.style = `
+        position: absolute; bottom: 100%; right: 0; z-index: 1000;
+        background: var(--surface); border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        border: 0.5px solid var(--border-subtle);
+        margin-bottom: 8px; overflow: hidden;
+      `;
+
+      const picker = document.createElement('emoji-picker');
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        picker.classList.add('dark');
+      }
+
+      pickerContainer.appendChild(picker);
+      iconTrigger.parentElement.appendChild(pickerContainer);
+
+      picker.addEventListener('emoji-click', event => {
+        const emoji = event.detail.unicode;
+        iconTrigger.textContent = emoji;
+        iconInput.value = emoji;
+        pickerContainer.classList.add('hidden');
+      });
+
+      const closePicker = (ev) => {
+        if (!pickerContainer.contains(ev.target) && ev.target !== iconTrigger) {
+          pickerContainer.classList.add('hidden');
+          document.removeEventListener('click', closePicker);
+        }
+      };
+      document.addEventListener('click', closePicker);
+    };
+  }
 
   // Populate parent select
   if (parentSelect) {
@@ -358,6 +406,7 @@ function openFolderModal(existingFolder = null) {
       parentSelect.appendChild(opt);
     });
     parentSelect.value = existingFolder ? (existingFolder.parentId || '') : '';
+    if (window.initCustomSelects) window.initCustomSelects();
   }
 
   const hide = () => {

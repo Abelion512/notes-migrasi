@@ -39,7 +39,7 @@ select {
   --surface-alt: #FFFFFF;
   --surface-strong: #FFFFFF;
   --frosted: rgba(255, 255, 255, 0.6);
-  --glass-blur: 25px;
+  --glass-blur: 35px;
 
   --card-radius: 12px;
   --panel-radius: 12px;
@@ -80,8 +80,8 @@ select {
   --surface: #1C1C1E;
   --surface-alt: #1C1C1E;
   --surface-strong: #2C2C2E;
-  --frosted: rgba(28, 28, 30, 0.5);
-  --glass-blur: 40px;
+  --frosted: rgba(28, 28, 30, 0.6);
+  --glass-blur: 50px;
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.8);
   --text-primary: #FFFFFF;
   --text-secondary: #EBEBF5;
@@ -305,6 +305,7 @@ h3 { font-size: 17px; font-weight: 600; }
   color: var(--text-muted);
   font-size: 14px;
   margin-left: 10px;
+  transition: transform 0.3s ease;
 }
 
 /* Notes Grid transformed to List */
@@ -501,6 +502,11 @@ h3 { font-size: 17px; font-weight: 600; }
   to { transform: translateY(0); }
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .modal-header-ios {
   display: flex;
   justify-content: space-between;
@@ -533,11 +539,18 @@ h3 { font-size: 17px; font-weight: 600; }
   background: var(--surface);
   width: 100%;
   height: 94vh;
-  border-radius: 20px 20px 0 0;
+  border-radius: 24px 24px 0 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.2, 1);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+}
+
+.note-editor-modal {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 0.3s ease;
 }
 
 .note-editor-header {
@@ -570,12 +583,111 @@ h3 { font-size: 17px; font-weight: 600; }
   border: none;
   width: 100%;
   height: auto;
-  min-height: 200px;
+  min-height: 400px;
   background: transparent;
   color: var(--text-primary);
   outline: none;
   resize: none;
-  line-height: 1.6;
+  line-height: 1.8;
+  letter-spacing: -0.01em;
+  font-family: var(--font-stack);
+}
+
+#editor-preview-area {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+#editor-preview-area h2, #editor-preview-area h3, #editor-preview-area h4 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+#editor-preview-area p {
+  margin-bottom: 16px;
+}
+
+#editor-preview-area ul, #editor-preview-area ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+#editor-preview-area li {
+  margin-bottom: 10px;
+}
+
+#editor-preview-area blockquote {
+  border-left: 4px solid var(--border-subtle);
+  padding-left: 16px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+#editor-preview-area hr {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: 32px 0;
+}
+
+#editor-preview-area pre {
+  background: var(--surface-strong);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px;
+}
+
+#editor-preview-area code {
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.slash-menu {
+  position: absolute;
+  background: var(--surface);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 5000;
+  min-width: 200px;
+  overflow: hidden;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.slash-item {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.slash-item:hover, .slash-item.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.slash-item-icon {
+  width: 24px;
+  height: 24px;
+  background: var(--surface-strong);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }
 
 /* Secondary Pages (Profile, Settings) */
@@ -735,6 +847,105 @@ select.input-control {
   height: 0.5px;
   background: var(--border-subtle);
   margin: 4px 6px;
+}
+
+/* Custom Select Styles */
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface-strong);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 17px;
+  color: var(--text-primary);
+  transition: background 0.2s;
+}
+
+.custom-select-trigger:active {
+  background: var(--border-subtle);
+}
+
+.custom-select-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 1000;
+  margin-top: 8px;
+  overflow: hidden;
+  display: none;
+}
+
+.custom-select-options.show {
+  display: block;
+  animation: popIn 0.2s ease-out;
+}
+
+.custom-select-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+
+.custom-select-option:last-child {
+  border-bottom: none;
+}
+
+.custom-select-option:hover, .custom-select-option.selected {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* iOS Action Sheet for Select */
+@media (max-width: 600px) {
+  .custom-select-options {
+    position: fixed;
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    width: calc(100% - 40px);
+    border-radius: 14px;
+    margin-top: 0;
+    display: none;
+    z-index: 10000;
+    background: var(--surface);
+    border: none;
+  }
+
+  .custom-select-options.show {
+    display: block;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .custom-select-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 9999;
+    display: none;
+  }
+
+  .custom-select-overlay.show {
+    display: block;
+  }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* Utilities */
