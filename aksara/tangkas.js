@@ -116,7 +116,7 @@
     },
     nightOwl: {
       id: 'nightOwl',
-      baseName: 'Burung Hantu',
+      baseName: 'Pencatat Nokturnal',
       icon: '🦉',
       description: 'Menulis di larut malam.',
       criteria: 'Menulis antara jam 00:00 - 04:00.',
@@ -124,7 +124,7 @@
     },
     earlyBird: {
       id: 'earlyBird',
-      baseName: 'Burung Pagi',
+      baseName: 'Pencatat Fajar',
       icon: '🌅',
       description: 'Menulis di pagi buta.',
       criteria: 'Menulis antara jam 05:00 - 08:00.',
@@ -140,7 +140,7 @@
     },
     patcher: {
       id: 'patcher',
-      baseName: 'Penyelamat Streak',
+      baseName: 'Penjaga Rangkaian',
       icon: '🛡️',
       description: 'Menjaga streak menulis selama seminggu.',
       criteria: 'Streak menulis mencapai 7 hari.',
@@ -156,7 +156,7 @@
     },
     projectTamer: {
       id: 'projectTamer',
-      baseName: 'Penjinak Proyek',
+      baseName: 'Pengelola Tugas',
       icon: '🎯',
       description: 'Menyelesaikan banyak checklist.',
       criteria: 'Menyelesaikan 10 item checklist.',
@@ -164,7 +164,7 @@
     },
     purist: {
       id: 'purist',
-      baseName: 'Purist',
+      baseName: 'Penjaga Rahasia',
       icon: '🔐',
       description: 'Menggunakan fitur catatan rahasia.',
       criteria: 'Membuat 5 catatan rahasia.',
@@ -328,7 +328,7 @@
       ? customTitleRaw.trim()
       : '';
     const sorted = TITLE_PROGRESSION.slice().sort((a, b) => a.level - b.level);
-    let active = sorted[0] || { name: 'Explorer', description: '' };
+    let active = sorted[0] || { name: 'Penjelajah', description: '' };
     let next = null;
 
     for (let i = 0; i < sorted.length; i++) {

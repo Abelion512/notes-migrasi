@@ -76,10 +76,10 @@
   const factoryResetBtn = document.getElementById('factory-reset-btn');
   if (factoryResetBtn) {
     factoryResetBtn.onclick = async () => {
-      const confirm1 = confirm('PERINGATAN: Semua catatan, folder, dan pengaturan akan dihapus secara permanen. Lanjutkan?');
+      const confirm1 = await AbelionUtils.confirmAction('Hapus Data Permanen', 'Semua catatan, folder, dan pengaturan akan dihapus secara permanen. Lanjutkan?', 'Lanjutkan', 'Batal');
       if (!confirm1) return;
 
-      const confirm2 = confirm('Apakah Anda benar-benar yakin? Tindakan ini tidak dapat dibatalkan.');
+      const confirm2 = await AbelionUtils.confirmAction('Konfirmasi Terakhir', 'Apakah Anda benar-benar yakin? Tindakan ini tidak dapat dibatalkan.', 'Hapus Semua', 'Batal');
       if (!confirm2) return;
 
       try {
@@ -245,7 +245,7 @@
         }
         else if (format === 'png') {
           if (typeof html2canvas === 'undefined') throw new Error('html2canvas not loaded');
-          alert('Mengekspor catatan terpilih sebagai gambar. Ini mungkin memakan waktu.');
+          alert('Mengekspor catatan terpilih sebagai gambar. Proses ini mungkin memerlukan waktu beberapa saat.');
 
           const container = document.createElement('div');
           container.style.position = 'absolute';
@@ -270,7 +270,7 @@
             `;
             container.appendChild(page);
 
-            if (idx < 3 || confirm(`Ekspor catatan ke-${idx+1}? (Maksimal 5 untuk demo gambar)`)) {
+            if (idx < 3 || await AbelionUtils.confirmAction('Ekspor Gambar', `Lanjutkan ekspor catatan ke-${idx+1}? (Maksimal 5 untuk demo gambar)`)) {
               const canvas = await html2canvas(page);
               const dataUrl = canvas.toDataURL('image/png');
               const a = document.createElement('a');

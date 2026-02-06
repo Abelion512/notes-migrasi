@@ -54,8 +54,8 @@
         <select id="export-format" class="input-control" style="background: var(--surface-strong); border-radius: 10px; color: var(--text-primary);">
           <option value="json">JSON (Lengkap)</option>
           <option value="md">Markdown (ZIP)</option>
-          <option value="txt">Plain Text (ZIP)</option>
-          <option value="pdf">PDF Document</option>
+          <option value="txt">Teks Polos (ZIP)</option>
+          <option value="pdf">Dokumen PDF</option>
         </select>
         <button type="button" class="btn-blue" id="export-btn" style="width: 100%;">Ekspor Sekarang</button>
       </div>
@@ -137,6 +137,21 @@
     <div style="text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 13px;">
       <p>Lembaga Arsip Digital Abelion v<span id="settings-version-label"></span></p>
       <p>Didesain untuk iOS & Web</p>
+    </div>
+  </div>
+
+  <div id="confirm-modal" class="modal-sheet">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="confirm-title">Konfirmasi</h2>
+      </div>
+      <div class="modal-body" style="padding: 20px; text-align: center;">
+        <p id="confirm-message" style="color: var(--text-secondary); line-height: 1.5;"></p>
+      </div>
+      <div class="modal-footer" style="display: flex; flex-direction: column; gap: 10px; padding: 15px;">
+        <button id="confirm-ok" class="btn-blue" style="width: 100%;">Ya</button>
+        <button id="confirm-cancel" class="ghost-btn" style="width: 100%; color: var(--danger);">Batal</button>
+      </div>
     </div>
   </div>
 

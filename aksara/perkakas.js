@@ -33,27 +33,27 @@
         releasedAt: '2026-02-06',
         highlights: [
           'Integrasi Modular: Halaman baru untuk konfigurasi Supabase dan Notion.',
-          'Security Vault: Penyimpanan kunci API yang aman dan terenkripsi.',
-          'Auto-Update Check: Deteksi otomatis versi baru dengan notifikasi popup.',
-          'UX Storage: Analisis penggunaan memori dan fitur hapus cache.',
+          'Brankas Keamanan: Penyimpanan kunci API yang aman dan terenkripsi.',
+          'Deteksi Pembaruan: Deteksi otomatis versi baru dengan notifikasi munculan.',
+          'Optimasi Penyimpanan: Analisis penggunaan memori dan fitur penghapusan tembolok.',
           'Grafik XP Proximity: Tooltip grafik tetap muncul meskipun kursor tidak tepat di titik data.',
-          'Premium Loader: Tampilan intro baru dengan efek Aurora Glass dan posisi sentral.',
-          'UI Refinement: Menghilangkan outline hitam pada feedback tap untuk pengalaman lebih halus.',
-          'Navigation Upgrade: Redesain tombol tambah menjadi action button yang menonjol.',
-          'Badge Aesthetics: Pembersihan teks pada grid badge untuk tampilan minimalis.',
-          'Smart Changelog: Penyingkatan otomatis catatan rilis dengan penekanan pada judul perubahan.',
+          'Pemuat Premium: Tampilan intro baru dengan efek Aurora Glass dan posisi sentral.',
+          'Penyempurnaan UI: Menghilangkan garis tepi hitam pada umpan balik sentuhan.',
+          'Peningkatan Navigasi: Redesain tombol tambah menjadi tombol aksi yang menonjol.',
+          'Estetika Lencana: Pembersihan teks pada kisi lencana untuk tampilan minimalis.',
+          'Catatan Rilis Cerdas: Penyingkatan otomatis catatan rilis dengan penekanan pada judul.',
         ]
       },
       {
         version: '2026.02.5',
         releasedAt: '2026-02-05',
         highlights: [
-          'Premium iOS Redesign: Overhaul total UI dengan gaya iOS 17+.',
-          'Floating Navigation: Navigasi bawah melayang (pill style) untuk aksesibilitas.',
-          'Liquid Glass Effect: Implementasi glassmorphism yang lebih halus dan dinamis.',
+          'Redesain iOS Premium: Perombakan total antarmuka dengan gaya iOS 17+.',
+          'Navigasi Melayang: Navigasi bawah melayang (gaya pil) untuk aksesibilitas.',
+          'Efek Kaca Cair: Implementasi glassmorphism yang lebih halus dan dinamis.',
           'Redesain Halaman Sekunder: Profil, Setelan, dan Riwayat kini konsisten dengan Beranda.',
-          'Default Light Mode: Pengalaman visual yang lebih segar secara default.',
-          'Fix Contrast: Perbaikan kontras dan transparansi pada Dark Mode.',
+          'Mode Terang Bawaan: Pengalaman visual yang lebih segar secara standar.',
+          'Perbaikan Kontras: Optimalisasi kontras dan transparansi pada Mode Gelap.',
         ]
       },
       {
@@ -244,7 +244,7 @@
 
   const ModalManager = {
     stack: [],
-    baseZIndex: 1000,
+    baseZIndex: 2000,
 
     open(id, element) {
       this.close(id); // Close if already open
@@ -257,6 +257,8 @@
       element.classList.add('show');
       this.stack.push({ id, element, zIndex });
 
+      // Only add modal-open (backdrop/blur) if it's the first modal
+      // to avoid stacking multiple dark/blurred layers
       if (this.stack.length === 1) {
         document.body.classList.add('modal-open');
       }
@@ -423,6 +425,40 @@
     ModalManager,
     DateUtils,
     checkStorageQuota,
-    generateId
+    generateId,
+    confirmAction: (title, message, okLabel = 'Ya', cancelLabel = 'Batal') => {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        if (!modal) return resolve(window.confirm(message));
+
+        const titleEl = document.getElementById('confirm-title');
+        const messageEl = document.getElementById('confirm-message');
+        const okBtn = document.getElementById('confirm-ok');
+        const cancelBtn = document.getElementById('confirm-cancel');
+
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+        if (okBtn) {
+          okBtn.textContent = okLabel;
+          okBtn.style.display = 'block';
+        }
+        if (cancelBtn) {
+          cancelBtn.textContent = cancelLabel;
+          cancelBtn.style.display = 'block';
+        }
+
+        const hide = (res) => {
+          if (global.AbelionUtils.ModalManager) global.AbelionUtils.ModalManager.close('confirm-modal');
+          else modal.classList.remove('show');
+          resolve(res);
+        };
+
+        okBtn.onclick = () => hide(true);
+        cancelBtn.onclick = () => hide(false);
+
+        if (global.AbelionUtils.ModalManager) global.AbelionUtils.ModalManager.open('confirm-modal', modal);
+        else modal.classList.add('show');
+      });
+    }
   };
 })(window);

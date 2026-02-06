@@ -41,6 +41,11 @@
     };
   });
 
+  // Stop propagation on config area to prevent toggling when interacting with inputs
+  document.querySelectorAll('[id$="-config-area"]').forEach(area => {
+    area.onclick = (e) => e.stopPropagation();
+  });
+
   // Supabase Logic
   if (supabaseUrlInput || supabaseKeyInput) {
     const config = await Storage.getValue(STORAGE_KEYS.SUPABASE_CONFIG, {});

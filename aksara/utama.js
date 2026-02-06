@@ -171,11 +171,11 @@ async function persistNotes() {
 // --- Mood Graph ---
 function renderHeroContent() {
   const mottos = [
-    "“Gagal sekali bukan berarti gagal selamanya.”",
-    "“Catat hari ini, eksekusi hari esok.”",
-    "“Ide adalah aset, jangan biarkan ia menguap.”",
-    "“Kualitas pikiran ditentukan oleh kualitas catatan.”",
-    "“Setiap langkah kecil adalah progres.”"
+    "“Informasi adalah kekayaan intelektual.”",
+    "“Arsip yang tertata adalah cerminan pikiran yang jernih.”",
+    "“Mengabadikan ide untuk masa depan peradaban.”",
+    "“Dokumentasi adalah kunci keberlanjutan.”",
+    "“Setiap catatan adalah bagian dari sejarah digital Anda.”"
   ];
   const mottoEl = document.getElementById('dynamic-motto');
   if (mottoEl) mottoEl.textContent = mottos[Math.floor(Math.random() * mottos.length)];
@@ -188,7 +188,7 @@ function renderHeroContent() {
     else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang ☀️';
     else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore 🌇';
     else prefix = 'Selamat Malam 🌙';
-    greetingEl.textContent = `${prefix}, siap mencatat hari ini?`;
+    greetingEl.textContent = `${prefix}, silakan kelola arsip Anda hari ini.`;
   }
 }
 
@@ -481,7 +481,8 @@ window.handleSwipeAction = async (id, action) => {
     note.isArchived = !note.isArchived;
     await persistNotes();
   } else if (action === 'delete') {
-    if (confirm(`Pindahkan "${note.title}" ke sampah?`)) {
+    const ok = await AbelionUtils.confirmAction('Hapus Catatan', `Pindahkan "${note.title}" ke sampah?`);
+    if (ok) {
       await Storage.moveToTrash(id);
       notes = notes.filter(n => n.id !== id);
     }
@@ -919,7 +920,8 @@ window.ContextMenu = {
       await persistNotes();
       renderNotes();
     } else if (action === 'delete') {
-      if (confirm(`Pindahkan "${note.title}" ke sampah?`)) {
+      const ok = await AbelionUtils.confirmAction('Hapus Catatan', `Pindahkan "${note.title}" ke sampah?`);
+      if (ok) {
         await Storage.moveToTrash(id);
         notes = notes.filter(n => n.id !== id);
         renderNotes();
@@ -943,7 +945,8 @@ window.ContextMenu = {
     const folder = folders.find(f => f.id === id);
     if (!folder) return;
 
-    if (confirm(`Hapus folder "${folder.name}"? Catatan di dalamnya tidak akan dihapus. Sub-folder akan dipindahkan ke tingkat utama.`)) {
+    const ok = await AbelionUtils.confirmAction('Hapus Folder', `Hapus folder "${folder.name}"? Catatan di dalamnya tidak akan dihapus. Sub-folder akan dipindahkan ke tingkat utama.`);
+    if (ok) {
       // Re-assign child folders to root or parent's parent? Let's go with parent of deleted or null.
       const newParentId = folder.parentId || null;
 
@@ -1084,31 +1087,7 @@ function setupDelegation() {
   });
   grid.addEventListener('touchend', () => clearTimeout(pressTimer));
 
-  const confirmAction = (title, message, okLabel = 'Hapus') => {
-    return new Promise((resolve) => {
-      const modal = document.getElementById('confirm-modal');
-      const titleEl = document.getElementById('confirm-title');
-      const messageEl = document.getElementById('confirm-message');
-      const okBtn = document.getElementById('confirm-ok');
-      const cancelBtn = document.getElementById('confirm-cancel');
-
-      titleEl.textContent = title;
-      messageEl.textContent = message;
-      okBtn.textContent = okLabel;
-
-      const hide = (res) => {
-        if (ModalManager) ModalManager.close('confirm-modal');
-        else modal.classList.remove('show');
-        resolve(res);
-      };
-
-      okBtn.onclick = () => hide(true);
-      cancelBtn.onclick = () => hide(false);
-
-      if (ModalManager) ModalManager.open('confirm-modal', modal);
-      else modal.classList.add('show');
-    });
-  };
+  // AbelionUtils.confirmAction is used globally
 
   grid.addEventListener('contextmenu', (e) => {
     const card = e.target.closest('.list-item');
@@ -1174,7 +1153,7 @@ function setupDelegation() {
         await persistNotes();
         renderNotes();
       } else if (action === 'delete') {
-        const confirmed = await confirmAction('Hapus Catatan', `Pindahkan "${note.title}" ke sampah?`);
+        const confirmed = await AbelionUtils.confirmAction('Hapus Catatan', `Pindahkan "${note.title}" ke sampah?`);
         if (confirmed) {
           await Storage.moveToTrash(id);
           notes = notes.filter(n => n.id !== id);
@@ -1186,7 +1165,7 @@ function setupDelegation() {
         await loadNotes();
         renderNotes();
       } else if (action === 'delete-perm') {
-        const confirmed = await confirmAction('Hapus Permanen', 'Tindakan ini tidak bisa dibatalkan.', 'Hapus Selamanya');
+        const confirmed = await AbelionUtils.confirmAction('Hapus Permanen', 'Tindakan ini tidak bisa dibatalkan.', 'Hapus Selamanya');
         if (confirmed) {
            await Storage.deleteFromTrash(id);
            renderNotes();
@@ -1502,7 +1481,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (deleteSelectedBtn) {
     deleteSelectedBtn.onclick = async () => {
       if (selectedNoteIds.size === 0) return;
-      if (confirm(`Pindahkan ${selectedNoteIds.size} catatan ke sampah?`)) {
+      const ok = await AbelionUtils.confirmAction('Hapus Masal', `Pindahkan ${selectedNoteIds.size} catatan ke sampah?`);
+      if (ok) {
         for (const id of selectedNoteIds) {
           await Storage.moveToTrash(id);
           notes = notes.filter(n => n.id !== id);
@@ -1542,12 +1522,19 @@ window.addEventListener('DOMContentLoaded', async () => {
   const main = document.getElementById('main-content');
   if (!intro || !main) return;
 
-  if (sessionStorage.getItem('skipIntro')) {
+  const introKey = 'abelion-last-intro-timestamp';
+  const lastIntro = localStorage.getItem(introKey);
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+
+  if (sessionStorage.getItem('skipIntro') || (lastIntro && (now - parseInt(lastIntro)) < oneHour)) {
     intro.style.display = 'none';
     main.classList.remove('hidden');
     sessionStorage.removeItem('skipIntro');
     return;
   }
+
+  localStorage.setItem(introKey, now.toString());
 
   let p = 0;
   const pt = document.getElementById('progress-text');

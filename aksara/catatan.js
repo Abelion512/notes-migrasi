@@ -163,8 +163,9 @@
 
     const cancelEditBtn = document.getElementById('cancel-edit');
     if (cancelEditBtn) {
-      cancelEditBtn.onclick = function() {
-        if (confirm('Batal edit?')) window.location.href = '../index.html';
+      cancelEditBtn.onclick = async function() {
+        const ok = await AbelionUtils.confirmAction('Batal Edit', 'Apakah Anda yakin ingin membatalkan perubahan?');
+        if (ok) window.location.href = '../index.html';
       };
     }
 

@@ -50,6 +50,21 @@
     </form>
   </div>
 
+  <div id="confirm-modal" class="modal-sheet">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="confirm-title">Konfirmasi</h2>
+      </div>
+      <div class="modal-body" style="padding: 20px; text-align: center;">
+        <p id="confirm-message" style="color: var(--text-secondary); line-height: 1.5;"></p>
+      </div>
+      <div class="modal-footer" style="display: flex; flex-direction: column; gap: 10px; padding: 15px;">
+        <button id="confirm-ok" class="btn-blue" style="width: 100%;">Ya</button>
+        <button id="confirm-cancel" class="ghost-btn" style="width: 100%; color: var(--danger);">Batal</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a class="nav-button" href="../index.html">

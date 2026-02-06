@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
   <title>Legalitas & Keamanan – Lembaga Arsip Digital Abelion</title>
   <link rel="stylesheet" href="../gaya/gayanya.css" />
 </head>
@@ -16,42 +18,57 @@
         Setelan
       </a>
       <h1 class="animated">Legalitas & Keamanan</h1>
-      <p class="subtitle">Ketentuan penggunaan dan komitmen privasi kami.</p>
+      <p class="subtitle">Ketentuan penggunaan dan komitmen privasi resmi Lembaga.</p>
     </header>
 
-    <div class="list-header">Syarat & Ketentuan</div>
+    <div class="list-header">Syarat dan Ketentuan Layanan</div>
     <div class="section-card" style="padding: 16px; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">
-      <p>Dengan menggunakan Lembaga Arsip Digital Abelion, Anda menyetujui prinsip-prinsip berikut:</p>
-      <ul style="margin-top: 10px; padding-left: 20px;">
-        <li><strong>Kepemilikan Data:</strong> Seluruh data yang Anda buat adalah milik Anda sepenuhnya. Kami tidak memiliki akses ke konten catatan Anda jika fitur enkripsi diaktifkan.</li>
-        <li><strong>Penggunaan Mandiri:</strong> Aplikasi ini disediakan "apa adanya". Pengguna bertanggung jawab penuh atas pencadangan data secara berkala.</li>
-        <li><strong>Keamanan Lokal:</strong> Passphrase enkripsi disimpan secara lokal di perangkat Anda. Jika Anda lupa passphrase, data tidak dapat dipulihkan.</li>
-      </ul>
+      <p>Selamat datang di Lembaga Arsip Digital Abelion ("Abelion"). Dengan mengakses atau menggunakan aplikasi kami, Anda dianggap telah membaca, memahami, dan menyetujui ketentuan berikut:</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">1. Definisi Layanan</h3>
+      <p>Abelion adalah platform manajemen catatan berbasis "local-first" yang mengutamakan privasi dan kedaulatan data pengguna.</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">2. Hak Kekayaan Intelektual</h3>
+      <p>Seluruh konten yang dibuat oleh pengguna adalah milik eksklusif pengguna. Abelion tidak mengklaim hak kepemilikan atas data, catatan, atau dokumen yang Anda simpan di dalam aplikasi.</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">3. Batasan Tanggung Jawab</h3>
+      <p>Aplikasi ini disediakan "sebagaimana adanya" (as-is). Lembaga tidak bertanggung jawab atas kehilangan data yang disebabkan oleh kelalaian pengguna, seperti penghapusan tidak sengaja, kehilangan perangkat, atau lupa terhadap kata sandi/passphrase enkripsi Vault.</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">4. Perubahan Ketentuan</h3>
+      <p>Kami berhak mengubah syarat ini sewaktu-waktu. Penggunaan berkelanjutan setelah perubahan dianggap sebagai persetujuan terhadap ketentuan baru.</p>
     </div>
 
     <div class="list-header">Kebijakan Privasi</div>
     <div class="section-card" style="padding: 16px; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">
-      <p>Privasi Anda adalah prioritas utama kami:</p>
-      <ul style="margin-top: 10px; padding-left: 20px;">
-        <li><strong>Zero-Knowledge:</strong> Konten Anda dienkripsi sebelum meninggalkan perangkat (E2EE).</li>
-        <li><strong>Tanpa Iklan:</strong> Kami tidak menampilkan iklan dan tidak menjual data Anda kepada pihak ketiga manapun.</li>
-        <li><strong>Transparansi Kode:</strong> Kode sumber aplikasi bersifat terbuka sehingga dapat diaudit oleh siapapun.</li>
-      </ul>
+      <p>Privasi Anda adalah inti dari operasional kami. Berikut adalah rincian perlindungan data Anda:</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">1. Pengumpulan Data</h3>
+      <p>Abelion tidak mengumpulkan data pribadi di server kami. Semua data catatan disimpan secara lokal di perangkat Anda menggunakan teknologi IndexedDB.</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">2. Enkripsi End-to-End (E2EE)</h3>
+      <p>Jika fitur Vault diaktifkan, data Anda akan dienkripsi menggunakan algoritma AES-GCM 256-bit sebelum disimpan. Kunci enkripsi diturunkan dari passphrase Anda dan tidak pernah meninggalkan perangkat Anda dalam bentuk teks polos.</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">3. Layanan Pihak Ketiga</h3>
+      <p>Jika Anda memilih untuk mengintegrasikan layanan Cloud (seperti Supabase atau Notion), data akan dikirimkan ke penyedia tersebut sesuai dengan konfigurasi Anda. Kami menyarankan Anda untuk meninjau kebijakan privasi penyedia layanan tersebut.</p>
+
+      <h3 style="margin: 15px 0 5px; color: var(--text-primary);">4. Penggunaan Cookie & Penyimpanan Lokal</h3>
+      <p>Kami menggunakan <i>Local Storage</i> untuk menyimpan preferensi aplikasi (seperti tema dan draf catatan). Kami tidak menggunakan cookie pelacakan pihak ketiga untuk tujuan iklan.</p>
     </div>
 
-    <div class="list-header">Standar Keamanan</div>
+    <div class="list-header">Pernyataan Keamanan Teknis</div>
     <div class="section-card" style="padding: 16px; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">
-      <p>Lembaga Arsip Digital Abelion mengadopsi standar industri tinggi:</p>
+      <p>Kami berkomitmen pada standar keamanan tinggi:</p>
       <ul style="margin-top: 10px; padding-left: 20px;">
-        <li><strong>Algoritma Enkripsi:</strong> AES-GCM 256-bit untuk proteksi data.</li>
-        <li><strong>Derivasi Kunci:</strong> PBKDF2 dengan 600.000 iterasi.</li>
-        <li><strong>Penyimpanan Local-First:</strong> Menggunakan IndexedDB untuk kapasitas besar dan performa lincah.</li>
+        <li><b>Audit Kode:</b> Kode sumber Abelion bersifat transparan dan dapat diaudit secara publik.</li>
+        <li><b>Kedaulatan Data:</b> Fitur ekspor/impor tersedia sepenuhnya untuk memastikan data Anda tidak terikat pada satu platform (no vendor lock-in).</li>
+        <li><b>Otonomi Pengguna:</b> Pengguna memiliki kendali penuh untuk menghapus seluruh jejak digital aplikasi kapan saja melalui menu Setelan.</li>
       </ul>
     </div>
 
     <div style="text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 13px;">
-      <p>Lembaga Arsip Digital Abelion</p>
-      <p>Versi Dokumen: 2026.01.A</p>
+      <p>Diterbitkan oleh Lembaga Arsip Digital Abelion</p>
+      <p>Versi Dokumen: 2026.02.06 (Revisi Gemilang)</p>
+      <p style="margin-top: 10px;">Hubungi: admin@abelion.archives (Simulasi)</p>
     </div>
   </div>
 
@@ -86,4 +103,5 @@
   <script src="../aksara/corak.js"></script>
   <script src="../aksara/pemuat.js"></script>
 </body>
+
 </html>

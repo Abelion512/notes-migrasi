@@ -1,8 +1,16 @@
 (function () {
     const STORAGE_KEY = 'abelion-last-seen-version';
+    const TIMESTAMP_KEY = 'abelion-update-popup-timestamp';
 
     async function checkUpdate() {
         try {
+            // Throttling: Check if we showed the popup recently (within 24h)
+            const lastShown = localStorage.getItem(TIMESTAMP_KEY);
+            const now = Date.now();
+            if (lastShown && (now - parseInt(lastShown)) < 24 * 60 * 60 * 1000) {
+                return;
+            }
+
             // Determine path to versi.json
             const isInPages = window.location.pathname.indexOf('/lembaran/') !== -1;
             const path = isInPages ? '../versi.json' : './versi.json';
@@ -68,8 +76,8 @@
                 </div>
             </div>
             <div style="display: flex; flex-direction: column; border-top: 0.5px solid var(--border-subtle);">
-                <button id="update-now" style="width: 100%; padding: 12px; background: none; border: none; font-size: 17px; color: var(--primary); font-weight: 600; cursor: pointer; border-bottom: 0.5px solid var(--border-subtle);">Instal Sekarang</button>
-                <button id="update-later" style="width: 100%; padding: 12px; background: none; border: none; font-size: 17px; color: var(--primary); font-weight: 400; cursor: pointer;">Nanti Saja</button>
+                <button id="update-now" style="width: 100%; padding: 12px; background: none; border: none; font-size: 17px; color: var(--primary); font-weight: 600; cursor: pointer; border-bottom: 0.5px solid var(--border-subtle);">Pasang Sekarang</button>
+                <button id="update-later" style="width: 100%; padding: 12px; background: none; border: none; font-size: 17px; color: var(--primary); font-weight: 400; cursor: pointer;">Tunda</button>
             </div>
             <style>
                 @keyframes alertPop {
@@ -86,11 +94,13 @@
 
         document.getElementById('update-later').onclick = () => {
             localStorage.setItem(STORAGE_KEY, info.version);
+            localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
             overlay.remove();
         };
 
         document.getElementById('update-now').onclick = () => {
             localStorage.setItem(STORAGE_KEY, info.version);
+            localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(registrations => {
                     for (let registration of registrations) registration.update();

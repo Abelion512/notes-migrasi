@@ -39,12 +39,11 @@
       // Use marked if available
       const renderer = new marked.Renderer();
       renderer.listitem = (item) => {
-        const taskRegex = /^\[([ xX])\]\s+(.*)/;
-        const match = item.text.match(taskRegex);
-        if (match || item.task) {
-           const checked = item.checked || (match && match[1].toLowerCase() === 'x');
-           const text = match ? match[2] : item.text;
-           return `<li style="list-style:none; margin-left:-20px;"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${text}</span></li>\n`;
+        // Strip GFM task list markers if marked left them in item.text
+        const textClean = item.text.replace(/^\[[ xX]\]\s+/, '');
+        if (item.task) {
+           const checked = item.checked;
+           return `<li class="checkbox-line" style="list-style:none; margin-left:-20px;"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${textClean}</span></li>\n`;
         }
         return `<li>${item.text}</li>\n`;
       };
@@ -70,7 +69,7 @@
       if (checkMatch) {
         if (inList) { htmlParts.push('</ul>'); inList = false; }
         const checked = checkMatch[1].toLowerCase() === 'x';
-        htmlParts.push(`<div class="checkbox-line"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${inlineMarkdown(checkMatch[2])}</span></div>`);
+        htmlParts.push(`<div class="checkbox-line" style="display:flex; align-items:center; gap:8px; margin-bottom:4px;"><input type="checkbox" ${checked ? 'checked' : ''} disabled style="width:18px; height:18px;"> <span>${inlineMarkdown(checkMatch[2])}</span></div>`);
         return;
       }
       const listMatch = line.match(/^\s*[-*]\s+(.*)/);
@@ -358,7 +357,7 @@
       pickerContainer = document.createElement('div');
       pickerContainer.id = 'emoji-picker-container';
       pickerContainer.style = `
-        position: absolute; bottom: 100%; right: 0; z-index: 1000;
+        position: absolute; bottom: 100%; right: 0; z-index: 10000;
         background: var(--surface); border-radius: 12px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         border: 0.5px solid var(--border-subtle);
@@ -456,9 +455,13 @@
     });
 
     const close = () => {
-      overlay.classList.remove('show');
+      if (ModalManager) {
+        ModalManager.close('note-editor-modal');
+      } else {
+        overlay.classList.remove('show');
+        document.body.classList.remove('modal-open');
+      }
       setTimeout(() => overlay.remove(), 300);
-      document.body.classList.remove('modal-open');
     };
 
     const clearDraft = () => {
@@ -467,9 +470,10 @@
       writeDrafts(currentDrafts);
     };
 
-    overlay.querySelector('[data-action="cancel"]').onclick = () => {
+    overlay.querySelector('[data-action="cancel"]').onclick = async () => {
       if (textarea.value.trim() || titleInput.value.trim()) {
-        if (confirm('Simpan sebagai draft?')) {
+        const ok = await AbelionUtils.confirmAction('Simpan Draft', 'Apakah Anda ingin menyimpan perubahan sebagai draf?', 'Simpan', 'Buang');
+        if (ok) {
           saveDraft();
         } else {
           clearDraft();
@@ -519,8 +523,12 @@
     });
 
     document.body.appendChild(overlay);
-    document.body.classList.add('modal-open');
-    setTimeout(() => overlay.classList.add('show'), 10);
+    if (ModalManager) {
+      ModalManager.open('note-editor-modal', overlay);
+    } else {
+      document.body.classList.add('modal-open');
+      setTimeout(() => overlay.classList.add('show'), 10);
+    }
     titleInput.focus();
 
     return { close };
