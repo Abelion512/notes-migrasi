@@ -259,6 +259,12 @@ let filterByTag = '';
 let activeFolderId = 'all';
 let activeNoteId = null;
 
+let isSelectionMode = false;
+let selectedNoteIds = new Set();
+
+let notesRenderLimit = 20;
+let currentNotesBatch = [];
+
 function renderFolders() {
   const el = document.getElementById('folder-list');
   if (!el) return;
@@ -415,10 +421,128 @@ function showSkeletons() {
   `).join('');
 }
 
-async function renderNotes() {
+window.handleSwipeAction = async (id, action) => {
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+
+  if (action === 'pin') {
+    note.pinned = !note.pinned;
+    await persistNotes();
+  } else if (action === 'archive') {
+    note.isArchived = !note.isArchived;
+    await persistNotes();
+  } else if (action === 'delete') {
+    if (confirm(`Pindahkan "${note.title}" ke sampah?`)) {
+      await Storage.moveToTrash(id);
+      notes = notes.filter(n => n.id !== id);
+    }
+  }
+  renderNotes();
+};
+
+let swipeActiveItem = null;
+
+function initSwipeLogic() {
+  const grid = document.getElementById("notes-grid");
+  if (!grid) return;
+
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let isSwiping = false;
+  let activeItem = null;
+  let initialTranslateX = 0;
+
+  grid.addEventListener('touchstart', (e) => {
+    const item = e.target.closest('.list-item');
+    if (!item || isSelectionMode) return;
+
+    // If another item is open, close it
+    if (swipeActiveItem && swipeActiveItem !== item) {
+      swipeActiveItem.style.transform = '';
+      swipeActiveItem = null;
+    }
+
+    activeItem = item;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+
+    // Get current transform if any
+    const style = window.getComputedStyle(activeItem);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    initialTranslateX = matrix.m41;
+
+    activeItem.classList.add('swiping');
+    isSwiping = false;
+  }, { passive: true });
+
+  grid.addEventListener('touchmove', (e) => {
+    if (!activeItem) return;
+
+    const deltaX = e.touches[0].clientX - startX;
+    const deltaY = e.touches[0].clientY - startY;
+
+    // Detect if horizontal swipe or vertical scroll
+    if (!isSwiping && Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      isSwiping = true;
+    }
+
+    if (isSwiping) {
+      currentX = initialTranslateX + deltaX;
+
+      // Limit swipe range
+      // Left actions (Pin): Max positive translateX
+      // Right actions (Archive/Delete): Max negative translateX
+      if (currentX > 80) currentX = 80 + (currentX - 80) * 0.2; // Rubber band effect
+      if (currentX < -160) currentX = -160 + (currentX + 160) * 0.2;
+
+      activeItem.style.transform = `translateX(${currentX}px)`;
+    }
+  }, { passive: true });
+
+  grid.addEventListener('touchend', (e) => {
+    if (!activeItem) return;
+    activeItem.classList.remove('swiping');
+
+    if (isSwiping) {
+      const threshold = 60;
+      if (currentX > threshold) {
+        // Snap to open Left (Pin)
+        activeItem.style.transform = 'translateX(74px)';
+        swipeActiveItem = activeItem;
+      } else if (currentX < -threshold) {
+        // Snap to open Right (Archive/Delete)
+        activeItem.style.transform = 'translateX(-148px)';
+        swipeActiveItem = activeItem;
+      } else {
+        // Snap back
+        activeItem.style.transform = '';
+        swipeActiveItem = null;
+      }
+    }
+
+    activeItem = null;
+    isSwiping = false;
+  });
+
+  // Close swipe on click elsewhere
+  document.addEventListener('touchstart', (e) => {
+    if (swipeActiveItem && !swipeActiveItem.contains(e.target)) {
+      swipeActiveItem.style.transform = '';
+      swipeActiveItem = null;
+    }
+  }, { passive: true });
+}
+
+async function renderNotes(append = false) {
   const grid = document.getElementById("notes-grid");
   const header = document.getElementById("notes-list-header");
   if (!grid || !header) return;
+
+  if (!append) {
+    grid.innerHTML = '';
+    notesRenderLimit = 20;
+  }
 
   if (activeFolderId === 'trash') {
     header.textContent = "Sampah";
@@ -428,12 +552,14 @@ async function renderNotes() {
       return;
     }
     grid.innerHTML = trash.map(n => `
-      <div class="list-item" data-id="${n.id}" data-type="trash">
-        <div class="list-item-content">
-          <div class="list-item-title">${sanitizeText(n.title || 'Tanpa Judul')}</div>
-          <div class="list-item-subtitle">Dihapus ${formatTanggalRelative(n.deletedAt)}</div>
+      <div class="list-item-container" data-id="${n.id}">
+        <div class="list-item" data-id="${n.id}" data-type="trash">
+          <div class="list-item-content">
+            <div class="list-item-title">${sanitizeText(n.title || 'Tanpa Judul')}</div>
+            <div class="list-item-subtitle">Dihapus ${formatTanggalRelative(n.deletedAt)}</div>
+          </div>
+          <div class="list-item-chevron">🗑️</div>
         </div>
-        <div class="list-item-chevron">🗑️</div>
       </div>
     `).join('');
     return;
@@ -455,32 +581,103 @@ async function renderNotes() {
     return n.folderId === activeFolderId && !n.isArchived && matchSearch;
   });
 
-  if (!filtered.length) {
+  if (!filtered.length && !append) {
     grid.innerHTML = `<div class="notes-empty" style="padding: 40px; text-align: center; color: var(--text-muted);">Belum ada catatan</div>`;
     return;
   }
 
   let sorted = [...filtered].sort((a, b) => (b.pinned - a.pinned) || new Date(b.date) - new Date(a.date));
 
-  grid.innerHTML = sorted.map(n => {
+  const totalNotes = sorted.length;
+  const batch = sorted.slice(append ? notesRenderLimit - 20 : 0, notesRenderLimit);
+
+  const batchHtml = batch.map(n => {
     const isSecret = Boolean(n.isSecret);
+    const isSelected = selectedNoteIds.has(n.id);
     const summary = n.contentMarkdown ? n.contentMarkdown.slice(0, 60).replace(/\n/g, ' ') : 'Tidak ada konten';
 
     return `
-      <div class="list-item" data-id="${n.id}" tabindex="0">
-        <div class="list-item-content">
-          <div class="list-item-title">
-            ${n.pinned ? '📌 ' : ''}${isSecret ? '🔒 ' : ''}${n.icon ? n.icon + ' ' : ''}${sanitizeText(n.title || 'Tanpa Judul')}
+      <div class="list-item-container" data-id="${n.id}">
+        <div class="list-item-actions list-item-actions-left">
+          <button class="swipe-action-btn pin" onclick="window.handleSwipeAction('${n.id}', 'pin')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>${n.pinned ? 'Lepas' : 'Pin'}</span>
+          </button>
+        </div>
+        <div class="list-item-actions list-item-actions-right">
+          <button class="swipe-action-btn archive" onclick="window.handleSwipeAction('${n.id}', 'archive')">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+             <span>Arsip</span>
+          </button>
+          <button class="swipe-action-btn delete" onclick="window.handleSwipeAction('${n.id}', 'delete')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Hapus</span>
+          </button>
+        </div>
+        <div class="list-item${isSelected ? ' selected' : ''}" data-id="${n.id}" tabindex="0">
+          <div class="list-item-content">
+            <div class="list-item-title">
+              ${n.pinned ? '📌 ' : ''}${isSecret ? '🔒 ' : ''}${n.icon ? n.icon + ' ' : ''}${sanitizeText(n.title || 'Tanpa Judul')}
+            </div>
+            <div class="list-item-subtitle">
+              <span style="color: var(--text-muted); min-width: 80px;">${formatTanggalRelative(n.date)}</span>
+              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.6;">${sanitizeText(isSecret ? 'Konten dirahasiakan' : summary)}</span>
+            </div>
           </div>
-          <div class="list-item-subtitle">
-            <span style="color: var(--text-muted); min-width: 80px;">${formatTanggalRelative(n.date)}</span>
-            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.6;">${sanitizeText(isSecret ? 'Konten dirahasiakan' : summary)}</span>
+          <div class="list-item-more" data-action="more">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
           </div>
         </div>
-        <div class="list-item-chevron">›</div>
       </div>
     `;
   }).join('');
+
+  if (append) {
+    grid.insertAdjacentHTML('beforeend', batchHtml);
+  } else {
+    grid.innerHTML = batchHtml;
+  }
+
+  // Infinite Scroll Observer
+  const existingObserver = document.getElementById('infinite-scroll-trigger');
+  if (existingObserver) existingObserver.remove();
+
+  if (notesRenderLimit < totalNotes) {
+    const trigger = document.createElement('div');
+    trigger.id = 'infinite-scroll-trigger';
+    trigger.style.height = '10px';
+    grid.appendChild(trigger);
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        notesRenderLimit += 20;
+        renderNotes(true);
+      }
+    }, { rootMargin: '100px' });
+    observer.observe(trigger);
+  }
+}
+
+function toggleSelectionMode(force = null) {
+  isSelectionMode = force !== null ? force : !isSelectionMode;
+  const btn = document.getElementById('toggle-selection-mode');
+  const bar = document.getElementById('selection-bar');
+
+  if (isSelectionMode) {
+    btn.textContent = 'Batal';
+    bar.classList.remove('hidden');
+  } else {
+    btn.textContent = 'Pilih';
+    bar.classList.add('hidden');
+    selectedNoteIds.clear();
+    updateSelectionUI();
+  }
+  renderNotes();
+}
+
+function updateSelectionUI() {
+  const countEl = document.getElementById('selection-count');
+  if (countEl) countEl.textContent = selectedNoteIds.size;
 }
 
 function initSortable() {
@@ -854,7 +1051,15 @@ function setupDelegation() {
   grid.addEventListener('click', async (e) => {
     const card = e.target.closest('.list-item');
     const actionBtn = e.target.closest('.action-btn');
+    const moreBtn = e.target.closest('.list-item-more');
     const wikiLink = e.target.closest('.wiki-link');
+
+    if (moreBtn && !isSelectionMode) {
+      e.stopPropagation();
+      const id = card.dataset.id;
+      window.ContextMenu.show(e, 'note', { id });
+      return;
+    }
 
     if (wikiLink) {
       e.preventDefault();
@@ -873,6 +1078,17 @@ function setupDelegation() {
 
     const id = card.dataset.id;
     const note = notes.find(n => n.id === id);
+
+    if (isSelectionMode) {
+      if (selectedNoteIds.has(id)) {
+        selectedNoteIds.delete(id);
+      } else {
+        selectedNoteIds.add(id);
+      }
+      updateSelectionUI();
+      renderNotes();
+      return;
+    }
 
     if (actionBtn) {
       e.stopPropagation();
@@ -958,7 +1174,8 @@ function openNoteModal(mode = 'create', existingNote = null) {
           content: payload.contentHtml,
           contentMarkdown: payload.contentMarkdown,
           isSecret: payload.isSecret,
-          updatedAt: iso
+          updatedAt: iso,
+          _dirty: true
         }));
         if (Gamification) {
           const oldLen = (existingNote.contentMarkdown || existingNote.content || '').length;
@@ -975,7 +1192,8 @@ function openNoteModal(mode = 'create', existingNote = null) {
           content: payload.contentHtml,
           date: iso.slice(0, 10),
           createdAt: iso,
-          pinned: false
+          pinned: false,
+          _dirty: true
         });
         notes.unshift(newNote);
         if (Gamification) {
@@ -987,6 +1205,124 @@ function openNoteModal(mode = 'create', existingNote = null) {
       renderNotes();
     }
   });
+}
+
+async function handleSmartExport() {
+  const format = document.getElementById('smart-export-format').value;
+  const merge = document.getElementById('export-merge-check').checked;
+  const selectedNotes = notes.filter(n => selectedNoteIds.has(n.id));
+  const dateStr = new Date().toISOString().split('T')[0];
+
+  if (selectedNotes.length === 0) return;
+
+  try {
+    if (format === 'json') {
+      const data = JSON.stringify({ version: '3.0', exportedAt: new Date().toISOString(), notes: selectedNotes }, null, 2);
+      downloadBlob(new Blob([data], { type: 'application/json' }), `abelion-selected-${dateStr}.json`);
+    }
+    else if (format === 'md' || format === 'txt') {
+      const ext = format === 'md' ? '.md' : '.txt';
+      if (merge) {
+        let combined = '';
+        selectedNotes.forEach(n => {
+          combined += format === 'md'
+            ? `\n\n# ${n.title}\n*Tanggal: ${n.date}*\n\n${n.contentMarkdown || n.content}\n\n---\n`
+            : `\n\n${n.title.toUpperCase()}\n${n.date}\n${'-'.repeat(n.title.length)}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}\n\n====================\n`;
+        });
+        downloadBlob(new Blob([combined], { type: format === 'md' ? 'text/markdown' : 'text/plain' }), `abelion-merged-${dateStr}${ext}`);
+      } else {
+        if (typeof JSZip === 'undefined') throw new Error('JSZip tidak termuat. Periksa koneksi internet.');
+        const zip = new JSZip();
+        selectedNotes.forEach(n => {
+          const filename = (n.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + ext;
+          const body = format === 'md'
+            ? `---\ntitle: ${n.title}\ndate: ${n.date}\n---\n\n${n.contentMarkdown || n.content}`
+            : `${n.title}\n${n.date}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}`;
+          zip.file(filename, body);
+        });
+        const blob = await zip.generateAsync({ type: 'blob' });
+        downloadBlob(blob, `abelion-selected-${dateStr}.zip`);
+      }
+    }
+    else if (format === 'pdf') {
+      if (typeof jspdf === 'undefined') throw new Error('jspdf tidak termuat.');
+      const doc = new jspdf.jsPDF({
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      selectedNotes.forEach((n, i) => {
+        if (i > 0) doc.addPage();
+
+        // Minimalist Header
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(24);
+        doc.setTextColor(0, 122, 255); // iOS Blue
+        doc.text(n.title || 'Tanpa Judul', 20, 30);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(142, 142, 147); // iOS Gray
+        doc.text(formatTanggal(n.date), 20, 38);
+
+        // Divider
+        doc.setDrawColor(230, 230, 235);
+        doc.line(20, 45, 190, 45);
+
+        // Content
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        const content = n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '');
+        const splitContent = doc.splitTextToSize(content, 170);
+
+        let y = 55;
+        splitContent.forEach(line => {
+          if (y > 280) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, 20, y);
+          y += 7;
+        });
+
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(180, 180, 180);
+        doc.text('Dibuat dengan Abelion Notes', 20, 287);
+      });
+      doc.save(`abelion-selected-${dateStr}.pdf`);
+    }
+    else if (format === 'docx') {
+      if (typeof docx === 'undefined') throw new Error('docx library tidak termuat.');
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+      const sections = selectedNotes.map(n => ({
+        properties: {},
+        children: [
+          new Paragraph({ text: n.title || 'Untitled', heading: HeadingLevel.HEADING_1 }),
+          new Paragraph({ children: [new TextRun({ text: `Tanggal: ${n.date}`, italics: true })] }),
+          new Paragraph({ text: "" }),
+          new Paragraph({ text: n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '') })
+        ]
+      }));
+      const doc = new Document({ sections });
+      const blob = await Packer.toBlob(doc);
+      downloadBlob(blob, `abelion-selected-${dateStr}.docx`);
+    }
+
+    toggleSelectionMode(false);
+    ModalManager.close('export-modal');
+  } catch (err) {
+    alert('Ekspor gagal: ' + err.message);
+  }
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -1062,6 +1398,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderSearchBar();
   renderNotes();
   setupDelegation();
+  initSwipeLogic();
   initSortable();
   initCommandPalette();
   checkAppVersion();
@@ -1077,6 +1414,41 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const addFolderBtn = document.getElementById('add-folder-btn');
   if (addFolderBtn) addFolderBtn.onclick = addFolder;
+
+  const toggleSelectBtn = document.getElementById('toggle-selection-mode');
+  if (toggleSelectBtn) toggleSelectBtn.onclick = () => toggleSelectionMode();
+
+  const cancelSelectBtn = document.getElementById('cancel-selection-btn');
+  if (cancelSelectBtn) cancelSelectBtn.onclick = () => toggleSelectionMode(false);
+
+  const exportSelectedBtn = document.getElementById('export-selected-btn');
+  if (exportSelectedBtn) {
+    exportSelectedBtn.onclick = () => {
+      if (selectedNoteIds.size === 0) return;
+      ModalManager.open('export-modal', document.getElementById('export-modal'));
+    };
+  }
+
+  const exportModalClose = document.getElementById('export-modal-close');
+  if (exportModalClose) exportModalClose.onclick = () => ModalManager.close('export-modal');
+
+  const confirmExportBtn = document.getElementById('confirm-smart-export');
+  if (confirmExportBtn) confirmExportBtn.onclick = handleSmartExport;
+
+  const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+  if (deleteSelectedBtn) {
+    deleteSelectedBtn.onclick = async () => {
+      if (selectedNoteIds.size === 0) return;
+      if (confirm(`Pindahkan ${selectedNoteIds.size} catatan ke sampah?`)) {
+        for (const id of selectedNoteIds) {
+          await Storage.moveToTrash(id);
+          notes = notes.filter(n => n.id !== id);
+        }
+        toggleSelectionMode(false);
+        renderNotes();
+      }
+    };
+  }
 
   // Drag & Drop Import
   document.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });

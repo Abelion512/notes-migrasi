@@ -208,6 +208,7 @@
       badges: [],
       specialDaysAwarded: {},
       artisanTier: 0,
+      xpHistory: [], // [{ at: ISO, gained: Number }]
       createdAt: now,
       updatedAt: now
     };
@@ -266,6 +267,7 @@
       ? clone(raw.specialDaysAwarded)
       : {};
     state.artisanTier = Math.max(0, Math.floor(numberOr(raw.artisanTier, 0)));
+    state.xpHistory = Array.isArray(raw.xpHistory) ? raw.xpHistory.slice(-100) : [];
     state.createdAt = raw.createdAt || base.createdAt;
     state.updatedAt = raw.updatedAt || base.updatedAt;
     return state;
@@ -414,6 +416,12 @@
     const xp = Math.max(0, Math.floor(numberOr(amount, 0)));
     if (xp <= 0) return 0;
     state.totalXp += xp;
+
+    // Log history
+    const now = new Date().toISOString();
+    state.xpHistory.push({ at: now, gained: xp });
+    state.xpHistory = state.xpHistory.slice(-100); // Keep last 100 entries
+
     return xp;
   }
 
@@ -961,6 +969,7 @@
       badgeIcons: badgeIcons.slice(0, 12),
       activeBadge,
       stats: clone(state.stats),
+      xpHistory: clone(state.xpHistory),
       xpGuideUrl: XP_GUIDE_URL
     };
   }

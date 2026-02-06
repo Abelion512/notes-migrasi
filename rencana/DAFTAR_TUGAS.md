@@ -1,30 +1,23 @@
 # 📋 Daftar Tugas Abelion (Technical Backlog)
 
-## 🎨 UI/UX Refinement
-- [x] Global `-webkit-tap-highlight-color: transparent` (Menghilangkan feedback klik default).
-- [x] Redesain Badge Grid (Efek Aurora Glass & Responsif).
-- [x] Redesain Form Supabase (iOS Grouped List style).
-- [x] Changelog Truncation (Fitur "Lihat Selengkapnya").
-- [x] Premium Central Loader (Aurora Glass style).
-- [x] Navigation "+" Button Redesign (Action Button style).
-- [ ] Implementasi SF Pro Font (via CDN jika memungkinkan atau fallback sistem).
-- [ ] Animasi Transisi Halaman (Slide effect antara Beranda -> Profil).
+## ⚡ Performa & UX (Prioritas Tinggi)
+- [ ] **Virtual Scrolling:** Implementasi list virtual untuk menangani 100+ catatan tanpa lag.
+- [ ] **Swipe Actions:** Logika deteksi geser pada card catatan dengan umpan balik visual.
+- [ ] **Incremental Loading:** Optimasi pembacaan database IndexedDB.
 
-## 🛠️ Fungsionalitas
-- [ ] Rich Text Editor (Markdown support dengan preview real-time).
-- [ ] Sistem Folder Bertingkat (Nested Folders).
-- [ ] Pencarian Global (Ctrl+K) yang lebih cerdas (Mencari di dalam isi catatan).
-- [ ] Recycle Bin (Trash) dengan penghapusan otomatis 30 hari.
+## ✍️ Editor & Ekspor
+- [ ] **Markdown Engine:** Integrasi parser Markdown yang ringan untuk preview real-time.
+- [ ] **PDF Generator:** Implementasi `jspdf` atau sejenisnya dengan template minimalis.
+- [ ] **DOCX Generator:** Implementasi `docx` library untuk ekspor dokumen.
 
-## ☁️ Sinkronisasi & Keamanan
-- [ ] Optimasi Konflik Sinkronisasi (Last-write-wins dengan konfirmasi).
-- [ ] Backup Manual ke File Terenkripsi (.abelion).
-- [ ] Biometric Auth (WebAuthn) untuk membuka Vault.
+## 🔐 Keamanan & Integrasi
+- [ ] **E2EE Core:** Modul enkripsi AES-GCM 256 menggunakan Web Crypto API.
+- [ ] **Supabase Sync Module:** Logika push/pull manual dengan penanganan konflik.
+- [ ] **Notion Connector:** Integrasi dasar dengan API Notion.
 
-## 📱 Mobile (Capacitor/PWA)
-- [ ] Push Notifications untuk pengingat menulis.
-- [ ] Home Screen Widgets (Android/iOS).
-- [ ] Offline Map (Caching seluruh asset via Service Worker).
+## 🏆 Gamifikasi
+- [ ] **XP Chart:** Implementasi Chart.js atau SVG kustom untuk grafik mingguan.
+- [ ] **Leaderboard Logic:** Sistem kalkulasi peringkat berdasarkan XP lokal.
 
 ---
 *Terakhir diperbarui: 6 Februari 2026*

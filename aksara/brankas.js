@@ -565,7 +565,7 @@
     return candidates;
   }
 
-  async function setNotes(notes = []) {
+  async function setNotes(notes = [], options = {}) {
     // 0. Quota check
     if (navigator?.storage?.estimate) {
       const { usage, quota } = await navigator.storage.estimate();
@@ -581,16 +581,32 @@
     const newNotes = Array.isArray(notes) ? notes : [];
     cacheSet(STORAGE_KEYS.NOTES, newNotes);
 
-    const payload = encrypted ? await encryptValue(newNotes) : newNotes;
-
+    // Delta Sync Logic
     if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
       try {
-        await global.AbelionSupabaseDB.setNotes(payload);
+        let notesToPush = newNotes;
+        let isDelta = false;
+
+        if (options.onlyDirty) {
+           notesToPush = newNotes.filter(n => n._dirty);
+           isDelta = true;
+        }
+
+        if (notesToPush.length > 0) {
+          const payload = encrypted ? await encryptValue(notesToPush) : notesToPush;
+          await global.AbelionSupabaseDB.setNotes(payload, { delta: isDelta });
+          // Clear dirty flag after success
+          notesToPush.forEach(n => delete n._dirty);
+        }
       } catch (err) {
         console.error('Supabase setNotes failed', err);
-        return false;
+        // We don't return false here, we still want local storage to succeed
       }
-    } else if (activeEngine === ENGINE.INDEXED_DB) {
+    }
+
+    const payload = encrypted ? await encryptValue(newNotes) : newNotes;
+
+    if (activeEngine === ENGINE.INDEXED_DB) {
       if (encrypted) {
         await idbTransaction('kv', 'readwrite', (store) => {
           store.put(payload, STORAGE_KEYS.NOTES);
@@ -721,7 +737,10 @@
 
   async function getFolders() {
     await ready;
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.FOLDERS);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       return idbGetAll('folders');
     }
     return getValue(STORAGE_KEYS.FOLDERS, []);
@@ -730,20 +749,26 @@
   async function setFolders(folders = []) {
     await ready;
     cacheSet(STORAGE_KEYS.FOLDERS, folders);
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.FOLDERS);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       await idbTransaction('folders', 'readwrite', (store) => {
         store.clear();
         folders.forEach(f => store.put(f));
       });
-    } else {
-      await setValue(STORAGE_KEYS.FOLDERS, folders);
+      return true;
     }
-    return true;
+
+    return setValue(STORAGE_KEYS.FOLDERS, folders);
   }
 
   async function getTrash() {
     await ready;
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.TRASH);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       return idbGetAll('trash');
     }
     return getValue(STORAGE_KEYS.TRASH, []);
@@ -760,10 +785,15 @@
 
     await setNotes(notes);
 
+    // Explicitly delete from Supabase if active
+    if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
+       await global.AbelionSupabaseDB.deleteNote(noteId);
+    }
+
     const trash = await getTrash();
     trash.push(note);
 
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       await idbPut('trash', note);
     } else {
       await setValue(STORAGE_KEYS.TRASH, trash);

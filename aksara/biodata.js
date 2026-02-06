@@ -352,9 +352,28 @@
     if (totalNotesEl) totalNotesEl.textContent = notesList.length;
     if (streakStatEl) streakStatEl.textContent = (summary?.stats?.logins || 0) + ' hari';
 
-    // Simulated XP history for the last 7 days
-    const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-    const data = [10, 25, 45, 30, 60, 90, summary?.totalXp || 100].slice(-7);
+    // Real XP history processing
+    const history = summary?.xpHistory || [];
+    const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    const today = new Date();
+
+    // Group gains by day for the last 7 days
+    const chartData = [];
+    const chartLabels = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const label = days[d.getDay()];
+
+      const dayXp = history
+        .filter(entry => entry.at.startsWith(dateStr))
+        .reduce((sum, entry) => sum + entry.gained, 0);
+
+      chartData.push(dayXp);
+      chartLabels.push(label);
+    }
 
     // Storage Info
     const usage = await window.AbelionStorage.getUsage();
@@ -377,26 +396,65 @@
     new Chart(canvas, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: chartLabels,
         datasets: [{
-          label: 'XP',
-          data: data,
+          label: 'XP Harian',
+          data: chartData,
           borderColor: '#007AFF',
           backgroundColor: 'rgba(0, 122, 255, 0.1)',
           borderWidth: 3,
           tension: 0.4,
-          fill: true
+          fill: true,
+          pointBackgroundColor: '#007AFF',
+          pointRadius: 4
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          y: { beginAtZero: true, grid: { display: false } },
-          x: { grid: { display: false } }
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(200, 200, 200, 0.1)' },
+            ticks: { font: { size: 10 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 } }
+          }
         }
       }
     });
+  }
+
+  function renderLeaderboard() {
+    const el = document.getElementById('leaderboard-list');
+    if (!el) return;
+
+    const summary = gamification ? gamification.getProfileSummary() : { name: 'You', totalXp: 0 };
+
+    // Generate mock competitors based on user XP
+    const userXp = summary.totalXp;
+    const competitors = [
+      { name: 'Abelion Lavv', xp: Math.floor(userXp * 1.5) + 500, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion' },
+      { name: 'Sora', xp: Math.floor(userXp * 1.2) + 100, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sora' },
+      { name: summary.name + ' (Anda)', xp: userXp, avatar: summary.photo || '../pustaka/default-avatar.svg', isUser: true },
+      { name: 'Ravi', xp: Math.floor(userXp * 0.8), avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ravi' },
+      { name: 'Luna', xp: Math.floor(userXp * 0.6), avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna' }
+    ].sort((a, b) => b.xp - a.xp);
+
+    el.innerHTML = competitors.map((c, i) => `
+      <div class="list-item" style="${c.isUser ? 'background: var(--primary-soft);' : ''}">
+        <div style="width: 24px; font-weight: 700; color: var(--text-muted);">${i + 1}</div>
+        <img src="${c.avatar}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 12px; background: var(--border-subtle);">
+        <div class="list-item-content">
+          <div class="list-item-title">${sanitizeText(c.name)}</div>
+          <div class="list-item-subtitle">${formatNumber(c.xp)} XP</div>
+        </div>
+        ${i === 0 ? '<div style="font-size: 20px;">👑</div>' : ''}
+      </div>
+    `).join('');
   }
 
   function wireInteractions() {
@@ -437,6 +495,11 @@
     renderVersion();
     applyProfile();
     wireInteractions();
-    await renderProductivityCharts();
+    renderLeaderboard();
+    try {
+      await renderProductivityCharts();
+    } catch (err) {
+      console.error('Chart failed', err);
+    }
   });
 })();

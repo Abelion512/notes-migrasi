@@ -13,7 +13,7 @@
   }
 
   async function loadNotes() { await Storage.ready; return Storage.getNotes({ sortByUpdatedAt: true }); }
-  async function saveNotes(notes) { await Storage.setNotes(notes); }
+  async function saveNotes(notes, onlyDirty = false) { await Storage.setNotes(notes, { onlyDirty }); }
 
   function renderMissingState() {
     const container = document.querySelector('.main-content');
@@ -93,9 +93,10 @@
         note.content = sanitizeRichContent(htmlContent);
         note.contentMarkdown = content;
         note.label = label;
+        note._dirty = true;
         const updatedAt = new Date().toISOString();
         note.updatedAt = updatedAt;
-        await saveNotes(notes);
+        await saveNotes(notes, true);
 
         if (Gamification && note?.id) {
           Gamification.recordNoteUpdated({

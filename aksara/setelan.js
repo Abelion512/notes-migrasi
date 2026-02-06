@@ -122,6 +122,28 @@
     });
   }
 
+  // --- Manual Sync ---
+  const syncBtn = document.getElementById('manual-sync-btn');
+  const syncStatus = document.getElementById('sync-status');
+  if (syncBtn) {
+    syncBtn.onclick = async () => {
+      if (Storage.getEngine() !== 'supabase') {
+        alert('Hubungkan ke Supabase terlebih dahulu untuk melakukan sinkronisasi cloud.');
+        return;
+      }
+      syncStatus.textContent = 'Menyinkronkan...';
+      try {
+        const notes = await Storage.getNotes();
+        await Storage.setNotes(notes, { onlyDirty: false }); // Force full sync
+        syncStatus.textContent = `Terakhir: ${new Date().toLocaleTimeString()}`;
+        alert('Sinkronisasi selesai!');
+      } catch (err) {
+        syncStatus.textContent = 'Gagal sinkron.';
+        alert('Gagal: ' + err.message);
+      }
+    };
+  }
+
   const supabaseToggle = document.getElementById('supabase-toggle');
   const supabaseConfigForm = document.getElementById('supabase-config-form');
   const supabaseUrlInput = document.getElementById('supabase-url');
@@ -166,6 +188,36 @@
       alert('Konfigurasi Supabase disimpan. Silakan muat ulang halaman untuk menghubungkan.');
       location.reload();
     };
+  }
+
+  // --- Notion ---
+  const notionToggle = document.getElementById('notion-config-toggle');
+  const notionForm = document.getElementById('notion-config-form');
+  const notionTokenInput = document.getElementById('notion-token');
+  const notionDbInput = document.getElementById('notion-db-id');
+  const saveNotionBtn = document.getElementById('save-notion-config');
+
+  if (notionToggle) {
+    notionToggle.onclick = () => {
+      const isVisible = notionForm.style.display === 'block';
+      notionForm.style.display = isVisible ? 'none' : 'block';
+    };
+  }
+
+  if (notionTokenInput) notionTokenInput.value = localStorage.getItem('abelion-notion-token') || '';
+  if (notionDbInput) notionDbInput.value = localStorage.getItem('abelion-notion-db') || '';
+
+  if (saveNotionBtn) {
+    saveNotionBtn.onclick = () => {
+      localStorage.setItem('abelion-notion-token', notionTokenInput.value.trim());
+      localStorage.setItem('abelion-notion-db', notionDbInput.value.trim());
+      alert('Konfigurasi Notion disimpan. (Integrasi API segera hadir)');
+      notionForm.style.display = 'none';
+      document.getElementById('notion-status').textContent = notionTokenInput.value ? 'Tersambung (Siap)' : 'Belum terhubung';
+    };
+  }
+  if (localStorage.getItem('abelion-notion-token')) {
+    document.getElementById('notion-status').textContent = 'Tersambung (Siap)';
   }
 
   if (showGuideBtn && guideModal) {

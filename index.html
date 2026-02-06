@@ -23,7 +23,10 @@
   <div id="main-content" class="main-content hidden">
     <header class="hero-section">
       <div id="offline-badge" class="offline-badge hidden">Mode Offline</div>
-      <h1 class="title-abelion animated">Catatan</h1>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <h1 class="title-abelion animated">Catatan</h1>
+        <button id="toggle-selection-mode" class="ghost-btn" style="font-size: 14px; font-weight: 600; color: var(--primary); padding: 8px 12px; border-radius: 20px; background: var(--frosted);">Pilih</button>
+      </div>
       <p class="subtitle" id="dynamic-greeting">Siap mencatat hari ini?</p>
       <blockquote class="motto" id="dynamic-motto">“Ide adalah aset.”</blockquote>
     </header>
@@ -60,6 +63,58 @@
       </div>
     </section>
   </div>
+
+  <!-- Floating Selection Bar -->
+  <div id="selection-bar" class="selection-bar hidden">
+    <div class="selection-info">
+      <span id="selection-count">0</span> terpilih
+    </div>
+    <div class="selection-actions">
+      <button id="export-selected-btn" class="ghost-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Ekspor</span>
+      </button>
+      <button id="delete-selected-btn" class="ghost-btn danger" style="color: var(--danger);">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <span>Hapus</span>
+      </button>
+      <button id="cancel-selection-btn" class="ghost-btn">Batal</button>
+    </div>
+  </div>
+
+  <!-- Export Options Modal -->
+  <div id="export-modal" class="about-modal">
+    <div class="about-modal-content">
+      <div class="modal-header-ios">
+        <h3>Opsi Ekspor</h3>
+        <button class="done-btn" id="export-modal-close">Batal</button>
+      </div>
+      <div class="list-header">Format File</div>
+      <div class="section-card">
+        <select id="smart-export-format" class="input-control">
+          <option value="json">JSON (Backup Abelion)</option>
+          <option value="md">Markdown (.md)</option>
+          <option value="txt">Teks Polos (.txt)</option>
+          <option value="docx">Word (.docx)</option>
+          <option value="pdf">PDF (.pdf)</option>
+        </select>
+      </div>
+      <div class="list-header">Metode Penggabungan</div>
+      <div class="section-card">
+        <div class="list-item" style="justify-content: space-between;">
+          <span>Gabung jadi 1 file</span>
+          <input type="checkbox" id="export-merge-check" style="width: 20px; height: 20px;">
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); padding: 10px 16px;">Jika tidak digabung, beberapa catatan akan otomatis dikemas dalam file .ZIP.</p>
+      <div style="padding: 20px 0;">
+        <button id="confirm-smart-export" class="btn-blue" style="width: 100%;">Mulai Unduh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div id="custom-context-menu" class="context-menu" style="display: none;"></div>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
@@ -136,6 +191,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.2.2/build/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="aksara/corak.js"></script>
   <script src="aksara/pemuat.js"></script>
   <script src="aksara/utusan.js"></script>

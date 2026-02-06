@@ -7,21 +7,23 @@
 - [x] Implementasi Floating Navigation (Pill Style).
 - [x] Efek "Liquid Glass" (Glassmorphism tingkat lanjut).
 - [x] Redesain Halaman Sekunder (Profil, Setelan, Versi).
-- [x] Optimasi Dark Mode & Default Light Mode.
 
 ## Fase 2: Pengalaman Menulis & Fitur Inti (Sedang Berjalan)
 - [x] Editor gaya "Sheet" iOS.
-- [x] Sinkronisasi aksi navigasi antar halaman (Tambah dari mana saja).
+- [x] Sinkronisasi aksi navigasi antar halaman.
 - [x] Redesain Profil & Badge (Aurora Glass).
-- [x] Optimasi Changelog & Form Pengaturan.
-- [x] Premium Loader & Tap Feedback Fix.
-- [ ] Implementasi Rich Text yang lebih baik (Markdown realtime).
-- [ ] Manajemen Media (Gambar & Lampiran).
+- [ ] Implementasi Markdown Real-time (Lihat `EDITOR_DAN_EKSPOR.md`).
+- [ ] Smart Export ke PDF/DOCX (Minimalis).
 
-## Fase 3: Fitur Canggih & Ekosistem (Mendatang)
-- [ ] Widget Beranda.
-- [ ] Sinkronisasi Supabase yang lebih stabil.
-- [ ] Sistem Tag yang lebih intuitif.
+## Fase 3: Optimasi & UX Lanjutan (Segera)
+- [ ] Virtual Scrolling untuk list catatan (Lihat `OPTIMASI_DAN_UX.md`).
+- [ ] Swipe Actions yang dapat dikustomisasi.
+- [ ] Transisi halaman yang lebih halus.
+
+## Fase 4: Keamanan & Ekosistem (Mendatang)
+- [ ] End-to-End Encryption (E2EE) (Lihat `SINKRONISASI_DAN_KEAMANAN.md`).
+- [ ] Integrasi Manual Supabase & Notion.
+- [ ] Grafik Progres XP & Leaderboard Lokal (Lihat `GAMIFIKASI.md`).
 
 ---
 *Dibuat oleh Jules (Agen AI) berdasarkan masukan pengguna.*

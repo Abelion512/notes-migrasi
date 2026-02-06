@@ -147,11 +147,13 @@
             <button type="button" id="toggle-details-btn" class="ghost-btn" style="font-size: 15px;">Tampilkan Detail</button>
           </div>
         </div>
-        <div class="editor-toolbar" style="padding: 10px; background: var(--frosted); border-top: 0.5px solid var(--border-subtle); display: flex; justify-content: center; gap: 20px;">
-           <button type="button" class="toolbar-btn-ios" data-cmd="bold"><b>B</b></button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="italic"><i>I</i></button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="heading">H</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="list">•</button>
+        <div class="editor-toolbar" style="padding: 10px; background: var(--frosted); border-top: 0.5px solid var(--border-subtle); display: flex; justify-content: center; gap: 15px; overflow-x: auto;">
+           <button type="button" class="toolbar-btn-ios" data-cmd="bold" title="Tebal"><b>B</b></button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="italic" title="Miring"><i>I</i></button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="heading" title="Judul">H</button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="list" title="Daftar">•</button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas">☑</button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="link" title="Wiki Link">[[ ]]</button>
         </div>
       </div>
     `;
@@ -203,7 +205,12 @@
     }, 1000);
 
     titleInput.addEventListener('input', saveDraft);
-    textarea.addEventListener('input', saveDraft);
+    textarea.addEventListener('input', () => {
+      saveDraft();
+      if (!previewArea.classList.contains('hidden')) {
+        previewArea.innerHTML = markdownToHtml(textarea.value);
+      }
+    });
     iconInput.addEventListener('input', saveDraft);
     secretInput.addEventListener('change', saveDraft);
 
@@ -300,9 +307,12 @@
             const val = textarea.value;
             let next = val;
             if (cmd === 'bold') next = val.slice(0, start) + '**' + val.slice(start, end) + '**' + val.slice(end);
-            if (cmd === 'italic') next = val.slice(0, start) + '*' + val.slice(start, end) + '*' + val.slice(end);
-            if (cmd === 'heading') next = val.slice(0, start) + '# ' + val.slice(start);
-            if (cmd === 'list') next = val.slice(0, start) + '- ' + val.slice(start);
+            else if (cmd === 'italic') next = val.slice(0, start) + '*' + val.slice(start, end) + '*' + val.slice(end);
+            else if (cmd === 'heading') next = val.slice(0, start) + '\n### ' + val.slice(start);
+            else if (cmd === 'list') next = val.slice(0, start) + '\n- ' + val.slice(start);
+            else if (cmd === 'todo') next = val.slice(0, start) + '\n- [ ] ' + val.slice(start);
+            else if (cmd === 'link') next = val.slice(0, start) + '[[' + val.slice(start, end) + ']]' + val.slice(end);
+
             textarea.value = next;
             textarea.focus();
         };
