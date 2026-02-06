@@ -37,7 +37,19 @@
   function markdownToHtml(markdown) {
     if (typeof marked !== 'undefined') {
       // Use marked if available
-      let html = marked.parse(String(markdown || ''));
+      const renderer = new marked.Renderer();
+      renderer.listitem = (item) => {
+        const taskRegex = /^\[([ xX])\]\s+(.*)/;
+        const match = item.text.match(taskRegex);
+        if (match || item.task) {
+           const checked = item.checked || (match && match[1].toLowerCase() === 'x');
+           const text = match ? match[2] : item.text;
+           return `<li style="list-style:none; margin-left:-20px;"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${text}</span></li>\n`;
+        }
+        return `<li>${item.text}</li>\n`;
+      };
+
+      let html = marked.parse(String(markdown || ''), { renderer });
       // Support WikiLinks: [[Target]] -> <a href="#" class="wiki-link" data-target="Target">[[Target]]</a>
       html = html.replace(/\[\[(.+?)\]\]/g, '<a href="#" class="wiki-link" data-target="$1">[[$1]]</a>');
       return sanitizeRichContent(html);
@@ -58,7 +70,7 @@
       if (checkMatch) {
         if (inList) { htmlParts.push('</ul>'); inList = false; }
         const checked = checkMatch[1].toLowerCase() === 'x';
-        htmlParts.push(`<div class="checkbox-line"><input type="checkbox" ${checked ? 'checked' : ''} disabled> ${inlineMarkdown(checkMatch[2])}</div>`);
+        htmlParts.push(`<div class="checkbox-line"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${inlineMarkdown(checkMatch[2])}</span></div>`);
         return;
       }
       const listMatch = line.match(/^\s*[-*]\s+(.*)/);
@@ -128,7 +140,10 @@
               <div class="section-card" style="padding: 0;">
                 <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
                    <span style="flex: 1; font-size: 17px;">Ikon</span>
-                   <input name="icon" maxlength="2" style="width: 40px; border: none; text-align: right; background: transparent; font-size: 17px;" placeholder="📄">
+                   <div style="position: relative;">
+                     <button type="button" id="emoji-trigger" style="font-size: 20px; background: none; border: none; cursor: pointer;">📁</button>
+                     <input type="hidden" name="icon" value="📁">
+                   </div>
                 </div>
                 <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
                    <span style="flex: 1; font-size: 17px;">Folder</span>
@@ -151,9 +166,9 @@
            <button type="button" class="toolbar-btn-ios" data-cmd="bold" title="Tebal"><b>B</b></button>
            <button type="button" class="toolbar-btn-ios" data-cmd="italic" title="Miring"><i>I</i></button>
            <button type="button" class="toolbar-btn-ios" data-cmd="heading" title="Judul">H</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="list" title="Daftar">•</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas">☑</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="link" title="Wiki Link">[[ ]]</button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="list" title="Daftar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="link" title="Wiki Link"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></button>
         </div>
       </div>
     `;
@@ -205,13 +220,179 @@
     }, 1000);
 
     titleInput.addEventListener('input', saveDraft);
-    textarea.addEventListener('input', () => {
+
+    let slashMenu = null;
+    let slashIndex = 0;
+    const slashCommands = [
+      { id: 'h2', label: 'Heading 1', icon: 'H1', syntax: '\n## ' },
+      { id: 'h3', label: 'Heading 2', icon: 'H2', syntax: '\n### ' },
+      { id: 'bullet', label: 'Bulleted List', icon: '•', syntax: '\n- ' },
+      { id: 'todo', label: 'To-do List', icon: '☐', syntax: '\n- [ ] ' },
+      { id: 'code', label: 'Code Block', icon: '</>', syntax: '\n```\n\n```' },
+      { id: 'quote', label: 'Quote', icon: '"', syntax: '\n> ' }
+    ];
+
+    function showSlashMenu(x, y) {
+      if (slashMenu) slashMenu.remove();
+      slashMenu = document.createElement('div');
+      slashMenu.className = 'slash-menu';
+      slashMenu.style.left = x + 'px';
+      slashMenu.style.top = y + 'px';
+
+      slashCommands.forEach((cmd, i) => {
+        const item = document.createElement('div');
+        item.className = 'slash-item' + (i === slashIndex ? ' active' : '');
+        item.innerHTML = `<div class="slash-item-icon">${cmd.icon}</div> <div>${cmd.label}</div>`;
+        item.onclick = () => applySlashCommand(cmd);
+        slashMenu.appendChild(item);
+      });
+      overlay.appendChild(slashMenu);
+    }
+
+    function applySlashCommand(cmd) {
+      const val = textarea.value;
+      const pos = textarea.selectionStart;
+      const before = val.slice(0, pos).replace(/\/$/, '');
+      const after = val.slice(pos);
+      textarea.value = before + cmd.syntax + after;
+      textarea.focus();
+      const newPos = (before + cmd.syntax).length;
+      textarea.setSelectionRange(newPos, newPos);
+      if (slashMenu) {
+        slashMenu.remove();
+        slashMenu = null;
+      }
+      saveDraft();
+    }
+
+    textarea.addEventListener('keydown', (e) => {
+      if (slashMenu) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          slashIndex = (slashIndex + 1) % slashCommands.length;
+          renderSlashMenuContent();
+          return;
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          slashIndex = (slashIndex - 1 + slashCommands.length) % slashCommands.length;
+          renderSlashMenuContent();
+          return;
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          applySlashCommand(slashCommands[slashIndex]);
+          return;
+        } else if (e.key === 'Escape') {
+          slashMenu.remove();
+          slashMenu = null;
+          return;
+        }
+      }
+
+      // Block Reordering (Alt + Up/Down)
+      if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+          e.preventDefault();
+          const val = textarea.value;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+
+          const lines = val.split('\n');
+          const currentLineIndex = val.slice(0, start).split('\n').length - 1;
+
+          if (e.key === 'ArrowUp' && currentLineIndex > 0) {
+              [lines[currentLineIndex], lines[currentLineIndex - 1]] = [lines[currentLineIndex - 1], lines[currentLineIndex]];
+              textarea.value = lines.join('\n');
+              // Maintain focus (approximate)
+              textarea.setSelectionRange(start - lines[currentLineIndex].length - 1, start - lines[currentLineIndex].length - 1);
+          } else if (e.key === 'ArrowDown' && currentLineIndex < lines.length - 1) {
+              [lines[currentLineIndex], lines[currentLineIndex + 1]] = [lines[currentLineIndex + 1], lines[currentLineIndex]];
+              textarea.value = lines.join('\n');
+              textarea.setSelectionRange(start + lines[currentLineIndex].length + 1, start + lines[currentLineIndex].length + 1);
+          }
+          saveDraft();
+      }
+    });
+
+    function renderSlashMenuContent() {
+      if (!slashMenu) return;
+      slashMenu.querySelectorAll('.slash-item').forEach((item, i) => {
+        item.className = 'slash-item' + (i === slashIndex ? ' active' : '');
+      });
+    }
+
+    textarea.addEventListener('input', (e) => {
       saveDraft();
       if (!previewArea.classList.contains('hidden')) {
         previewArea.innerHTML = markdownToHtml(textarea.value);
       }
+
+      const val = textarea.value;
+      const pos = textarea.selectionStart;
+      if (val[pos - 1] === '/') {
+        // Get cursor coordinates (simplified for textarea)
+        const { offsetLeft, offsetTop } = textarea;
+        const lines = val.slice(0, pos).split('\n');
+        const lineCount = lines.length;
+        const x = 20;
+        const y = offsetTop + (lineCount * 28); // Approximate line height
+        slashIndex = 0;
+        showSlashMenu(x, Math.min(y, textarea.offsetHeight + offsetTop - 100));
+      } else if (slashMenu) {
+        slashMenu.remove();
+        slashMenu = null;
+      }
     });
-    iconInput.addEventListener('input', saveDraft);
+    const emojiTrigger = overlay.querySelector('#emoji-trigger');
+    if (initialValue.icon) {
+      emojiTrigger.textContent = initialValue.icon;
+      form.querySelector('input[name="icon"]').value = initialValue.icon;
+    }
+
+    emojiTrigger.onclick = (e) => {
+      e.stopPropagation();
+      let pickerContainer = overlay.querySelector('#emoji-picker-container');
+      if (pickerContainer) {
+        pickerContainer.classList.toggle('hidden');
+        return;
+      }
+
+      pickerContainer = document.createElement('div');
+      pickerContainer.id = 'emoji-picker-container';
+      pickerContainer.style = `
+        position: absolute; bottom: 100%; right: 0; z-index: 1000;
+        background: var(--surface); border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        border: 0.5px solid var(--border-subtle);
+        margin-bottom: 8px; overflow: hidden;
+      `;
+
+      const picker = document.createElement('emoji-picker');
+      picker.classList.add('light'); // default
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+          picker.classList.add('dark');
+          picker.classList.remove('light');
+      }
+
+      pickerContainer.appendChild(picker);
+      emojiTrigger.parentElement.appendChild(pickerContainer);
+
+      picker.addEventListener('emoji-click', event => {
+        const emoji = event.detail.unicode;
+        emojiTrigger.textContent = emoji;
+        form.querySelector('input[name="icon"]').value = emoji;
+        pickerContainer.classList.add('hidden');
+        saveDraft();
+      });
+
+      // Close when clicking outside
+      const closePicker = (ev) => {
+        if (!pickerContainer.contains(ev.target) && ev.target !== emojiTrigger) {
+          pickerContainer.classList.add('hidden');
+          document.removeEventListener('click', closePicker);
+        }
+      };
+      document.addEventListener('click', closePicker);
+    };
+
     secretInput.addEventListener('change', saveDraft);
 
     if (global.AbelionStorage) {
@@ -223,6 +404,7 @@
           folderSelect.appendChild(opt);
         });
         folderSelect.value = initialValue.folderId || '';
+        if (window.initCustomSelects) window.initCustomSelects();
       });
     }
 
@@ -238,19 +420,37 @@
           t.classList.remove('active');
           t.style.color = 'var(--text-secondary)';
           t.style.fontWeight = '400';
+          t.style.borderBottom = 'none';
         });
         tab.classList.add('active');
         tab.style.color = 'var(--primary)';
         tab.style.fontWeight = '600';
+        tab.style.borderBottom = '2px solid var(--primary)';
 
         if (tab.dataset.tab === 'preview') {
-          inputArea.classList.add('hidden');
-          previewArea.classList.remove('hidden');
-          previewArea.innerHTML = markdownToHtml(textarea.value);
+          inputArea.style.opacity = '0';
+          setTimeout(() => {
+              inputArea.classList.add('hidden');
+              previewArea.classList.remove('hidden');
+              previewArea.style.opacity = '0';
+              previewArea.innerHTML = markdownToHtml(textarea.value);
+              requestAnimationFrame(() => {
+                  previewArea.style.transition = 'opacity 0.2s';
+                  previewArea.style.opacity = '1';
+              });
+          }, 100);
         } else {
-          previewArea.classList.add('hidden');
-          inputArea.classList.remove('hidden');
-          textarea.focus();
+          previewArea.style.opacity = '0';
+          setTimeout(() => {
+              previewArea.classList.add('hidden');
+              inputArea.classList.remove('hidden');
+              inputArea.style.opacity = '0';
+              requestAnimationFrame(() => {
+                  inputArea.style.transition = 'opacity 0.2s';
+                  inputArea.style.opacity = '1';
+                  textarea.focus();
+              });
+          }, 100);
         }
       };
     });

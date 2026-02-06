@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
-  <title>Integrasi – Abelion Notes</title>
+  <title>Integrasi – Lembaga Arsip Digital Abelion</title>
   <link rel="stylesheet" href="../gaya/gayanya.css" />
 </head>
 
@@ -23,60 +23,59 @@
 
     <div class="list-header">Layanan Tersedia</div>
 
-    <!-- Supabase Card -->
-    <div class="section-card integration-card" style="padding: 16px; margin-bottom: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-        <div style="width: 40px; height: 40px; background: #1c1c1c; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="#3ECF8E"><path d="M11.383 15.071L6.274 12c-.22-.128-.352-.36-.352-.61 0-.25.132-.482.352-.61l5.11-3.071c.14-.084.31-.084.45 0l5.11 3.071c.22.128.352.36.352.61 0 .25-.132.482-.352.61l-5.11 3.071c-.14.084-.31.084-.45 0zM12 18l-9-5.143v2.286L12 20.286l9-5.143v-2.286L12 18zm0-12l9 5.143V8.857L12 3.714 3 8.857v2.286L12 6z"/></svg>
+    <div class="grouped-list" style="margin-bottom: 30px;">
+      <!-- Supabase Row -->
+      <div class="list-item-container integration-row" data-target="supabase">
+        <div class="list-item" id="item-supabase" style="padding: 16px;">
+          <div style="width: 36px; height: 36px; background: #1c1c1c; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(62, 207, 142, 0.2);">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M12.8258 2L4.01709 13.0658H11.5317L11.1742 22L19.9829 10.9342H12.4683L12.8258 2Z" fill="#3ECF8E"/></svg>
+          </div>
+          <div class="list-item-content">
+            <div class="list-item-title">Supabase</div>
+            <div class="list-item-subtitle">Database & Sinkronisasi Cloud</div>
+          </div>
+          <div id="supabase-status-badge" style="padding: 4px 8px; border-radius: 6px; font-size: 10px; background: var(--surface-strong); margin-right: 8px;">Terputus</div>
+          <div class="list-item-chevron">❯</div>
         </div>
-        <div>
-          <h3 style="margin: 0; font-size: 16px;">Supabase</h3>
-          <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Database & Sinkronisasi Cloud</p>
+        <div id="supabase-config-area" style="display: none; padding: 0 16px 16px 16px; background: var(--surface);">
+          <div class="grouped-list" style="margin-bottom: 12px; border: 0.5px solid var(--border-subtle);">
+            <div class="list-item">
+              <input type="text" id="supabase-url" class="input-control" placeholder="URL Supabase" style="font-size: 14px;" />
+            </div>
+            <div class="list-item">
+              <input type="password" id="supabase-key" class="input-control" placeholder="Kunci Anon (Anon Key)" style="font-size: 14px;" />
+            </div>
+          </div>
+          <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; justify-content: center; font-size: 15px; padding: 10px;">Simpan</button>
         </div>
-        <div id="supabase-status-badge" style="margin-left: auto; padding: 4px 8px; border-radius: 6px; font-size: 10px; background: var(--surface-strong);">Terputus</div>
       </div>
 
-      <div id="supabase-config-area" style="display: none;">
-        <div class="grouped-list" style="margin-bottom: 12px;">
-          <div class="list-item">
-            <input type="text" id="supabase-url" class="input-control" placeholder="URL Supabase" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
+      <!-- Notion Row -->
+      <div class="list-item-container integration-row" data-target="notion">
+        <div class="list-item" id="item-notion" style="padding: 16px;">
+          <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%); backdrop-filter: blur(10px); border-radius: 10px; border: 1.5px solid #000; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 70%);"></div>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="black" style="z-index: 1;"><path d="M18.825 3H5.111C4.437 3 3.844 3.253 3.4 3.666 2.972 4.062 2.75 4.63 2.75 5.253v13.494c0 .624.222 1.192.65 1.587.444.413 1.037.666 1.711.666h13.714c.674 0 1.267-.253 1.711-.666.428-.395.65-.963.65-1.587V5.253c0-.623-.222-1.191-.65-1.587C20.092 3.253 19.499 3 18.825 3zM16.635 15.651l-1.006.101c-.4.04-.501-.132-.501-.5V8.636l-3.084 7.429H10.53L8.71 8.636v6.236c0 .415.1.58.5.58l1.006-.101v1.442H6.425v-1.442l1.006.101c.4 0 .5-.165.5-.58V6.843l-2.26.101V5.502h3.514l1.91 5.922 1.83-5.922h3.693v1.442l-1.006-.101c-.4 0-.5.165-.5.58v7.719c0 .368.101.54.501.54l1.006-.101v1.442h-3.804z"/></svg>
           </div>
-          <div class="list-item">
-            <input type="password" id="supabase-key" class="input-control" placeholder="Kunci Anon (Anon Key)" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
+          <div class="list-item-content">
+            <div class="list-item-title">Notion</div>
+            <div class="list-item-subtitle">Ekspor ke Database Notion</div>
           </div>
+          <div id="notion-status-badge" style="padding: 4px 8px; border-radius: 6px; font-size: 10px; background: var(--surface-strong); margin-right: 8px;">Terputus</div>
+          <div class="list-item-chevron">❯</div>
         </div>
-        <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; justify-content: center;">Simpan Pengaturan</button>
+        <div id="notion-config-area" style="display: none; padding: 0 16px 16px 16px; background: var(--surface);">
+          <div class="grouped-list" style="margin-bottom: 12px; border: 0.5px solid var(--border-subtle);">
+            <div class="list-item">
+              <input type="password" id="notion-token" class="input-control" placeholder="Token Integrasi Internal" style="font-size: 14px;" />
+            </div>
+            <div class="list-item">
+              <input type="text" id="notion-db-id" class="input-control" placeholder="ID Database" style="font-size: 14px;" />
+            </div>
+          </div>
+          <button type="button" class="btn-blue" id="save-notion-config" style="width: 100%; justify-content: center; font-size: 15px; padding: 10px;">Hubungkan</button>
+        </div>
       </div>
-
-      <button type="button" class="btn-ghost" id="toggle-supabase-form" style="width: 100%; margin-top: 8px;">Konfigurasi</button>
-    </div>
-
-    <!-- Notion Card -->
-    <div class="section-card integration-card" style="padding: 16px; margin-bottom: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-        <div style="width: 40px; height: 40px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="black"><path d="M4.459 4.458v15.083h15.083V4.458H4.459zm1.432 1.432h12.219v1.613l-1.075-.107c-.43-.036-.537.143-.537.537v9.423c0 .358.107.537.537.537l1.075-.107v1.612H9.866v-1.612l1.075.107c.43.036.538-.143.538-.537V8.686L8.898 16.5h-1.613l-1.432-6.449v6.521c0 .358.107.537.537.537l1.075-.107v1.612H4.459v-1.612l1.075.107c.43.036.537-.143.537-.537V7.252c0-.358-.107-.537-.537-.537l-1.075.107V5.89h2.399l1.432 6.449 1.433-6.449H5.89z"/></svg>
-        </div>
-        <div>
-          <h3 style="margin: 0; font-size: 16px;">Notion</h3>
-          <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Ekspor Catatan ke Database Notion</p>
-        </div>
-        <div id="notion-status-badge" style="margin-left: auto; padding: 4px 8px; border-radius: 6px; font-size: 10px; background: var(--surface-strong);">Terputus</div>
-      </div>
-
-      <div id="notion-config-area" style="display: none;">
-        <div class="grouped-list" style="margin-bottom: 12px;">
-          <div class="list-item">
-            <input type="password" id="notion-token" class="input-control" placeholder="Token Integrasi Internal" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
-          </div>
-          <div class="list-item">
-            <input type="text" id="notion-db-id" class="input-control" placeholder="ID Database" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
-          </div>
-        </div>
-        <button type="button" class="btn-blue" id="save-notion-config" style="width: 100%; justify-content: center;">Hubungkan Notion</button>
-      </div>
-
-      <button type="button" class="btn-ghost" id="toggle-notion-form" style="width: 100%; margin-top: 8px;">Konfigurasi</button>
     </div>
 
     <div class="list-header">Mendatang</div>
@@ -86,14 +85,14 @@
           <div class="list-item-title">Google Drive</div>
           <div class="list-item-subtitle">Backup otomatis ke Drive</div>
         </div>
-        <div class="list-item-chevron">⏳</div>
+        <div class="list-item-chevron"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
       </div>
       <div class="list-item" style="opacity: 0.6;">
         <div class="list-item-content">
           <div class="list-item-title">GitHub</div>
           <div class="list-item-subtitle">Simpan catatan sebagai Gist/Repo</div>
         </div>
-        <div class="list-item-chevron">⏳</div>
+        <div class="list-item-chevron"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
       </div>
     </div>
 

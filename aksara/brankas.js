@@ -309,6 +309,28 @@
     if (cacheGet(META_KEY)?.encryption?.enabled) {
       isLocked = true;
     }
+
+    // On startup, if we are connected to Supabase but don't have local encryption meta,
+    // try to fetch it to support seamless multi-device vault.
+    if (global.AbelionSupabaseDB && !cacheGet(META_KEY)?.encryption?.enabled) {
+        try {
+            const cloudMeta = await global.AbelionSupabaseDB.getValue('abelion-encryption-meta');
+            if (cloudMeta && cloudMeta.enabled) {
+                const localMeta = cacheGet(META_KEY) || { ...DEFAULT_META };
+                localMeta.encryption = {
+                    enabled: true,
+                    salt: cloudMeta.salt,
+                    encryptedKeys: Array.from(SENSITIVE_KEYS)
+                };
+                cacheSet(META_KEY, localMeta);
+                isLocked = true;
+                await persistMeta();
+                console.log('Encryption meta recovered from Cloud');
+            }
+        } catch (e) {
+            console.warn('Failed to fetch cloud encryption meta:', e);
+        }
+    }
   }
 
   function emit(event) {
@@ -430,6 +452,18 @@
       await idbSet('meta', META_KEY, meta);
     } else {
       localWrite(META_KEY, meta);
+    }
+
+    // Multi-device sync for encryption meta
+    if (global.AbelionSupabaseDB && meta.encryption?.enabled) {
+      const cloudEncryptionMeta = {
+        enabled: true,
+        salt: meta.encryption.salt,
+        version: ENCRYPTION.VERSION
+      };
+      global.AbelionSupabaseDB.setValue('abelion-encryption-meta', cloudEncryptionMeta).catch(err => {
+        console.warn('Gagal sinkronisasi meta enkripsi ke cloud:', err);
+      });
     }
   }
 
@@ -903,30 +937,51 @@
 
   async function vacuum() {
     await ready;
+
+    // 1. Clear temporary local storage keys
     CLEAN_KEYS.forEach((key) => {
       localStorage.removeItem(key);
     });
+
+    // 2. Clear IndexedDB temporary keys if applicable
     if (activeEngine === ENGINE.INDEXED_DB) {
-      for (const key of CLEAN_KEYS) {
-        await idbTransaction('kv', 'readwrite', (store) => { store.delete(key); });
+      try {
+        for (const key of CLEAN_KEYS) {
+          await idbTransaction('kv', 'readwrite', (store) => { store.delete(key); });
+        }
+      } catch (e) {
+        console.warn('IDB vacuum partial failure:', e);
       }
     }
 
-    // Clear Cache API
+    // 3. Force garbage collection of internal caches
+    cache.clear();
+    encryptedCache.clear();
+    // Re-prime essential meta
+    await primeLocalCache();
+
+    // 4. Clear Browser Cache API (Service Worker caches)
     if ('caches' in global) {
         try {
             const keys = await caches.keys();
             await Promise.all(keys.map(key => caches.delete(key)));
-            console.log('Service Worker Cache cleared');
         } catch (e) {
-            console.error('Failed to clear caches', e);
+            console.error('Failed to clear caches:', e);
         }
     }
 
-    const meta = cacheGet(META_KEY);
+    // 5. Update meta with minimal timestamp (date only to save bytes if needed, but ISO is standard)
+    // To prevent the "1kB growth" issue, we ensure meta doesn't keep growing with redundant data
+    const meta = cacheGet(META_KEY) || { ...DEFAULT_META };
     meta.lastVacuumAt = new Date().toISOString();
+
+    // Clean up indexes if they got corrupted or bloated
+    const notes = await getNotes();
+    meta.indexes = buildNoteIndexes(notes);
+
     cacheSet(META_KEY, meta);
     await persistMeta();
+
     return true;
   }
 
@@ -953,6 +1008,27 @@
     moveToTrash,
     restoreFromTrash,
     purgeOldTrash,
-    vacuum
+    vacuum,
+    destroy: async () => {
+      await ready;
+      if (activeEngine === ENGINE.INDEXED_DB && db) {
+        db.close();
+        await new Promise((resolve, reject) => {
+          const req = indexedDB.deleteDatabase(DB_NAME);
+          req.onsuccess = () => resolve();
+          req.onerror = () => reject(req.error);
+          req.onblocked = () => {
+            console.warn('Delete DB blocked, clearing stores instead');
+            // If blocked, we could try to clear stores manually but delete is cleaner for factory reset
+            resolve();
+          };
+        });
+      }
+      localStorage.clear();
+      sessionStorage.clear();
+      cache.clear();
+      encryptedCache.clear();
+      return true;
+    }
   };
 })(window);

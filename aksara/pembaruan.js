@@ -39,39 +39,46 @@
         const overlay = document.createElement('div');
         overlay.className = 'update-popup-overlay';
         overlay.style = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
-            z-index: 9999; display: flex; align-items: center; justify-content: center;
-            padding: 20px; box-sizing: border-box;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            z-index: 99999; display: flex; align-items: center; justify-content: center;
+            padding: 40px; box-sizing: border-box;
+            animation: fadeIn 0.3s ease-out;
         `;
 
         const card = document.createElement('div');
         card.style = `
-            background: var(--surface-modal); width: 100%; max-width: 400px;
-            border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-subtle); color: var(--text-primary);
+            background: var(--surface); width: 100%; max-width: 280px;
+            border-radius: 14px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 0.5px solid var(--glass-outline); color: var(--text-primary);
+            text-align: center; animation: alertPop 0.3s cubic-bezier(0.2, 1, 0.2, 1);
         `;
 
-        const changelogHtml = info.changelog.map(item => `<li>${item}</li>`).join('');
+        const changelogHtml = info.changelog.map(item => `<div style="margin-bottom: 4px;">• ${item}</div>`).join('');
 
         card.innerHTML = `
-            <div style="text-align: center; margin-bottom: 16px;">
-                <div style="width: 60px; height: 60px; background: var(--accent); border-radius: 15px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                </div>
-                <h2 style="margin: 0; font-size: 20px;">Versi Baru Tersedia!</h2>
-                <p style="color: var(--text-secondary); margin: 4px 0 0 0; font-size: 14px;">v${info.version} - ${info.codename}</p>
-            </div>
-            <div style="background: var(--surface-strong); border-radius: 12px; padding: 16px; margin-bottom: 20px; max-height: 200px; overflow-y: auto;">
-                <h3 style="margin: 0 0 8px 0; font-size: 13px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Rincian Perubahan</h3>
-                <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: var(--text-primary);">
+            <div style="padding: 20px 16px;">
+                <h2 style="margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3;">Pembaruan Perangkat Lunak</h2>
+                <p style="color: var(--text-secondary); margin: 4px 0 12px; font-size: 13px;">Versi ${info.version} tersedia.</p>
+                <div style="text-align: left; font-size: 11px; line-height: 1.4; color: var(--text-secondary); max-height: 120px; overflow-y: auto; padding: 8px; background: var(--primary-soft); border-radius: 8px;">
+                    <div style="font-weight: 700; margin-bottom: 4px; text-transform: uppercase; font-size: 10px; color: var(--primary);">Apa yang Baru:</div>
                     ${changelogHtml}
-                </ul>
+                </div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="update-later" class="btn-ghost" style="flex: 1; border: 1px solid var(--border-subtle);">Nanti</button>
-                <button id="update-now" class="btn-blue" style="flex: 1;">Muat Ulang Sekarang</button>
+            <div style="display: flex; flex-direction: column; border-top: 0.5px solid var(--border-subtle);">
+                <button id="update-now" style="width: 100%; padding: 12px; background: none; border: none; font-size: 17px; color: var(--primary); font-weight: 600; cursor: pointer; border-bottom: 0.5px solid var(--border-subtle);">Instal Sekarang</button>
+                <button id="update-later" style="width: 100%; padding: 12px; background: none; border: none; font-size: 17px; color: var(--primary); font-weight: 400; cursor: pointer;">Nanti Saja</button>
             </div>
+            <style>
+                @keyframes alertPop {
+                    from { opacity: 0; transform: scale(1.1); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                #update-now:active, #update-later:active { background: var(--primary-soft); }
+            </style>
         `;
 
         overlay.appendChild(card);

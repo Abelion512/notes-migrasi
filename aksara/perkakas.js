@@ -16,10 +16,10 @@
   const APP_VERSION_BASE = Object.freeze({
     major: 2026,
     minor: 2,
-    patch: 7,
+    patch: 6,
     channel: 'premium-release',
     codename: 'Integrasi Gemilang',
-    build: '2026-02-07',
+    build: '2026-02-06',
     environment: 'production'
   });
 
@@ -29,20 +29,14 @@
     versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
       {
-        version: '2026.02.7',
-        releasedAt: '2026-02-07',
+        version: '2026.02.6',
+        releasedAt: '2026-02-06',
         highlights: [
           'Integrasi Modular: Halaman baru untuk konfigurasi Supabase dan Notion.',
           'Security Vault: Penyimpanan kunci API yang aman dan terenkripsi.',
           'Auto-Update Check: Deteksi otomatis versi baru dengan notifikasi popup.',
           'UX Storage: Analisis penggunaan memori dan fitur hapus cache.',
           'Grafik XP Proximity: Tooltip grafik tetap muncul meskipun kursor tidak tepat di titik data.',
-        ]
-      },
-      {
-        version: '2026.02.6',
-        releasedAt: '2026-02-06',
-        highlights: [
           'Premium Loader: Tampilan intro baru dengan efek Aurora Glass dan posisi sentral.',
           'UI Refinement: Menghilangkan outline hitam pada feedback tap untuk pengalaman lebih halus.',
           'Navigation Upgrade: Redesain tombol tambah menjadi action button yang menonjol.',
@@ -89,7 +83,7 @@
     if (!html) return '';
     const template = document.createElement('template');
     template.innerHTML = html;
-    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV']);
+    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV', 'INPUT', 'BLOCKQUOTE', 'HR', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
 
     const walk = (node, depth) => {
       if (depth > maxDepth) {
@@ -105,7 +99,16 @@
             const text = document.createTextNode(child.textContent || '');
             child.replaceWith(text);
           } else {
-            Array.from(child.attributes).forEach(attr => child.removeAttribute(attr.name));
+            const allowedAttrs = {
+              'INPUT': ['type', 'checked', 'disabled'],
+              'A': ['href', 'class', 'data-target']
+            };
+            const tagName = child.tagName;
+            Array.from(child.attributes).forEach(attr => {
+              if (!allowedAttrs[tagName] || !allowedAttrs[tagName].includes(attr.name)) {
+                child.removeAttribute(attr.name);
+              }
+            });
             walk(child, depth + 1);
           }
         }
