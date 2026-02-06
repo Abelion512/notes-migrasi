@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests; " />
   <title>Abelion Notes</title>
   <link rel="stylesheet" href="gaya/gayanya.css" />
   <link rel="manifest" href="izin.json" />
@@ -176,10 +176,10 @@
           <input type="text" id="folder-name-input" class="input-control" placeholder="Nama Folder">
           <input type="text" id="folder-icon-input" class="input-control" placeholder="Ikon (Misal: 📁)" style="border-top: 0.5px solid var(--border-subtle);">
         </div>
-        <div class="list-header">Parent Folder</div>
+        <div class="list-header">Folder Utama (Opsional)</div>
         <div class="section-card">
           <select id="folder-parent-input" class="input-control">
-            <option value="">(Tanpa Parent)</option>
+            <option value="">(Jadikan Folder Utama)</option>
           </select>
         </div>
         <button class="ghost-btn" id="folder-modal-close" style="color: var(--danger);">Batal</button>
@@ -205,16 +205,6 @@
   <script src="aksara/tangkas.js"></script>
   <script src="aksara/kotak-tulis.js"></script>
   <script src="aksara/utama.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./penjaga.js').then(reg => {
-          console.log('SW Registered', reg.scope);
-        }).catch(err => {
-          console.error('SW Registration failed', err);
-        });
-      });
-    }
-  </script>
+  <script src="aksara/inisialisasi.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
   <title>Integrasi – Abelion Notes</title>
   <link rel="stylesheet" href="../gaya/gayanya.css" />
 </head>
@@ -39,16 +39,16 @@
       <div id="supabase-config-area" style="display: none;">
         <div class="grouped-list" style="margin-bottom: 12px;">
           <div class="list-item">
-            <input type="text" id="supabase-url" class="input-control" placeholder="Supabase URL" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
+            <input type="text" id="supabase-url" class="input-control" placeholder="URL Supabase" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
           </div>
           <div class="list-item">
-            <input type="password" id="supabase-key" class="input-control" placeholder="Anon Key" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
+            <input type="password" id="supabase-key" class="input-control" placeholder="Kunci Anon (Anon Key)" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
           </div>
         </div>
-        <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; justify-content: center;">Simpan Konfigurasi</button>
+        <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; justify-content: center;">Simpan Pengaturan</button>
       </div>
 
-      <button type="button" class="btn-ghost" id="toggle-supabase-form" style="width: 100%; border: 1px solid var(--border-subtle); margin-top: 8px;">Konfigurasi</button>
+      <button type="button" class="btn-ghost" id="toggle-supabase-form" style="width: 100%; margin-top: 8px;">Konfigurasi</button>
     </div>
 
     <!-- Notion Card -->
@@ -67,16 +67,16 @@
       <div id="notion-config-area" style="display: none;">
         <div class="grouped-list" style="margin-bottom: 12px;">
           <div class="list-item">
-            <input type="password" id="notion-token" class="input-control" placeholder="Internal Integration Token" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
+            <input type="password" id="notion-token" class="input-control" placeholder="Token Integrasi Internal" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
           </div>
           <div class="list-item">
-            <input type="text" id="notion-db-id" class="input-control" placeholder="Database ID" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
+            <input type="text" id="notion-db-id" class="input-control" placeholder="ID Database" style="background: transparent; color: var(--text-primary); font-size: 13px;" />
           </div>
         </div>
         <button type="button" class="btn-blue" id="save-notion-config" style="width: 100%; justify-content: center;">Hubungkan Notion</button>
       </div>
 
-      <button type="button" class="btn-ghost" id="toggle-notion-form" style="width: 100%; border: 1px solid var(--border-subtle); margin-top: 8px;">Konfigurasi</button>
+      <button type="button" class="btn-ghost" id="toggle-notion-form" style="width: 100%; margin-top: 8px;">Konfigurasi</button>
     </div>
 
     <div class="list-header">Mendatang</div>

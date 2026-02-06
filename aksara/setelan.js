@@ -70,8 +70,28 @@
   if (vacuumBtn) vacuumBtn.addEventListener('click', async () => {
     await Storage.vacuum();
     await renderStorageHealth();
-    alert('Vacuum selesai. Draft/cache/logs dibersihkan.');
+    alert('Penyimpanan telah dioptimalkan.');
   });
+
+  const factoryResetBtn = document.getElementById('factory-reset-btn');
+  if (factoryResetBtn) {
+    factoryResetBtn.onclick = async () => {
+      const confirm1 = confirm('PERINGATAN: Semua catatan, folder, dan pengaturan akan dihapus secara permanen. Lanjutkan?');
+      if (!confirm1) return;
+
+      const confirm2 = confirm('Apakah Anda benar-benar yakin? Tindakan ini tidak dapat dibatalkan.');
+      if (!confirm2) return;
+
+      try {
+        await Storage.destroy();
+        localStorage.clear();
+        alert('Data telah dihapus. Aplikasi akan memuat ulang.');
+        window.location.href = '../index.html';
+      } catch (err) {
+        alert('Gagal menghapus data: ' + err.message);
+      }
+    };
+  }
 
   async function renderEncryptionState() {
     await Storage.ready;

@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
   <title>Pengaturan – Abelion Notes</title>
   <link rel="stylesheet" href="../gaya/gayanya.css" />
 </head>
@@ -107,10 +107,11 @@
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
         Penyimpanan mencakup database catatan, file aplikasi (cache), dan data sesi. Kapasitas bisa bertambah karena metadata dan log aktivitas untuk mempercepat performa.
       </p>
-      <button type="button" class="btn-ghost" id="storage-vacuum-btn" style="width: 100%; border: 1px solid var(--border-subtle);">Hapus Cache & Optimasi</button>
+      <button type="button" class="btn-ghost" id="storage-vacuum-btn" style="width: 100%;">Optimalkan Penyimpanan</button>
+      <button type="button" class="btn-ghost" id="factory-reset-btn" style="width: 100%; margin-top: 12px; color: var(--danger); border-color: rgba(255, 59, 48, 0.3);">Hapus Semua Data</button>
     </div>
 
-    <div class="list-header">Lainnya</div>
+    <div class="list-header">Tentang</div>
     <div class="grouped-list">
       <a href="riwayat.html" class="list-item">
         <div class="list-item-content">

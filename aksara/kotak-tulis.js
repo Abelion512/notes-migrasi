@@ -133,11 +133,11 @@
                 <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
                    <span style="flex: 1; font-size: 17px;">Folder</span>
                    <select name="folderId" style="border: none; background: transparent; font-size: 17px; text-align: right;">
-                     <option value="">(Tanpa Folder)</option>
+                     <option value="">(Folder Utama)</option>
                    </select>
                 </div>
                 <div style="display: flex; align-items: center; padding: 12px 16px;">
-                   <span style="flex: 1; font-size: 17px;">Rahasia (Secret)</span>
+                   <span style="flex: 1; font-size: 17px;">Catatan Rahasia</span>
                    <input type="checkbox" name="isSecret" style="width: 20px; height: 20px;">
                 </div>
               </div>

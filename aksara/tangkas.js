@@ -42,13 +42,13 @@
     {
       id: 'explorer',
       level: 1,
-      name: 'Explorer',
+      name: 'Penjelajah',
       description: 'Menjelajah ide dan membangun kebiasaan menulis.'
     },
     {
       id: 'trailblazer',
       level: 500,
-      name: 'Trailblazer',
+      name: 'Perintis',
       description: 'Memimpin komunitas dengan konsistensi menulis tinggi.'
     }
   ]);
@@ -56,35 +56,35 @@
   const TIER_DEFINITIONS = [
     {
       id: 'novice',
-      name: 'Novice',
-      label: 'Novice (Pemula)',
+      name: 'Pemula',
+      label: 'Pemula',
       min: 1,
       max: 50,
       summary: 'Fokus membangun kebiasaan menulis harian.',
-      hint: 'Pertahankan ritme mencatat untuk menembus Apprentice.'
+      hint: 'Pertahankan ritme mencatat untuk menembus Magang.'
     },
     {
       id: 'apprentice',
-      name: 'Apprentice',
-      label: 'Apprentice (Magang)',
+      name: 'Magang',
+      label: 'Magang',
       min: 51,
       max: 150,
       summary: 'Eksplorasi fitur catatan untuk memperkaya proses belajar.',
-      hint: 'Gunakan variasi catatan untuk menuju Scholar.'
+      hint: 'Gunakan variasi catatan untuk menuju Cendekia.'
     },
     {
       id: 'scholar',
-      name: 'Scholar',
-      label: 'Scholar (Cendekia)',
+      name: 'Cendekia',
+      label: 'Cendekia',
       min: 151,
       max: 400,
-      summary: 'Satukan pola dan insight untuk mempercepat peningkatan level.',
-      hint: 'Optimalkan konsistensi untuk menembus Archivist.'
+      summary: 'Satukan pola dan wawasan untuk mempercepat peningkatan level.',
+      hint: 'Optimalkan konsistensi untuk menembus Arsiparis.'
     },
     {
       id: 'archivist',
-      name: 'Archivist',
-      label: 'Archivist (Arsiparis)',
+      name: 'Arsiparis',
+      label: 'Arsiparis',
       min: 401,
       max: 1000,
       summary: 'Kurasi catatanmu dan bantu diri masa depan menemukan referensi.',
@@ -92,8 +92,8 @@
     },
     {
       id: 'luminary',
-      name: 'Luminary',
-      label: 'Luminary (Legenda)',
+      name: 'Legenda',
+      label: 'Legenda',
       min: 1001,
       max: Number.POSITIVE_INFINITY,
       summary: 'Legenda catatan yang terus berbagi wawasan.',

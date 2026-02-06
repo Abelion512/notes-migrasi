@@ -1,74 +1,53 @@
-# 🗒️ Abelion Notes
+# 📝 Abelion Notes
 
-Abelion Notes is a modern, gamified note-taking web app that runs fully in the browser. It pairs fast local storage with a progression system so every action feels rewarding.
+**Abelion Notes** adalah aplikasi catatan modern yang mengutamakan privasi, gamifikasi, dan pengalaman pengguna yang premium. Terinspirasi oleh desain iOS dan Notion, aplikasi ini menawarkan antarmuka yang bersih dengan fitur canggih yang berjalan sepenuhnya di perangkat Anda (Local-first).
 
-## ✨ Core Features
+🚀 **Akses Aplikasi:** [https://abelion512.github.io/Notes](https://abelion512.github.io/Notes)
 
-- 📝 Create, edit, pin, and delete notes with emoji icons and subtle animations.
-- 🔍 Debounced search and tag filtering for fast discovery.
-- 😊 Daily mood tracker with a 7-day emoji timeline.
-- 📌 Persistent layout that remembers state across reloads.
-- ⚡ Optimised localStorage reads/writes via safe helpers and quota handling.
+---
 
-## 🎮 Gamification System (v2.0)
+## ✨ Fitur Utama
 
-- 🆙 **Smart XP**: XP scaling based on level (Base + 100/level).
-- 🔄 **Realtime Sync**: Actions in one tab update XP/Level across all tabs instantly.
-- 📅 **Streak & Bonus**: Daily login +15 XP, Streak +150 XP, and Special Date Multipliers.
-- 🏅 **Badge System**: 12+ Badges including tiered Artisan rewards.
-- 🧠 **XP Modal**: Dynamic "Cara Dapat XP" guide injected with user's current rank stats.
+- **Apple-Inspired UI**: Desain *Glassmorphism*, *Grouped List*, dan navigasi melayang yang halus.
+- **Privacy First (E2EE)**: Data Anda adalah milik Anda. Mendukung enkripsi AES-GCM 256 langsung di browser.
+- **Gamifikasi Terintegrasi**: Kumpulkan XP, naikkan level, dan buka badge pencapaian saat Anda mencatat.
+- **Local-first with Cloud Sync**: Menggunakan IndexedDB untuk kecepatan maksimal secara offline, dengan sinkronisasi opsional ke Supabase.
+- **Multi-format Export**: Ekspor catatan Anda ke PDF, DOCX, Markdown, JSON, atau Teks Polos.
+- **Smart Search & Folders**: Kelola ide-ide Anda dengan sistem folder bertingkat dan pencarian instan.
 
-## 👤 Profile Experience
+## 🛠️ Stack Teknologi
 
-- 📸 **Interactive Avatar**: Click camera icon to upload/change photo instantly.
-- 💊 **Minimalist Stats**: Apple-style "pill" design for Level & XP.
-- 🔄 **Seamless Navigation**: Smart back-button logic and hover tooltips on nav icons.
-- ⏰ **Dynamic Greetings**: Greeting changes based on time of day (Pagi/Siang/Sore/Malam).
+- **Bahasa**: Vanilla JavaScript (ES6+), HTML5, CSS3.
+- **Penyimpanan**: IndexedDB (Primary), LocalStorage (UI Prefs).
+- **Library**:
+  - [SortableJS](https://github.com/SortableJS/Sortable) (Reordering)
+  - [Chart.js](https://www.chartjs.org/) (Statistik XP)
+  - [Marked](https://marked.js.org/) (Markdown Parser)
+  - [jsPDF](https://github.com/parallax/jsPDF) & [docx](https://github.com/dolanmiu/docx) (Generator Dokumen)
 
-## 🧱 Architecture Highlights
+## 📦 Instalasi Lokal
 
-- **Vanilla JavaScript (ES2020+)** broken into dedicated modules (`index.js`, `profile.js`, `gamification.js`, `utils.js`).
-- **Local persistence** with typed `STORAGE_KEYS`, defensive reads, and quota fallbacks.
-- **Input sanitisation** via `sanitizeText` and `sanitizeRichContent` to mitigate XSS.
-- **Event-driven updates** (`abelion-xp-update`) so UI stays fresh without reloads.
-- **Changelog System**: Built-in version history and update highlights.
+1. Clone repositori ini:
+   ```bash
+   git clone https://github.com/Abelion512/Notes.git
+   ```
+2. Masuk ke direktori:
+   ```bash
+   cd Notes
+   ```
+3. Jalankan server lokal (misalnya menggunakan `http-server`):
+   ```bash
+   npx http-server . -p 3000
+   ```
+4. Buka `http://localhost:3000` di browser Anda.
 
-## 🚀 Getting Started
+## 🤝 Kontribusi
 
-No build step required—just open the main HTML file in a browser.
+Kami sangat menghargai kontribusi dari komunitas! Silakan baca [CONTRIBUTING.md](./CONTRIBUTING.md) untuk panduan lebih lanjut.
 
-```bash
-# Clone this repository
-git clone https://github.com/username/abelion-notes.git
-cd abelion-notes
+## 📄 Lisensi
 
-# Launch in your preferred browser
-open index.html  # macOS
-# or
-xdg-open index.html  # Linux
-```
+Proyek ini dilisensikan di bawah [MIT License](./LICENSE).
 
-## 📱 Deployment Options
-
-- **GitHub Pages:** Commit to `main`, enable Pages, and access via `https://username.github.io/abelion-notes/`.
-- **Netlify:** Drag-and-drop the project folder to [Netlify Drop](https://app.netlify.com/drop).
-- **Vercel:** Install the CLI (`npm install -g vercel`) and run `vercel` from the project root.
-
-## 🔐 Security & Resilience
-
-- Sanitised user inputs before rendering to the DOM.
-- Graceful handling of `QuotaExceededError` when localStorage fills up.
-- Safe fallbacks for missing note dates (`createdAt` or derived ISO values).
-- Default avatar fallback everywhere a profile photo is used.
-- Strict Content Security Policy applied on every entry page via `<meta http-equiv="Content-Security-Policy">` restricting assets to `self`, Google Fonts, and data/blob URLs.
-
-## 📄 Roadmap Ideas
-
-- 📤 Export/import of notes for easy backups.
-- 🌙 Optional dark mode theme.
-- 📝 Rich modal editor instead of `prompt()` for note creation.
-- 📱 Progressive Web App manifest for installable experience.
-
-## 👨‍💻 Author
-
-Crafted with care by Abelion Lavv (agen.salva@gmail.com).
+---
+*Didesain dengan ❤️ oleh Abelion Lavv.*

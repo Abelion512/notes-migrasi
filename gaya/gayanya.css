@@ -153,17 +153,34 @@ h3 { font-size: 17px; font-weight: 600; }
   transform: scale(0.98);
 }
 
-.ghost-btn {
+.btn-ghost, .ghost-btn {
   background: transparent;
   color: var(--primary);
   border: none;
   font-size: 17px;
   font-weight: 400;
   cursor: pointer;
-  padding: 8px 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, opacity 0.2s;
 }
 
-.ghost-btn:active { opacity: 0.5; }
+.btn-ghost:active, .ghost-btn:active {
+  background: var(--primary-soft);
+  opacity: 0.7;
+}
+
+.btn-ghost {
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme="dark"] .btn-ghost {
+  border-color: var(--border-subtle);
+  background: rgba(255, 255, 255, 0.05);
+}
 
 /* Grouped List Style (The iPhone look) */
 .grouped-list {

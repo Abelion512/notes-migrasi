@@ -347,7 +347,7 @@ function openFolderModal(existingFolder = null) {
 
   // Populate parent select
   if (parentSelect) {
-    parentSelect.innerHTML = '<option value="">(Tanpa Parent)</option>';
+    parentSelect.innerHTML = '<option value="">(Jadikan Folder Utama)</option>';
     folders.forEach(f => {
       // Prevent selecting itself or its children as parent (basic check: itself)
       if (existingFolder && f.id === existingFolder.id) return;
@@ -599,17 +599,17 @@ async function renderNotes(append = false) {
     return `
       <div class="list-item-container" data-id="${n.id}">
         <div class="list-item-actions list-item-actions-left">
-          <button class="swipe-action-btn pin" onclick="window.handleSwipeAction('${n.id}', 'pin')">
+          <button class="swipe-action-btn pin" data-action="pin" data-id="${n.id}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             <span>${n.pinned ? 'Lepas' : 'Pin'}</span>
           </button>
         </div>
         <div class="list-item-actions list-item-actions-right">
-          <button class="swipe-action-btn archive" onclick="window.handleSwipeAction('${n.id}', 'archive')">
+          <button class="swipe-action-btn archive" data-action="archive" data-id="${n.id}">
              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
              <span>Arsip</span>
           </button>
-          <button class="swipe-action-btn delete" onclick="window.handleSwipeAction('${n.id}', 'delete')">
+          <button class="swipe-action-btn delete" data-action="delete" data-id="${n.id}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             <span>Hapus</span>
           </button>
@@ -811,6 +811,14 @@ window.ContextMenu = {
     document.addEventListener('click', (e) => {
       if (this.el && !this.el.contains(e.target)) this.hide();
     });
+
+    this.el.addEventListener('click', (e) => {
+      const item = e.target.closest('.context-menu-item');
+      if (item) {
+        this.handleAction(item.dataset.action);
+      }
+    });
+
     window.addEventListener('scroll', () => this.hide(), { passive: true });
     this.initialized = true;
   },
@@ -974,20 +982,20 @@ window.ContextMenu = {
       const id = this.activeTarget.id;
       const note = notes.find(n => n.id === id);
       this.el.innerHTML = `
-        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('edit')"><span>✏️</span> Edit Catatan</div>
-        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('move')"><span>📂</span> Pindahkan Folder</div>
-        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('pin')"><span>📌</span> ${note.pinned ? 'Lepas Pin' : 'Pin Catatan'}</div>
-        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('star')"><span>⭐</span> ${note.isFavorite ? 'Hapus Favorit' : 'Jadikan Favorit'}</div>
+        <div class="context-menu-item" data-action="edit"><span>✏️</span> Edit Catatan</div>
+        <div class="context-menu-item" data-action="move"><span>📂</span> Pindahkan Folder</div>
+        <div class="context-menu-item" data-action="pin"><span>📌</span> ${note.pinned ? 'Lepas Pin' : 'Pin Catatan'}</div>
+        <div class="context-menu-item" data-action="star"><span>⭐</span> ${note.isFavorite ? 'Hapus Favorit' : 'Jadikan Favorit'}</div>
         <div class="context-menu-divider"></div>
-        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('archive')"><span>📦</span> ${note.isArchived ? 'Buka Arsip' : 'Arsipkan'}</div>
-        <div class="context-menu-item" onclick="window.ContextMenu.handleAction('copy')"><span>📋</span> Salin Teks</div>
+        <div class="context-menu-item" data-action="archive"><span>📦</span> ${note.isArchived ? 'Buka Arsip' : 'Arsipkan'}</div>
+        <div class="context-menu-item" data-action="copy"><span>📋</span> Salin Teks</div>
         <div class="context-menu-divider"></div>
-        <div class="context-menu-item danger" onclick="window.ContextMenu.handleAction('delete')"><span>🗑️</span> Hapus</div>
+        <div class="context-menu-item danger" data-action="delete"><span>🗑️</span> Hapus</div>
       `;
     } else if (this.activeType === 'folder') {
        this.el.innerHTML = `
-         <div class="context-menu-item" onclick="window.ContextMenu.handleAction('edit-folder')"><span>✏️</span> Edit Folder</div>
-         <div class="context-menu-item danger" onclick="window.ContextMenu.handleAction('delete-folder')"><span>🗑️</span> Hapus Folder</div>
+         <div class="context-menu-item" data-action="edit-folder"><span>✏️</span> Edit Folder</div>
+         <div class="context-menu-item danger" data-action="delete-folder"><span>🗑️</span> Hapus Folder</div>
        `;
     }
   }
@@ -1003,6 +1011,17 @@ function setupDelegation() {
     const pill = e.target.closest('.folder-pill');
     if (!pill || pill.dataset.id === 'all' || pill.dataset.id === 'archived' || pill.dataset.id === 'trash') return;
     window.ContextMenu.show(e, 'folder', { id: pill.dataset.id });
+  });
+
+  // Delegate Swipe Actions
+  grid.addEventListener('click', (e) => {
+    const swipeBtn = e.target.closest('.swipe-action-btn');
+    if (swipeBtn) {
+      e.stopPropagation();
+      const id = swipeBtn.dataset.id;
+      const action = swipeBtn.dataset.action;
+      window.handleSwipeAction(id, action);
+    }
   });
 
   // Long press for mobile context menu

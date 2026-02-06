@@ -203,9 +203,9 @@
     const day = 24 * hour;
 
     if (diffMs < minute) return 'Baru saja';
-    if (diffMs < hour) return `${Math.floor(diffMs / minute)} menit lalu`;
-    if (diffMs < day) return `${Math.floor(diffMs / hour)} jam lalu`;
-    if (diffMs < 7 * day) return `${Math.floor(diffMs / day)} hari lalu`;
+    if (diffMs < hour) return `${Math.floor(diffMs / minute)} menit yang lalu`;
+    if (diffMs < day) return `${Math.floor(diffMs / hour)} jam yang lalu`;
+    if (diffMs < 7 * day) return `${Math.floor(diffMs / day)} hari yang lalu`;
     return formatTanggal(tglStr);
   }
 
