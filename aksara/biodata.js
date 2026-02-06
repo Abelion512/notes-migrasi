@@ -412,7 +412,19 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 10,
+            cornerRadius: 10,
+            displayColors: false
+          }
+        },
         scales: {
           y: {
             beginAtZero: true,
@@ -428,33 +440,61 @@
     });
   }
 
-  function renderLeaderboard() {
+  async function renderLeaderboard() {
     const el = document.getElementById('leaderboard-list');
     if (!el) return;
 
     const summary = gamification ? gamification.getProfileSummary() : { name: 'You', totalXp: 0 };
+    const notes = await window.AbelionStorage.getNotes();
+
+    // Kualifikasi: Harus punya nama dan minimal 1 catatan
+    const userQualifies = (summary.name && summary.name !== 'Explorer') && notes.length > 0;
 
     // Generate mock competitors based on user XP
     const userXp = summary.totalXp;
-    const competitors = [
-      { name: 'Abelion Lavv', xp: Math.floor(userXp * 1.5) + 500, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion' },
-      { name: 'Sora', xp: Math.floor(userXp * 1.2) + 100, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sora' },
-      { name: summary.name + ' (Anda)', xp: userXp, avatar: summary.photo || '../pustaka/default-avatar.svg', isUser: true },
-      { name: 'Ravi', xp: Math.floor(userXp * 0.8), avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ravi' },
-      { name: 'Luna', xp: Math.floor(userXp * 0.6), avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna' }
-    ].sort((a, b) => b.xp - a.xp);
+    const allCompetitors = [
+      { id: 'dev-1', name: 'Abelion Lavv', xp: Math.floor(userXp * 1.5) + 1200, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion', notesCount: 15 },
+      { id: 'dev-2', name: 'Sora', xp: Math.floor(userXp * 1.2) + 500, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sora', notesCount: 8 },
+      { id: 'dev-3', name: 'Ravi', xp: Math.floor(userXp * 0.8) + 200, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ravi', notesCount: 12 },
+      { id: 'dev-4', name: 'Luna', xp: Math.floor(userXp * 0.6) + 100, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna', notesCount: 5 }
+    ];
 
-    el.innerHTML = competitors.map((c, i) => `
-      <div class="list-item" style="${c.isUser ? 'background: var(--primary-soft);' : ''}">
+    if (userQualifies) {
+      allCompetitors.push({
+        id: 'me',
+        name: summary.name + ' (Anda)',
+        xp: userXp,
+        avatar: summary.photo || '../pustaka/default-avatar.svg',
+        isUser: true,
+        notesCount: notes.length
+      });
+    }
+
+    const sorted = allCompetitors.sort((a, b) => b.xp - a.xp);
+
+    el.innerHTML = sorted.map((c, i) => `
+      <div class="list-item leaderboard-row" data-id="${c.id}" style="${c.isUser ? 'background: var(--primary-soft);' : ''} cursor: pointer;">
         <div style="width: 24px; font-weight: 700; color: var(--text-muted);">${i + 1}</div>
         <img src="${c.avatar}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 12px; background: var(--border-subtle);">
         <div class="list-item-content">
           <div class="list-item-title">${sanitizeText(c.name)}</div>
-          <div class="list-item-subtitle">${formatNumber(c.xp)} XP</div>
+          <div class="list-item-subtitle">${formatNumber(c.xp)} XP • ${c.notesCount} Catatan</div>
         </div>
-        ${i === 0 ? '<div style="font-size: 20px;">👑</div>' : ''}
+        ${i === 0 ? '<div style="font-size: 20px;">👑</div>' : '<span class="list-item-chevron">❯</span>'}
       </div>
     `).join('');
+
+    // Wire clicks
+    el.querySelectorAll('.leaderboard-row').forEach(row => {
+      row.onclick = () => {
+        const id = row.dataset.id;
+        const competitor = sorted.find(c => c.id === id);
+        if (competitor) {
+          sessionStorage.setItem('abelion-view-profile', JSON.stringify(competitor));
+          window.location.href = 'publik.html';
+        }
+      };
+    });
   }
 
   function wireInteractions() {

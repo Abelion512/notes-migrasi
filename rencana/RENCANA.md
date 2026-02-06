@@ -20,10 +20,12 @@
 - [ ] Swipe Actions yang dapat dikustomisasi.
 - [ ] Transisi halaman yang lebih halus.
 
-## Fase 4: Keamanan & Ekosistem (Mendatang)
-- [ ] End-to-End Encryption (E2EE) (Lihat `SINKRONISASI_DAN_KEAMANAN.md`).
-- [ ] Integrasi Manual Supabase & Notion.
-- [ ] Grafik Progres XP & Leaderboard Lokal (Lihat `GAMIFIKASI.md`).
+## Fase 4: Keamanan & Ekosistem (Sedang Berjalan)
+- [ ] Implementasi Halaman Integrasi khusus (Supabase & Notion).
+- [ ] Penguatan Keamanan & Alur E2EE (Lihat `SINKRONISASI_DAN_KEAMANAN.md`).
+- [ ] Sistem Update Otomatis & Notifikasi Versi Baru.
+- [ ] Optimasi UX Grafik XP & Papan Peringkat Lokal.
+- [ ] Profil Publik dengan Animasi 3D & Manajemen Penyimpanan.
 
 ---
 *Dibuat oleh Jules (Agen AI) berdasarkan masukan pengguna.*

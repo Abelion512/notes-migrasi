@@ -1,6 +1,6 @@
 {
   "name": "abelion-notes",
-  "version": "2.0.0",
+  "version": "2.0.7",
   "description": "Modern, gamified note-taking web app with local-first architecture.",
   "main": "index.html",
   "scripts": {

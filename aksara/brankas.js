@@ -73,15 +73,35 @@
     STORAGE_KEYS.PROFILE,
     STORAGE_KEYS.MOODS,
     STORAGE_KEYS.GAMIFICATION,
-    STORAGE_KEYS.VERSION_META
+    STORAGE_KEYS.VERSION_META,
+    STORAGE_KEYS.SUPABASE_CONFIG,
+    STORAGE_KEYS.NOTION_CONFIG
   ].filter(Boolean));
 
   const ready = (async () => {
+    await primeLocalCache();
+
     // Check if Supabase is disabled by user
     const supabaseDisabled = localStorage.getItem('abelion-disable-supabase') === 'true';
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = !!meta.encryption?.enabled;
 
-    // 1. Wait for Supabase Env to load (optional) with Timeout
-    if (!supabaseDisabled && global.AbelionSupabase && global.AbelionSupabase.ready) {
+    if (!supabaseDisabled && global.AbelionSupabase) {
+      if (!encrypted) {
+        // If not encrypted, we can try to get config and init now
+        let config;
+        if (canUseIndexedDB()) {
+           await ensureDatabase();
+           config = await idbGet('kv', STORAGE_KEYS.SUPABASE_CONFIG);
+        }
+        if (!config) config = localRead(STORAGE_KEYS.SUPABASE_CONFIG);
+
+        if (config && config.url && config.key) {
+           global.AbelionSupabase.init(config.url, config.key);
+        }
+      }
+
+      // Wait for Supabase (if it's being initialized)
       try {
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase init timeout')), 2000));
         const client = await Promise.race([global.AbelionSupabase.ready, timeout]);
@@ -95,7 +115,6 @@
       }
     }
 
-    await primeLocalCache();
     if (activeEngine !== ENGINE.SUPABASE && canUseIndexedDB()) {
       activeEngine = ENGINE.INDEXED_DB;
       await ensureDatabase();
@@ -456,6 +475,26 @@
     currentMeta = cacheGet(META_KEY);
     currentMeta.engine = ENGINE.INDEXED_DB;
     currentMeta.lastMigrationAt = new Date().toISOString();
+
+    // Legacy migration for Supabase & Notion keys
+    const oldSupabaseUrl = localStorage.getItem('abelion-supabase-url');
+    const oldSupabaseKey = localStorage.getItem('abelion-supabase-key');
+    if (oldSupabaseUrl && oldSupabaseKey) {
+        const config = { url: oldSupabaseUrl, key: oldSupabaseKey };
+        await setValue(STORAGE_KEYS.SUPABASE_CONFIG, config);
+        localStorage.removeItem('abelion-supabase-url');
+        localStorage.removeItem('abelion-supabase-key');
+    }
+
+    const oldNotionToken = localStorage.getItem('abelion-notion-token');
+    const oldNotionDb = localStorage.getItem('abelion-notion-db');
+    if (oldNotionToken) {
+        const config = { token: oldNotionToken, dbId: oldNotionDb };
+        await setValue(STORAGE_KEYS.NOTION_CONFIG, config);
+        localStorage.removeItem('abelion-notion-token');
+        localStorage.removeItem('abelion-notion-db');
+    }
+
     cacheSet(META_KEY, currentMeta);
     await persistMeta();
   }
@@ -611,6 +650,8 @@
         await idbTransaction('kv', 'readwrite', (store) => {
           store.put(payload, STORAGE_KEYS.NOTES);
         });
+        // Important: Clear plaintext notes store if encryption is enabled
+        await idbTransaction('notes', 'readwrite', (store) => store.clear());
       } else {
         await idbTransaction('notes', 'readwrite', (store) => {
           store.clear();
@@ -649,6 +690,13 @@
     }
     if (!cache.has(STORAGE_KEYS.NOTES)) cacheSet(STORAGE_KEYS.NOTES, []);
     await refreshIndexes();
+
+    // After decrypting, check if we need to init Supabase
+    const supabaseConfig = cacheGet(STORAGE_KEYS.SUPABASE_CONFIG);
+    if (supabaseConfig && supabaseConfig.url && supabaseConfig.key && global.AbelionSupabase) {
+       global.AbelionSupabase.init(supabaseConfig.url, supabaseConfig.key);
+    }
+
     emit('unlock');
     return true;
   }
@@ -863,6 +911,18 @@
         await idbTransaction('kv', 'readwrite', (store) => { store.delete(key); });
       }
     }
+
+    // Clear Cache API
+    if ('caches' in global) {
+        try {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(key => caches.delete(key)));
+            console.log('Service Worker Cache cleared');
+        } catch (e) {
+            console.error('Failed to clear caches', e);
+        }
+    }
+
     const meta = cacheGet(META_KEY);
     meta.lastVacuumAt = new Date().toISOString();
     cacheSet(META_KEY, meta);

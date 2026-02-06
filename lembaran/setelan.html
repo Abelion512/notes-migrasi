@@ -77,8 +77,15 @@
       </div>
     </div>
 
-    <div class="list-header">Sinkronisasi & Cloud</div>
+    <div class="list-header">Koneksi & Integrasi</div>
     <div class="grouped-list">
+      <a href="integrasi.html" class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Layanan Cloud</div>
+          <div class="list-item-subtitle">Supabase, Notion, dan lainnya</div>
+        </div>
+        <span class="list-item-chevron">❯</span>
+      </a>
       <div class="list-item" id="manual-sync-btn" style="cursor: pointer;">
         <div class="list-item-content">
           <div class="list-item-title">Sinkronkan Sekarang</div>
@@ -86,47 +93,21 @@
         </div>
         <div class="list-item-chevron">🔄</div>
       </div>
-      <div class="list-item" style="cursor: default;">
-        <div class="list-item-content">
-          <div class="list-item-title">Supabase Sync</div>
-          <div class="list-item-subtitle">Simpan catatan di Supabase</div>
-        </div>
-        <input type="checkbox" id="supabase-toggle" style="width: 44px; height: 24px; cursor: pointer;" />
-      </div>
     </div>
 
-    <div id="supabase-config-form" style="display: none; margin-bottom: 20px;">
-      <div class="list-header">Konfigurasi Supabase</div>
-      <div class="grouped-list">
-        <div class="list-item">
-          <input type="text" id="supabase-url" class="input-control" placeholder="Supabase URL" style="background: transparent; color: var(--text-primary);" />
-        </div>
-        <div class="list-item">
-          <input type="password" id="supabase-key" class="input-control" placeholder="Anon Key" style="background: transparent; color: var(--text-primary);" />
-        </div>
+    <div class="list-header">Penyimpanan & Performa</div>
+    <div class="section-card" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 14px; font-weight: 600;">Kapasitas Terpakai</span>
+        <span id="storage-usage-label" style="font-size: 13px; color: var(--text-secondary);">Menghitung...</span>
       </div>
-      <div style="padding: 0 4px 20px 4px;">
-        <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; justify-content: center;">Simpan & Hubungkan</button>
+      <div style="height: 6px; background: var(--surface-strong); border-radius: 3px; overflow: hidden; margin-bottom: 12px;">
+        <div id="storage-usage-bar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s ease;"></div>
       </div>
-    </div>
-
-    <div class="list-header">Integrasi Pihak Ketiga</div>
-    <div class="grouped-list">
-      <div class="list-item" id="notion-config-toggle" style="cursor: pointer;">
-        <div class="list-item-content">
-          <div class="list-item-title">Notion</div>
-          <div class="list-item-subtitle" id="notion-status">Belum terhubung</div>
-        </div>
-        <span class="list-item-chevron">❯</span>
-      </div>
-    </div>
-
-    <div id="notion-config-form" style="display: none; padding: 0 0 20px 0;">
-      <div class="section-card">
-        <input type="password" id="notion-token" class="input-control" placeholder="Internal Integration Token" />
-        <input type="text" id="notion-db-id" class="input-control" placeholder="Database ID" style="border-top: 0.5px solid var(--border-subtle);" />
-      </div>
-      <button type="button" class="btn-blue" id="save-notion-config" style="width: 100%; justify-content: center;">Hubungkan Notion</button>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
+        Penyimpanan mencakup database catatan, file aplikasi (cache), dan data sesi. Kapasitas bisa bertambah karena metadata dan log aktivitas untuk mempercepat performa.
+      </p>
+      <button type="button" class="btn-ghost" id="storage-vacuum-btn" style="width: 100%; border: 1px solid var(--border-subtle);">Hapus Cache & Optimasi</button>
     </div>
 
     <div class="list-header">Lainnya</div>
@@ -186,6 +167,7 @@
   <script src="../aksara/perkakas.js"></script>
   <script src="../aksara/brankas.js"></script>
   <script src="../aksara/kunci.js"></script>
+  <script src="../aksara/pembaruan.js"></script>
   <script src="../aksara/setelan.js"></script>
 </body>
 

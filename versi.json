@@ -1,0 +1,14 @@
+{
+  "version": "2026.02.7",
+  "codename": "Integrasi Gemilang",
+  "build": "2026-02-07",
+  "changelog": [
+    "Halaman Integrasi Modular (Supabase & Notion).",
+    "Penyempurnaan E2EE: Kunci API kini tersimpan aman dalam Vault.",
+    "Auto-migration: Pemindahan otomatis kunci lama ke sistem Vault baru.",
+    "Sistem Update Otomatis & Popup Notifikasi Versi.",
+    "Perbaikan UX Grafik XP: Tooltip lebih responsif.",
+    "Manajemen Penyimpanan & Fitur Hapus Cache."
+  ],
+  "needsReload": true
+}

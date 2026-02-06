@@ -8,14 +8,16 @@
   - Data dienkripsi sebelum dikirim ke Supabase/Notion.
   - **Peringatan:** Kunci tidak disimpan di server. Lupa password = Data hilang.
 
-## 2. Integrasi Cloud (Manual Sync)
-**Tujuan:** Sinkronisasi multi-perangkat yang terkontrol.
+## 2. Integrasi Cloud (Manual Sync & Modular)
+**Tujuan:** Sinkronisasi multi-perangkat yang terkontrol dengan antarmuka modular.
+- **Halaman Integrasi Khusus:**
+  - Lokasi: `Settings > Integrations`.
+  - Desain modular menggunakan kartu untuk mempermudah penambahan layanan di masa depan.
 - **Supabase:**
   - Menggunakan tabel `catatan`, `folder`, dan `user_metadata`.
-  - Tombol "Sinkronkan Sekarang" di menu Setelan atau integrasi.
+  - Mengaktifkan Row Level Security (RLS) di sisi server untuk perlindungan database.
 - **Notion:**
   - Pemetaan catatan ke Database Notion melalui Notion API.
-  - Sinkronisasi satu arah atau dua arah (opsional).
 - **Conflict Resolution:**
   - Strategi "Last-Write-Wins" dengan notifikasi jika ada perbedaan signifikan.
 

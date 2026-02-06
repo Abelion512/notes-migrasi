@@ -8,16 +8,18 @@
     NOTE_DRAFTS: 'abelion-note-drafts',
     VERSION_META: 'abelion-version-meta',
     TRASH: 'abelion-trash',
-    CUSTOM_SPECIAL_DAYS: 'abelion-custom-special-days'
+    CUSTOM_SPECIAL_DAYS: 'abelion-custom-special-days',
+    SUPABASE_CONFIG: 'abelion-supabase-config',
+    NOTION_CONFIG: 'abelion-notion-config'
   };
 
   const APP_VERSION_BASE = Object.freeze({
     major: 2026,
     minor: 2,
-    patch: 6,
+    patch: 7,
     channel: 'premium-release',
-    codename: 'Aurora Glass',
-    build: '2026-02-05',
+    codename: 'Integrasi Gemilang',
+    build: '2026-02-07',
     environment: 'production'
   });
 
@@ -26,6 +28,17 @@
   const APP_META = Object.freeze({
     versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
+      {
+        version: '2026.02.7',
+        releasedAt: '2026-02-07',
+        highlights: [
+          'Integrasi Modular: Halaman baru untuk konfigurasi Supabase dan Notion.',
+          'Security Vault: Penyimpanan kunci API yang aman dan terenkripsi.',
+          'Auto-Update Check: Deteksi otomatis versi baru dengan notifikasi popup.',
+          'UX Storage: Analisis penggunaan memori dan fitur hapus cache.',
+          'Grafik XP Proximity: Tooltip grafik tetap muncul meskipun kursor tidak tepat di titik data.',
+        ]
+      },
       {
         version: '2026.02.6',
         releasedAt: '2026-02-06',

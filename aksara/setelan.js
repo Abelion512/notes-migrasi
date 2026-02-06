@@ -128,7 +128,7 @@
   if (syncBtn) {
     syncBtn.onclick = async () => {
       if (Storage.getEngine() !== 'supabase') {
-        alert('Hubungkan ke Supabase terlebih dahulu untuk melakukan sinkronisasi cloud.');
+        alert('Hubungkan ke Supabase di menu Layanan Cloud terlebih dahulu.');
         return;
       }
       syncStatus.textContent = 'Menyinkronkan...';
@@ -143,92 +143,6 @@
       }
     };
   }
-
-  const supabaseToggle = document.getElementById('supabase-toggle');
-  const supabaseConfigForm = document.getElementById('supabase-config-form');
-  const supabaseUrlInput = document.getElementById('supabase-url');
-  const supabaseKeyInput = document.getElementById('supabase-key');
-  const saveSupabaseBtn = document.getElementById('save-supabase-config');
-  const showGuideBtn = document.getElementById('show-supabase-guide');
-  const guideModal = document.getElementById('supabase-guide-modal');
-  const guideClose = document.getElementById('guide-close');
-  const guideOk = document.getElementById('guide-ok');
-
-  if (supabaseToggle) {
-    const disabled = localStorage.getItem('abelion-disable-supabase') === 'true';
-    supabaseToggle.checked = !disabled;
-    if (supabaseToggle.checked) supabaseConfigForm.style.display = 'block';
-
-    supabaseToggle.onchange = (e) => {
-      const isEnabled = e.target.checked;
-      localStorage.setItem('abelion-disable-supabase', (!isEnabled).toString());
-      supabaseConfigForm.style.display = isEnabled ? 'block' : 'none';
-      if (!isEnabled) {
-        alert('Sinkronisasi dinonaktifkan. Catatan hanya disimpan di perangkat ini.');
-      }
-    };
-  }
-
-  // Load existing config
-  if (supabaseUrlInput) supabaseUrlInput.value = localStorage.getItem('abelion-supabase-url') || '';
-  if (supabaseKeyInput) supabaseKeyInput.value = localStorage.getItem('abelion-supabase-key') || '';
-
-  if (saveSupabaseBtn) {
-    saveSupabaseBtn.onclick = () => {
-      const url = supabaseUrlInput.value.trim();
-      const key = supabaseKeyInput.value.trim();
-
-      if (url && !url.startsWith('https://')) {
-        alert('URL harus diawali dengan https://');
-        return;
-      }
-
-      localStorage.setItem('abelion-supabase-url', url);
-      localStorage.setItem('abelion-supabase-key', key);
-      alert('Konfigurasi Supabase disimpan. Silakan muat ulang halaman untuk menghubungkan.');
-      location.reload();
-    };
-  }
-
-  // --- Notion ---
-  const notionToggle = document.getElementById('notion-config-toggle');
-  const notionForm = document.getElementById('notion-config-form');
-  const notionTokenInput = document.getElementById('notion-token');
-  const notionDbInput = document.getElementById('notion-db-id');
-  const saveNotionBtn = document.getElementById('save-notion-config');
-
-  if (notionToggle) {
-    notionToggle.onclick = () => {
-      const isVisible = notionForm.style.display === 'block';
-      notionForm.style.display = isVisible ? 'none' : 'block';
-    };
-  }
-
-  if (notionTokenInput) notionTokenInput.value = localStorage.getItem('abelion-notion-token') || '';
-  if (notionDbInput) notionDbInput.value = localStorage.getItem('abelion-notion-db') || '';
-
-  if (saveNotionBtn) {
-    saveNotionBtn.onclick = () => {
-      localStorage.setItem('abelion-notion-token', notionTokenInput.value.trim());
-      localStorage.setItem('abelion-notion-db', notionDbInput.value.trim());
-      alert('Konfigurasi Notion disimpan. (Integrasi API segera hadir)');
-      notionForm.style.display = 'none';
-      document.getElementById('notion-status').textContent = notionTokenInput.value ? 'Tersambung (Siap)' : 'Belum terhubung';
-    };
-  }
-  if (localStorage.getItem('abelion-notion-token')) {
-    document.getElementById('notion-status').textContent = 'Tersambung (Siap)';
-  }
-
-  if (showGuideBtn && guideModal) {
-    showGuideBtn.onclick = (e) => {
-      e.preventDefault();
-      guideModal.style.display = 'flex';
-    };
-  }
-
-  if (guideClose) guideClose.onclick = () => guideModal.style.display = 'none';
-  if (guideOk) guideOk.onclick = () => guideModal.style.display = 'none';
 
   // --- Export / Import ---
   const exportBtn = document.getElementById('export-btn');

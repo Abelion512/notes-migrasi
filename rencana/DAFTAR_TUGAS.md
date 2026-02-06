@@ -11,13 +11,19 @@
 - [ ] **DOCX Generator:** Implementasi `docx` library untuk ekspor dokumen.
 
 ## 🔐 Keamanan & Integrasi
-- [ ] **E2EE Core:** Modul enkripsi AES-GCM 256 menggunakan Web Crypto API.
-- [ ] **Supabase Sync Module:** Logika push/pull manual dengan penanganan konflik.
-- [ ] **Notion Connector:** Integrasi dasar dengan API Notion.
+- [ ] **Integrations Page:** Pemisahan setelan Supabase & Notion ke halaman khusus yang modular.
+- [ ] **E2EE Core & Audit:** Penguatan alur enkripsi AES-GCM 256 dan audit penyimpanan kunci.
+- [ ] **Supabase/Notion Logic:** Optimasi sinkronisasi dan keamanan token/API key.
 
-## 🏆 Gamifikasi
-- [ ] **XP Chart:** Implementasi Chart.js atau SVG kustom untuk grafik mingguan.
-- [ ] **Leaderboard Logic:** Sistem kalkulasi peringkat berdasarkan XP lokal.
+## 🏆 Gamifikasi & Profil
+- [ ] **XP Chart Proximity:** Tooltip grafik tetap aktif tanpa harus presisi di titik data.
+- [ ] **Enhanced Leaderboard:** Validasi nama & jumlah catatan untuk masuk peringkat.
+- [ ] **3D Public Profile:** Profil dengan animasi 3D (Lottie/Three.js) & fallback low-end.
+
+## 🚀 DevOps & Maintenance
+- [ ] **Update Automation:** Mekanisme deteksi versi baru.
+- [ ] **Update Popup:** UI notifikasi rincian pembaruan & tombol reload.
+- [ ] **Storage Manager:** Analisis kapasitas terpakai dan fitur "Clear Cache".
 
 ---
 *Terakhir diperbarui: 6 Februari 2026*
