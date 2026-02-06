@@ -30,6 +30,9 @@
     dom.avatar = document.getElementById('profile-avatar');
     dom.greeting = document.getElementById('profile-greeting');
     dom.title = document.getElementById('profile-title');
+    dom.titleDisplay = document.getElementById('profile-title-display');
+    dom.nameDisplay = document.getElementById('profile-name-display');
+    dom.levelBadge = document.getElementById('profile-level-badge');
     dom.tier = document.getElementById('profile-tier');
     dom.level = document.getElementById('profile-level');
     dom.totalXp = document.getElementById('profile-total-xp');
@@ -44,6 +47,7 @@
     dom.tierHint = document.getElementById('profile-tier-hint');
     dom.titleHint = document.getElementById('profile-title-hint');
     dom.xpGuide = document.getElementById('xp-guide');
+    dom.xpRulesTrigger = document.getElementById('xp-rules-trigger');
   }
 
   function formatNumber(value) {
@@ -140,28 +144,18 @@
     }
 
     if (dom.greeting) dom.greeting.textContent = greetingMessage(summary.name);
-    if (dom.title) {
-      dom.title.textContent = summary.title || 'Explorer';
-      if (summary.titleHint) {
-        dom.title.title = summary.titleHint;
-        dom.title.setAttribute('aria-label', `${summary.title} – ${summary.titleHint}`);
-      } else {
-        dom.title.removeAttribute('title');
-        dom.title.removeAttribute('aria-label');
-      }
-    }
-    if (dom.tier) {
-      dom.tier.textContent = summary.tier || 'Novice';
-      if (summary.tierHint) {
-        dom.tier.title = summary.tierHint;
-        dom.tier.setAttribute('aria-label', `${summary.tier} – ${summary.tierHint}`);
-      } else {
-        dom.tier.removeAttribute('title');
-        dom.tier.removeAttribute('aria-label');
-      }
-    }
+    if (dom.nameDisplay) dom.nameDisplay.textContent = summary.name || 'Username';
+    if (dom.levelBadge) dom.levelBadge.textContent = `Lv ${summary.level}`;
+
+    const titleValue = summary.title || 'Explorer';
+    if (dom.title) dom.title.textContent = titleValue;
+    if (dom.titleDisplay) dom.titleDisplay.textContent = titleValue;
+
+    const tierValue = summary.tier || 'Novice';
+    if (dom.tier) dom.tier.textContent = tierValue;
+
     if (dom.level) dom.level.textContent = `Level ${summary.level}`;
-    if (dom.totalXp) dom.totalXp.textContent = `Total ${formatNumber(summary.totalXp)} XP`;
+    if (dom.totalXp) dom.totalXp.textContent = `${formatNumber(summary.totalXp)} XP`;
 
     if (dom.tierHint) {
       dom.tierHint.textContent = summary.tierHint || '';
@@ -196,24 +190,40 @@
       }
     }
 
-    if (dom.xpGuide) {
-      dom.xpGuide.onclick = (e) => {
-        e.preventDefault();
-        const modal = document.getElementById('xp-rules-modal');
-        if (modal) {
+    const openXpRules = (e) => {
+      if (e) e.preventDefault();
+      const modal = document.getElementById('xp-rules-modal');
+      if (modal) {
+        if (window.AbelionUtils?.ModalManager) {
+          window.AbelionUtils.ModalManager.open('xp-rules-modal', modal);
+        } else {
           modal.classList.add('show');
-
-          // Close handler
-          const closeBtn = document.getElementById('xp-rules-close');
-          const closeFn = () => modal.classList.remove('show');
-
-          if (closeBtn) closeBtn.onclick = closeFn;
-          modal.onclick = (ev) => {
-            if (ev.target === modal) closeFn();
-          };
         }
-      };
+
+        // Close handler
+        const closeBtn = document.getElementById('xp-rules-close');
+        const closeFn = () => {
+          if (window.AbelionUtils?.ModalManager) {
+            window.AbelionUtils.ModalManager.close('xp-rules-modal');
+          } else {
+            modal.classList.remove('show');
+          }
+        };
+
+        if (closeBtn) closeBtn.onclick = closeFn;
+        modal.onclick = (ev) => {
+          if (ev.target === modal) closeFn();
+        };
+      }
+    };
+
+    if (dom.xpGuide) {
+      dom.xpGuide.onclick = openXpRules;
       dom.xpGuide.style.display = 'inline-block';
+    }
+
+    if (dom.xpRulesTrigger) {
+      dom.xpRulesTrigger.onclick = openXpRules;
     }
 
     renderBadges(summary);
@@ -336,12 +346,34 @@
     const summary = gamification ? gamification.getProfileSummary() : null;
     const notesList = await window.AbelionStorage.getNotes();
 
-    document.getElementById('total-notes-stat').textContent = notesList.length;
-    document.getElementById('streak-stat').textContent = (summary?.stats?.logins || 0) + ' hari';
+    const totalNotesEl = document.getElementById('total-notes-stat');
+    const streakStatEl = document.getElementById('streak-stat');
 
-    // Simulated XP history for the last 7 days
-    const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-    const data = [10, 25, 45, 30, 60, 90, summary?.totalXp || 100].slice(-7);
+    if (totalNotesEl) totalNotesEl.textContent = notesList.length;
+    if (streakStatEl) streakStatEl.textContent = (summary?.stats?.logins || 0) + ' hari';
+
+    // Real XP history processing
+    const history = summary?.xpHistory || [];
+    const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    const today = new Date();
+
+    // Group gains by day for the last 7 days
+    const chartData = [];
+    const chartLabels = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const label = days[d.getDay()];
+
+      const dayXp = history
+        .filter(entry => entry.at.startsWith(dateStr))
+        .reduce((sum, entry) => sum + entry.gained, 0);
+
+      chartData.push(dayXp);
+      chartLabels.push(label);
+    }
 
     // Storage Info
     const usage = await window.AbelionStorage.getUsage();
@@ -351,7 +383,7 @@
     if (usage && usageValEl && usageBarEl) {
        const used = usage.usage || 0;
        const quota = usage.quota || 1;
-       const pct = Math.min(100, (used / quota) * 100);
+       const pct = Math.max(1, Math.min(100, (used / quota) * 100));
 
        const units = ['B', 'KB', 'MB', 'GB'];
        let size = used, unitIdx = 0;
@@ -364,25 +396,104 @@
     new Chart(canvas, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: chartLabels,
         datasets: [{
-          label: 'XP',
-          data: data,
+          label: 'XP Harian',
+          data: chartData,
           borderColor: '#007AFF',
           backgroundColor: 'rgba(0, 122, 255, 0.1)',
           borderWidth: 3,
           tension: 0.4,
-          fill: true
+          fill: true,
+          pointBackgroundColor: '#007AFF',
+          pointRadius: 4
         }]
       },
       options: {
         responsive: true,
-        plugins: { legend: { display: false } },
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 10,
+            cornerRadius: 10,
+            displayColors: false
+          }
+        },
         scales: {
-          y: { beginAtZero: true, grid: { display: false } },
-          x: { grid: { display: false } }
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(200, 200, 200, 0.1)' },
+            ticks: { font: { size: 10 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 } }
+          }
         }
       }
+    });
+  }
+
+  async function renderLeaderboard() {
+    const el = document.getElementById('leaderboard-list');
+    if (!el) return;
+
+    const summary = gamification ? gamification.getProfileSummary() : { name: 'You', totalXp: 0 };
+    const notes = await window.AbelionStorage.getNotes();
+
+    // Kualifikasi: Harus punya nama dan minimal 1 catatan
+    const userQualifies = (summary.name && summary.name !== 'Explorer') && notes.length > 0;
+
+    // Generate mock competitors based on user XP
+    const userXp = summary.totalXp;
+    const allCompetitors = [
+      { id: 'dev-1', name: 'Abelion Lavv', xp: Math.floor(userXp * 1.5) + 1200, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion', notesCount: 15 },
+      { id: 'dev-2', name: 'Sora', xp: Math.floor(userXp * 1.2) + 500, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sora', notesCount: 8 },
+      { id: 'dev-3', name: 'Ravi', xp: Math.floor(userXp * 0.8) + 200, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ravi', notesCount: 12 },
+      { id: 'dev-4', name: 'Luna', xp: Math.floor(userXp * 0.6) + 100, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna', notesCount: 5 }
+    ];
+
+    if (userQualifies) {
+      allCompetitors.push({
+        id: 'me',
+        name: summary.name + ' (Anda)',
+        xp: userXp,
+        avatar: summary.photo || '../pustaka/default-avatar.svg',
+        isUser: true,
+        notesCount: notes.length
+      });
+    }
+
+    const sorted = allCompetitors.sort((a, b) => b.xp - a.xp);
+
+    el.innerHTML = sorted.map((c, i) => `
+      <div class="list-item leaderboard-row" data-id="${c.id}" style="${c.isUser ? 'background: var(--primary-soft);' : ''} cursor: pointer;">
+        <div style="width: 24px; font-weight: 700; color: var(--text-muted);">${i + 1}</div>
+        <img src="${c.avatar}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 12px; background: var(--border-subtle);">
+        <div class="list-item-content">
+          <div class="list-item-title">${sanitizeText(c.name)}</div>
+          <div class="list-item-subtitle">${formatNumber(c.xp)} XP • ${c.notesCount} Catatan</div>
+        </div>
+        ${i === 0 ? '<div style="font-size: 20px;">👑</div>' : '<span class="list-item-chevron">❯</span>'}
+      </div>
+    `).join('');
+
+    // Wire clicks
+    el.querySelectorAll('.leaderboard-row').forEach(row => {
+      row.onclick = () => {
+        const id = row.dataset.id;
+        const competitor = sorted.find(c => c.id === id);
+        if (competitor) {
+          sessionStorage.setItem('abelion-view-profile', JSON.stringify(competitor));
+          window.location.href = 'publik.html';
+        }
+      };
     });
   }
 
@@ -424,6 +535,11 @@
     renderVersion();
     applyProfile();
     wireInteractions();
-    await renderProductivityCharts();
+    renderLeaderboard();
+    try {
+      await renderProductivityCharts();
+    } catch (err) {
+      console.error('Chart failed', err);
+    }
   });
 })();

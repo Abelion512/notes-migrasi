@@ -21,7 +21,7 @@
   }
 
   // Initial load
-  const savedTheme = localStorage.getItem(THEME_KEY) || 'auto';
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
   const savedAccent = localStorage.getItem(ACCENT_KEY);
 
   applyTheme(savedTheme);
@@ -38,7 +38,7 @@
   window.AbelionTheme = {
     applyTheme,
     applyAccent,
-    getTheme: () => localStorage.getItem(THEME_KEY) || 'auto',
+    getTheme: () => localStorage.getItem(THEME_KEY) || 'light',
     getAccent: () => localStorage.getItem(ACCENT_KEY) || '#007AFF'
   };
 })();

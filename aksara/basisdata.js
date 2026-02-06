@@ -28,11 +28,13 @@
             });
         },
 
-        async setNotes(notes) {
+        async setNotes(notes, options = {}) {
             const client = getClient();
             if (!client) throw new Error('Supabase client not ready');
 
-            // 1. Upsert current notes
+            const isDelta = options.delta === true;
+
+            // 1. Upsert notes
             const rows = notes.map(note => ({
                 id: note.id,
                 updated_at: note.updatedAt || new Date().toISOString(),
@@ -46,24 +48,29 @@
                 if (upsertError) throw upsertError;
             }
 
-            // 2. Delete notes not in the input list
-            const validIds = notes.map(n => n.id);
-
-            // If we have valid IDs, delete everything else
-            if (validIds.length > 0) {
-                const { error: deleteError } = await client
-                    .from(TABLE_NOTES)
-                    .delete()
-                    .not('id', 'in', `(${validIds.map(id => `"${id}"`).join(',')})`);
-                
-                if (deleteError) throw deleteError;
-            } else {
-                 // If input list is empty, delete all notes
-                 const { error: deleteAll } = await client.from(TABLE_NOTES).delete().neq('id', '00000000-0000-0000-0000-000000000000'); 
-                 if (deleteAll) throw deleteAll;
+            // 2. Delete notes (only if not a delta update)
+            if (!isDelta) {
+                const validIds = notes.map(n => n.id);
+                if (validIds.length > 0) {
+                    const { error: deleteError } = await client
+                        .from(TABLE_NOTES)
+                        .delete()
+                        .not('id', 'in', `(${validIds.map(id => `"${id}"`).join(',')})`);
+                    if (deleteError) throw deleteError;
+                } else {
+                    const { error: deleteAll } = await client.from(TABLE_NOTES).delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                    if (deleteAll) throw deleteAll;
+                }
             }
 
             return true;
+        },
+
+        async deleteNote(id) {
+            const client = getClient();
+            if (!client) return false;
+            const { error } = await client.from(TABLE_NOTES).delete().eq('id', id);
+            return !error;
         },
 
         async getValue(key) {

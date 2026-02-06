@@ -3,317 +3,156 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
   <title>Pengaturan – Abelion Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../gaya/gayanya.css" />
-  <link rel="manifest" href="../izin.json" />
 </head>
 
 <body class="page-shell">
-  <main class="panel">
-    <header class="panel-header">
-      <button type="button" class="ghost-btn" id="settings-back">← Kembali</button>
-      <button type="button" class="ghost-btn" id="settings-version">ℹ️ Version info</button>
+  <div class="main-content">
+    <header class="secondary-header">
+      <a href="../index.html" class="back-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Catatan
+      </a>
+      <h1 class="animated">Setelan</h1>
+      <p class="subtitle">Preferensi aplikasi dan keamanan data.</p>
     </header>
 
-    <h1 class="panel-title">⚙️ Settings</h1>
-    <p class="panel-subtitle">Atur preferensi tampilan, navigasi, dan sistem Abelion Notes.</p>
-
-    <section class="panel-section">
-      <h2>Tampilan &amp; Bahasa</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Mode Tema</h3>
-          <select id="theme-select" class="input-control">
-            <option value="auto">Otomatis (Sistem)</option>
-            <option value="light">Terang</option>
-            <option value="dark">Gelap</option>
-          </select>
+    <div class="list-header">Tampilan</div>
+    <div class="grouped-list">
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Mode Tema</div>
+          <div class="list-item-subtitle">Sesuaikan suasana mata</div>
         </div>
-        <div class="settings-section">
-          <h3>Warna Aksen</h3>
-          <div id="accent-picker" style="display: flex; gap: 8px; margin-top: 8px;">
-            <button class="accent-dot" data-color="#007AFF" style="background: #007AFF; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
-            <button class="accent-dot" data-color="#34C759" style="background: #34C759; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
-            <button class="accent-dot" data-color="#AF52DE" style="background: #AF52DE; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
-            <button class="accent-dot" data-color="#FF9500" style="background: #FF9500; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
-            <button class="accent-dot" data-color="#FF3B30" style="background: #FF3B30; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; cursor: pointer;"></button>
-          </div>
+        <select id="theme-select" class="ghost-btn" style="text-align: right; appearance: none; -webkit-appearance: none;">
+          <option value="light">Terang</option>
+          <option value="dark">Gelap</option>
+          <option value="auto">Sistem</option>
+        </select>
+      </div>
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Warna Aksen</div>
         </div>
-        <div class="settings-section">
-          <h3>Typography</h3>
-          <ul class="settings-items">
-            <li>Font Catatan</li>
-            <li>Ukuran Font</li>
-            <li>Bahasa Antarmuka</li>
-          </ul>
+        <div id="accent-picker" style="display: flex; gap: 8px;">
+          <button class="accent-dot" data-color="#007AFF" style="background: #007AFF; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid white; cursor: pointer;"></button>
+          <button class="accent-dot" data-color="#34C759" style="background: #34C759; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid white; cursor: pointer;"></button>
+          <button class="accent-dot" data-color="#AF52DE" style="background: #AF52DE; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid white; cursor: pointer;"></button>
+          <button class="accent-dot" data-color="#FF9500" style="background: #FF9500; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid white; cursor: pointer;"></button>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="panel-section">
-      <h2>Catatan &amp; Navigasi</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Preferensi</h3>
-          <ul class="settings-items">
-            <li>Tampilan Default: Grid / List</li>
-            <li>Auto Save: Aktif / Nonaktif</li>
-            <li>Shortcut Tombol (jika tersedia)</li>
-          </ul>
-        </div>
-        <div class="settings-section">
-          <h3>Produktivitas</h3>
-          <ul class="settings-items">
-            <li>Reminder menulis: Jam &amp; frekuensi</li>
-          </ul>
+    <div class="list-header">Ekspor Data</div>
+    <div class="section-card" style="padding: 16px;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Simpan salinan catatan Anda secara mandiri.</p>
+      <div style="display: flex; gap: 8px; flex-direction: column;">
+        <select id="export-format" class="input-control" style="background: var(--surface-strong); border-radius: 10px; color: var(--text-primary);">
+          <option value="json">JSON (Lengkap)</option>
+          <option value="md">Markdown (ZIP)</option>
+          <option value="txt">Plain Text (ZIP)</option>
+          <option value="pdf">PDF Document</option>
+        </select>
+        <button type="button" class="btn-blue" id="export-btn" style="width: 100%;">Ekspor Sekarang</button>
+      </div>
+    </div>
+
+    <div class="list-header">Keamanan & Enkripsi</div>
+    <div class="grouped-list">
+      <div class="list-item" id="encryption-status-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Status Enkripsi</div>
+          <div class="list-item-subtitle" id="encryption-status">Memeriksa...</div>
         </div>
       </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Privasi &amp; Data</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Kontrol Data</h3>
-          <p class="settings-items">Simpan catatan Anda secara mandiri.</p>
-          <div class="settings-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <select id="export-format" class="input-control" style="width: auto;">
-              <option value="json">JSON</option>
-              <option value="md">Markdown (ZIP)</option>
-              <option value="txt">Plain Text (ZIP)</option>
-              <option value="md-single">Markdown (Single File)</option>
-              <option value="txt-single">Plain Text (Single File)</option>
-              <option value="pdf">PDF</option>
-              <option value="xlsx">Excel</option>
-              <option value="docx">Word (.docx)</option>
-              <option value="png">Image (PNG)</option>
-            </select>
-            <button type="button" class="btn-blue" id="export-btn">Export</button>
-            <label class="ghost-btn" style="cursor: pointer;">
-              Import (JSON/MD)
-              <input type="file" id="import-json-input" accept=".json,.md,.txt" hidden />
-            </label>
-          </div>
-        </div>
-        <div class="settings-section">
-          <h3>Keamanan</h3>
-          <ul class="settings-items">
-            <li>Reset Semua Data</li>
-            <li>Hapus Akun</li>
-          </ul>
+      <div class="list-item" id="secure-logout-btn">
+        <div class="list-item-content">
+          <div class="list-item-title" style="color: var(--danger);">Kunci Vault</div>
+          <div class="list-item-subtitle">Kunci aplikasi sekarang</div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="panel-section">
-      <h2>Enkripsi &amp; Kunci</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Lapisan Enkripsi</h3>
-          <p id="encryption-status" class="settings-items">Memeriksa status...</p>
-          <form id="passphrase-form" class="settings-form">
-            <label for="passphrase-input">Passphrase baru</label>
-            <input id="passphrase-input" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter"
-              required />
-            <label for="passphrase-confirm">Konfirmasi passphrase</label>
-            <input id="passphrase-confirm" type="password" autocomplete="new-password" placeholder="Ulangi passphrase"
-              required />
-            <p class="settings-hint" id="passphrase-hint">Kata kunci tidak disimpan di server mana pun.</p>
-            <button type="submit" class="btn-blue">Aktifkan / Perbarui Enkripsi</button>
-          </form>
+    <div class="list-header">Koneksi & Integrasi</div>
+    <div class="grouped-list">
+      <a href="integrasi.html" class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Layanan Cloud</div>
+          <div class="list-item-subtitle">Supabase, Notion, dan lainnya</div>
         </div>
-        <div class="settings-section">
-          <h3>Kontrol Akses</h3>
-          <p class="settings-items">Kunci layar akan muncul saat memuat bila enkripsi aktif.</p>
-          <button type="button" class="ghost-btn" id="secure-logout-btn">🔒 Kunci &amp; Keluar</button>
+        <span class="list-item-chevron">❯</span>
+      </a>
+      <div class="list-item" id="manual-sync-btn" style="cursor: pointer;">
+        <div class="list-item-content">
+          <div class="list-item-title">Sinkronkan Sekarang</div>
+          <div class="list-item-subtitle" id="sync-status">Ketuk untuk kirim data ke Cloud</div>
         </div>
-        <div class="settings-section">
-          <h3>Cloud Sync (Supabase)</h3>
-          <p class="settings-items">Gunakan cloud untuk sinkronisasi antar perangkat (Opsional).</p>
-
-          <div id="supabase-config-form" style="margin-top: 12px; display: none;">
-            <label for="supabase-url">Supabase URL</label>
-            <input type="text" id="supabase-url" placeholder="https://xyz.supabase.co" style="width: 100%; margin-bottom: 8px;" />
-
-            <label for="supabase-key">Supabase Anon Key</label>
-            <input type="password" id="supabase-key" placeholder="eyJhbGciOiJIUzI1..." style="width: 100%; margin-bottom: 8px;" />
-
-            <button type="button" class="btn-blue" id="save-supabase-config" style="width: 100%; margin-bottom: 12px;">Simpan Konfigurasi</button>
-
-            <div style="background: rgba(0,0,0,0.05); padding: 12px; border-radius: 8px; font-size: 0.85em;">
-              <strong>Bantuan:</strong> Belum punya key?
-              <a href="#" id="show-supabase-guide" style="color: var(--accent-color);">Lihat Panduan</a>
-            </div>
-          </div>
-
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 12px;">
-            <input type="checkbox" id="supabase-toggle" style="width: auto;" />
-            <span>Aktifkan Sinkronisasi Supabase</span>
-          </label>
-          <small id="supabase-status-hint">Mencatat hanya di perangkat ini bila dinonaktifkan.</small>
-        </div>
+        <div class="list-item-chevron">🔄</div>
       </div>
-    </section>
+    </div>
 
-    <section class="panel-section">
-      <h2>Penyimpanan &amp; Privasi</h2>
-      <div class="section-card">
-        <h3 style="margin-bottom: 12px; font-weight: 800;">Bagaimana data saya disimpan?</h3>
-        <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 16px;">
-          Abelion Notes menggunakan teknologi <strong>IndexedDB</strong>, yaitu basis data di dalam browser Anda yang mampu menampung data dalam jumlah besar (hingga gigabytes). Berbeda dengan LocalStorage yang terbatas (hanya 5MB), IndexedDB memungkinkan Anda menyimpan ribuan catatan tanpa khawatir penuh.
-        </p>
-        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem;">
-          <li style="display: flex; gap: 10px; align-items: flex-start;">
-            <span>🛡️</span>
-            <div><strong>Privasi Lokal:</strong> Data Anda tidak dikirim ke server mana pun kecuali Anda mengaktifkan Supabase secara manual.</div>
-          </li>
-          <li style="display: flex; gap: 10px; align-items: flex-start;">
-            <span>🔑</span>
-            <div><strong>Enkripsi AES-GCM:</strong> Jika enkripsi diaktifkan, data Anda dikunci dengan standar industri sebelum ditulis ke memori perangkat.</div>
-          </li>
-          <li style="display: flex; gap: 10px; align-items: flex-start;">
-            <span>📶</span>
-            <div><strong>Offline First:</strong> Aplikasi tetap berfungsi penuh meski tanpa koneksi internet.</div>
-          </li>
-        </ul>
+    <div class="list-header">Penyimpanan & Performa</div>
+    <div class="section-card" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 14px; font-weight: 600;">Kapasitas Terpakai</span>
+        <span id="storage-usage-label" style="font-size: 13px; color: var(--text-secondary);">Menghitung...</span>
       </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Storage Health</h2>
-      <div class="section-card storage-health">
-        <div class="storage-health-grid">
-          <div>
-            <div class="storage-health-label">Active Engine</div>
-            <div class="storage-health-value" id="storage-engine-label">—</div>
-          </div>
-          <div>
-            <div class="storage-health-label">Schema</div>
-            <div class="storage-health-value" id="storage-schema-label">—</div>
-          </div>
-          <div>
-            <div class="storage-health-label">Usage</div>
-            <div class="storage-health-value" id="storage-usage-label">—</div>
-          </div>
-        </div>
-        <div class="storage-health-actions">
-          <button type="button" class="ghost-btn" id="storage-refresh-btn">↻ Refresh</button>
-          <button type="button" class="btn-blue" id="storage-vacuum-btn">Vacuum / Cleanup</button>
-        </div>
-        <div class="storage-health-footnote" id="storage-footnote">Rebuild indexes and purge drafts/cache/logs to keep
-          things light.</div>
+      <div style="height: 6px; background: var(--surface-strong); border-radius: 3px; overflow: hidden; margin-bottom: 12px;">
+        <div id="storage-usage-bar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s ease;"></div>
       </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Notifikasi</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Preferensi Notif</h3>
-          <ul class="settings-items">
-            <li>Notif motivasi harian</li>
-            <li>Notif pengingat menulis</li>
-            <li>Push / Email notifikasi</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Pusat Developer (Menuju Native)</h2>
-      <div class="section-card">
-        <h3 style="margin-bottom: 12px; font-weight: 800;">Ingin menjadikan aplikasi ini Native?</h3>
-        <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 16px;">
-          Stack teknologi saat ini (HTML/CSS/JS) sudah sangat optimal untuk gaya iOS. Anda tidak perlu mengubah bahasa pemrograman untuk masuk ke App Store.
-        </p>
-        <div style="background: var(--surface-alt); padding: 12px; border-radius: 12px; font-size: 0.85em; border: 1px solid var(--border-subtle);">
-          <strong>Rekomendasi:</strong> Gunakan <strong>Capacitor</strong> (oleh Ionic) atau <strong>Tauri</strong>.
-          <ul style="margin-top: 8px; padding-left: 18px;">
-            <li>Pertahankan 100% kode saat ini.</li>
-            <li>Akses fitur native (Kamera, Biometrik, Push Notif).</li>
-            <li>Build langsung menjadi file .ipa (iOS) atau .apk (Android).</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel-section">
-      <h2>Aplikasi & Mobile</h2>
-      <div class="section-card settings-grid">
-        <div class="settings-section">
-          <h3>Versi Mobile (APK)</h3>
-          <p class="settings-items">Gunakan fitur "Tambah ke Layar Utama" di browser Anda untuk menginstal Abelion sebagai aplikasi (PWA). Ini memberikan pengalaman yang sama dengan APK.</p>
-          <button type="button" class="btn-blue" id="install-pwa-btn" style="display: none; width: 100%; margin-top: 10px;">Instal Aplikasi</button>
-        </div>
-        <div class="settings-section">
-          <h3>Informasi</h3>
-          <ul class="settings-items">
-            <li><span>Versi App</span> <strong id="settings-version-label">—</strong></li>
-            <li><span>Developer</span> <strong>Abelion Lavv</strong></li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
-  </main>
-
-
-
-  <!-- Supabase Guide Modal -->
-  <div id="supabase-guide-modal" class="about-modal" style="display: none;">
-    <div class="about-modal-content" style="max-width: 500px; text-align: left;">
-      <button class="about-close" id="guide-close">&times;</button>
-      <h3 style="margin-bottom: 16px;">Cara Mendapatkan API Key Supabase</h3>
-      <ol style="padding-left: 20px; line-height: 1.6;">
-        <li>Buat akun di <a href="https://supabase.com" target="_blank">supabase.com</a>.</li>
-        <li>Buat Project baru (pilih nama dan password bebas).</li>
-        <li>Tunggu project selesai dibuat (1-2 menit).</li>
-        <li>Buka menu <strong>Project Settings</strong> (ikon gerigi) > <strong>API</strong>.</li>
-        <li>Salin <strong>Project URL</strong> dan masukkan ke kotak URL di atas.</li>
-        <li>Salin <strong>anon public</strong> key dan masukkan ke kotak Anon Key di atas.</li>
-        <li>Jalankan SQL Schema di menu <strong>SQL Editor</strong> jika sinkronisasi tidak berjalan (hubungi bantuan untuk script SQL).</li>
-      </ol>
-      <p style="margin-top: 16px; font-size: 0.9em; color: var(--text-secondary);">
-        *Data Anda aman. API Key disimpan secara lokal di browser Anda.
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
+        Penyimpanan mencakup database catatan, file aplikasi (cache), dan data sesi. Kapasitas bisa bertambah karena metadata dan log aktivitas untuk mempercepat performa.
       </p>
-      <button class="btn-blue" id="guide-ok" style="width: 100%; margin-top: 20px;">Mengerti</button>
+      <button type="button" class="btn-ghost" id="storage-vacuum-btn" style="width: 100%;">Optimalkan Penyimpanan</button>
+      <button type="button" class="btn-ghost" id="factory-reset-btn" style="width: 100%; margin-top: 12px; color: var(--danger); border-color: rgba(255, 59, 48, 0.3);">Hapus Semua Data</button>
+    </div>
+
+    <div class="list-header">Tentang</div>
+    <div class="grouped-list">
+      <a href="riwayat.html" class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Versi & Changelog</div>
+        </div>
+        <span class="list-item-chevron">❯</span>
+      </a>
+    </div>
+
+    <div style="text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 13px;">
+      <p>Abelion Notes v<span id="settings-version-label"></span></p>
+      <p>Didesain untuk iOS & Web</p>
     </div>
   </div>
 
-  <nav class="bottom-nav" aria-label="Navigasi utama">
-    <div class="bottom-nav-shell">
-      <a class="nav-button" href="../index.html" aria-label="Beranda">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </span>
-        <span class="nav-label">Beranda</span>
-      </a>
-      <a class="nav-button" href="biodata.html" aria-label="Profil">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        </span>
-        <span class="nav-label">Profil</span>
-      </a>
-      <a class="nav-button active" href="setelan.html" aria-label="Pengaturan">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </span>
-        <span class="nav-label">Pengaturan</span>
-      </a>
-      <a class="nav-button" href="riwayat.html" aria-label="Versi">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </span>
-        <span class="nav-label">Versi</span>
-      </a>
-    </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a class="nav-button" href="../index.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      </span>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a class="nav-button nav-add-btn" href="../index.html?action=new">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </span>
+      <span class="nav-label">Tambah</span>
+    </a>
+    <a class="nav-button" href="biodata.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </span>
+      <span class="nav-label">Profil</span>
+    </a>
+    <a class="nav-button active" href="setelan.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </span>
+      <span class="nav-label">Setelan</span>
+    </a>
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -329,6 +168,7 @@
   <script src="../aksara/perkakas.js"></script>
   <script src="../aksara/brankas.js"></script>
   <script src="../aksara/kunci.js"></script>
+  <script src="../aksara/pembaruan.js"></script>
   <script src="../aksara/setelan.js"></script>
 </body>
 

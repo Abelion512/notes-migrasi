@@ -89,20 +89,24 @@ async function loadFolders() {
   renderFolders();
 }
 
+function prepareNoteForSearch(note) {
+  return {
+    ...note,
+    _searchText: [
+      note.title || '',
+      note.contentMarkdown || (note.content || '').replace(/<[^>]+>/g, ''),
+      note.label || ''
+    ].join(' ').toLowerCase()
+  };
+}
+
 async function loadNotes() {
   try {
     const storedNotes = await Storage.getNotes({ sortByUpdatedAt: false });
     // Sort by sortOrder if available
     const sortedNotes = storedNotes.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
-    notes = sortedNotes.map(note => ({
-      ...note,
-      _searchText: [
-        note.title || '',
-        note.contentMarkdown || (note.content || '').replace(/<[^>]+>/g, ''),
-        note.label || ''
-      ].join(' ').toLowerCase()
-    }));
+    notes = sortedNotes.map(prepareNoteForSearch);
     notesLoaded = true;
     return notes;
   } catch (error) {
@@ -153,14 +157,6 @@ function showXPToast({ xp, message, streak, bonus }) {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 300);
   }, 3500);
-}
-
-if (Gamification) {
-  Gamification.trackDailyLogin().then(res => {
-    if (res && res.xp > 0) {
-      showXPToast({ xp: res.xp, message: 'Login harian', streak: res.streak, bonus: res.bonus });
-    }
-  }).catch(console.error);
 }
 
 async function persistNotes() {
@@ -263,6 +259,12 @@ let filterByTag = '';
 let activeFolderId = 'all';
 let activeNoteId = null;
 
+let isSelectionMode = false;
+let selectedNoteIds = new Set();
+
+let notesRenderLimit = 20;
+let currentNotesBatch = [];
+
 function renderFolders() {
   const el = document.getElementById('folder-list');
   if (!el) return;
@@ -270,13 +272,34 @@ function renderFolders() {
   const allActive = activeFolderId === 'all' ? ' active' : '';
   let html = `<div class="folder-pill${allActive}" data-id="all">Semua</div>`;
 
+  // Build hierarchy
+  const folderMap = {};
+  folders.forEach(f => { folderMap[f.id] = { ...f, children: [] }; });
+  const roots = [];
   folders.forEach(f => {
+    if (f.parentId && folderMap[f.parentId]) {
+      folderMap[f.parentId].children.push(folderMap[f.id]);
+    } else {
+      roots.push(folderMap[f.id]);
+    }
+  });
+
+  function renderFolderItem(f, level = 0) {
     const active = activeFolderId === f.id ? ' active' : '';
-    html += `
-      <div class="folder-pill${active}" data-id="${f.id}">
-        ${f.icon || '📁'} ${f.name}
+    const indent = level > 0 ? `<span style="opacity: 0.5; margin-right: 4px;">${'↳'.repeat(level)}</span>` : '';
+    let itemHtml = `
+      <div class="folder-pill${active}" data-id="${f.id}" style="margin-left: ${level * 8}px">
+        ${indent}${sanitizeText(f.icon || '📁')} ${sanitizeText(f.name)}
       </div>
     `;
+    f.children.forEach(child => {
+      itemHtml += renderFolderItem(child, level + 1);
+    });
+    return itemHtml;
+  }
+
+  roots.forEach(root => {
+    html += renderFolderItem(root);
   });
 
   const archivedActive = activeFolderId === 'archived' ? ' active' : '';
@@ -297,13 +320,45 @@ function renderFolders() {
 }
 
 function addFolder() {
+  openFolderModal();
+}
+
+function editFolder(folderId) {
+  const folder = folders.find(f => f.id === folderId);
+  if (folder) openFolderModal(folder);
+}
+
+function openFolderModal(existingFolder = null) {
   const modal = document.getElementById('folder-modal');
   if (!modal) return;
 
-  const closeBtn = document.getElementById('folder-modal-close');
+  const titleEl = document.getElementById('folder-modal-title');
+  const idInput = document.getElementById('folder-id-input');
   const nameInput = document.getElementById('folder-name-input');
   const iconInput = document.getElementById('folder-icon-input');
+  const parentSelect = document.getElementById('folder-parent-input');
   const saveBtn = document.getElementById('save-folder-btn');
+  const closeBtn = document.getElementById('folder-modal-close');
+
+  titleEl.textContent = existingFolder ? 'Edit Folder' : 'Folder Baru';
+  idInput.value = existingFolder ? existingFolder.id : '';
+  nameInput.value = existingFolder ? existingFolder.name : '';
+  iconInput.value = existingFolder ? existingFolder.icon : '';
+
+  // Populate parent select
+  if (parentSelect) {
+    parentSelect.innerHTML = '<option value="">(Jadikan Folder Utama)</option>';
+    folders.forEach(f => {
+      // Prevent selecting itself or its children as parent (basic check: itself)
+      if (existingFolder && f.id === existingFolder.id) return;
+
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = f.name;
+      parentSelect.appendChild(opt);
+    });
+    parentSelect.value = existingFolder ? (existingFolder.parentId || '') : '';
+  }
 
   const hide = () => {
     if (ModalManager) ModalManager.close('folder-modal');
@@ -314,20 +369,28 @@ function addFolder() {
     const name = nameInput.value.trim();
     if (!name) return;
 
-    const newFolder = {
-      id: generateId('folder'),
-      name,
-      icon: iconInput.value.trim() || '📁',
-      createdAt: new Date().toISOString()
-    };
+    const parentId = parentSelect ? parentSelect.value || null : null;
+    const iso = new Date().toISOString();
 
-    folders.push(newFolder);
+    if (existingFolder) {
+      existingFolder.name = name;
+      existingFolder.icon = iconInput.value.trim() || '📁';
+      existingFolder.parentId = parentId;
+      existingFolder.updatedAt = iso;
+    } else {
+      const newFolder = {
+        id: generateId('folder'),
+        name,
+        icon: iconInput.value.trim() || '📁',
+        parentId,
+        createdAt: iso
+      };
+      folders.push(newFolder);
+    }
+
     await Storage.setFolders(folders);
     renderFolders();
     hide();
-
-    nameInput.value = '';
-    iconInput.value = '';
   };
 
   closeBtn.onclick = hide;
@@ -336,14 +399,9 @@ function addFolder() {
 }
 
 function renderSearchBar() {
-  let searchDiv = document.getElementById('search-bar');
-  if (!searchDiv) {
-    searchDiv = document.createElement('div');
-    searchDiv.id = 'search-bar';
-    searchDiv.innerHTML = `<input id="search-input" class="search-input" type="text" placeholder="Cari catatan..." autocomplete="off"/>`;
-    const grid = document.getElementById('notes-grid');
-    grid.parentNode.insertBefore(searchDiv, grid);
-    document.getElementById('search-input').addEventListener('input', debounce(function() {
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce(function() {
       searchQuery = sanitizeText(this.value).toLowerCase();
       renderNotes();
     }, 250));
@@ -353,94 +411,273 @@ function renderSearchBar() {
 function showSkeletons() {
   const grid = document.getElementById("notes-grid");
   if (!grid) return;
-  grid.innerHTML = Array(3).fill(0).map(() => `
-    <div class="note-card skeleton" style="height: 160px;">
-      <div class="skeleton-title" style="margin-top: 10px;"></div>
-      <div class="skeleton-text"></div>
-      <div class="skeleton-text" style="width: 80%;"></div>
+  grid.innerHTML = Array(5).fill(0).map(() => `
+    <div class="list-item">
+      <div class="list-item-content">
+        <div class="skeleton" style="height: 17px; width: 60%; margin-bottom: 8px;"></div>
+        <div class="skeleton" style="height: 15px; width: 90%;"></div>
+      </div>
     </div>
   `).join('');
 }
 
-async function renderNotes() {
+window.handleSwipeAction = async (id, action) => {
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+
+  if (action === 'pin') {
+    note.pinned = !note.pinned;
+    await persistNotes();
+  } else if (action === 'archive') {
+    note.isArchived = !note.isArchived;
+    await persistNotes();
+  } else if (action === 'delete') {
+    if (confirm(`Pindahkan "${note.title}" ke sampah?`)) {
+      await Storage.moveToTrash(id);
+      notes = notes.filter(n => n.id !== id);
+    }
+  }
+  renderNotes();
+};
+
+let swipeActiveItem = null;
+
+function initSwipeLogic() {
   const grid = document.getElementById("notes-grid");
+  if (!grid) return;
+
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let isSwiping = false;
+  let activeItem = null;
+  let initialTranslateX = 0;
+
+  grid.addEventListener('touchstart', (e) => {
+    const item = e.target.closest('.list-item');
+    if (!item || isSelectionMode) return;
+
+    // If another item is open, close it
+    if (swipeActiveItem && swipeActiveItem !== item) {
+      swipeActiveItem.style.transform = '';
+      swipeActiveItem = null;
+    }
+
+    activeItem = item;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+
+    // Get current transform if any
+    const style = window.getComputedStyle(activeItem);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    initialTranslateX = matrix.m41;
+
+    activeItem.classList.add('swiping');
+    isSwiping = false;
+  }, { passive: true });
+
+  grid.addEventListener('touchmove', (e) => {
+    if (!activeItem) return;
+
+    const deltaX = e.touches[0].clientX - startX;
+    const deltaY = e.touches[0].clientY - startY;
+
+    // Detect if horizontal swipe or vertical scroll
+    if (!isSwiping && Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      isSwiping = true;
+    }
+
+    if (isSwiping) {
+      currentX = initialTranslateX + deltaX;
+
+      // Limit swipe range
+      // Left actions (Pin): Max positive translateX
+      // Right actions (Archive/Delete): Max negative translateX
+      if (currentX > 80) currentX = 80 + (currentX - 80) * 0.2; // Rubber band effect
+      if (currentX < -160) currentX = -160 + (currentX + 160) * 0.2;
+
+      activeItem.style.transform = `translateX(${currentX}px)`;
+    }
+  }, { passive: true });
+
+  grid.addEventListener('touchend', (e) => {
+    if (!activeItem) return;
+    activeItem.classList.remove('swiping');
+
+    if (isSwiping) {
+      const threshold = 60;
+      if (currentX > threshold) {
+        // Snap to open Left (Pin)
+        activeItem.style.transform = 'translateX(74px)';
+        swipeActiveItem = activeItem;
+      } else if (currentX < -threshold) {
+        // Snap to open Right (Archive/Delete)
+        activeItem.style.transform = 'translateX(-148px)';
+        swipeActiveItem = activeItem;
+      } else {
+        // Snap back
+        activeItem.style.transform = '';
+        swipeActiveItem = null;
+      }
+    }
+
+    activeItem = null;
+    isSwiping = false;
+  });
+
+  // Close swipe on click elsewhere
+  document.addEventListener('touchstart', (e) => {
+    if (swipeActiveItem && !swipeActiveItem.contains(e.target)) {
+      swipeActiveItem.style.transform = '';
+      swipeActiveItem = null;
+    }
+  }, { passive: true });
+}
+
+async function renderNotes(append = false) {
+  const grid = document.getElementById("notes-grid");
+  const header = document.getElementById("notes-list-header");
+  if (!grid || !header) return;
+
+  if (!append) {
+    grid.innerHTML = '';
+    notesRenderLimit = 20;
+  }
 
   if (activeFolderId === 'trash') {
+    header.textContent = "Sampah";
     const trash = await Storage.getTrash();
     if (!trash.length) {
-      grid.innerHTML = `<div class="notes-empty"><h3>Sampah kosong</h3></div>`;
+      grid.innerHTML = `<div class="notes-empty" style="padding: 40px; text-align: center; color: var(--text-muted);">Sampah kosong</div>`;
       return;
     }
     grid.innerHTML = trash.map(n => `
-      <div class="note-card" data-id="${n.id}" data-type="trash">
-        <div class="note-actions">
-          <button class="action-btn restore" data-action="restore" title="Pulihkan">🔄</button>
-          <button class="action-btn delete-perm" data-action="delete-perm" title="Hapus Permanen">❌</button>
+      <div class="list-item-container" data-id="${n.id}">
+        <div class="list-item" data-id="${n.id}" data-type="trash">
+          <div class="list-item-content">
+            <div class="list-item-title">${sanitizeText(n.title || 'Tanpa Judul')}</div>
+            <div class="list-item-subtitle">Dihapus ${formatTanggalRelative(n.deletedAt)}</div>
+          </div>
+          <div class="list-item-chevron">🗑️</div>
         </div>
-        <div class="note-title">${sanitizeText(n.title)}</div>
-        <div class="note-date">Dihapus: ${formatTanggalRelative(n.deletedAt)}</div>
       </div>
     `).join('');
     return;
   }
 
-  if (!notes.length) {
-    grid.innerHTML = `<div class="notes-empty"><h3>Belum ada catatan</h3><button class="btn-blue" onclick="document.getElementById('add-note-btn').click()">Buat catatan</button></div>`;
-    return;
-  }
+  const folderName = activeFolderId === 'all' ? 'Semua Catatan' : (activeFolderId === 'archived' ? 'Arsip' : (folders.find(f => f.id === activeFolderId)?.name || 'Catatan'));
+  header.textContent = folderName;
 
   const filtered = notes.filter(n => {
-    const matchSearch = !searchQuery || (n._searchText || '').includes(searchQuery);
-    const matchTag = !filterByTag || (n.label || '').toLowerCase() === filterByTag.toLowerCase();
+    let matchSearch = true;
+    if (searchQuery) {
+      const words = searchQuery.split(/\s+/).filter(Boolean);
+      matchSearch = words.every(word => (n._searchText || '').includes(word));
+    }
 
-    if (activeFolderId === 'archived') return n.isArchived && matchSearch && matchTag;
-    if (activeFolderId === 'all') return !n.isArchived && matchSearch && matchTag;
+    if (activeFolderId === 'archived') return n.isArchived && matchSearch;
+    if (activeFolderId === 'all') return !n.isArchived && matchSearch;
 
-    const matchFolder = n.folderId === activeFolderId;
-    return matchSearch && matchTag && matchFolder && !n.isArchived;
+    return n.folderId === activeFolderId && !n.isArchived && matchSearch;
   });
 
-  // Keep manual order if no search/filter/tag active, otherwise sort by pinned/date
-  let sorted = filtered;
-  if (searchQuery || filterByTag || activeFolderId !== 'all') {
-    sorted = [...filtered].sort((a, b) => (b.pinned - a.pinned) || new Date(b.date) - new Date(a.date));
-  }
-
-  if (!sorted.length) {
-    grid.innerHTML = `<div class="notes-empty"><p>Catatan tidak ditemukan.</p></div>`;
+  if (!filtered.length && !append) {
+    grid.innerHTML = `<div class="notes-empty" style="padding: 40px; text-align: center; color: var(--text-muted);">Belum ada catatan</div>`;
     return;
   }
 
-  grid.innerHTML = sorted.map(n => {
+  let sorted = [...filtered].sort((a, b) => (b.pinned - a.pinned) || new Date(b.date) - new Date(a.date));
+
+  const totalNotes = sorted.length;
+  const batch = sorted.slice(append ? notesRenderLimit - 20 : 0, notesRenderLimit);
+
+  const batchHtml = batch.map(n => {
     const isSecret = Boolean(n.isSecret);
-    // Mask in grid if it's secret (always, for privacy in list view)
-    const maskContent = isSecret;
-
-    const content = maskContent
-      ? `<div class="note-content-masked"><span class="lock-icon">🔒</span> Konten ini dirahasiakan</div>`
-      : `<div class="note-content">${renderMarkdown(n.contentMarkdown || markdownFromNote(n))}</div>`;
-
-    const activeClass = activeNoteId === n.id ? ' note-card--active' : '';
-    const secretClass = isSecret ? ' note-card--secret' : '';
+    const isSelected = selectedNoteIds.has(n.id);
+    const summary = n.contentMarkdown ? n.contentMarkdown.slice(0, 60).replace(/\n/g, ' ') : 'Tidak ada konten';
 
     return `
-      <div class="note-card${activeClass}${secretClass}" data-id="${n.id}" tabindex="0">
-        <div class="note-actions">
-          <button class="action-btn pin ${n.pinned ? 'pin-active' : ''}" data-action="pin" title="Pin">📌</button>
-          <button class="action-btn star ${n.isFavorite ? 'star-active' : ''}" data-action="star" title="Favorit">⭐</button>
-          <button class="action-btn archive" data-action="archive" title="${n.isArchived ? 'Buka Arsip' : 'Arsipkan'}">📦</button>
-          <button class="action-btn copy" data-action="copy" title="Salin">📋</button>
-          <button class="action-btn delete" data-action="delete" title="Hapus">🗑️</button>
+      <div class="list-item-container" data-id="${n.id}">
+        <div class="list-item-actions list-item-actions-left">
+          <button class="swipe-action-btn pin" data-action="pin" data-id="${n.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>${n.pinned ? 'Lepas' : 'Pin'}</span>
+          </button>
         </div>
-        <div class="note-title">
-          ${n.icon ? `<span class="icon">${sanitizeText(n.icon)}</span>` : ''}
-          ${sanitizeText(n.title)}
+        <div class="list-item-actions list-item-actions-right">
+          <button class="swipe-action-btn archive" data-action="archive" data-id="${n.id}">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+             <span>Arsip</span>
+          </button>
+          <button class="swipe-action-btn delete" data-action="delete" data-id="${n.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Hapus</span>
+          </button>
         </div>
-        ${content}
-        <div class="note-date">Ditulis: ${formatTanggalRelative(n.date)}</div>
+        <div class="list-item${isSelected ? ' selected' : ''}" data-id="${n.id}" tabindex="0">
+          <div class="list-item-content">
+            <div class="list-item-title">
+              ${n.pinned ? '📌 ' : ''}${isSecret ? '🔒 ' : ''}${n.icon ? n.icon + ' ' : ''}${sanitizeText(n.title || 'Tanpa Judul')}
+            </div>
+            <div class="list-item-subtitle">
+              <span style="color: var(--text-muted); min-width: 80px;">${formatTanggalRelative(n.date)}</span>
+              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.6;">${sanitizeText(isSecret ? 'Konten dirahasiakan' : summary)}</span>
+            </div>
+          </div>
+          <div class="list-item-more" data-action="more">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </div>
+        </div>
       </div>
     `;
   }).join('');
+
+  if (append) {
+    grid.insertAdjacentHTML('beforeend', batchHtml);
+  } else {
+    grid.innerHTML = batchHtml;
+  }
+
+  // Infinite Scroll Observer
+  const existingObserver = document.getElementById('infinite-scroll-trigger');
+  if (existingObserver) existingObserver.remove();
+
+  if (notesRenderLimit < totalNotes) {
+    const trigger = document.createElement('div');
+    trigger.id = 'infinite-scroll-trigger';
+    trigger.style.height = '10px';
+    grid.appendChild(trigger);
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        notesRenderLimit += 20;
+        renderNotes(true);
+      }
+    }, { rootMargin: '100px' });
+    observer.observe(trigger);
+  }
+}
+
+function toggleSelectionMode(force = null) {
+  isSelectionMode = force !== null ? force : !isSelectionMode;
+  const btn = document.getElementById('toggle-selection-mode');
+  const bar = document.getElementById('selection-bar');
+
+  if (isSelectionMode) {
+    btn.textContent = 'Batal';
+    bar.classList.remove('hidden');
+  } else {
+    btn.textContent = 'Pilih';
+    bar.classList.add('hidden');
+    selectedNoteIds.clear();
+    updateSelectionUI();
+  }
+  renderNotes();
+}
+
+function updateSelectionUI() {
+  const countEl = document.getElementById('selection-count');
+  if (countEl) countEl.textContent = selectedNoteIds.size;
 }
 
 function initSortable() {
@@ -449,9 +686,9 @@ function initSortable() {
 
   Sortable.create(grid, {
     animation: 150,
-    ghostClass: 'note-card--ghost',
+    ghostClass: 'list-item--ghost',
     onEnd: async () => {
-      const newOrderIds = Array.from(grid.querySelectorAll('.note-card')).map(el => el.dataset.id);
+      const newOrderIds = Array.from(grid.querySelectorAll('.list-item')).map(el => el.dataset.id);
 
       // Update notes array to match new order
       const orderedNotes = [];
@@ -477,6 +714,8 @@ function initCommandPalette() {
   const palette = document.getElementById('command-palette');
   const input = document.getElementById('command-input');
   const results = document.getElementById('command-results');
+
+  if (!palette || !input || !results) return;
 
   const commands = [
     { name: 'Tulis Catatan Baru', icon: '📝', action: () => openNoteModal('create') },
@@ -538,7 +777,7 @@ function initCommandPalette() {
         const item = document.createElement('div');
         item.className = 'command-item';
         item.style = 'padding: 12px 15px; border-radius: 10px; cursor: pointer; display: flex; gap: 10px; align-items: center; transition: background 0.2s;';
-        item.innerHTML = `<span>📄</span> <span>${n.title}</span>`;
+        item.innerHTML = `<span>📄</span> <span>${sanitizeText(n.title)}</span>`;
         item.onclick = () => { openNoteModal('edit', n); hide(); };
         item.onmouseover = () => item.style.background = 'var(--surface-alt)';
         item.onmouseout = () => item.style.background = 'transparent';
@@ -560,8 +799,242 @@ function initCommandPalette() {
   palette.onclick = (e) => { if (e.target === palette) hide(); };
 }
 
+window.ContextMenu = {
+  el: null,
+  activeTarget: null,
+  activeType: null,
+
+  initialized: false,
+  init() {
+    if (this.initialized) return;
+    this.el = document.getElementById('custom-context-menu');
+    document.addEventListener('click', (e) => {
+      if (this.el && !this.el.contains(e.target)) this.hide();
+    });
+
+    this.el.addEventListener('click', (e) => {
+      const item = e.target.closest('.context-menu-item');
+      if (item) {
+        this.handleAction(item.dataset.action);
+      }
+    });
+
+    window.addEventListener('scroll', () => this.hide(), { passive: true });
+    this.initialized = true;
+  },
+
+  show(e, type, target) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.activeTarget = target;
+    this.activeType = type;
+
+    this.render();
+
+    this.el.style.display = 'flex';
+
+    const { clientX: x, clientY: y } = e;
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+    const menuW = this.el.offsetWidth || 180;
+    const menuH = this.el.offsetHeight || 200;
+
+    let posX = x;
+    let posY = y;
+
+    if (x + menuW > winW) posX = winW - menuW - 10;
+    if (y + menuH > winH) posY = winH - menuH - 10;
+
+    this.el.style.left = `${posX}px`;
+    this.el.style.top = `${posY}px`;
+  },
+
+  hide() {
+    if (this.el) this.el.style.display = 'none';
+  },
+
+  async handleAction(action) {
+    const id = this.activeTarget.id;
+    const note = notes.find(n => n.id === id);
+
+    if (action === 'pin') {
+      note.pinned = !note.pinned;
+      await persistNotes();
+      renderNotes();
+    } else if (action === 'star') {
+      note.isFavorite = !note.isFavorite;
+      await persistNotes();
+      renderNotes();
+    } else if (action === 'archive') {
+      note.isArchived = !note.isArchived;
+      await persistNotes();
+      renderNotes();
+    } else if (action === 'delete') {
+      if (confirm(`Pindahkan "${note.title}" ke sampah?`)) {
+        await Storage.moveToTrash(id);
+        notes = notes.filter(n => n.id !== id);
+        renderNotes();
+      }
+    } else if (action === 'copy') {
+      const text = `${note.title}\n\n${markdownFromNote(note)}`;
+      navigator.clipboard.writeText(text);
+    } else if (action === 'edit') {
+      openNoteModal('edit', note);
+    } else if (action === 'move') {
+      this.showMoveModal(note);
+    } else if (action === 'delete-folder') {
+      this.handleDeleteFolder(this.activeTarget.id);
+    } else if (action === 'edit-folder') {
+      editFolder(this.activeTarget.id);
+    }
+    this.hide();
+  },
+
+  async handleDeleteFolder(id) {
+    const folder = folders.find(f => f.id === id);
+    if (!folder) return;
+
+    if (confirm(`Hapus folder "${folder.name}"? Catatan di dalamnya tidak akan dihapus. Sub-folder akan dipindahkan ke tingkat utama.`)) {
+      // Re-assign child folders to root or parent's parent? Let's go with parent of deleted or null.
+      const newParentId = folder.parentId || null;
+
+      folders.forEach(f => {
+        if (f.parentId === id) f.parentId = newParentId;
+      });
+
+      // Filter out the deleted folder
+      folders = folders.filter(f => f.id !== id);
+
+      // Update notes that were in this folder
+      notes.forEach(n => {
+        if (n.folderId === id) n.folderId = null;
+      });
+
+      await Storage.setFolders(folders);
+      await persistNotes();
+      renderFolders();
+      renderNotes();
+    }
+  },
+
+  showMoveModal(note) {
+    const modal = document.getElementById('move-note-modal');
+    const listEl = document.getElementById('move-note-list');
+    const closeBtn = document.getElementById('move-note-close');
+    if (!modal || !listEl) return;
+
+    const hide = () => {
+      if (ModalManager) ModalManager.close('move-note-modal');
+      else modal.classList.remove('show');
+    };
+
+    const renderList = () => {
+      let html = `
+        <div class="context-menu-item" data-id="" style="border: 1px solid var(--border-subtle)">
+          <span>📁</span> (Tanpa Folder)
+        </div>
+      `;
+
+      // Use hierarchy for better UX
+      const folderMap = {};
+      folders.forEach(f => { folderMap[f.id] = { ...f, children: [] }; });
+      const roots = [];
+      folders.forEach(f => {
+        if (f.parentId && folderMap[f.parentId]) {
+          folderMap[f.parentId].children.push(folderMap[f.id]);
+        } else {
+          roots.push(folderMap[f.id]);
+        }
+      });
+
+      const addItems = (f, level = 0) => {
+        const active = note.folderId === f.id ? ' style="background: var(--primary-soft); border: 1px solid var(--primary)"' : ' style="border: 1px solid var(--border-subtle)"';
+        const indent = level > 0 ? '　'.repeat(level) + '↳ ' : '';
+        html += `
+          <div class="context-menu-item" data-id="${f.id}"${active}>
+            <span>📁</span> ${indent}${sanitizeText(f.name)}
+          </div>
+        `;
+        f.children.forEach(child => addItems(child, level + 1));
+      };
+
+      roots.forEach(root => addItems(root));
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('.context-menu-item').forEach(item => {
+        item.onclick = async () => {
+          note.folderId = item.dataset.id || null;
+          await persistNotes();
+          renderNotes();
+          hide();
+        };
+      });
+    };
+
+    renderList();
+    closeBtn.onclick = hide;
+    if (ModalManager) ModalManager.open('move-note-modal', modal);
+    else modal.classList.add('show');
+  },
+
+  render() {
+    if (this.activeType === 'note') {
+      const id = this.activeTarget.id;
+      const note = notes.find(n => n.id === id);
+      this.el.innerHTML = `
+        <div class="context-menu-item" data-action="edit"><span>✏️</span> Edit Catatan</div>
+        <div class="context-menu-item" data-action="move"><span>📂</span> Pindahkan Folder</div>
+        <div class="context-menu-item" data-action="pin"><span>📌</span> ${note.pinned ? 'Lepas Pin' : 'Pin Catatan'}</div>
+        <div class="context-menu-item" data-action="star"><span>⭐</span> ${note.isFavorite ? 'Hapus Favorit' : 'Jadikan Favorit'}</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="archive"><span>📦</span> ${note.isArchived ? 'Buka Arsip' : 'Arsipkan'}</div>
+        <div class="context-menu-item" data-action="copy"><span>📋</span> Salin Teks</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item danger" data-action="delete"><span>🗑️</span> Hapus</div>
+      `;
+    } else if (this.activeType === 'folder') {
+       this.el.innerHTML = `
+         <div class="context-menu-item" data-action="edit-folder"><span>✏️</span> Edit Folder</div>
+         <div class="context-menu-item danger" data-action="delete-folder"><span>🗑️</span> Hapus Folder</div>
+       `;
+    }
+  }
+};
+
 function setupDelegation() {
   const grid = document.getElementById("notes-grid");
+  const folderList = document.getElementById("folder-list");
+
+  if (window.ContextMenu) window.ContextMenu.init();
+
+  folderList.addEventListener('contextmenu', (e) => {
+    const pill = e.target.closest('.folder-pill');
+    if (!pill || pill.dataset.id === 'all' || pill.dataset.id === 'archived' || pill.dataset.id === 'trash') return;
+    window.ContextMenu.show(e, 'folder', { id: pill.dataset.id });
+  });
+
+  // Delegate Swipe Actions
+  grid.addEventListener('click', (e) => {
+    const swipeBtn = e.target.closest('.swipe-action-btn');
+    if (swipeBtn) {
+      e.stopPropagation();
+      const id = swipeBtn.dataset.id;
+      const action = swipeBtn.dataset.action;
+      window.handleSwipeAction(id, action);
+    }
+  });
+
+  // Long press for mobile context menu
+  let pressTimer;
+  grid.addEventListener('touchstart', (e) => {
+    const item = e.target.closest('.list-item');
+    if (!item) return;
+    pressTimer = setTimeout(() => {
+      window.ContextMenu.show(e, 'note', { id: item.dataset.id });
+    }, 600);
+  });
+  grid.addEventListener('touchend', () => clearTimeout(pressTimer));
+
   const confirmAction = (title, message, okLabel = 'Hapus') => {
     return new Promise((resolve) => {
       const modal = document.getElementById('confirm-modal');
@@ -589,24 +1062,23 @@ function setupDelegation() {
   };
 
   grid.addEventListener('contextmenu', (e) => {
-    const card = e.target.closest('.note-card');
+    const card = e.target.closest('.list-item');
     if (!card) return;
-    e.preventDefault();
-
-    const id = card.dataset.id;
-    const note = notes.find(n => n.id === id);
-    if (!note) return;
-
-    // We can just trigger the same actions or show a better custom menu later
-    // For now, let's just make the pin/unpin/archive easier
-    note.pinned = !note.pinned;
-    persistNotes().then(renderNotes);
+    window.ContextMenu.show(e, 'note', { id: card.dataset.id });
   });
 
   grid.addEventListener('click', async (e) => {
-    const card = e.target.closest('.note-card');
+    const card = e.target.closest('.list-item');
     const actionBtn = e.target.closest('.action-btn');
+    const moreBtn = e.target.closest('.list-item-more');
     const wikiLink = e.target.closest('.wiki-link');
+
+    if (moreBtn && !isSelectionMode) {
+      e.stopPropagation();
+      const id = card.dataset.id;
+      window.ContextMenu.show(e, 'note', { id });
+      return;
+    }
 
     if (wikiLink) {
       e.preventDefault();
@@ -625,6 +1097,17 @@ function setupDelegation() {
 
     const id = card.dataset.id;
     const note = notes.find(n => n.id === id);
+
+    if (isSelectionMode) {
+      if (selectedNoteIds.has(id)) {
+        selectedNoteIds.delete(id);
+      } else {
+        selectedNoteIds.add(id);
+      }
+      updateSelectionUI();
+      renderNotes();
+      return;
+    }
 
     if (actionBtn) {
       e.stopPropagation();
@@ -692,23 +1175,27 @@ function openNoteModal(mode = 'create', existingNote = null) {
   }
   NoteEditor.open({
     mode,
+    draftKey: existingNote ? existingNote.id : 'new',
     initialValue: {
       icon: existingNote?.icon || '',
       title: existingNote?.title || '',
       content: markdownFromNote(existingNote),
-      isSecret: existingNote?.isSecret || false
+      isSecret: existingNote?.isSecret || false,
+      folderId: existingNote?.folderId || ''
     },
     onSave: async (payload) => {
       const iso = new Date().toISOString();
       if (mode === 'edit' && existingNote) {
-        Object.assign(existingNote, {
+        Object.assign(existingNote, prepareNoteForSearch({
+          ...existingNote,
           icon: payload.icon,
           title: payload.title,
           content: payload.contentHtml,
           contentMarkdown: payload.contentMarkdown,
           isSecret: payload.isSecret,
-          updatedAt: iso
-        });
+          updatedAt: iso,
+          _dirty: true
+        }));
         if (Gamification) {
           const oldLen = (existingNote.contentMarkdown || existingNote.content || '').length;
           const newLen = (payload.contentMarkdown || payload.contentHtml || '').length;
@@ -718,14 +1205,16 @@ function openNoteModal(mode = 'create', existingNote = null) {
         }
       } else {
         const id = generateId('note');
-        notes.unshift({
+        const newNote = prepareNoteForSearch({
           id,
           ...payload,
           content: payload.contentHtml,
           date: iso.slice(0, 10),
           createdAt: iso,
-          pinned: false
+          pinned: false,
+          _dirty: true
         });
+        notes.unshift(newNote);
         if (Gamification) {
           Gamification.recordNoteCreated({ id, createdAt: iso });
           if (payload.isSecret) Gamification.recordSecretNoteUsed();
@@ -737,10 +1226,131 @@ function openNoteModal(mode = 'create', existingNote = null) {
   });
 }
 
+async function handleSmartExport() {
+  const format = document.getElementById('smart-export-format').value;
+  const merge = document.getElementById('export-merge-check').checked;
+  const selectedNotes = notes.filter(n => selectedNoteIds.has(n.id));
+  const dateStr = new Date().toISOString().split('T')[0];
+
+  if (selectedNotes.length === 0) return;
+
+  try {
+    if (format === 'json') {
+      const data = JSON.stringify({ version: '3.0', exportedAt: new Date().toISOString(), notes: selectedNotes }, null, 2);
+      downloadBlob(new Blob([data], { type: 'application/json' }), `abelion-selected-${dateStr}.json`);
+    }
+    else if (format === 'md' || format === 'txt') {
+      const ext = format === 'md' ? '.md' : '.txt';
+      if (merge) {
+        let combined = '';
+        selectedNotes.forEach(n => {
+          combined += format === 'md'
+            ? `\n\n# ${n.title}\n*Tanggal: ${n.date}*\n\n${n.contentMarkdown || n.content}\n\n---\n`
+            : `\n\n${n.title.toUpperCase()}\n${n.date}\n${'-'.repeat(n.title.length)}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}\n\n====================\n`;
+        });
+        downloadBlob(new Blob([combined], { type: format === 'md' ? 'text/markdown' : 'text/plain' }), `abelion-merged-${dateStr}${ext}`);
+      } else {
+        if (typeof JSZip === 'undefined') throw new Error('JSZip tidak termuat. Periksa koneksi internet.');
+        const zip = new JSZip();
+        selectedNotes.forEach(n => {
+          const filename = (n.title || 'Untitled').replace(/[/\\?%*:|"<>]/g, '-') + ext;
+          const body = format === 'md'
+            ? `---\ntitle: ${n.title}\ndate: ${n.date}\n---\n\n${n.contentMarkdown || n.content}`
+            : `${n.title}\n${n.date}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}`;
+          zip.file(filename, body);
+        });
+        const blob = await zip.generateAsync({ type: 'blob' });
+        downloadBlob(blob, `abelion-selected-${dateStr}.zip`);
+      }
+    }
+    else if (format === 'pdf') {
+      if (typeof jspdf === 'undefined') throw new Error('jspdf tidak termuat.');
+      const doc = new jspdf.jsPDF({
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      selectedNotes.forEach((n, i) => {
+        if (i > 0) doc.addPage();
+
+        // Minimalist Header
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(24);
+        doc.setTextColor(0, 122, 255); // iOS Blue
+        doc.text(n.title || 'Tanpa Judul', 20, 30);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(142, 142, 147); // iOS Gray
+        doc.text(formatTanggal(n.date), 20, 38);
+
+        // Divider
+        doc.setDrawColor(230, 230, 235);
+        doc.line(20, 45, 190, 45);
+
+        // Content
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        const content = n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '');
+        const splitContent = doc.splitTextToSize(content, 170);
+
+        let y = 55;
+        splitContent.forEach(line => {
+          if (y > 280) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, 20, y);
+          y += 7;
+        });
+
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(180, 180, 180);
+        doc.text('Dibuat dengan Abelion Notes', 20, 287);
+      });
+      doc.save(`abelion-selected-${dateStr}.pdf`);
+    }
+    else if (format === 'docx') {
+      if (typeof docx === 'undefined') throw new Error('docx library tidak termuat.');
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+      const sections = selectedNotes.map(n => ({
+        properties: {},
+        children: [
+          new Paragraph({ text: n.title || 'Untitled', heading: HeadingLevel.HEADING_1 }),
+          new Paragraph({ children: [new TextRun({ text: `Tanggal: ${n.date}`, italics: true })] }),
+          new Paragraph({ text: "" }),
+          new Paragraph({ text: n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '') })
+        ]
+      }));
+      const doc = new Document({ sections });
+      const blob = await Packer.toBlob(doc);
+      downloadBlob(blob, `abelion-selected-${dateStr}.docx`);
+    }
+
+    toggleSelectionMode(false);
+    ModalManager.close('export-modal');
+  } catch (err) {
+    alert('Ekspor gagal: ' + err.message);
+  }
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
-  const addBtn = document.getElementById('add-note-btn');
-  if (addBtn) {
-    addBtn.onclick = () => openNoteModal('create');
+  const addBtnNav = document.getElementById('add-note-btn-nav');
+  if (addBtnNav) {
+    addBtnNav.onclick = (e) => {
+      e.preventDefault();
+      openNoteModal('create');
+    };
   }
 
   const aboutBtn = document.getElementById('nav-about');
@@ -790,19 +1400,74 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   showSkeletons();
   await Storage.ready;
+
+  if (Gamification) {
+    Gamification.trackDailyLogin().then(res => {
+      if (res && res.xp > 0) {
+        showXPToast({ xp: res.xp, message: 'Login harian', streak: res.streak, bonus: res.bonus });
+      }
+    }).catch(console.error);
+  }
+
   await loadFolders();
   await loadNotes();
+  if (Storage.purgeOldTrash) Storage.purgeOldTrash(30).catch(console.error);
   await renderMoodGraph();
   renderHeroContent();
   renderSearchBar();
   renderNotes();
   setupDelegation();
+  initSwipeLogic();
   initSortable();
   initCommandPalette();
   checkAppVersion();
 
+  // Handle URL actions (e.g., ?action=new)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('action') === 'new') {
+    // Small delay to ensure everything is ready
+    setTimeout(() => openNoteModal('create'), 500);
+    // Clear the param without refreshing to avoid re-opening on manual refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   const addFolderBtn = document.getElementById('add-folder-btn');
   if (addFolderBtn) addFolderBtn.onclick = addFolder;
+
+  const toggleSelectBtn = document.getElementById('toggle-selection-mode');
+  if (toggleSelectBtn) toggleSelectBtn.onclick = () => toggleSelectionMode();
+
+  const cancelSelectBtn = document.getElementById('cancel-selection-btn');
+  if (cancelSelectBtn) cancelSelectBtn.onclick = () => toggleSelectionMode(false);
+
+  const exportSelectedBtn = document.getElementById('export-selected-btn');
+  if (exportSelectedBtn) {
+    exportSelectedBtn.onclick = () => {
+      if (selectedNoteIds.size === 0) return;
+      ModalManager.open('export-modal', document.getElementById('export-modal'));
+    };
+  }
+
+  const exportModalClose = document.getElementById('export-modal-close');
+  if (exportModalClose) exportModalClose.onclick = () => ModalManager.close('export-modal');
+
+  const confirmExportBtn = document.getElementById('confirm-smart-export');
+  if (confirmExportBtn) confirmExportBtn.onclick = handleSmartExport;
+
+  const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+  if (deleteSelectedBtn) {
+    deleteSelectedBtn.onclick = async () => {
+      if (selectedNoteIds.size === 0) return;
+      if (confirm(`Pindahkan ${selectedNoteIds.size} catatan ke sampah?`)) {
+        for (const id of selectedNoteIds) {
+          await Storage.moveToTrash(id);
+          notes = notes.filter(n => n.id !== id);
+        }
+        toggleSelectionMode(false);
+        renderNotes();
+      }
+    };
+  }
 
   // Drag & Drop Import
   document.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });

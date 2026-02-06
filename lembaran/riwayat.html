@@ -3,89 +3,91 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none';" />
-  <title>Version Info – Abelion Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
+  <title>Versi – Abelion Notes</title>
   <link rel="stylesheet" href="../gaya/gayanya.css" />
-  <link rel="manifest" href="../izin.json" />
 </head>
 
 <body class="page-shell">
-  <main class="panel" id="version-panel">
-    <header class="panel-header">
-      <button type="button" class="ghost-btn" id="version-back">← Kembali</button>
-      <button type="button" class="ghost-btn" id="version-home" title="Ke Beranda">🏠</button>
+  <div class="main-content">
+    <header class="secondary-header">
+      <a href="setelan.html" class="back-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Setelan
+      </a>
+      <h1 class="animated">Versi</h1>
+      <p class="subtitle">Riwayat pengembangan dan catatan rilis.</p>
     </header>
 
-    <h1 class="panel-title">Versioning System</h1>
-    <p class="panel-subtitle">Lacak rilis Abelion Notes dan highlight peningkatan terbaru.</p>
-
-    <section class="panel-section" hidden>
-      <h2>Ringkasan Versi</h2>
-      <div class="section-card" id="version-summary">
-        <p><strong>Versi:</strong> <span id="version-name">—</span></p>
-        <p><strong>Codename:</strong> <span id="version-codename">—</span></p>
-        <p><strong>Tanggal Rilis:</strong> <span id="version-date">—</span></p>
-        <p><strong>Lingkungan:</strong> <span id="version-env">—</span></p>
-        <p><strong>Major:</strong> <span id="version-major">—</span></p>
-        <p><strong>Minor:</strong> <span id="version-minor">—</span></p>
-        <p><strong>Patch:</strong> <span id="version-patch">—</span></p>
-        <p><strong>Channel:</strong> <span id="version-channel">—</span></p>
-        <p><strong>Terakhir Diperbarui:</strong> <span id="version-updated">—</span></p>
-      </div>
-    </section>
-
-    <section class="panel-section" id="changelog-section">
-      <h2>Changelog</h2>
-      <div class="settings-grid" id="changelog-list">
-        <div class="section-card">
-          <p>Belum ada catatan rilis.</p>
+    <div class="list-header">Informasi Sistem</div>
+    <div class="grouped-list">
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Versi Aplikasi</div>
+          <div class="list-item-subtitle" id="version-name">—</div>
         </div>
       </div>
-    </section>
-
-    <footer class="panel-footer">© 2025 Abelion Notes. All rights reserved.</footer>
-  </main>
-
-
-
-  <nav class="bottom-nav" aria-label="Navigasi utama">
-    <div class="bottom-nav-shell">
-      <a class="nav-button" href="../index.html" aria-label="Beranda">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </span>
-        <span class="nav-label">Beranda</span>
-      </a>
-      <a class="nav-button" href="biodata.html" aria-label="Profil">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        </span>
-        <span class="nav-label">Profil</span>
-      </a>
-      <a class="nav-button" href="setelan.html" aria-label="Pengaturan">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </span>
-        <span class="nav-label">Pengaturan</span>
-      </a>
-      <a class="nav-button active" href="riwayat.html" aria-label="Versi">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </span>
-        <span class="nav-label">Versi</span>
-      </a>
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Codename</div>
+          <div class="list-item-subtitle" id="version-codename">—</div>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">Build Date</div>
+          <div class="list-item-subtitle" id="version-date">—</div>
+        </div>
+      </div>
     </div>
+
+    <div class="list-header">Changelog</div>
+    <div id="changelog-list">
+      <!-- Changelog items injected here -->
+      <div class="section-card" style="padding: 16px;">
+        <p style="color: var(--text-muted);">Memuat riwayat rilis...</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 13px;">
+      <p>© 2025 Abelion Notes</p>
+      <p>Made with ❤️ for everyone.</p>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a class="nav-button" href="../index.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      </span>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a class="nav-button nav-add-btn" href="../index.html?action=new">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </span>
+      <span class="nav-label">Tambah</span>
+    </a>
+    <a class="nav-button" href="biodata.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </span>
+      <span class="nav-label">Profil</span>
+    </a>
+    <a class="nav-button" href="setelan.html">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1-2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </span>
+      <span class="nav-label">Setelan</span>
+    </a>
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../aksara/corak.js"></script>
   <script src="../aksara/pemuat.js"></script>
-  <script src="../aksara/utusan.js"></script>
   <script src="../aksara/basisdata.js"></script>
   <script src="../aksara/perkakas.js"></script>
   <script src="../aksara/brankas.js"></script>

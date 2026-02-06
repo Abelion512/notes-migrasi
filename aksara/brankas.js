@@ -73,15 +73,35 @@
     STORAGE_KEYS.PROFILE,
     STORAGE_KEYS.MOODS,
     STORAGE_KEYS.GAMIFICATION,
-    STORAGE_KEYS.VERSION_META
+    STORAGE_KEYS.VERSION_META,
+    STORAGE_KEYS.SUPABASE_CONFIG,
+    STORAGE_KEYS.NOTION_CONFIG
   ].filter(Boolean));
 
   const ready = (async () => {
+    await primeLocalCache();
+
     // Check if Supabase is disabled by user
     const supabaseDisabled = localStorage.getItem('abelion-disable-supabase') === 'true';
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = !!meta.encryption?.enabled;
 
-    // 1. Wait for Supabase Env to load (optional) with Timeout
-    if (!supabaseDisabled && global.AbelionSupabase && global.AbelionSupabase.ready) {
+    if (!supabaseDisabled && global.AbelionSupabase) {
+      if (!encrypted) {
+        // If not encrypted, we can try to get config and init now
+        let config;
+        if (canUseIndexedDB()) {
+           await ensureDatabase();
+           config = await idbGet('kv', STORAGE_KEYS.SUPABASE_CONFIG);
+        }
+        if (!config) config = localRead(STORAGE_KEYS.SUPABASE_CONFIG);
+
+        if (config && config.url && config.key) {
+           global.AbelionSupabase.init(config.url, config.key);
+        }
+      }
+
+      // Wait for Supabase (if it's being initialized)
       try {
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase init timeout')), 2000));
         const client = await Promise.race([global.AbelionSupabase.ready, timeout]);
@@ -95,7 +115,6 @@
       }
     }
 
-    await primeLocalCache();
     if (activeEngine !== ENGINE.SUPABASE && canUseIndexedDB()) {
       activeEngine = ENGINE.INDEXED_DB;
       await ensureDatabase();
@@ -456,6 +475,26 @@
     currentMeta = cacheGet(META_KEY);
     currentMeta.engine = ENGINE.INDEXED_DB;
     currentMeta.lastMigrationAt = new Date().toISOString();
+
+    // Legacy migration for Supabase & Notion keys
+    const oldSupabaseUrl = localStorage.getItem('abelion-supabase-url');
+    const oldSupabaseKey = localStorage.getItem('abelion-supabase-key');
+    if (oldSupabaseUrl && oldSupabaseKey) {
+        const config = { url: oldSupabaseUrl, key: oldSupabaseKey };
+        await setValue(STORAGE_KEYS.SUPABASE_CONFIG, config);
+        localStorage.removeItem('abelion-supabase-url');
+        localStorage.removeItem('abelion-supabase-key');
+    }
+
+    const oldNotionToken = localStorage.getItem('abelion-notion-token');
+    const oldNotionDb = localStorage.getItem('abelion-notion-db');
+    if (oldNotionToken) {
+        const config = { token: oldNotionToken, dbId: oldNotionDb };
+        await setValue(STORAGE_KEYS.NOTION_CONFIG, config);
+        localStorage.removeItem('abelion-notion-token');
+        localStorage.removeItem('abelion-notion-db');
+    }
+
     cacheSet(META_KEY, currentMeta);
     await persistMeta();
   }
@@ -565,7 +604,7 @@
     return candidates;
   }
 
-  async function setNotes(notes = []) {
+  async function setNotes(notes = [], options = {}) {
     // 0. Quota check
     if (navigator?.storage?.estimate) {
       const { usage, quota } = await navigator.storage.estimate();
@@ -581,20 +620,38 @@
     const newNotes = Array.isArray(notes) ? notes : [];
     cacheSet(STORAGE_KEYS.NOTES, newNotes);
 
-    const payload = encrypted ? await encryptValue(newNotes) : newNotes;
-
+    // Delta Sync Logic
     if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
       try {
-        await global.AbelionSupabaseDB.setNotes(payload);
+        let notesToPush = newNotes;
+        let isDelta = false;
+
+        if (options.onlyDirty) {
+           notesToPush = newNotes.filter(n => n._dirty);
+           isDelta = true;
+        }
+
+        if (notesToPush.length > 0) {
+          const payload = encrypted ? await encryptValue(notesToPush) : notesToPush;
+          await global.AbelionSupabaseDB.setNotes(payload, { delta: isDelta });
+          // Clear dirty flag after success
+          notesToPush.forEach(n => delete n._dirty);
+        }
       } catch (err) {
         console.error('Supabase setNotes failed', err);
-        return false;
+        // We don't return false here, we still want local storage to succeed
       }
-    } else if (activeEngine === ENGINE.INDEXED_DB) {
+    }
+
+    const payload = encrypted ? await encryptValue(newNotes) : newNotes;
+
+    if (activeEngine === ENGINE.INDEXED_DB) {
       if (encrypted) {
         await idbTransaction('kv', 'readwrite', (store) => {
           store.put(payload, STORAGE_KEYS.NOTES);
         });
+        // Important: Clear plaintext notes store if encryption is enabled
+        await idbTransaction('notes', 'readwrite', (store) => store.clear());
       } else {
         await idbTransaction('notes', 'readwrite', (store) => {
           store.clear();
@@ -633,6 +690,13 @@
     }
     if (!cache.has(STORAGE_KEYS.NOTES)) cacheSet(STORAGE_KEYS.NOTES, []);
     await refreshIndexes();
+
+    // After decrypting, check if we need to init Supabase
+    const supabaseConfig = cacheGet(STORAGE_KEYS.SUPABASE_CONFIG);
+    if (supabaseConfig && supabaseConfig.url && supabaseConfig.key && global.AbelionSupabase) {
+       global.AbelionSupabase.init(supabaseConfig.url, supabaseConfig.key);
+    }
+
     emit('unlock');
     return true;
   }
@@ -721,7 +785,10 @@
 
   async function getFolders() {
     await ready;
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.FOLDERS);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       return idbGetAll('folders');
     }
     return getValue(STORAGE_KEYS.FOLDERS, []);
@@ -730,20 +797,26 @@
   async function setFolders(folders = []) {
     await ready;
     cacheSet(STORAGE_KEYS.FOLDERS, folders);
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.FOLDERS);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       await idbTransaction('folders', 'readwrite', (store) => {
         store.clear();
         folders.forEach(f => store.put(f));
       });
-    } else {
-      await setValue(STORAGE_KEYS.FOLDERS, folders);
+      return true;
     }
-    return true;
+
+    return setValue(STORAGE_KEYS.FOLDERS, folders);
   }
 
   async function getTrash() {
     await ready;
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const encrypted = meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.TRASH);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       return idbGetAll('trash');
     }
     return getValue(STORAGE_KEYS.TRASH, []);
@@ -760,15 +833,51 @@
 
     await setNotes(notes);
 
+    // Explicitly delete from Supabase if active
+    if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
+       await global.AbelionSupabaseDB.deleteNote(noteId);
+    }
+
     const trash = await getTrash();
     trash.push(note);
 
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
       await idbPut('trash', note);
     } else {
       await setValue(STORAGE_KEYS.TRASH, trash);
     }
     return true;
+  }
+
+  async function purgeOldTrash(daysThreshold = 30) {
+    await ready;
+    const trash = await getTrash();
+    const now = new Date();
+    const thresholdMs = daysThreshold * 24 * 60 * 60 * 1000;
+
+    const remaining = [];
+    const toDelete = [];
+
+    trash.forEach(note => {
+      const deletedAt = new Date(note.deletedAt || 0);
+      if (now - deletedAt > thresholdMs) {
+        toDelete.push(note.id);
+      } else {
+        remaining.push(note);
+      }
+    });
+
+    if (toDelete.length === 0) return 0;
+
+    if (activeEngine === ENGINE.INDEXED_DB) {
+      await idbTransaction('trash', 'readwrite', (store) => {
+        toDelete.forEach(id => store.delete(id));
+      });
+    } else {
+      await setValue(STORAGE_KEYS.TRASH, remaining);
+    }
+
+    return toDelete.length;
   }
 
   async function restoreFromTrash(noteId) {
@@ -802,6 +911,18 @@
         await idbTransaction('kv', 'readwrite', (store) => { store.delete(key); });
       }
     }
+
+    // Clear Cache API
+    if ('caches' in global) {
+        try {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(key => caches.delete(key)));
+            console.log('Service Worker Cache cleared');
+        } catch (e) {
+            console.error('Failed to clear caches', e);
+        }
+    }
+
     const meta = cacheGet(META_KEY);
     meta.lastVacuumAt = new Date().toISOString();
     cacheSet(META_KEY, meta);
@@ -831,6 +952,7 @@
     getTrash,
     moveToTrash,
     restoreFromTrash,
+    purgeOldTrash,
     vacuum
   };
 })(window);

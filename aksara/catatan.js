@@ -13,17 +13,15 @@
   }
 
   async function loadNotes() { await Storage.ready; return Storage.getNotes({ sortByUpdatedAt: true }); }
-  async function saveNotes(notes) { await Storage.setNotes(notes); }
+  async function saveNotes(notes, onlyDirty = false) { await Storage.setNotes(notes, { onlyDirty }); }
 
   function renderMissingState() {
-    const container = document.querySelector('.note-detail-container');
+    const container = document.querySelector('.main-content');
     if (container) {
       container.innerHTML = `
-        <div class="note-empty-card">
-          <p>Catatan tidak ditemukan.</p>
-          <div class="note-empty-actions">
-            <a href="index.html" class="back-link">&larr; Kembali ke beranda</a>
-          </div>
+        <div class="section-card" style="padding: 40px; text-align: center;">
+          <p style="margin-bottom: 20px; color: var(--text-secondary);">Catatan tidak ditemukan atau telah dihapus.</p>
+          <a href="../index.html" class="btn-blue" style="text-decoration: none; display: inline-flex;">Kembali ke Beranda</a>
         </div>
       `;
     }
@@ -95,27 +93,29 @@
         note.content = sanitizeRichContent(htmlContent);
         note.contentMarkdown = content;
         note.label = label;
+        note._dirty = true;
         const updatedAt = new Date().toISOString();
         note.updatedAt = updatedAt;
-        await saveNotes(notes);
+        await saveNotes(notes, true);
 
         if (Gamification && note?.id) {
           Gamification.recordNoteUpdated({
             id: note.id,
             updatedAt,
-            createdAt: note.createdAt || note.date
+            createdAt: note.createdAt || note.date,
+            charDiff: content.length
           });
         }
 
         alert('Catatan telah disimpan!');
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
       };
     }
 
     const cancelEditBtn = document.getElementById('cancel-edit');
     if (cancelEditBtn) {
       cancelEditBtn.onclick = function() {
-        if (confirm('Batal edit?')) window.location.href = 'index.html';
+        if (confirm('Batal edit?')) window.location.href = '../index.html';
       };
     }
 

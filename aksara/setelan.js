@@ -16,6 +16,8 @@
     const engineEl = document.getElementById('storage-engine-label');
     const schemaEl = document.getElementById('storage-schema-label');
     const usageEl = document.getElementById('storage-usage-label');
+    const usageValEl = document.getElementById('storage-usage-value');
+    const usageBarEl = document.getElementById('storage-usage-bar');
     const footnote = document.getElementById('storage-footnote');
 
     const meta = await Storage.getMeta();
@@ -33,6 +35,14 @@
       } else {
         usageEl.textContent = 'Not available';
       }
+    }
+
+    if (usageValEl && usageBarEl && usage?.usage) {
+      const used = usage.usage || 0;
+      const quota = usage.quota || 1;
+      const pct = Math.max(1, Math.min(100, (used / quota) * 100));
+      usageValEl.textContent = formatBytes(used);
+      usageBarEl.style.width = `${pct}%`;
     }
 
     if (footnote) {
@@ -60,8 +70,28 @@
   if (vacuumBtn) vacuumBtn.addEventListener('click', async () => {
     await Storage.vacuum();
     await renderStorageHealth();
-    alert('Vacuum selesai. Draft/cache/logs dibersihkan.');
+    alert('Penyimpanan telah dioptimalkan.');
   });
+
+  const factoryResetBtn = document.getElementById('factory-reset-btn');
+  if (factoryResetBtn) {
+    factoryResetBtn.onclick = async () => {
+      const confirm1 = confirm('PERINGATAN: Semua catatan, folder, dan pengaturan akan dihapus secara permanen. Lanjutkan?');
+      if (!confirm1) return;
+
+      const confirm2 = confirm('Apakah Anda benar-benar yakin? Tindakan ini tidak dapat dibatalkan.');
+      if (!confirm2) return;
+
+      try {
+        await Storage.destroy();
+        localStorage.clear();
+        alert('Data telah dihapus. Aplikasi akan memuat ulang.');
+        window.location.href = '../index.html';
+      } catch (err) {
+        alert('Gagal menghapus data: ' + err.message);
+      }
+    };
+  }
 
   async function renderEncryptionState() {
     await Storage.ready;
@@ -112,61 +142,27 @@
     });
   }
 
-  const supabaseToggle = document.getElementById('supabase-toggle');
-  const supabaseConfigForm = document.getElementById('supabase-config-form');
-  const supabaseUrlInput = document.getElementById('supabase-url');
-  const supabaseKeyInput = document.getElementById('supabase-key');
-  const saveSupabaseBtn = document.getElementById('save-supabase-config');
-  const showGuideBtn = document.getElementById('show-supabase-guide');
-  const guideModal = document.getElementById('supabase-guide-modal');
-  const guideClose = document.getElementById('guide-close');
-  const guideOk = document.getElementById('guide-ok');
-
-  if (supabaseToggle) {
-    const disabled = localStorage.getItem('abelion-disable-supabase') === 'true';
-    supabaseToggle.checked = !disabled;
-    if (supabaseToggle.checked) supabaseConfigForm.style.display = 'block';
-
-    supabaseToggle.onchange = (e) => {
-      const isEnabled = e.target.checked;
-      localStorage.setItem('abelion-disable-supabase', (!isEnabled).toString());
-      supabaseConfigForm.style.display = isEnabled ? 'block' : 'none';
-      if (!isEnabled) {
-        alert('Sinkronisasi dinonaktifkan. Catatan hanya disimpan di perangkat ini.');
-      }
-    };
-  }
-
-  // Load existing config
-  if (supabaseUrlInput) supabaseUrlInput.value = localStorage.getItem('abelion-supabase-url') || '';
-  if (supabaseKeyInput) supabaseKeyInput.value = localStorage.getItem('abelion-supabase-key') || '';
-
-  if (saveSupabaseBtn) {
-    saveSupabaseBtn.onclick = () => {
-      const url = supabaseUrlInput.value.trim();
-      const key = supabaseKeyInput.value.trim();
-
-      if (url && !url.startsWith('https://')) {
-        alert('URL harus diawali dengan https://');
+  // --- Manual Sync ---
+  const syncBtn = document.getElementById('manual-sync-btn');
+  const syncStatus = document.getElementById('sync-status');
+  if (syncBtn) {
+    syncBtn.onclick = async () => {
+      if (Storage.getEngine() !== 'supabase') {
+        alert('Hubungkan ke Supabase di menu Layanan Cloud terlebih dahulu.');
         return;
       }
-
-      localStorage.setItem('abelion-supabase-url', url);
-      localStorage.setItem('abelion-supabase-key', key);
-      alert('Konfigurasi Supabase disimpan. Silakan muat ulang halaman untuk menghubungkan.');
-      location.reload();
+      syncStatus.textContent = 'Menyinkronkan...';
+      try {
+        const notes = await Storage.getNotes();
+        await Storage.setNotes(notes, { onlyDirty: false }); // Force full sync
+        syncStatus.textContent = `Terakhir: ${new Date().toLocaleTimeString()}`;
+        alert('Sinkronisasi selesai!');
+      } catch (err) {
+        syncStatus.textContent = 'Gagal sinkron.';
+        alert('Gagal: ' + err.message);
+      }
     };
   }
-
-  if (showGuideBtn && guideModal) {
-    showGuideBtn.onclick = (e) => {
-      e.preventDefault();
-      guideModal.style.display = 'flex';
-    };
-  }
-
-  if (guideClose) guideClose.onclick = () => guideModal.style.display = 'none';
-  if (guideOk) guideOk.onclick = () => guideModal.style.display = 'none';
 
   // --- Export / Import ---
   const exportBtn = document.getElementById('export-btn');

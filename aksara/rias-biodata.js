@@ -384,6 +384,65 @@
     if (linkInput) linkInput.value = profileState.link || '';
 
     renderBadgeOptions(profileState.activeBadge);
+    renderCustomDays();
+  }
+
+  async function renderCustomDays() {
+    const container = document.getElementById('custom-days-list');
+    if (!container) return;
+    container.innerHTML = '';
+    const days = await Gamification.getCustomSpecialDays();
+
+    if (days.length === 0) {
+      container.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; text-align: center;">Belum ada hari spesial kustom.</p>';
+      return;
+    }
+
+    days.forEach(day => {
+      const el = document.createElement('div');
+      el.className = 'list-item';
+      el.style.justifyContent = 'space-between';
+      el.style.padding = '8px 0';
+      el.innerHTML = `
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 600; font-size: 14px;">${day.name}</span>
+          <span style="font-size: 12px; color: var(--text-muted);">${day.day} ${['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][day.month]}</span>
+        </div>
+        <button type="button" class="ghost-btn delete-day-btn" data-id="${day.id}" style="color: var(--danger); font-size: 12px; padding: 4px 8px;">Hapus</button>
+      `;
+      container.appendChild(el);
+    });
+
+    container.querySelectorAll('.delete-day-btn').forEach(btn => {
+      btn.onclick = async () => {
+        await Gamification.deleteCustomSpecialDay(btn.dataset.id);
+        renderCustomDays();
+      };
+    });
+  }
+
+  async function handleAddDay() {
+    const nameInput = document.getElementById('new-day-name');
+    const dateInput = document.getElementById('new-day-date');
+    if (!nameInput || !dateInput) return;
+
+    const name = nameInput.value.trim();
+    const dateStr = dateInput.value;
+    if (!name || !dateStr) {
+      alert('Nama dan tanggal harus diisi.');
+      return;
+    }
+
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) {
+      alert('Tanggal tidak valid.');
+      return;
+    }
+
+    await Gamification.addCustomSpecialDay(date.getMonth(), date.getDate(), name);
+    nameInput.value = '';
+    dateInput.value = '';
+    renderCustomDays();
   }
 
   function clearAvatar() {
@@ -438,7 +497,7 @@
     window.location.href = 'biodata.html';
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function init() {
     const form = document.getElementById('profile-form');
     const photoInput = document.getElementById('photo-input');
     const uploadBtn = document.getElementById('avatar-upload-btn');
@@ -476,6 +535,11 @@
       resetBtn.addEventListener('click', resetProfile);
     }
 
+    const addDayBtn = document.getElementById('add-day-btn');
+    if (addDayBtn) {
+      addDayBtn.addEventListener('click', handleAddDay);
+    }
+
     if (form) {
       form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -486,5 +550,11 @@
     populateForm();
     window.resetProfile = resetProfile;
     window.saveProfile = saveProfile;
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
