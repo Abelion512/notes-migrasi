@@ -114,9 +114,24 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const data = JSON.parse(sessionStorage.getItem('abelion-view-profile') || '{}');
+        const params = new URLSearchParams(window.location.search);
+        const usernameParam = params.get('u');
+
+        let data = JSON.parse(sessionStorage.getItem('abelion-view-profile') || '{}');
+
+        if (usernameParam && (!data.name || data.name.toLowerCase() !== usernameParam.toLowerCase())) {
+          // If username in URL, try to mock a profile if not in session
+          data = {
+            name: usernameParam,
+            title: 'Arsiparis',
+            xp: 2500,
+            notesCount: 42,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${usernameParam}`
+          };
+        }
+
         if (!data.name) {
            window.location.href = 'biodata.html';
            return;

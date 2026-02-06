@@ -22,10 +22,14 @@
             const currentVersion = AbelionUtils.getVersionMeta().version;
             const lastSeen = localStorage.getItem(STORAGE_KEY);
 
-            // If remote version is newer than current OR user just updated and hasn't seen the changelog
-            const isFreshUpdate = updateInfo.version === currentVersion && lastSeen !== currentVersion;
+            // If we have already seen or acknowledged this version, don't show it
+            if (lastSeen === updateInfo.version) return;
 
-            if ((isNewer(updateInfo.version, currentVersion) || isFreshUpdate) && updateInfo.version !== lastSeen) {
+            // Show if remote is newer OR it is a fresh update (same version but hasn't been seen)
+            const isNewerThanLocal = isNewer(updateInfo.version, currentVersion);
+            const isFreshlyUpdated = updateInfo.version === currentVersion && lastSeen !== currentVersion;
+
+            if (isNewerThanLocal || isFreshlyUpdated) {
                 showUpdatePopup(updateInfo);
             }
         } catch (e) {

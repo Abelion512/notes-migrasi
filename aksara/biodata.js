@@ -450,8 +450,6 @@
     // Kualifikasi: Harus punya nama dan minimal 1 catatan
     const userQualifies = (summary.name && summary.name !== 'Penjelajah') && notes.length > 0;
 
-    // Only show user and official Abelion Lavv for context, or just the user.
-    // The user requested to reset dummy data.
     const allCompetitors = [];
 
     if (userQualifies) {
@@ -464,15 +462,6 @@
         notesCount: notes.length
       });
     }
-
-    // Official Abelion Lavv (as a goal/admin)
-    allCompetitors.push({
-      id: 'dev-1',
-      name: 'Abelion Lavv',
-      xp: 15000,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion',
-      notesCount: 150
-    });
 
     const sorted = allCompetitors.sort((a, b) => b.xp - a.xp);
 

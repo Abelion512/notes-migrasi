@@ -69,10 +69,10 @@
           <div class="list-item-subtitle" id="encryption-status">Memeriksa...</div>
         </div>
       </div>
-      <div class="list-item" id="secure-logout-btn">
+      <div class="list-item" id="secure-logout-btn" style="cursor: pointer;">
         <div class="list-item-content">
           <div class="list-item-title" style="color: var(--danger);">Kunci Vault</div>
-          <div class="list-item-subtitle">Kunci aplikasi sekarang</div>
+          <div class="list-item-subtitle">Keluar dan amankan data Anda (membutuhkan kunci untuk masuk kembali).</div>
         </div>
       </div>
     </div>
@@ -142,15 +142,13 @@
 
   <div id="confirm-modal" class="modal-sheet">
     <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="confirm-title">Konfirmasi</h2>
+      <div style="padding: 20px 16px;">
+        <h3 id="confirm-title" style="margin: 0 0 8px; font-size: 17px; font-weight: 600;">Konfirmasi</h3>
+        <p id="confirm-message" style="margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.4;"></p>
       </div>
-      <div class="modal-body" style="padding: 20px; text-align: center;">
-        <p id="confirm-message" style="color: var(--text-secondary); line-height: 1.5;"></p>
-      </div>
-      <div class="modal-footer" style="display: flex; flex-direction: column; gap: 10px; padding: 15px;">
-        <button id="confirm-ok" class="btn-blue" style="width: 100%;">Ya</button>
-        <button id="confirm-cancel" class="ghost-btn" style="width: 100%; color: var(--danger);">Batal</button>
+      <div class="alert-buttons">
+        <button id="confirm-cancel" class="alert-button">Batal</button>
+        <button id="confirm-ok" class="alert-button bold danger">Ya</button>
       </div>
     </div>
   </div>

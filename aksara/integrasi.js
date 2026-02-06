@@ -24,7 +24,11 @@
 
   // Unified Row Logic
   document.querySelectorAll('.integration-row').forEach(row => {
-    row.onclick = () => {
+    const header = row.querySelector('.list-item');
+    if (!header) return;
+
+    header.onclick = (e) => {
+      e.stopPropagation();
       const target = row.dataset.target;
       const area = document.getElementById(`${target}-config-area`);
       const isVisible = area.style.display === 'block';

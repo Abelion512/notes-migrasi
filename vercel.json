@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/profil/:username",
+      "destination": "/lembaran/publik.html?u=:username"
+    },
+    {
+      "source": "/:username",
+      "destination": "/lembaran/publik.html?u=:username"
+    }
+  ]
+}

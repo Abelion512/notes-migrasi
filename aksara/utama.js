@@ -41,33 +41,9 @@ async function checkAppVersion() {
   if (versionBadge) versionBadge.textContent = 'v' + currentMeta.version;
 
   if (storedVersion !== currentMeta.version) {
-    showChangelog(currentMeta.version);
+    // We already have a dedicated update popup in pembaruan.js
+    // Just sync the stored version to suppress redundant legacy checks
     localStorage.setItem('abelion-last-version', currentMeta.version);
-  }
-}
-
-function showChangelog(version) {
-  const modal = document.getElementById('changelog-modal');
-  const verEl = document.getElementById('changelog-version');
-  const listEl = document.getElementById('changelog-list');
-  const logs = AbelionUtils.getVersionChangelog();
-  const latest = logs.find(l => l.version.includes(version)) || logs[0];
-
-  if (modal && verEl && listEl && latest) {
-    verEl.textContent = latest.version;
-    listEl.innerHTML = '';
-    const ul = document.createElement('ul');
-    ul.style.display = 'flex';
-    ul.style.flexDirection = 'column';
-    ul.style.gap = '10px';
-    latest.highlights.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      ul.appendChild(li);
-    });
-    listEl.appendChild(ul);
-    if (ModalManager) ModalManager.open('changelog-modal', modal);
-    else modal.classList.add('show');
   }
 }
 
@@ -1525,12 +1501,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   const introKey = 'abelion-last-intro-timestamp';
   const lastIntro = localStorage.getItem(introKey);
   const now = Date.now();
-  const oneHour = 60 * 60 * 1000;
+  const twentyFourHours = 24 * 60 * 60 * 1000;
 
-  if (sessionStorage.getItem('skipIntro') || (lastIntro && (now - parseInt(lastIntro)) < oneHour)) {
+  // Only show intro once every 24 hours OR if it's a new session without skipIntro flag
+  if (sessionStorage.getItem('skipIntro') || (lastIntro && (now - parseInt(lastIntro)) < twentyFourHours)) {
     intro.style.display = 'none';
     main.classList.remove('hidden');
-    sessionStorage.removeItem('skipIntro');
     return;
   }
 
@@ -1539,7 +1515,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   let p = 0;
   const pt = document.getElementById('progress-text');
   let interval = setInterval(() => {
-    p = Math.min(100, p + Math.floor(Math.random() * 15 + 5));
+    // Faster progress for better performance feel
+    p = Math.min(100, p + Math.floor(Math.random() * 25 + 15));
     if (pt) pt.textContent = p + "%";
     if (p >= 100) {
       clearInterval(interval);
@@ -1547,7 +1524,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => {
         intro.style.display = "none";
         main.classList.remove('hidden');
-      }, 800);
+        sessionStorage.setItem('skipIntro', '1');
+      }, 400); // Reduced delay
     }
-  }, 50);
+  }, 30); // Faster interval
 });

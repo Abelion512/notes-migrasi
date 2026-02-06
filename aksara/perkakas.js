@@ -440,11 +440,9 @@
         if (messageEl) messageEl.textContent = message;
         if (okBtn) {
           okBtn.textContent = okLabel;
-          okBtn.style.display = 'block';
         }
         if (cancelBtn) {
           cancelBtn.textContent = cancelLabel;
-          cancelBtn.style.display = 'block';
         }
 
         const hide = (res) => {
