@@ -1,9 +1,9 @@
-# Panduan Kontribusi Abelion Notes
+# Panduan Kontribusi Lembaga Arsip Digital Abelion
 
-Terima kasih telah tertarik untuk berkontribusi pada Abelion Notes (Lembaga Arsip Digital Abelion). Kami sangat menghargai bantuan Anda dalam melestarikan ide dan dokumentasi.
+Terima kasih telah tertarik untuk berkontribusi pada Lembaga Arsip Digital Abelion (Lembaga Arsip Digital Abelion). Kami sangat menghargai bantuan Anda dalam melestarikan ide dan dokumentasi.
 
 ## Visi dan Misi
-Abelion Notes dikembangkan dengan prinsip:
+Lembaga Arsip Digital Abelion dikembangkan dengan prinsip:
 1. **Local-First:** Data diprioritaskan disimpan di perangkat pengguna.
 2. **Keamanan Tinggi:** Menganut konsep keamanan Linux dan enkripsi end-to-end (E2EE).
 3. **Estetika iOS:** Antarmuka yang bersih, intuitif, dan premium.

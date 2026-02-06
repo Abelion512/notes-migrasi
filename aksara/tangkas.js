@@ -101,7 +101,76 @@
     }
   ];
 
-  const BADGE_DEFINITIONS = {};
+  const BADGE_DEFINITIONS = {
+    artisan: {
+      id: 'artisan',
+      baseName: 'Pengrajin Kata',
+      icon: '✍️',
+      description: 'Menulis banyak catatan.',
+      criteria: 'Mencapai target jumlah catatan.',
+      tiers: [
+        { threshold: 10, xp: 100, suffix: 'I' },
+        { threshold: 50, xp: 250, suffix: 'II' },
+        { threshold: 100, xp: 500, suffix: 'III' }
+      ]
+    },
+    nightOwl: {
+      id: 'nightOwl',
+      baseName: 'Burung Hantu',
+      icon: '🦉',
+      description: 'Menulis di larut malam.',
+      criteria: 'Menulis antara jam 00:00 - 04:00.',
+      xp: 150
+    },
+    earlyBird: {
+      id: 'earlyBird',
+      baseName: 'Burung Pagi',
+      icon: '🌅',
+      description: 'Menulis di pagi buta.',
+      criteria: 'Menulis antara jam 05:00 - 08:00.',
+      xp: 150
+    },
+    reviewer: {
+      id: 'reviewer',
+      baseName: 'Pemeriksa',
+      icon: '🧐',
+      description: 'Sering memperbarui catatan lama.',
+      criteria: 'Memperbarui catatan yang berumur > 30 hari sebanyak 5 kali.',
+      xp: 200
+    },
+    patcher: {
+      id: 'patcher',
+      baseName: 'Penyelamat Streak',
+      icon: '🛡️',
+      description: 'Menjaga streak menulis selama seminggu.',
+      criteria: 'Streak menulis mencapai 7 hari.',
+      xp: 300
+    },
+    veteran: {
+      id: 'veteran',
+      baseName: 'Veteran',
+      icon: '🎖️',
+      description: 'Pengguna setia Abelion selama satu tahun.',
+      criteria: 'Akun berumur 365 hari dan 100 kali login.',
+      xp: 1000
+    },
+    projectTamer: {
+      id: 'projectTamer',
+      baseName: 'Penjinak Proyek',
+      icon: '🎯',
+      description: 'Menyelesaikan banyak checklist.',
+      criteria: 'Menyelesaikan 10 item checklist.',
+      xp: 250
+    },
+    purist: {
+      id: 'purist',
+      baseName: 'Purist',
+      icon: '🔐',
+      description: 'Menggunakan fitur catatan rahasia.',
+      criteria: 'Membuat 5 catatan rahasia.',
+      xp: 300
+    }
+  };
 
   function createDefaultState() {
     const now = new Date().toISOString();
@@ -451,19 +520,19 @@
   }
 
   const SPECIAL_DATES_MAP = {
-    '0-1': 'Tahun Baru',
-    '1-14': 'Hari Kasih Sayang',
-    '3-21': 'Hari Kartini',
-    '4-1': 'Hari Buruh',
-    '4-2': 'Hari Pendidikan Nasional',
-    '4-20': 'Hari Kebangkitan Nasional',
-    '5-1': 'Hari Lahir Pancasila',
-    '7-17': 'Hari Kemerdekaan RI',
-    '9-1': 'Hari Kesaktian Pancasila',
-    '9-28': 'Hari Sumpah Pemuda',
-    '10-10': 'Hari Pahlawan',
-    '11-22': 'Hari Ibu',
-    '11-25': 'Hari Natal'
+    '0-1': '🎆 Tahun Baru',
+    '1-14': '💖 Hari Kasih Sayang',
+    '3-21': '👸 Hari Kartini',
+    '4-1': '🛠️ Hari Buruh',
+    '4-2': '📚 Hari Pendidikan Nasional',
+    '4-20': '🇮🇩 Hari Kebangkitan Nasional',
+    '5-1': '🦅 Hari Lahir Pancasila',
+    '7-17': '🇮🇩 Hari Kemerdekaan RI',
+    '9-1': '🛡️ Hari Kesaktian Pancasila',
+    '9-28': '✊ Hari Sumpah Pemuda',
+    '10-10': '🎖️ Hari Pahlawan',
+    '11-22': '👩‍👧‍👦 Hari Ibu',
+    '11-25': '🎄 Hari Natal'
   };
 
   async function getCustomSpecialDays() {

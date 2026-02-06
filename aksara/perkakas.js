@@ -16,7 +16,7 @@
   const APP_VERSION_BASE = Object.freeze({
     major: 2026,
     minor: 2,
-    patch: 7,
+    patch: 6,
     channel: 'premium-release',
     codename: 'Integrasi Gemilang',
     build: '2026-02-06',
@@ -29,7 +29,7 @@
     versioning: APP_VERSION_BASE,
     changelog: Object.freeze([
       {
-        version: '2026.02.7',
+        version: '2026.02.6',
         releasedAt: '2026-02-06',
         highlights: [
           'Integrasi Modular: Halaman baru untuk konfigurasi Supabase dan Notion.',
@@ -83,7 +83,7 @@
     if (!html) return '';
     const template = document.createElement('template');
     template.innerHTML = html;
-    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV']);
+    const allowed = new Set(['UL', 'OL', 'LI', 'P', 'BR', 'STRONG', 'EM', 'CODE', 'PRE', 'SPAN', 'DIV', 'INPUT']);
 
     const walk = (node, depth) => {
       if (depth > maxDepth) {
@@ -99,7 +99,16 @@
             const text = document.createTextNode(child.textContent || '');
             child.replaceWith(text);
           } else {
-            Array.from(child.attributes).forEach(attr => child.removeAttribute(attr.name));
+            const allowedAttrs = {
+              'INPUT': ['type', 'checked', 'disabled'],
+              'A': ['href', 'class', 'data-target']
+            };
+            const tagName = child.tagName;
+            Array.from(child.attributes).forEach(attr => {
+              if (!allowedAttrs[tagName] || !allowedAttrs[tagName].includes(attr.name)) {
+                child.removeAttribute(attr.name);
+              }
+            });
             walk(child, depth + 1);
           }
         }

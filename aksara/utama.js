@@ -183,11 +183,11 @@ function renderHeroContent() {
   const greetingEl = document.getElementById('dynamic-greeting');
   if (greetingEl) {
     const hour = new Date().getHours();
-    let prefix = 'Halo';
-    if (hour >= 5 && hour < 11) prefix = 'Selamat Pagi';
-    else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang';
-    else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore';
-    else prefix = 'Selamat Malam';
+    let prefix = 'Halo 👋';
+    if (hour >= 5 && hour < 11) prefix = 'Selamat Pagi 🌅';
+    else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang ☀️';
+    else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore 🌇';
+    else prefix = 'Selamat Malam 🌙';
     greetingEl.textContent = `${prefix}, siap mencatat hari ini?`;
   }
 }
@@ -1307,7 +1307,7 @@ async function handleSmartExport() {
         // Footer
         doc.setFontSize(8);
         doc.setTextColor(180, 180, 180);
-        doc.text('Dibuat dengan Abelion Notes', 20, 287);
+        doc.text('Dibuat dengan Lembaga Arsip Digital Abelion', 20, 287);
       });
       doc.save(`abelion-selected-${dateStr}.pdf`);
     }

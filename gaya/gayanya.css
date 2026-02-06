@@ -973,3 +973,66 @@ select.input-control {
   background: var(--primary);
   color: white;
 }
+
+/* iOS Checkbox Redesign */
+.checkbox-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-line input[type="checkbox"],
+ul li input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+  vertical-align: middle;
+  transition: all 0.2s cubic-bezier(0.2, 1, 0.2, 1);
+}
+
+.checkbox-line input[type="checkbox"]:checked,
+ul li input[type="checkbox"]:checked {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.checkbox-line input[type="checkbox"]:checked::after,
+ul li input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-line span {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.checkbox-line input[type="checkbox"]:checked + span,
+ul li input[type="checkbox"]:checked + span {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+/* For marked output where text is just after input */
+ul li input[type="checkbox"] {
+  margin-right: 8px;
+}

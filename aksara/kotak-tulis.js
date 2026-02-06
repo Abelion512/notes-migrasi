@@ -37,7 +37,19 @@
   function markdownToHtml(markdown) {
     if (typeof marked !== 'undefined') {
       // Use marked if available
-      let html = marked.parse(String(markdown || ''));
+      const renderer = new marked.Renderer();
+      renderer.listitem = (item) => {
+        const taskRegex = /^\[([ xX])\]\s+(.*)/;
+        const match = item.text.match(taskRegex);
+        if (match || item.task) {
+           const checked = item.checked || (match && match[1].toLowerCase() === 'x');
+           const text = match ? match[2] : item.text;
+           return `<li style="list-style:none; margin-left:-20px;"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${text}</span></li>\n`;
+        }
+        return `<li>${item.text}</li>\n`;
+      };
+
+      let html = marked.parse(String(markdown || ''), { renderer });
       // Support WikiLinks: [[Target]] -> <a href="#" class="wiki-link" data-target="Target">[[Target]]</a>
       html = html.replace(/\[\[(.+?)\]\]/g, '<a href="#" class="wiki-link" data-target="$1">[[$1]]</a>');
       return sanitizeRichContent(html);
@@ -58,7 +70,7 @@
       if (checkMatch) {
         if (inList) { htmlParts.push('</ul>'); inList = false; }
         const checked = checkMatch[1].toLowerCase() === 'x';
-        htmlParts.push(`<div class="checkbox-line"><input type="checkbox" ${checked ? 'checked' : ''} disabled> ${inlineMarkdown(checkMatch[2])}</div>`);
+        htmlParts.push(`<div class="checkbox-line"><input type="checkbox" ${checked ? 'checked' : ''} disabled> <span>${inlineMarkdown(checkMatch[2])}</span></div>`);
         return;
       }
       const listMatch = line.match(/^\s*[-*]\s+(.*)/);

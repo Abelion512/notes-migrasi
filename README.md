@@ -1,6 +1,6 @@
-# Lembaga Arsip Digital Abelion (Abelion Notes)
+# Lembaga Arsip Digital Abelion (Abelion)
 
-**Abelion Notes** adalah sistem manajemen informasi dan dokumentasi modern yang mengedepankan kedaulatan data, keamanan tingkat tinggi, dan pengalaman pengguna premium. Mengadopsi prinsip *Local-first* dan estetika iOS, platform ini dirancang untuk pelestarian ide dan catatan secara sistematis.
+**Lembaga Arsip Digital Abelion** adalah sistem manajemen informasi dan dokumentasi modern yang mengedepankan kedaulatan data, keamanan tingkat tinggi, dan pengalaman pengguna premium. Mengadopsi prinsip *Local-first* dan estetika iOS, platform ini dirancang untuk pelestarian ide dan catatan secara sistematis.
 
 🚀 **Akses Platform:** [https://abelion512.github.io/Notes](https://abelion512.github.io/Notes)
 
