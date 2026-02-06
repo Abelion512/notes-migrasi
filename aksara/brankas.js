@@ -799,6 +799,11 @@
     return !!meta.encryption?.enabled;
   }
 
+  function isTrashEncrypted() {
+    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    return !!(meta.encryption?.enabled && SENSITIVE_KEYS.has(STORAGE_KEYS.TRASH));
+  }
+
   async function getMeta() {
     await ready;
     return { ...(cacheGet(META_KEY) || DEFAULT_META) };
@@ -875,7 +880,7 @@
     const trash = await getTrash();
     trash.push(note);
 
-    if (activeEngine === ENGINE.INDEXED_DB && !encrypted) {
+    if (activeEngine === ENGINE.INDEXED_DB && !isTrashEncrypted()) {
       await idbPut('trash', note);
     } else {
       await setValue(STORAGE_KEYS.TRASH, trash);
@@ -903,7 +908,7 @@
 
     if (toDelete.length === 0) return 0;
 
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    if (activeEngine === ENGINE.INDEXED_DB && !isTrashEncrypted()) {
       await idbTransaction('trash', 'readwrite', (store) => {
         toDelete.forEach(id => store.delete(id));
       });
@@ -912,6 +917,22 @@
     }
 
     return toDelete.length;
+  }
+
+  async function deleteFromTrash(noteId) {
+    await ready;
+    const trash = await getTrash();
+    const noteIdx = trash.findIndex(n => n.id === noteId);
+    if (noteIdx === -1) return false;
+
+    trash.splice(noteIdx, 1);
+
+    if (activeEngine === ENGINE.INDEXED_DB && !isTrashEncrypted()) {
+      await idbTransaction('trash', 'readwrite', (store) => store.delete(noteId));
+    } else {
+      await setValue(STORAGE_KEYS.TRASH, trash);
+    }
+    return true;
   }
 
   async function restoreFromTrash(noteId) {
@@ -923,7 +944,7 @@
     const note = trash.splice(noteIdx, 1)[0];
     delete note.deletedAt;
 
-    if (activeEngine === ENGINE.INDEXED_DB) {
+    if (activeEngine === ENGINE.INDEXED_DB && !isTrashEncrypted()) {
       await idbTransaction('trash', 'readwrite', (store) => store.delete(noteId));
     } else {
       await setValue(STORAGE_KEYS.TRASH, trash);
@@ -1007,6 +1028,7 @@
     getTrash,
     moveToTrash,
     restoreFromTrash,
+    deleteFromTrash,
     purgeOldTrash,
     vacuum,
     destroy: async () => {

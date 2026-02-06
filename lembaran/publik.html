@@ -87,8 +87,8 @@
       </div>
       <div class="profile-fallback-img" id="profile-fallback">👤</div>
 
-      <h1 class="profile-header-name" id="pub-name">Loading...</h1>
-      <p class="profile-header-title" id="pub-title">Explorer</p>
+      <h1 class="profile-header-name" id="pub-name">Memuat...</h1>
+      <p class="profile-header-title" id="pub-title">Penjelajah</p>
 
       <div class="profile-stats-grid">
         <div class="stat-card">
@@ -123,7 +123,7 @@
         }
 
         document.getElementById('pub-name').textContent = data.name.replace(' (Anda)', '');
-        document.getElementById('pub-title').textContent = data.title || (data.xp > 1000 ? 'Veteran' : 'Novice');
+        document.getElementById('pub-title').textContent = data.title || (data.xp > 1000 ? 'Perintis' : 'Penyusun');
         document.getElementById('pub-xp').textContent = (data.xp || 0).toLocaleString();
         document.getElementById('pub-notes').textContent = data.notesCount || 0;
 
@@ -144,7 +144,7 @@
         }
       } catch (err) {
         console.error('Failed to load public profile:', err);
-        document.getElementById('pub-name').textContent = 'Error loading profile';
+        document.getElementById('pub-name').textContent = 'Gagal memuat profil';
       }
     });
   </script>

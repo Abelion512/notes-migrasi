@@ -479,14 +479,21 @@ h3 { font-size: 17px; font-weight: 600; }
 .about-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: transparent;
   display: none;
   align-items: flex-end; /* Sheet style */
   justify-content: center;
-  z-index: 2000;
 }
 
 .about-modal.show { display: flex; }
+
+/* Only the bottom-most modal gets the dark backdrop and blur */
+.about-modal.show[data-modal-index="0"],
+.note-editor-modal.show[data-modal-index="0"] {
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
 
 .about-modal-content {
   background: var(--surface);
@@ -527,10 +534,9 @@ h3 { font-size: 17px; font-weight: 600; }
 .note-editor-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: transparent;
   display: none;
   align-items: flex-end;
-  z-index: 3000;
 }
 
 .note-editor-modal.show { display: flex; }
@@ -548,8 +554,6 @@ h3 { font-size: 17px; font-weight: 600; }
 }
 
 .note-editor-modal {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   transition: opacity 0.3s ease;
 }
 
@@ -568,18 +572,19 @@ h3 { font-size: 17px; font-weight: 600; }
 }
 
 .editor-title-input {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
   border: none;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   background: transparent;
   color: var(--text-primary);
   outline: none;
+  letter-spacing: -0.5px;
 }
 
 .editor-textarea {
-  font-size: 17px;
+  font-size: 18px;
   border: none;
   width: 100%;
   height: auto;
@@ -588,15 +593,15 @@ h3 { font-size: 17px; font-weight: 600; }
   color: var(--text-primary);
   outline: none;
   resize: none;
-  line-height: 1.8;
-  letter-spacing: -0.01em;
-  font-family: var(--font-stack);
+  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 #editor-preview-area {
-  font-size: 17px;
-  line-height: 1.8;
+  font-size: 18px;
+  line-height: 1.6;
   color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 #editor-preview-area h2, #editor-preview-area h3, #editor-preview-area h4 {

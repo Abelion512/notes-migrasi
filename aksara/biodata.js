@@ -139,15 +139,15 @@
     if (!summary) return;
 
     if (dom.avatar) {
-      dom.avatar.src = summary.photo || '../pustaka/default-avatar.svg';
+      dom.avatar.src = summary.photo || '../pustaka/Avatar_Bawaan.svg';
       dom.avatar.classList.toggle('is-empty', !summary.photo);
     }
 
     if (dom.greeting) dom.greeting.textContent = greetingMessage(summary.name);
-    if (dom.nameDisplay) dom.nameDisplay.textContent = summary.name || 'Username';
+    if (dom.nameDisplay) dom.nameDisplay.textContent = summary.name || 'Nama Pengguna';
     if (dom.levelBadge) dom.levelBadge.textContent = `Lv ${summary.level}`;
 
-    const titleValue = summary.title || 'Explorer';
+    const titleValue = summary.title || 'Penjelajah';
     if (dom.title) dom.title.textContent = titleValue;
     if (dom.titleDisplay) dom.titleDisplay.textContent = titleValue;
 
@@ -448,27 +448,31 @@
     const notes = await window.AbelionStorage.getNotes();
 
     // Kualifikasi: Harus punya nama dan minimal 1 catatan
-    const userQualifies = (summary.name && summary.name !== 'Explorer') && notes.length > 0;
+    const userQualifies = (summary.name && summary.name !== 'Penjelajah') && notes.length > 0;
 
-    // Generate mock competitors based on user XP
-    const userXp = summary.totalXp;
-    const allCompetitors = [
-      { id: 'dev-1', name: 'Abelion Lavv', xp: Math.floor(userXp * 1.5) + 1200, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion', notesCount: 15 },
-      { id: 'dev-2', name: 'Sora', xp: Math.floor(userXp * 1.2) + 500, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sora', notesCount: 8 },
-      { id: 'dev-3', name: 'Ravi', xp: Math.floor(userXp * 0.8) + 200, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ravi', notesCount: 12 },
-      { id: 'dev-4', name: 'Luna', xp: Math.floor(userXp * 0.6) + 100, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna', notesCount: 5 }
-    ];
+    // Only show user and official Abelion Lavv for context, or just the user.
+    // The user requested to reset dummy data.
+    const allCompetitors = [];
 
     if (userQualifies) {
       allCompetitors.push({
         id: 'me',
         name: summary.name + ' (Anda)',
-        xp: userXp,
-        avatar: summary.photo || '../pustaka/default-avatar.svg',
+        xp: summary.totalXp,
+        avatar: summary.photo || '../pustaka/Avatar_Bawaan.svg',
         isUser: true,
         notesCount: notes.length
       });
     }
+
+    // Official Abelion Lavv (as a goal/admin)
+    allCompetitors.push({
+      id: 'dev-1',
+      name: 'Abelion Lavv',
+      xp: 15000,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion',
+      notesCount: 150
+    });
 
     const sorted = allCompetitors.sort((a, b) => b.xp - a.xp);
 

@@ -134,7 +134,7 @@
       avatar.classList.remove('is-empty');
       avatar.alt = 'Foto profil terkini';
     } else {
-      avatar.src = '../pustaka/default-avatar.svg';
+      avatar.src = '../pustaka/Avatar_Bawaan.svg';
       avatar.classList.add('is-empty');
       avatar.alt = 'Belum ada foto profil';
     }
@@ -451,7 +451,8 @@
   }
 
   async function resetProfile() {
-    if (!confirm('Reset semua data profil?')) return;
+    const ok = await AbelionUtils.confirmAction('Reset Profil', 'Apakah Anda yakin ingin menghapus semua data profil dan pencapaian?');
+    if (!ok) return;
     profileState = cloneDefaultProfile();
     await Storage.setValue(STORAGE_KEYS.PROFILE, profileState);
     populateForm();
