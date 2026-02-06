@@ -1188,13 +1188,8 @@ function setupDelegation() {
       } else if (action === 'delete-perm') {
         const confirmed = await confirmAction('Hapus Permanen', 'Tindakan ini tidak bisa dibatalkan.', 'Hapus Selamanya');
         if (confirmed) {
-           // Implement individual delete from trash
-           const trash = await Storage.getTrash();
-           const newTrash = trash.filter(n => n.id !== id);
-           // We need a way to set trash directly or delete by id
-           // Since brankas.js doesn't have setTrash, I'll use vacuum as a hint or implement it if possible
-           // Actually, let's just use Storage.vacuum() for now as suggested or implement a simple one
-           alert('Segera hadir: Hapus permanen individu.');
+           await Storage.deleteFromTrash(id);
+           renderNotes();
         }
       } else if (action === 'copy') {
         const text = `${note.title}\n\n${markdownFromNote(note)}`;
