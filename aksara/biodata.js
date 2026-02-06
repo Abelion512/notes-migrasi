@@ -56,10 +56,10 @@
 
   function greetingMessage(name) {
     const hour = new Date().getHours();
-    if (hour >= 5 && hour < 11) return `Selamat pagi, ${name} 👋`;
-    if (hour >= 11 && hour < 15) return `Selamat siang, ${name} 👋`;
-    if (hour >= 15 && hour < 19) return `Selamat sore, ${name} 👋`;
-    return `Selamat malam, ${name} 👋`;
+    if (hour >= 5 && hour < 11) return `Selamat pagi, ${name}`;
+    if (hour >= 11 && hour < 15) return `Selamat siang, ${name}`;
+    if (hour >= 15 && hour < 19) return `Selamat sore, ${name}`;
+    return `Selamat malam, ${name}`;
   }
 
   function renderBadges(summary) {
@@ -78,9 +78,9 @@
         || 'https://olivx.gitbook.io/abelion-notes/getting-started/claim-exp';
       empty.innerHTML = `
         <div class="badge-empty-copy">
-          <div class="badge-empty-icon">🎖️</div>
+          <div class="badge-empty-icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5"><path d="M12 15l-2 5 2 2 2-2-2-5z"></path><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"></path><circle cx="12" cy="7" r="7"></circle></svg></div>
           <p style="margin:0;color:var(--text-muted);font-size:0.95em;">
-            Belum ada badge.<br>
+            Belum ada pencapaian.<br>
             <small>Mulai kumpulkan XP untuk membuka pencapaian.</small>
           </p>
           <a class="badge-guide-link" href="${guideUrl}" target="_blank" rel="noopener">Panduan klaim XP</a>
@@ -285,7 +285,7 @@
 
     const iconEl = document.createElement('div');
     iconEl.className = 'badge-detail-icon';
-    iconEl.textContent = badge.icon || '🎖️';
+    iconEl.textContent = badge.icon || '';
 
     const title = document.createElement('h2');
     title.textContent = badge.name ? sanitizeText?.(badge.name) || badge.name : 'Badge';
@@ -480,7 +480,7 @@
           <div class="list-item-title">${sanitizeText(c.name)}</div>
           <div class="list-item-subtitle">${formatNumber(c.xp)} XP • ${c.notesCount} Catatan</div>
         </div>
-        ${i === 0 ? '<div style="font-size: 20px;">👑</div>' : '<span class="list-item-chevron">❯</span>'}
+        ${i === 0 ? '<div style="color: var(--warning); font-weight: 800; font-size: 12px; background: rgba(255,149,0,0.1); padding: 4px 8px; border-radius: 8px;">TERBAIK</div>' : '<span class="list-item-chevron">❯</span>'}
       </div>
     `).join('');
 

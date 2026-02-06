@@ -19,7 +19,7 @@
     patch: 7,
     channel: 'premium-release',
     codename: 'Integrasi Gemilang',
-    build: '2026-02-07',
+    build: '2026-02-06',
     environment: 'production'
   });
 
@@ -30,19 +30,13 @@
     changelog: Object.freeze([
       {
         version: '2026.02.7',
-        releasedAt: '2026-02-07',
+        releasedAt: '2026-02-06',
         highlights: [
           'Integrasi Modular: Halaman baru untuk konfigurasi Supabase dan Notion.',
           'Security Vault: Penyimpanan kunci API yang aman dan terenkripsi.',
           'Auto-Update Check: Deteksi otomatis versi baru dengan notifikasi popup.',
           'UX Storage: Analisis penggunaan memori dan fitur hapus cache.',
           'Grafik XP Proximity: Tooltip grafik tetap muncul meskipun kursor tidak tepat di titik data.',
-        ]
-      },
-      {
-        version: '2026.02.6',
-        releasedAt: '2026-02-06',
-        highlights: [
           'Premium Loader: Tampilan intro baru dengan efek Aurora Glass dan posisi sentral.',
           'UI Refinement: Menghilangkan outline hitam pada feedback tap untuk pengalaman lebih halus.',
           'Navigation Upgrade: Redesain tombol tambah menjadi action button yang menonjol.',

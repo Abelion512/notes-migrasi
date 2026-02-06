@@ -144,7 +144,7 @@ function showXPToast({ xp, message, streak, bonus }) {
   const toast = document.createElement('div');
   toast.className = 'xp-toast';
   toast.innerHTML = `
-    <div class="xp-toast-icon">⭐</div>
+    <div class="xp-toast-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--primary)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
     <div class="xp-toast-content">
       <strong>+${xp} XP</strong>
       <span>${message || ''}</span>
@@ -213,7 +213,7 @@ async function renderMoodGraph() {
 
   el.innerHTML = days.map(m => `
     <div class="mood-bar ${m.isToday ? 'today' : ''}">
-      <div class="mood-emoji">${stored[m.iso] || '⚪'}</div>
+      <div class="mood-emoji">${stored[m.iso] || '<div style="width:24px;height:24px;border:2px solid var(--border-subtle);border-radius:50%"></div>'}</div>
       <div class="mood-date">${m.label}</div>
     </div>
   `).join('');
@@ -303,10 +303,10 @@ function renderFolders() {
   });
 
   const archivedActive = activeFolderId === 'archived' ? ' active' : '';
-  html += `<div class="folder-pill${archivedActive}" data-id="archived">📦 Arsip</div>`;
+  html += `<div class="folder-pill${archivedActive}" data-id="archived">Arsip</div>`;
 
   const trashActive = activeFolderId === 'trash' ? ' active' : '';
-  html += `<div class="folder-pill${trashActive}" data-id="trash">🗑️ Sampah</div>`;
+  html += `<div class="folder-pill${trashActive}" data-id="trash">Sampah</div>`;
 
   el.innerHTML = html;
 
@@ -558,7 +558,7 @@ async function renderNotes(append = false) {
             <div class="list-item-title">${sanitizeText(n.title || 'Tanpa Judul')}</div>
             <div class="list-item-subtitle">Dihapus ${formatTanggalRelative(n.deletedAt)}</div>
           </div>
-          <div class="list-item-chevron">🗑️</div>
+          <div class="list-item-chevron"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>
         </div>
       </div>
     `).join('');
@@ -601,7 +601,7 @@ async function renderNotes(append = false) {
         <div class="list-item-actions list-item-actions-left">
           <button class="swipe-action-btn pin" data-action="pin" data-id="${n.id}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            <span>${n.pinned ? 'Lepas' : 'Pin'}</span>
+            <span>${n.pinned ? 'Lepas' : 'Sematkan'}</span>
           </button>
         </div>
         <div class="list-item-actions list-item-actions-right">
@@ -617,7 +617,7 @@ async function renderNotes(append = false) {
         <div class="list-item${isSelected ? ' selected' : ''}" data-id="${n.id}" tabindex="0">
           <div class="list-item-content">
             <div class="list-item-title">
-              ${n.pinned ? '📌 ' : ''}${isSecret ? '🔒 ' : ''}${n.icon ? n.icon + ' ' : ''}${sanitizeText(n.title || 'Tanpa Judul')}
+              ${n.pinned ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="var(--primary)" style="margin-right:4px; vertical-align:middle"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path></svg>' : ''}${isSecret ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="var(--text-muted)" style="margin-right:4px; vertical-align:middle"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>' : ''}${n.icon ? n.icon + ' ' : ''}${sanitizeText(n.title || 'Tanpa Judul')}
             </div>
             <div class="list-item-subtitle">
               <span style="color: var(--text-muted); min-width: 80px;">${formatTanggalRelative(n.date)}</span>
@@ -718,12 +718,12 @@ function initCommandPalette() {
   if (!palette || !input || !results) return;
 
   const commands = [
-    { name: 'Tulis Catatan Baru', icon: '📝', action: () => openNoteModal('create') },
-    { name: 'Buka Pengaturan', icon: '⚙️', action: () => window.location.href = 'lembaran/setelan.html' },
-    { name: 'Buka Profil', icon: '👤', action: () => window.location.href = 'lembaran/biodata.html' },
-    { name: 'Lihat Arsip', icon: '📦', action: () => { activeFolderId = 'archived'; renderFolders(); renderNotes(); } },
-    { name: 'Lihat Sampah', icon: '🗑️', action: () => { activeFolderId = 'trash'; renderFolders(); renderNotes(); } },
-    { name: 'Ganti Tema', icon: '🌓', action: () => {
+    { name: 'Tulis Catatan Baru', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>', action: () => openNoteModal('create') },
+    { name: 'Buka Pengaturan', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>', action: () => window.location.href = 'lembaran/setelan.html' },
+    { name: 'Buka Profil', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>', action: () => window.location.href = 'lembaran/biodata.html' },
+    { name: 'Lihat Arsip', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>', action: () => { activeFolderId = 'archived'; renderFolders(); renderNotes(); } },
+    { name: 'Lihat Sampah', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>', action: () => { activeFolderId = 'trash'; renderFolders(); renderNotes(); } },
+    { name: 'Ganti Tema', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>', action: () => {
         const current = AbelionTheme.getTheme();
         const next = current === 'dark' ? 'light' : 'dark';
         AbelionTheme.applyTheme(next);
@@ -777,7 +777,7 @@ function initCommandPalette() {
         const item = document.createElement('div');
         item.className = 'command-item';
         item.style = 'padding: 12px 15px; border-radius: 10px; cursor: pointer; display: flex; gap: 10px; align-items: center; transition: background 0.2s;';
-        item.innerHTML = `<span>📄</span> <span>${sanitizeText(n.title)}</span>`;
+        item.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> <span>${sanitizeText(n.title)}</span>`;
         item.onclick = () => { openNoteModal('edit', n); hide(); };
         item.onmouseover = () => item.style.background = 'var(--surface-alt)';
         item.onmouseout = () => item.style.background = 'transparent';
@@ -982,20 +982,20 @@ window.ContextMenu = {
       const id = this.activeTarget.id;
       const note = notes.find(n => n.id === id);
       this.el.innerHTML = `
-        <div class="context-menu-item" data-action="edit"><span>✏️</span> Edit Catatan</div>
-        <div class="context-menu-item" data-action="move"><span>📂</span> Pindahkan Folder</div>
-        <div class="context-menu-item" data-action="pin"><span>📌</span> ${note.pinned ? 'Lepas Pin' : 'Pin Catatan'}</div>
-        <div class="context-menu-item" data-action="star"><span>⭐</span> ${note.isFavorite ? 'Hapus Favorit' : 'Jadikan Favorit'}</div>
+        <div class="context-menu-item" data-action="edit">Edit Catatan</div>
+        <div class="context-menu-item" data-action="move">Pindahkan Folder</div>
+        <div class="context-menu-item" data-action="pin">${note.pinned ? 'Lepas Sematan' : 'Sematkan Catatan'}</div>
+        <div class="context-menu-item" data-action="star">${note.isFavorite ? 'Hapus Favorit' : 'Jadikan Favorit'}</div>
         <div class="context-menu-divider"></div>
-        <div class="context-menu-item" data-action="archive"><span>📦</span> ${note.isArchived ? 'Buka Arsip' : 'Arsipkan'}</div>
-        <div class="context-menu-item" data-action="copy"><span>📋</span> Salin Teks</div>
+        <div class="context-menu-item" data-action="archive">${note.isArchived ? 'Buka Arsip' : 'Arsipkan'}</div>
+        <div class="context-menu-item" data-action="copy">Salin Teks</div>
         <div class="context-menu-divider"></div>
-        <div class="context-menu-item danger" data-action="delete"><span>🗑️</span> Hapus</div>
+        <div class="context-menu-item danger" data-action="delete">Hapus</div>
       `;
     } else if (this.activeType === 'folder') {
        this.el.innerHTML = `
-         <div class="context-menu-item" data-action="edit-folder"><span>✏️</span> Edit Folder</div>
-         <div class="context-menu-item danger" data-action="delete-folder"><span>🗑️</span> Hapus Folder</div>
+         <div class="context-menu-item" data-action="edit-folder">Edit Folder</div>
+         <div class="context-menu-item danger" data-action="delete-folder">Hapus Folder</div>
        `;
     }
   }

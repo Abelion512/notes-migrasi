@@ -128,7 +128,7 @@
               <div class="section-card" style="padding: 0;">
                 <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
                    <span style="flex: 1; font-size: 17px;">Ikon</span>
-                   <input name="icon" maxlength="2" style="width: 40px; border: none; text-align: right; background: transparent; font-size: 17px;" placeholder="📄">
+                   <input name="icon" maxlength="2" style="width: 40px; border: none; text-align: right; background: transparent; font-size: 17px;" placeholder="📁">
                 </div>
                 <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
                    <span style="flex: 1; font-size: 17px;">Folder</span>
@@ -151,9 +151,9 @@
            <button type="button" class="toolbar-btn-ios" data-cmd="bold" title="Tebal"><b>B</b></button>
            <button type="button" class="toolbar-btn-ios" data-cmd="italic" title="Miring"><i>I</i></button>
            <button type="button" class="toolbar-btn-ios" data-cmd="heading" title="Judul">H</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="list" title="Daftar">•</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas">☑</button>
-           <button type="button" class="toolbar-btn-ios" data-cmd="link" title="Wiki Link">[[ ]]</button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="list" title="Daftar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></button>
+           <button type="button" class="toolbar-btn-ios" data-cmd="link" title="Wiki Link"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></button>
         </div>
       </div>
     `;

@@ -56,129 +56,52 @@
   const TIER_DEFINITIONS = [
     {
       id: 'novice',
-      name: 'Pemula',
-      label: 'Pemula',
+      name: 'Penyusun',
+      label: 'Penyusun',
       min: 1,
-      max: 50,
-      summary: 'Fokus membangun kebiasaan menulis harian.',
-      hint: 'Pertahankan ritme mencatat untuk menembus Magang.'
+      max: 20,
+      summary: 'Tahap awal dalam merintis dokumentasi dan arsip pribadi.',
+      hint: 'Teruslah mencatat untuk mencapai kualifikasi Dokumentalis.'
     },
     {
       id: 'apprentice',
-      name: 'Magang',
-      label: 'Magang',
-      min: 51,
-      max: 150,
-      summary: 'Eksplorasi fitur catatan untuk memperkaya proses belajar.',
-      hint: 'Gunakan variasi catatan untuk menuju Cendekia.'
+      name: 'Dokumentalis',
+      label: 'Dokumentalis',
+      min: 21,
+      max: 60,
+      summary: 'Telah menunjukkan dedikasi dalam mengelola informasi secara sistematis.',
+      hint: 'Perdalam pengorganisasian data untuk menjadi seorang Arsiparis.'
     },
     {
       id: 'scholar',
-      name: 'Cendekia',
-      label: 'Cendekia',
-      min: 151,
-      max: 400,
-      summary: 'Satukan pola dan wawasan untuk mempercepat peningkatan level.',
-      hint: 'Optimalkan konsistensi untuk menembus Arsiparis.'
+      name: 'Arsiparis',
+      label: 'Arsiparis',
+      min: 61,
+      max: 150,
+      summary: 'Ahli dalam menjaga keberlangsungan dan aksesibilitas catatan penting.',
+      hint: 'Kurasilah pengetahuan Anda untuk menembus jenjang Kurator.'
     },
     {
       id: 'archivist',
-      name: 'Arsiparis',
-      label: 'Arsiparis',
-      min: 401,
-      max: 1000,
-      summary: 'Kurasi catatanmu dan bantu diri masa depan menemukan referensi.',
-      hint: 'Bersiap menuju tier puncak dengan menjaga kualitas catatan.'
+      name: 'Kurator',
+      label: 'Kurator',
+      min: 151,
+      max: 300,
+      summary: 'Memilih dan memelihara koleksi informasi dengan standar ketelitian tinggi.',
+      hint: 'Pertahankan integritas arsip untuk diakui sebagai Konservator.'
     },
     {
       id: 'luminary',
-      name: 'Legenda',
-      label: 'Legenda',
-      min: 1001,
+      name: 'Konservator',
+      label: 'Konservator',
+      min: 301,
       max: Number.POSITIVE_INFINITY,
-      summary: 'Legenda catatan yang terus berbagi wawasan.',
-      hint: 'Terus eksplorasi tantangan baru untuk mempertahankan status.'
+      summary: 'Penjaga warisan informasi yang berdedikasi penuh pada keabadian catatan.',
+      hint: 'Anda adalah penjaga utama dalam hierarki dokumentasi Abelion.'
     }
   ];
 
-  const BADGE_DEFINITIONS = {
-    patcher: {
-      id: 'patcher',
-      icon: '🪔',
-      baseName: 'The Patcher',
-      description: 'Apresiasi konsistensi streak catatan selama sepekan penuh.',
-      criteria: 'Mencatat selama 7 hari berturut-turut (streak 7 hari).',
-      xp: 50
-    },
-    artisan: {
-      id: 'artisan',
-      icon: '🪶',
-      baseName: 'The Artisan',
-      description: 'Menghargai ketekunan dalam menyelesaikan banyak catatan.',
-      criteria: 'Menuntaskan 100 catatan. Ulangi untuk setiap tier lanjutan.',
-      tiers: [
-        { threshold: 100, xp: 100, suffix: 'I' },
-        { threshold: 200, xp: 150, suffix: 'II' },
-        { threshold: 500, xp: 250, suffix: 'III' }
-      ]
-    },
-    archivist: {
-      id: 'archivist',
-      icon: '📚',
-      baseName: 'The Archivist',
-      description: 'Simbol kerapian mengorganisasi catatan.',
-      criteria: 'Menggunakan 5 fitur pengorganisasian (Folder, Tag, Warna, Pin, Search) dalam 1 hari.',
-      xp: 75
-    },
-    projectTamer: {
-      id: 'projectTamer',
-      icon: '🎯',
-      baseName: 'The Project Tamer',
-      description: 'Perayaan keberhasilan menaklukkan to-do lintas catatan.',
-      criteria: 'Menyelesaikan 10 daftar checklist/to-do di 10 catatan yang berbeda.',
-      xp: 150
-    },
-    nightOwl: {
-      id: 'nightOwl',
-      icon: '🌙',
-      baseName: 'The Night Owl',
-      description: 'Penghargaan untuk penulis malam.',
-      criteria: 'Membuat catatan pada pukul 00:00 - 04:00.',
-      xp: 30
-    },
-    earlyBird: {
-      id: 'earlyBird',
-      icon: '🌅',
-      baseName: 'The Early Bird',
-      description: 'Bonus bagi penyambut pagi.',
-      criteria: 'Membuat catatan pada pukul 05:00 - 08:00.',
-      xp: 30
-    },
-    purist: {
-      id: 'purist',
-      icon: '🔐',
-      baseName: 'The Purist',
-      description: 'Pengingat pentingnya keamanan catatan.',
-      criteria: 'Menggunakan fitur enkripsi/password pada 5 catatan sensitif.',
-      xp: 100
-    },
-    reviewer: {
-      id: 'reviewer',
-      icon: '🔎',
-      baseName: 'The Reviewer',
-      description: 'Apresiasi untuk rutin merefleksikan catatan lama.',
-      criteria: 'Membuka dan mengedit catatan berusia 30 hari sebanyak 5 kali dalam seminggu.',
-      xp: 60
-    },
-    veteran: {
-      id: 'veteran',
-      icon: '🌲',
-      baseName: 'The Veteran',
-      description: 'Penghormatan bagi pengguna jangka panjang.',
-      criteria: 'Menjadi pengguna aktif selama 1 tahun dengan minimal 100 hari login.',
-      xp: 200
-    }
-  };
+  const BADGE_DEFINITIONS = {};
 
   function createDefaultState() {
     const now = new Date().toISOString();
@@ -275,10 +198,11 @@
 
   function xpRequiredForLevel(level) {
     if (level <= 1) return 0;
-    // "Setiap naik level, xp yang dibutuhkan meningkat +100"
+    // Mempermudah sistem: setiap naik level hanya bertambah +50 XP
     // Lvl 1->2: 100
-    // Lvl 2->3: 200
-    return (level - 1) * 100 + 100;
+    // Lvl 2->3: 150
+    // Lvl 3->4: 200
+    return (level - 2) * 50 + 100;
   }
 
   function resolveProgress(totalXp) {
@@ -739,10 +663,10 @@
     profile.badges = earnedIcons.slice(0, 12);
 
     // Default badges to ensure fallback
-    const defaults = ['🪔', '🪶', '📚'];
+    const defaults = [];
 
     if (!profile.activeBadge || (!earnedIcons.includes(profile.activeBadge) && !defaults.includes(profile.activeBadge))) {
-      profile.activeBadge = earnedIcons[earnedIcons.length - 1] || earnedIcons[0] || defaults[0];
+      profile.activeBadge = earnedIcons[earnedIcons.length - 1] || earnedIcons[0] || '';
     }
     profile.xpGuideUrl = XP_GUIDE_URL;
     profile.updatedAt = new Date().toISOString();
@@ -941,7 +865,7 @@
       ? profileRaw.activeBadge
       : (badgeIcons[badgeIcons.length - 1] || badgeIcons[0] || '');
 
-    const profileName = profileRaw?.name && profileRaw.name.trim() ? profileRaw.name.trim() : 'username';
+    const profileName = profileRaw?.name && profileRaw.name.trim() ? profileRaw.name.trim() : 'Pengguna Abelion';
     const titleInfo = resolveTitleInfo(progress.level, profileRaw?.title);
     const tierLabel = tier.label || tier.name;
     const tierHint = buildTierHint(tier, progress);
@@ -985,7 +909,7 @@
     modal.className = 'level-up-modal';
     modal.innerHTML = `
       <div class="level-up-content">
-        <div class="level-up-confetti">🎊</div>
+        <div class="level-up-confetti"><svg viewBox="0 0 24 24" width="48" height="48" fill="var(--primary)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
         <h2>Level Up!</h2>
         <div class="level-up-number">${newLevel}</div>
         <p>Kamu telah mencapai level ${newLevel}!</p>

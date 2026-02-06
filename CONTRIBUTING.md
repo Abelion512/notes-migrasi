@@ -1,38 +1,40 @@
-# 🤝 Kontribusi ke Abelion Notes
+# Panduan Kontribusi Abelion Notes
 
-Terima kasih telah tertarik untuk berkontribusi pada Abelion Notes! Kami senang menerima bantuan dari siapa saja untuk membuat aplikasi ini menjadi lebih baik.
+Terima kasih telah tertarik untuk berkontribusi pada Abelion Notes (Lembaga Arsip Digital Abelion). Kami sangat menghargai bantuan Anda dalam melestarikan ide dan dokumentasi.
 
-## 🚀 Cara Mulai
+## Visi dan Misi
+Abelion Notes dikembangkan dengan prinsip:
+1. **Local-First:** Data diprioritaskan disimpan di perangkat pengguna.
+2. **Keamanan Tinggi:** Menganut konsep keamanan Linux dan enkripsi end-to-end (E2EE).
+3. **Estetika iOS:** Antarmuka yang bersih, intuitif, dan premium.
+4. **Bahasa Indonesia Baku:** Penggunaan istilah yang formal dan sesuai EYD.
 
-1. **Fork** repositori ini ke akun GitHub Anda.
-2. **Clone** hasil fork tersebut ke komputer Anda:
-   ```bash
-   git clone https://github.com/Abelion512/Notes.git
-   ```
-3. Buat **Branch** baru untuk fitur atau perbaikan bug Anda:
-   ```bash
-   git checkout -b fitur/nama-fitur-anda
-   ```
-4. Lakukan perubahan kode dan pastikan semuanya berjalan lancar.
-5. **Commit** perubahan Anda dengan pesan yang jelas:
-   ```bash
-   git commit -m "Menambahkan fitur X untuk meningkatkan Y"
-   ```
-6. **Push** ke branch Anda:
-   ```bash
-   git push origin fitur/nama-fitur-anda
-   ```
-7. Buat **Pull Request** di repositori utama.
+## Cara Berkontribusi
 
-## 🎨 Panduan Desain & Kode
+### 1. Pelaporan Bug
+Jika Anda menemukan kesalahan, silakan buat *Issue* di GitHub dengan format:
+- Deskripsi bug yang jelas.
+- Langkah-langkah untuk mereproduksi bug.
+- Tangkapan layar (jika ada).
 
-- **UI/UX**: Ikuti gaya desain iOS/Apple. Gunakan *Glassmorphism* dan pertahankan kebersihan antarmuka.
-- **Bahasa**: Gunakan Bahasa Indonesia yang baku dan sesuai EYD untuk semua label di UI.
-- **Kualitas Kode**: Pastikan kode tetap modular dan tidak menggunakan library berat yang tidak perlu.
+### 2. Pengajuan Fitur
+Kami menerima ide-ide baru yang selaras dengan visi aplikasi. Gunakan *Feature Request* pada tab *Issue*.
 
-## 🐛 Melaporkan Masalah
+### 3. Kontribusi Kode (Pull Request)
+- Lakukan *Fork* repositori ini.
+- Buat *branch* baru dengan nama yang deskriptif (contoh: `fitur-arsip-baru` atau `perbaikan-bug-editor`).
+- Pastikan kode Anda mengikuti standar estetika iOS.
+- Gunakan bahasa Indonesia baku untuk seluruh elemen UI.
+- Lakukan *Push* ke branch Anda dan buat *Pull Request*.
 
-Jika Anda menemukan bug atau memiliki saran fitur, silakan buka [Issues](https://github.com/Abelion512/Notes/issues).
+## Standar Teknologi
+- **Core:** HTML5, CSS3 (Modern Flexbox/Grid), JavaScript (ES6+).
+- **Storage:** IndexedDB (via `brankas.js`), LocalStorage (Preferences).
+- **Encryption:** Web Crypto API (AES-GCM 256).
+- **Cloud Sync:** Supabase (Realtime DB).
+
+## Etika Berkomunikasi
+Gunakan bahasa yang sopan dan profesional dalam setiap interaksi di platform ini.
 
 ---
-*Bersama-sama, kita bangun alat pencatat yang luar biasa!*
+© 2026 Lembaga Arsip Digital Abelion

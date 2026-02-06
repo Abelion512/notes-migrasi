@@ -1,18 +1,18 @@
-# 📝 Abelion Notes
+# Lembaga Arsip Digital Abelion (Abelion Notes)
 
-**Abelion Notes** adalah aplikasi catatan modern yang mengutamakan privasi, gamifikasi, dan pengalaman pengguna yang premium. Terinspirasi oleh desain iOS dan Notion, aplikasi ini menawarkan antarmuka yang bersih dengan fitur canggih yang berjalan sepenuhnya di perangkat Anda (Local-first).
+**Abelion Notes** adalah sistem manajemen informasi dan dokumentasi modern yang mengedepankan kedaulatan data, keamanan tingkat tinggi, dan pengalaman pengguna premium. Mengadopsi prinsip *Local-first* dan estetika iOS, platform ini dirancang untuk pelestarian ide dan catatan secara sistematis.
 
-🚀 **Akses Aplikasi:** [https://abelion512.github.io/Notes](https://abelion512.github.io/Notes)
+🚀 **Akses Platform:** [https://abelion512.github.io/Notes](https://abelion512.github.io/Notes)
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
-- **Apple-Inspired UI**: Desain *Glassmorphism*, *Grouped List*, dan navigasi melayang yang halus.
-- **Privacy First (E2EE)**: Data Anda adalah milik Anda. Mendukung enkripsi AES-GCM 256 langsung di browser.
-- **Gamifikasi Terintegrasi**: Kumpulkan XP, naikkan level, dan buka badge pencapaian saat Anda mencatat.
-- **Local-first with Cloud Sync**: Menggunakan IndexedDB untuk kecepatan maksimal secara offline, dengan sinkronisasi opsional ke Supabase.
-- **Multi-format Export**: Ekspor catatan Anda ke PDF, DOCX, Markdown, JSON, atau Teks Polos.
+- **Antarmuka Khas Apple**: Implementasi desain *Glassmorphism*, *Grouped List*, dan navigasi pill-style yang responsif.
+- **Kedaulatan Data (E2EE)**: Enkripsi End-to-End menggunakan algoritma AES-GCM 256-bit langsung pada perangkat pengguna.
+- **Sistem Dokumentasi Nasional**: Gamifikasi berbasis tingkatan (Tier) dari Penyusun hingga Konservator, mendorong konsistensi penulisan.
+- **Local-first & Cloud Sync**: Prioritas penyimpanan pada IndexedDB lokal dengan opsi sinkronisasi awan melalui Supabase.
+- **Ekspor Multi-Format**: Kemampuan menghasilkan dokumen resmi dalam format PDF, DOCX, Markdown, atau JSON.
 - **Smart Search & Folders**: Kelola ide-ide Anda dengan sistem folder bertingkat dan pencarian instan.
 
 ## 🛠️ Stack Teknologi
@@ -50,4 +50,4 @@ Kami sangat menghargai kontribusi dari komunitas! Silakan baca [CONTRIBUTING.md]
 Proyek ini dilisensikan di bawah [MIT License](./LICENSE).
 
 ---
-*Didesain dengan ❤️ oleh Abelion Lavv.*
+*Dikelola oleh Lembaga Arsip Digital Abelion.*

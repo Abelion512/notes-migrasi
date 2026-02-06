@@ -40,37 +40,38 @@
         overlay.className = 'update-popup-overlay';
         overlay.style = `
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px) saturate(180%);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
             padding: 20px; box-sizing: border-box;
         `;
 
         const card = document.createElement('div');
         card.style = `
-            background: var(--surface-modal); width: 100%; max-width: 400px;
-            border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-subtle); color: var(--text-primary);
+            background: var(--frosted-heavy); width: 100%; max-width: 320px;
+            border-radius: 20px; padding: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border: 0.5px solid rgba(255,255,255,0.2); color: var(--text-primary);
+            text-align: center;
         `;
 
-        const changelogHtml = info.changelog.map(item => `<li>${item}</li>`).join('');
+        const changelogHtml = info.changelog.map(item => `<li style="margin-bottom: 6px;">${item}</li>`).join('');
 
         card.innerHTML = `
-            <div style="text-align: center; margin-bottom: 16px;">
-                <div style="width: 60px; height: 60px; background: var(--accent); border-radius: 15px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <div style="margin-bottom: 20px;">
+                <div style="width: 54px; height: 54px; background: var(--primary); border-radius: 14px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 16px var(--primary-soft);">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 </div>
-                <h2 style="margin: 0; font-size: 20px;">Versi Baru Tersedia!</h2>
-                <p style="color: var(--text-secondary); margin: 4px 0 0 0; font-size: 14px;">v${info.version} - ${info.codename}</p>
+                <h2 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.5px;">Versi Baru Tersedia</h2>
+                <p style="color: var(--text-secondary); margin: 6px 0 0 0; font-size: 13px; font-weight: 500;">v${info.version} • ${info.codename}</p>
             </div>
-            <div style="background: var(--surface-strong); border-radius: 12px; padding: 16px; margin-bottom: 20px; max-height: 200px; overflow-y: auto;">
-                <h3 style="margin: 0 0 8px 0; font-size: 13px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Rincian Perubahan</h3>
-                <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: var(--text-primary);">
+            <div style="background: rgba(150,150,150,0.1); border-radius: 14px; padding: 16px; margin-bottom: 24px; max-height: 180px; overflow-y: auto; text-align: left;">
+                <h3 style="margin: 0 0 10px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; font-weight: 700;">Rincian Perubahan</h3>
+                <ul style="margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--text-primary); font-weight: 400;">
                     ${changelogHtml}
                 </ul>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="update-later" class="btn-ghost" style="flex: 1; border: 1px solid var(--border-subtle);">Nanti</button>
-                <button id="update-now" class="btn-blue" style="flex: 1;">Muat Ulang Sekarang</button>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="update-now" class="btn-blue" style="width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 15px;">Muat Ulang Sekarang</button>
+                <button id="update-later" class="btn-ghost" style="width: 100%; padding: 12px; border-radius: 12px; font-weight: 500; font-size: 15px; color: var(--primary);">Nanti</button>
             </div>
         `;
 
