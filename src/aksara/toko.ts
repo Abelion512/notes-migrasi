@@ -78,7 +78,7 @@ export const useAbelionStore = create<AbelionStore>()(
       pulihkanDariSampah: (id) => set((state) => {
         const c = state.sampah.find((n) => n.id === id);
         if (!c) return state;
-        const { deletedAt, ...rest } = c;
+        const { deletedAt: _deletedAt, ...rest } = c;
         return {
           sampah: state.sampah.filter((n) => n.id !== id),
           catatan: [rest as Catatan, ...state.catatan]

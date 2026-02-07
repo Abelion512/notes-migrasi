@@ -120,7 +120,7 @@
         return menu;
     }
 
-    function showContextMenu(x, y, target) {
+    function showContextMenu(x, y, _target) {
         const menu = createMenuElement();
 
         // Dynamic Content

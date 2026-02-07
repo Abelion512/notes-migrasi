@@ -75,7 +75,7 @@ export default function Beranda() {
         <Plus size={28} />
       </button>
 
-      <DialogEditor
+      <DialogEditor key={editingCatatan?.id || "baru"}
         catatan={editingCatatan}
         isOpen={!!editingCatatan}
         onClose={() => setEditingCatatan(null)}

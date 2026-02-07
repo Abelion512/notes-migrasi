@@ -2,15 +2,15 @@
   const Storage = window.AbelionStorage;
 
   // Supabase Elements
-  const supabaseToggleBtn = document.getElementById('toggle-supabase-form');
-  const supabaseConfigArea = document.getElementById('supabase-config-area');
+  const _supabaseToggleBtn = document.getElementById('toggle-supabase-form');
+  const _supabaseConfigArea = document.getElementById('supabase-config-area');
   const supabaseUrlInput = document.getElementById('supabase-url');
   const supabaseKeyInput = document.getElementById('supabase-key');
   const saveSupabaseBtn = document.getElementById('save-supabase-config');
   const supabaseStatusBadge = document.getElementById('supabase-status-badge');
 
   // Notion Elements
-  const notionToggleBtn = document.getElementById('toggle-notion-form');
+  const _notionToggleBtn = document.getElementById('toggle-notion-form');
   const notionConfigArea = document.getElementById('notion-config-area');
   const notionTokenInput = document.getElementById('notion-token');
   const notionDbInput = document.getElementById('notion-db-id');

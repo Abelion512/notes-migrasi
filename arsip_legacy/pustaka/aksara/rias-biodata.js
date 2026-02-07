@@ -146,7 +146,7 @@
       const parsed = new Date(isoDate);
       if (Number.isNaN(parsed.getTime())) return '';
       return parsed.toLocaleDateString('id-ID');
-    } catch (error) {
+    } catch (_error) {
       return '';
     }
   }

@@ -5,9 +5,9 @@
     sanitizeRichContent,
     safeGetItem,
     safeSetItem,
-    debounce,
+    _debounce,
     ModalManager,
-    generateId
+    _generateId
   } = global.AbelionUtils || {};
 
   if (!STORAGE_KEYS || !sanitizeText || !sanitizeRichContent) {
@@ -16,8 +16,8 @@
   }
 
   const DRAFT_KEY = STORAGE_KEYS.NOTE_DRAFTS || 'abelion-note-drafts';
-  const readDrafts = () => safeGetItem(DRAFT_KEY, {});
-  const writeDrafts = (drafts) => safeSetItem(DRAFT_KEY, drafts || {});
+  const _readDrafts = () => safeGetItem(DRAFT_KEY, {});
+  const _writeDrafts = (drafts) => safeSetItem(DRAFT_KEY, drafts || {});
 
   // --- MD Parser & Generator ---
   function markdownToHtml(markdown) {
@@ -167,7 +167,7 @@
 
   function openModalEditor(options = {}) {
     if (document.querySelector('.note-editor-modal')) return;
-    const { mode = 'create', initialValue = {}, onSave, draftKey = 'new' } = options;
+    const { _mode = 'create', initialValue = {}, onSave, _draftKey = 'new' } = options;
 
     const overlay = buildModalShell();
     const titleInput = overlay.querySelector('#editor-title');
@@ -492,7 +492,7 @@
         const rect = emojiTrigger.getBoundingClientRect();
         // Position above the trigger, aligned right. Width ~340px, Height ~400px
         // If closer to top, show below.
-        const spaceAbove = rect.top;
+        const _spaceAbove = rect.top;
         const pickerHeight = 420;
         const pickerWidth = 350;
 

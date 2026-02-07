@@ -106,7 +106,7 @@
             if (!Number.isNaN(date.getTime())) {
               details.push(`Diraih ${date.toLocaleDateString('id-ID')}`);
             }
-          } catch (error) {
+          } catch (_error) {
             // ignore parsing failure
           }
         }
@@ -453,7 +453,7 @@
     });
   }
 
-  async function renderLeaderboard() {
+  async function _renderLeaderboard() {
     const el = document.getElementById('leaderboard-list');
     if (!el) return;
 

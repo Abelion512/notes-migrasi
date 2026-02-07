@@ -64,7 +64,7 @@ self.addEventListener('fetch', (event) => {
             cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;
-        }).catch((err) => {
+        }).catch((_err) => {
           // Network failed, return nothing (or offline fallback for images?)
           // For scripts, if network fails and no cache, App might break.
         });

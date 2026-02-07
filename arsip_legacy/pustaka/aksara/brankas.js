@@ -222,7 +222,7 @@
               if (!resolved) {
                 // Try to abort if possible
                 if (tx.readyState === 'active') {
-                  try { tx.abort(); } catch (e) { /* ignore */ }
+                  try { tx.abort(); } catch (_e) { /* ignore */ }
                 }
                 resolved = true;
                 reject(err);
@@ -235,7 +235,7 @@
       } catch (error) {
         if (!resolved) {
           if (tx.readyState === 'active') {
-            try { tx.abort(); } catch (e) { /* ignore */ }
+            try { tx.abort(); } catch (_e) { /* ignore */ }
           }
           resolved = true;
           reject(error);
@@ -714,7 +714,7 @@
   }
 
   async function decryptAllSensitive() {
-    const meta = cacheGet(META_KEY) || DEFAULT_META;
+    const _meta = cacheGet(META_KEY) || DEFAULT_META;
     const keys = Array.from(SENSITIVE_KEYS);
     for (const key of keys) {
       if (!key) continue;
@@ -757,7 +757,7 @@
       isLocked = false;
       await decryptAllSensitive();
       return true;
-    } catch (error) {
+    } catch (_error) {
       encryptionKey = null;
       isLocked = true;
       throw Object.assign(new Error('Passphrase salah'), { code: 'BAD_PASSPHRASE' });
