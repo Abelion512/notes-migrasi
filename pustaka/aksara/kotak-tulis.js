@@ -315,30 +315,30 @@
 
         // --- Live Preview Transformations ---
         if (e.inputType === 'insertText') {
-            const lineText = textBefore;
-            if (lineText === '# ') {
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('formatBlock', false, 'h1');
-            } else if (lineText === '## ') {
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('formatBlock', false, 'h2');
-            } else if (lineText === '### ') {
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('formatBlock', false, 'h3');
-            } else if (lineText === '- [ ] ') {
-                for(let i=0; i<6; i++) document.execCommand('delete', false);
-                insertCheckbox();
-            } else if (lineText === '> ') {
-                document.execCommand('delete', false);
-                document.execCommand('delete', false);
-                document.execCommand('formatBlock', false, 'blockquote');
-            }
+          const lineText = textBefore;
+          if (lineText === '# ') {
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('formatBlock', false, 'h1');
+          } else if (lineText === '## ') {
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('formatBlock', false, 'h2');
+          } else if (lineText === '### ') {
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('formatBlock', false, 'h3');
+          } else if (lineText === '- [ ] ') {
+            for (let i = 0; i < 6; i++) document.execCommand('delete', false);
+            insertCheckbox();
+          } else if (lineText === '> ') {
+            document.execCommand('delete', false);
+            document.execCommand('delete', false);
+            document.execCommand('formatBlock', false, 'blockquote');
+          }
         }
       }
     });
@@ -395,22 +395,72 @@
 
     emojiTrigger.onclick = (e) => {
       e.stopPropagation();
-      let pc = overlay.querySelector('#emoji-picker-container');
-      if (pc) { pc.classList.toggle('hidden'); return; }
+      let pc = document.getElementById('emoji-picker-container');
+
+      const updatePosition = () => {
+        const rect = emojiTrigger.getBoundingClientRect();
+        // Position above the trigger, aligned right. Width ~340px, Height ~400px
+        // If closer to top, show below.
+        const spaceAbove = rect.top;
+        const pickerHeight = 420;
+        const pickerWidth = 350;
+
+        let top = rect.top - pickerHeight - 10;
+        if (top < 10) top = rect.bottom + 10; // Flip to bottom if no space top
+
+        let left = rect.right - pickerWidth;
+        if (left < 10) left = 10; // Keep on screen
+
+        pc.style.top = top + 'px';
+        pc.style.left = left + 'px';
+      };
+
+      if (pc) {
+        const isHidden = pc.style.display === 'none';
+        pc.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) updatePosition();
+        return;
+      }
+
       pc = document.createElement('div');
       pc.id = 'emoji-picker-container';
-      pc.style = `position: absolute; bottom: 100%; right: 0; z-index: 10001; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border: 0.5px solid var(--border-subtle); margin-bottom: 8px; overflow: hidden;`;
+      pc.style.cssText = `
+        position: fixed; 
+        z-index: 11000; 
+        background: var(--surface); 
+        border-radius: 12px; 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
+        border: 0.5px solid var(--border-subtle); 
+        margin-bottom: 8px; 
+        overflow: hidden;
+        display: block;
+      `;
+
       const picker = document.createElement('emoji-picker');
       if (document.documentElement.getAttribute('data-theme') === 'dark') picker.classList.add('dark');
+      picker.style.width = '100%';
+      picker.style.height = '400px';
+
       pc.appendChild(picker);
-      emojiTrigger.parentElement.appendChild(pc);
+      document.body.appendChild(pc);
+
+      updatePosition();
+
       picker.addEventListener('emoji-click', ev => {
         const emoji = ev.detail.unicode;
         emojiTrigger.textContent = emoji;
         iconInput.value = emoji;
-        pc.classList.add('hidden');
+        pc.style.display = 'none';
       });
-      document.addEventListener('click', (ev) => { if (!pc.contains(ev.target) && ev.target !== emojiTrigger) pc.classList.add('hidden'); }, { once: true });
+
+      // Close on click outside
+      setTimeout(() => {
+        document.addEventListener('click', (ev) => {
+          if (pc && pc.style.display !== 'none' && !pc.contains(ev.target) && ev.target !== emojiTrigger) {
+            pc.style.display = 'none';
+          }
+        });
+      }, 0);
     };
 
     const close = () => {

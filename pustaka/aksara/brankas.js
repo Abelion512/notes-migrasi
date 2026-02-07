@@ -91,13 +91,13 @@
         // If not encrypted, we can try to get config and init now
         let config;
         if (canUseIndexedDB()) {
-           await ensureDatabase();
-           config = await idbGet('kv', STORAGE_KEYS.SUPABASE_CONFIG);
+          await ensureDatabase();
+          config = await idbGet('kv', STORAGE_KEYS.SUPABASE_CONFIG);
         }
         if (!config) config = localRead(STORAGE_KEYS.SUPABASE_CONFIG);
 
         if (config && config.url && config.key) {
-           global.AbelionSupabase.init(config.url, config.key);
+          global.AbelionSupabase.init(config.url, config.key);
         }
       }
 
@@ -313,23 +313,23 @@
     // On startup, if we are connected to Supabase but don't have local encryption meta,
     // try to fetch it to support seamless multi-device vault.
     if (global.AbelionSupabaseDB && !cacheGet(META_KEY)?.encryption?.enabled) {
-        try {
-            const cloudMeta = await global.AbelionSupabaseDB.getValue('abelion-encryption-meta');
-            if (cloudMeta && cloudMeta.enabled) {
-                const localMeta = cacheGet(META_KEY) || { ...DEFAULT_META };
-                localMeta.encryption = {
-                    enabled: true,
-                    salt: cloudMeta.salt,
-                    encryptedKeys: Array.from(SENSITIVE_KEYS)
-                };
-                cacheSet(META_KEY, localMeta);
-                isLocked = true;
-                await persistMeta();
-                console.log('Encryption meta recovered from Cloud');
-            }
-        } catch (e) {
-            console.warn('Failed to fetch cloud encryption meta:', e);
+      try {
+        const cloudMeta = await global.AbelionSupabaseDB.getValue('abelion-encryption-meta');
+        if (cloudMeta && cloudMeta.enabled) {
+          const localMeta = cacheGet(META_KEY) || { ...DEFAULT_META };
+          localMeta.encryption = {
+            enabled: true,
+            salt: cloudMeta.salt,
+            encryptedKeys: Array.from(SENSITIVE_KEYS)
+          };
+          cacheSet(META_KEY, localMeta);
+          isLocked = true;
+          await persistMeta();
+          console.log('Encryption meta recovered from Cloud');
         }
+      } catch (e) {
+        console.warn('Failed to fetch cloud encryption meta:', e);
+      }
     }
   }
 
@@ -514,19 +514,19 @@
     const oldSupabaseUrl = localStorage.getItem('abelion-supabase-url');
     const oldSupabaseKey = localStorage.getItem('abelion-supabase-key');
     if (oldSupabaseUrl && oldSupabaseKey) {
-        const config = { url: oldSupabaseUrl, key: oldSupabaseKey };
-        await setValue(STORAGE_KEYS.SUPABASE_CONFIG, config);
-        localStorage.removeItem('abelion-supabase-url');
-        localStorage.removeItem('abelion-supabase-key');
+      const config = { url: oldSupabaseUrl, key: oldSupabaseKey };
+      await setValue(STORAGE_KEYS.SUPABASE_CONFIG, config);
+      localStorage.removeItem('abelion-supabase-url');
+      localStorage.removeItem('abelion-supabase-key');
     }
 
     const oldNotionToken = localStorage.getItem('abelion-notion-token');
     const oldNotionDb = localStorage.getItem('abelion-notion-db');
     if (oldNotionToken) {
-        const config = { token: oldNotionToken, dbId: oldNotionDb };
-        await setValue(STORAGE_KEYS.NOTION_CONFIG, config);
-        localStorage.removeItem('abelion-notion-token');
-        localStorage.removeItem('abelion-notion-db');
+      const config = { token: oldNotionToken, dbId: oldNotionDb };
+      await setValue(STORAGE_KEYS.NOTION_CONFIG, config);
+      localStorage.removeItem('abelion-notion-token');
+      localStorage.removeItem('abelion-notion-db');
     }
 
     cacheSet(META_KEY, currentMeta);
@@ -652,6 +652,18 @@
 
     // Safety check: ensure notes is array
     const newNotes = Array.isArray(notes) ? notes : [];
+
+    // [SAFETY] Prevent accidental wipe of local data
+    // If we are trying to write an empty array (wipe), but we have existing data,
+    // and we are NOT in a delta update or forced mode, reject it.
+    if (newNotes.length === 0 && !options.delta && !options.force) {
+      const existingInfo = cacheGet(STORAGE_KEYS.NOTES);
+      if (existingInfo && existingInfo.length > 0) {
+        console.warn('[Abelion] Prevented accidental notes wipe. Use {force: true} to override.');
+        return false;
+      }
+    }
+
     cacheSet(STORAGE_KEYS.NOTES, newNotes);
 
     // Delta Sync Logic
@@ -661,8 +673,8 @@
         let isDelta = false;
 
         if (options.onlyDirty) {
-           notesToPush = newNotes.filter(n => n._dirty);
-           isDelta = true;
+          notesToPush = newNotes.filter(n => n._dirty);
+          isDelta = true;
         }
 
         if (notesToPush.length > 0) {
@@ -728,7 +740,7 @@
     // After decrypting, check if we need to init Supabase
     const supabaseConfig = cacheGet(STORAGE_KEYS.SUPABASE_CONFIG);
     if (supabaseConfig && supabaseConfig.url && supabaseConfig.key && global.AbelionSupabase) {
-       global.AbelionSupabase.init(supabaseConfig.url, supabaseConfig.key);
+      global.AbelionSupabase.init(supabaseConfig.url, supabaseConfig.key);
     }
 
     emit('unlock');
@@ -874,7 +886,7 @@
 
     // Explicitly delete from Supabase if active
     if (activeEngine === ENGINE.SUPABASE && global.AbelionSupabaseDB) {
-       await global.AbelionSupabaseDB.deleteNote(noteId);
+      await global.AbelionSupabaseDB.deleteNote(noteId);
     }
 
     const trash = await getTrash();
@@ -983,12 +995,12 @@
 
     // 4. Clear Browser Cache API (Service Worker caches)
     if ('caches' in global) {
-        try {
-            const keys = await caches.keys();
-            await Promise.all(keys.map(key => caches.delete(key)));
-        } catch (e) {
-            console.error('Failed to clear caches:', e);
-        }
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(key => caches.delete(key)));
+      } catch (e) {
+        console.error('Failed to clear caches:', e);
+      }
     }
 
     // 5. Update meta with minimal timestamp (date only to save bytes if needed, but ISO is standard)

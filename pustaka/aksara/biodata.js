@@ -144,7 +144,7 @@
     }
 
     if (dom.greeting) dom.greeting.textContent = greetingMessage(summary.name);
-    if (dom.nameDisplay) dom.nameDisplay.textContent = summary.name || 'Nama Pengguna';
+    if (dom.nameDisplay) dom.nameDisplay.textContent = summary.name || 'Penyusun';
     if (dom.levelBadge) dom.levelBadge.textContent = `Lv ${summary.level}`;
 
     const titleValue = summary.title || 'Penjelajah';
@@ -394,16 +394,16 @@
     const usageBarEl = document.getElementById('storage-usage-bar');
 
     if (usage && usageValEl && usageBarEl) {
-       const used = usage.usage || 0;
-       const quota = usage.quota || 1;
-       const pct = Math.max(1, Math.min(100, (used / quota) * 100));
+      const used = usage.usage || 0;
+      const quota = usage.quota || 1;
+      const pct = Math.max(1, Math.min(100, (used / quota) * 100));
 
-       const units = ['B', 'KB', 'MB', 'GB'];
-       let size = used, unitIdx = 0;
-       while (size > 1024 && unitIdx < units.length - 1) { size /= 1024; unitIdx++; }
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let size = used, unitIdx = 0;
+      while (size > 1024 && unitIdx < units.length - 1) { size /= 1024; unitIdx++; }
 
-       usageValEl.textContent = `${size.toFixed(1)} ${units[unitIdx]}`;
-       usageBarEl.style.width = `${pct}%`;
+      usageValEl.textContent = `${size.toFixed(1)} ${units[unitIdx]}`;
+      usageBarEl.style.width = `${pct}%`;
     }
 
     new Chart(canvas, {

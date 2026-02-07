@@ -153,15 +153,25 @@
         alert('Hubungkan ke Supabase di menu Layanan Cloud terlebih dahulu.');
         return;
       }
+
+      const icon = syncBtn.querySelector('svg');
+      if (icon) icon.style.animation = 'spin 1s linear infinite';
+      syncBtn.disabled = true;
       syncStatus.textContent = 'Menyinkronkan...';
+
       try {
         const notes = await Storage.getNotes();
         await Storage.setNotes(notes, { onlyDirty: false }); // Force full sync
         syncStatus.textContent = `Terakhir: ${new Date().toLocaleTimeString()}`;
-        alert('Sinkronisasi selesai!');
+        // alert('Sinkronisasi selesai!'); // User might prefer silent or toast, but alert is ok for now. 
+        // Plan said "Verify ... completion alert".
+        setTimeout(() => alert('Sinkronisasi selesai!'), 100);
       } catch (err) {
         syncStatus.textContent = 'Gagal sinkron.';
         alert('Gagal: ' + err.message);
+      } finally {
+        if (icon) icon.style.animation = '';
+        syncBtn.disabled = false;
       }
     };
   }
@@ -199,10 +209,10 @@
           const ext = format === 'md-single' ? '.md' : '.txt';
           let combinedContent = '';
           notes.forEach(n => {
-             const body = format === 'md-single'
-               ? `\n\n# ${n.title}\n*Tanggal: ${n.date}*\n\n${n.contentMarkdown || n.content}\n\n---\n`
-               : `\n\n${n.title.toUpperCase()}\n${n.date}\n${'-'.repeat(n.title.length)}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}\n\n====================\n`;
-             combinedContent += body;
+            const body = format === 'md-single'
+              ? `\n\n# ${n.title}\n*Tanggal: ${n.date}*\n\n${n.contentMarkdown || n.content}\n\n---\n`
+              : `\n\n${n.title.toUpperCase()}\n${n.date}\n${'-'.repeat(n.title.length)}\n\n${n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '')}\n\n====================\n`;
+            combinedContent += body;
           });
           downloadBlob(new Blob([combinedContent], { type: format === 'md-single' ? 'text/markdown' : 'text/plain' }), `abelion-all-notes-${dateStr}${ext}`);
         }
@@ -272,12 +282,12 @@
             `;
             container.appendChild(page);
 
-            if (idx < 3 || await AbelionUtils.confirmAction('Ekspor Gambar', `Lanjutkan ekspor catatan ke-${idx+1}? (Maksimal 5 untuk demo gambar)`)) {
+            if (idx < 3 || await AbelionUtils.confirmAction('Ekspor Gambar', `Lanjutkan ekspor catatan ke-${idx + 1}? (Maksimal 5 untuk demo gambar)`)) {
               const canvas = await html2canvas(page);
               const dataUrl = canvas.toDataURL('image/png');
               const a = document.createElement('a');
               a.href = dataUrl;
-              a.download = `abelion-note-${idx+1}-${dateStr}.png`;
+              a.download = `abelion-note-${idx + 1}-${dateStr}.png`;
               a.click();
             }
             if (idx >= 4) break;
@@ -360,10 +370,56 @@
   }
 
   // --- Theme & Accent ---
-  const themeSelect = document.getElementById('theme-select');
-  if (themeSelect && window.AbelionTheme) {
-    themeSelect.value = window.AbelionTheme.getTheme();
-    themeSelect.onchange = (e) => window.AbelionTheme.applyTheme(e.target.value);
+  // --- Theme & Accent ---
+  const themeTrigger = document.getElementById('theme-picker-trigger');
+  const themeModal = document.getElementById('theme-picker-modal');
+  const themeClose = document.getElementById('theme-picker-close');
+  const themeOptions = document.querySelectorAll('.theme-option-btn');
+
+  if (themeTrigger && window.AbelionTheme) {
+    const updateUI = () => {
+      const current = window.AbelionTheme.getTheme();
+      const map = { 'light': '☀️ Terang', 'dark': '🌙 Gelap', 'auto': '🖥️ Sistem' };
+      themeTrigger.innerHTML = `${map[current] || 'Sistem'} <span style="opacity: 0.5;">▼</span>`;
+
+      if (themeModal) {
+        themeOptions.forEach(btn => {
+          const check = btn.querySelector('.check-icon');
+          if (check) check.style.display = btn.dataset.value === current ? 'block' : 'none';
+        });
+      }
+    };
+
+    themeTrigger.onclick = () => {
+      if (themeModal) {
+        if (window.AbelionUtils && window.AbelionUtils.ModalManager) {
+          window.AbelionUtils.ModalManager.open('theme-picker-modal', themeModal);
+        } else {
+          themeModal.classList.add('show');
+        }
+        updateUI();
+      }
+    };
+
+    if (themeClose) {
+      themeClose.onclick = () => {
+        if (window.AbelionUtils && window.AbelionUtils.ModalManager) {
+          window.AbelionUtils.ModalManager.close('theme-picker-modal');
+        } else {
+          themeModal.classList.remove('show');
+        }
+      };
+    }
+
+    themeOptions.forEach(btn => {
+      btn.onclick = () => {
+        window.AbelionTheme.applyTheme(btn.dataset.value);
+        updateUI();
+        if (themeClose) themeClose.click();
+      };
+    });
+
+    updateUI();
   }
 
   const accentPicker = document.getElementById('accent-picker');

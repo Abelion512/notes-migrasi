@@ -25,6 +25,8 @@ alter table public.app_data enable row level security;
 -- 4. Access Policies (Open Access for Prototype)
 -- WARNING: These policies allow ANYONE with your Anon Key to read/write/delete data.
 -- TODO: Update these when you implement Supabase Auth (e.g., using auth.uid()).
+-- [SECURITY NOTE] For production, you MUST restrict these policies to authenticated users or specific IDs.
+-- Current "Open Access" is for prototyping/personal use only where Anon Key is kept secret (which is hard in client-side apps).
 
 create policy "Public Access to Notes"
 on public.notes

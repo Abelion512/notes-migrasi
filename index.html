@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests; " />
   <title>Lembaga Arsip Digital Abelion</title>
-  <link rel="stylesheet" href="gaya/gayanya.css" />
+  <link rel="stylesheet" href="pustaka/gaya/gayanya.css" />
   <link rel="manifest" href="izin.json" />
 </head>
 
@@ -25,7 +25,8 @@
       <div id="offline-badge" class="offline-badge hidden">Mode Offline</div>
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <h1 class="title-abelion animated">Catatan</h1>
-        <button id="toggle-selection-mode" class="ghost-btn" style="font-size: 14px; font-weight: 600; color: var(--primary); padding: 6px 14px; border-radius: 20px; background: var(--frosted); border: 0.5px solid var(--border-subtle);">Pilih</button>
+        <button id="toggle-selection-mode" class="ghost-btn"
+          style="font-size: 14px; font-weight: 600; color: var(--primary); padding: 6px 14px; border-radius: 20px; background: var(--frosted); border: 0.5px solid var(--border-subtle);">Pilih</button>
       </div>
       <p class="subtitle" id="dynamic-greeting">Selamat datang di Lembaga Arsip Digital Abelion.</p>
       <blockquote class="motto" id="dynamic-motto">“Ide adalah aset.”</blockquote>
@@ -33,8 +34,12 @@
 
     <section class="search-section">
       <div class="search-bar-container">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="search-input" class="search-input" type="text" placeholder="Cari catatan..." autocomplete="off"/>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="search-input" class="search-input" type="text" placeholder="Cari catatan..." autocomplete="off" />
       </div>
     </section>
 
@@ -44,7 +49,8 @@
           <!-- Folders injected here -->
           <div class="folder-pill active" data-id="all">Semua</div>
         </div>
-        <button id="add-folder-btn" class="ghost-btn" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--frosted); border: 0.5px solid var(--border-subtle);">＋</button>
+        <button id="add-folder-btn" class="ghost-btn"
+          style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--frosted); border: 0.5px solid var(--border-subtle);">＋</button>
       </div>
     </section>
 
@@ -71,11 +77,20 @@
     </div>
     <div class="selection-actions">
       <button id="export-selected-btn" class="ghost-btn">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
         <span>Ekspor</span>
       </button>
       <button id="delete-selected-btn" class="ghost-btn danger" style="color: var(--danger);">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
         <span>Hapus</span>
       </button>
       <button id="cancel-selection-btn" class="ghost-btn">Batal</button>
@@ -106,7 +121,8 @@
           <input type="checkbox" id="export-merge-check" style="width: 20px; height: 20px;">
         </div>
       </div>
-      <p style="font-size: 12px; color: var(--text-muted); padding: 10px 16px;">Jika tidak digabung, beberapa catatan akan otomatis dikemas dalam file .ZIP.</p>
+      <p style="font-size: 12px; color: var(--text-muted); padding: 10px 16px;">Jika tidak digabung, beberapa catatan
+        akan otomatis dikemas dalam file .ZIP.</p>
       <div style="padding: 20px 0;">
         <button id="confirm-smart-export" class="btn-blue" style="width: 100%;">Mulai Unduh</button>
       </div>
@@ -120,25 +136,38 @@
   <nav class="bottom-nav">
     <a class="nav-button active" href="index.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        </svg>
       </span>
       <span class="nav-label">Beranda</span>
     </a>
     <a class="nav-button nav-add-btn" id="add-note-btn-nav" href="#">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
       </span>
       <span class="nav-label">Tambah</span>
     </a>
     <a class="nav-button" href="lembaran/biodata.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
       </span>
       <span class="nav-label">Profil</span>
     </a>
     <a class="nav-button" href="lembaran/setelan.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
       </span>
       <span class="nav-label">Setelan</span>
     </a>
@@ -186,9 +215,11 @@
         <input type="hidden" id="folder-id-input">
         <div class="section-card">
           <input type="text" id="folder-name-input" class="input-control" placeholder="Nama Folder">
-          <div style="display: flex; align-items: center; border-top: 0.5px solid var(--border-subtle); padding-right: 16px; position: relative;">
+          <div
+            style="display: flex; align-items: center; border-top: 0.5px solid var(--border-subtle); padding-right: 16px; position: relative;">
             <div style="flex: 1; padding: 12px 16px; color: var(--text-secondary); font-size: 17px;">Ikon</div>
-            <button type="button" id="folder-icon-trigger" style="font-size: 20px; background: none; border: none; cursor: pointer;">📁</button>
+            <button type="button" id="folder-icon-trigger"
+              style="font-size: 20px; background: none; border: none; cursor: pointer;">📁</button>
             <input type="hidden" id="folder-icon-input" value="📁">
           </div>
         </div>
@@ -225,17 +256,19 @@
   <script src="https://cdn.jsdelivr.net/npm/docx@8.2.2/build/index.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
-  <script src="aksara/corak.js"></script>
-  <script src="aksara/pemuat.js"></script>
-  <script src="aksara/utusan.js"></script>
-  <script src="aksara/basisdata.js"></script>
-  <script src="aksara/perkakas.js"></script>
-  <script src="aksara/brankas.js"></script>
-  <script src="aksara/kunci.js"></script>
-  <script src="aksara/pembaruan.js"></script>
-  <script src="aksara/tangkas.js"></script>
-  <script src="aksara/kotak-tulis.js"></script>
-  <script src="aksara/utama.js"></script>
-  <script src="aksara/inisialisasi.js"></script>
+  <script src="pustaka/aksara/corak.js"></script>
+  <script src="pustaka/aksara/pemuat.js"></script>
+  <script src="pustaka/aksara/utusan.js"></script>
+  <script src="pustaka/aksara/basisdata.js"></script>
+  <script src="pustaka/aksara/perkakas.js"></script>
+  <script src="pustaka/aksara/brankas.js"></script>
+  <script src="pustaka/aksara/kunci.js"></script>
+  <script src="pustaka/aksara/pembaruan.js"></script>
+  <script src="pustaka/aksara/tangkas.js"></script>
+  <script src="pustaka/aksara/kotak-tulis.js"></script>
+  <script src="pustaka/aksara/utama.js"></script>
+  <script src="pustaka/aksara/konteks.js"></script>
+  <script src="pustaka/aksara/inisialisasi.js"></script>
 </body>
+
 </html>

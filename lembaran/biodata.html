@@ -7,14 +7,16 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
   <title>Profil – Lembaga Arsip Digital Abelion</title>
-  <link rel="stylesheet" href="../gaya/gayanya.css">
+  <link rel="stylesheet" href="../pustaka/gaya/gayanya.css">
 </head>
 
 <body class="page-shell">
   <div class="main-content">
     <header class="secondary-header">
       <a href="../index.html" class="back-link">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
         Catatan
       </a>
       <h1 class="animated">Profil</h1>
@@ -23,8 +25,11 @@
 
     <section class="profile-hero-ios" style="text-align: center; padding: 20px 0;">
       <div style="position: relative; display: inline-block;">
-        <img src="../pustaka/Avatar_Bawaan.svg" alt="Foto profil" id="profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: var(--border-subtle);" />
-        <div id="profile-level-badge" style="position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 700;">Lv 1</div>
+        <img src="../pustaka/citra/Avatar_Bawaan.svg" alt="Foto profil" id="profile-avatar"
+          style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: var(--border-subtle);" />
+        <div id="profile-level-badge"
+          style="position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 700;">
+          Lv 1</div>
       </div>
       <h2 id="profile-name-display" style="margin-top: 12px;">Nama Pengguna</h2>
       <p id="profile-title-display" style="color: var(--text-muted); font-size: 15px;">Penjelajah</p>
@@ -55,14 +60,17 @@
 
     <div class="list-header">Progress Level</div>
     <div class="section-card" style="padding: 16px;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600;">
+      <div
+        style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600;">
         <span id="xp-counter">0 / 100 XP</span>
         <span id="xp-percent">0%</span>
       </div>
       <div style="height: 8px; background: var(--border-subtle); border-radius: 4px; overflow: hidden;">
-        <div id="xp-bar-fill" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.5s ease-out;"></div>
+        <div id="xp-bar-fill"
+          style="width: 0%; height: 100%; background: var(--primary); transition: width 0.5s ease-out;"></div>
       </div>
-      <p id="xp-next" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">100 XP lagi untuk naik level.</p>
+      <p id="xp-next" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">100 XP lagi untuk naik level.
+      </p>
     </div>
 
     <div class="list-header">Produktivitas Menulis</div>
@@ -123,12 +131,14 @@
         <span id="storage-usage-value">Menghitung...</span>
       </div>
       <div style="height: 8px; background: var(--border-subtle); border-radius: 4px; overflow: hidden;">
-        <div id="storage-usage-bar" style="width: 0%; height: 100%; background: var(--success); transition: width 0.5s;"></div>
+        <div id="storage-usage-bar"
+          style="width: 0%; height: 100%; background: var(--success); transition: width 0.5s;"></div>
       </div>
     </div>
 
     <div style="text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 13px;">
-      <button id="version-btn" class="ghost-btn" style="font-size: 13px;">Versi <span id="profile-version"></span></button>
+      <button id="version-btn" class="ghost-btn" style="font-size: 13px;">Versi <span
+          id="profile-version"></span></button>
       <p>© 2026 Lembaga Arsip Digital Abelion</p>
     </div>
   </div>
@@ -150,25 +160,38 @@
   <nav class="bottom-nav">
     <a class="nav-button" href="../index.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        </svg>
       </span>
       <span class="nav-label">Beranda</span>
     </a>
     <a class="nav-button nav-add-btn" href="../index.html?action=new">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
       </span>
       <span class="nav-label">Tambah</span>
     </a>
     <a class="nav-button active" href="biodata.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
       </span>
       <span class="nav-label">Profil</span>
     </a>
     <a class="nav-button" href="setelan.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
       </span>
       <span class="nav-label">Setelan</span>
     </a>
@@ -224,16 +247,17 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="../aksara/corak.js"></script>
-  <script src="../aksara/pemuat.js"></script>
-  <script src="../aksara/utusan.js"></script>
-  <script src="../aksara/basisdata.js"></script>
-  <script src="../aksara/perkakas.js"></script>
-  <script src="../aksara/brankas.js"></script>
-  <script src="../aksara/kunci.js"></script>
-  <script src="../aksara/pembaruan.js"></script>
-  <script src="../aksara/tangkas.js"></script>
-  <script src="../aksara/biodata.js"></script>
+  <script src="../pustaka/aksara/corak.js"></script>
+  <script src="../pustaka/aksara/pemuat.js"></script>
+  <script src="../pustaka/aksara/utusan.js"></script>
+  <script src="../pustaka/aksara/basisdata.js"></script>
+  <script src="../pustaka/aksara/perkakas.js"></script>
+  <script src="../pustaka/aksara/brankas.js"></script>
+  <script src="../pustaka/aksara/kunci.js"></script>
+  <script src="../pustaka/aksara/pembaruan.js"></script>
+  <script src="../pustaka/aksara/tangkas.js"></script>
+  <script src="../pustaka/aksara/biodata.js"></script>
+  <script src="../pustaka/aksara/konteks.js"></script>
 </body>
 
 </html>

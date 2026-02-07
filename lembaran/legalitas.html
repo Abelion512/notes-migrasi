@@ -7,14 +7,16 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none';" />
   <title>Legalitas & Keamanan – Lembaga Arsip Digital Abelion</title>
-  <link rel="stylesheet" href="../gaya/gayanya.css" />
+  <link rel="stylesheet" href="../pustaka/gaya/gayanya.css" />
 </head>
 
 <body class="page-shell">
   <div class="main-content">
     <header class="secondary-header">
       <a href="setelan.html" class="back-link">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
         Setelan
       </a>
       <h1 class="animated">Legalitas & Keamanan</h1>
@@ -23,19 +25,25 @@
 
     <div class="list-header">Syarat dan Ketentuan Layanan</div>
     <div class="section-card" style="padding: 16px; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">
-      <p>Selamat datang di Lembaga Arsip Digital Abelion ("Abelion"). Dengan mengakses atau menggunakan aplikasi kami, Anda dianggap telah membaca, memahami, dan menyetujui ketentuan berikut:</p>
+      <p>Selamat datang di Lembaga Arsip Digital Abelion ("Abelion"). Dengan mengakses atau menggunakan aplikasi kami,
+        Anda dianggap telah membaca, memahami, dan menyetujui ketentuan berikut:</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">1. Definisi Layanan</h3>
-      <p>Abelion adalah platform manajemen catatan berbasis "local-first" yang mengutamakan privasi dan kedaulatan data pengguna.</p>
+      <p>Abelion adalah platform manajemen catatan berbasis "local-first" yang mengutamakan privasi dan kedaulatan data
+        pengguna.</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">2. Hak Kekayaan Intelektual</h3>
-      <p>Seluruh konten yang dibuat oleh pengguna adalah milik eksklusif pengguna. Abelion tidak mengklaim hak kepemilikan atas data, catatan, atau dokumen yang Anda simpan di dalam aplikasi.</p>
+      <p>Seluruh konten yang dibuat oleh pengguna adalah milik eksklusif pengguna. Abelion tidak mengklaim hak
+        kepemilikan atas data, catatan, atau dokumen yang Anda simpan di dalam aplikasi.</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">3. Batasan Tanggung Jawab</h3>
-      <p>Aplikasi ini disediakan "sebagaimana adanya" (as-is). Lembaga tidak bertanggung jawab atas kehilangan data yang disebabkan oleh kelalaian pengguna, seperti penghapusan tidak sengaja, kehilangan perangkat, atau lupa terhadap kata sandi/passphrase enkripsi Vault.</p>
+      <p>Aplikasi ini disediakan "sebagaimana adanya" (as-is). Lembaga tidak bertanggung jawab atas kehilangan data yang
+        disebabkan oleh kelalaian pengguna, seperti penghapusan tidak sengaja, kehilangan perangkat, atau lupa terhadap
+        kata sandi/passphrase enkripsi Vault.</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">4. Perubahan Ketentuan</h3>
-      <p>Kami berhak mengubah syarat ini sewaktu-waktu. Penggunaan berkelanjutan setelah perubahan dianggap sebagai persetujuan terhadap ketentuan baru.</p>
+      <p>Kami berhak mengubah syarat ini sewaktu-waktu. Penggunaan berkelanjutan setelah perubahan dianggap sebagai
+        persetujuan terhadap ketentuan baru.</p>
     </div>
 
     <div class="list-header">Kebijakan Privasi</div>
@@ -43,16 +51,22 @@
       <p>Privasi Anda adalah inti dari operasional kami. Berikut adalah rincian perlindungan data Anda:</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">1. Pengumpulan Data</h3>
-      <p>Abelion tidak mengumpulkan data pribadi di server kami. Semua data catatan disimpan secara lokal di perangkat Anda menggunakan teknologi IndexedDB.</p>
+      <p>Abelion tidak mengumpulkan data pribadi di server kami. Semua data catatan disimpan secara lokal di perangkat
+        Anda menggunakan teknologi IndexedDB.</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">2. Enkripsi End-to-End (E2EE)</h3>
-      <p>Jika fitur Vault diaktifkan, data Anda akan dienkripsi menggunakan algoritma AES-GCM 256-bit sebelum disimpan. Kunci enkripsi diturunkan dari passphrase Anda dan tidak pernah meninggalkan perangkat Anda dalam bentuk teks polos.</p>
+      <p>Jika fitur Vault diaktifkan, data Anda akan dienkripsi menggunakan algoritma AES-GCM 256-bit sebelum disimpan.
+        Kunci enkripsi diturunkan dari passphrase Anda dan tidak pernah meninggalkan perangkat Anda dalam bentuk teks
+        polos.</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">3. Layanan Pihak Ketiga</h3>
-      <p>Jika Anda memilih untuk mengintegrasikan layanan Cloud (seperti Supabase atau Notion), data akan dikirimkan ke penyedia tersebut sesuai dengan konfigurasi Anda. Kami menyarankan Anda untuk meninjau kebijakan privasi penyedia layanan tersebut.</p>
+      <p>Jika Anda memilih untuk mengintegrasikan layanan Cloud (seperti Supabase atau Notion), data akan dikirimkan ke
+        penyedia tersebut sesuai dengan konfigurasi Anda. Kami menyarankan Anda untuk meninjau kebijakan privasi
+        penyedia layanan tersebut.</p>
 
       <h3 style="margin: 15px 0 5px; color: var(--text-primary);">4. Penggunaan Cookie & Penyimpanan Lokal</h3>
-      <p>Kami menggunakan <i>Local Storage</i> untuk menyimpan preferensi aplikasi (seperti tema dan draf catatan). Kami tidak menggunakan cookie pelacakan pihak ketiga untuk tujuan iklan.</p>
+      <p>Kami menggunakan <i>Local Storage</i> untuk menyimpan preferensi aplikasi (seperti tema dan draf catatan). Kami
+        tidak menggunakan cookie pelacakan pihak ketiga untuk tujuan iklan.</p>
     </div>
 
     <div class="list-header">Pernyataan Keamanan Teknis</div>
@@ -60,8 +74,10 @@
       <p>Kami berkomitmen pada standar keamanan tinggi:</p>
       <ul style="margin-top: 10px; padding-left: 20px;">
         <li><b>Audit Kode:</b> Kode sumber Abelion bersifat transparan dan dapat diaudit secara publik.</li>
-        <li><b>Kedaulatan Data:</b> Fitur ekspor/impor tersedia sepenuhnya untuk memastikan data Anda tidak terikat pada satu platform (no vendor lock-in).</li>
-        <li><b>Otonomi Pengguna:</b> Pengguna memiliki kendali penuh untuk menghapus seluruh jejak digital aplikasi kapan saja melalui menu Setelan.</li>
+        <li><b>Kedaulatan Data:</b> Fitur ekspor/impor tersedia sepenuhnya untuk memastikan data Anda tidak terikat pada
+          satu platform (no vendor lock-in).</li>
+        <li><b>Otonomi Pengguna:</b> Pengguna memiliki kendali penuh untuk menghapus seluruh jejak digital aplikasi
+          kapan saja melalui menu Setelan.</li>
       </ul>
     </div>
 
@@ -76,32 +92,46 @@
   <nav class="bottom-nav">
     <a class="nav-button" href="../index.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        </svg>
       </span>
       <span class="nav-label">Beranda</span>
     </a>
     <a class="nav-button nav-add-btn" href="../index.html?action=new">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
       </span>
       <span class="nav-label">Tambah</span>
     </a>
     <a class="nav-button" href="biodata.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
       </span>
       <span class="nav-label">Profil</span>
     </a>
     <a class="nav-button active" href="setelan.html">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
       </span>
       <span class="nav-label">Setelan</span>
     </a>
   </nav>
 
-  <script src="../aksara/corak.js"></script>
-  <script src="../aksara/pemuat.js"></script>
+  <script src="../pustaka/aksara/corak.js"></script>
+  <script src="../pustaka/aksara/pemuat.js"></script>
+  <script src="../pustaka/aksara/konteks.js"></script>
 </body>
 
 </html>

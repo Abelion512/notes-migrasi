@@ -29,7 +29,7 @@
         version: '2026.02.6',
         releasedAt: '2026-02-06',
         highlights: [
-          'Integrasi Modular: Halaman baru untuk konfigurasi Supabase dan Notion.',
+          'Integrasi Modular: Lembaran baru untuk konfigurasi Supabase dan Notion.',
           'Brankas Keamanan: Penyimpanan kunci API yang aman dan terenkripsi.',
           'Deteksi Pembaruan: Deteksi otomatis versi baru dengan notifikasi munculan.',
           'Optimasi Penyimpanan: Analisis penggunaan memori dan fitur penghapusan tembolok.',
@@ -48,7 +48,7 @@
           'Redesain iOS Premium: Perombakan total antarmuka dengan gaya iOS 17+.',
           'Navigasi Melayang: Navigasi bawah melayang (gaya pil) untuk aksesibilitas.',
           'Efek Kaca Cair: Implementasi glassmorphism yang lebih halus dan dinamis.',
-          'Redesain Halaman Sekunder: Profil, Setelan, dan Riwayat kini konsisten dengan Beranda.',
+          'Redesain Lembaran Sekunder: Profil, Setelan, dan Riwayat kini konsisten dengan Beranda.',
           'Mode Terang Bawaan: Pengalaman visual yang lebih segar secara standar.',
           'Perbaikan Kontras: Optimalisasi kontras dan transparansi pada Mode Gelap.',
         ]
@@ -59,7 +59,7 @@
         highlights: [
           'Redesign Profil: Tampilan lebih bersih dengan navigasi intuitif.',
           'Gamifikasi 2.0: XP, Level, dan Badge kini tersinkronisasi realtime.',
-          'Avatar Interaktif: Ganti foto profil langsung dari halaman profil.',
+          'Avatar Interaktif: Ganti foto profil langsung dari lembaran profil.',
           'Smart Stats: Menyederhanakan tampilan statistik XP dan Level.',
         ]
       }
@@ -411,7 +411,7 @@
       e.preventDefault();
       // Show general page context menu if needed
       if (window.ContextMenu && typeof window.ContextMenu.show === 'function') {
-         // Optionally show a general menu here
+        // Optionally show a general menu here
       }
     }
   });
