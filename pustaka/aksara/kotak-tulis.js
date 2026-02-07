@@ -112,47 +112,49 @@
     overlay.innerHTML = `
       <div class="note-editor-dialog" role="dialog" aria-modal="true">
         <div class="note-editor-header">
-          <button type="button" class="done-btn" data-action="cancel">Batal</button>
-          <div style="font-weight: 600; font-size: 17px;">Catatan</div>
-          <button type="button" class="done-btn" id="save-btn" style="font-weight: 700; color: var(--primary);">Selesai</button>
+          <button type="button" class="ghost-btn" data-action="cancel" style="font-size: 15px; color: var(--pro-text-secondary);">Tutup</button>
+          <div style="flex: 1;"></div>
+          <button type="button" id="save-btn" class="btn-blue" style="padding: 6px 16px; font-size: 14px; border-radius: 6px;">Simpan</button>
         </div>
-        <div class="note-editor-content" style="padding: 20px;">
-          <input id="editor-title" class="editor-title-input" placeholder="Judul" autocomplete="off" style="border:none; width:100%; font-size:28px; font-weight:700; margin-bottom:10px; background:transparent; outline:none; color:var(--text-primary);" />
 
+        <div id="editor-cover-area" style="width: 100%; height: 180px; background: var(--pro-surface); position: relative; overflow: hidden; display: none;">
+           <img id="editor-cover-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+           <button type="button" id="editor-change-cover-btn" class="ghost-btn" style="position: absolute; bottom: 10px; right: 20px; background: rgba(0,0,0,0.5); color: white; font-size: 11px; border-radius: 4px; padding: 4px 8px;">Ganti Sampul</button>
+        </div>
+
+        <div class="note-editor-content">
+          <div style="position: relative; margin-bottom: 40px;">
+             <div id="editor-icon-area" style="margin-top: -60px; margin-bottom: 20px; position: relative; display: inline-block;">
+                <button type="button" id="emoji-trigger" style="font-size: 64px; background: none; border: none; cursor: pointer; padding: 0; line-height: 1;">📝</button>
+                <input type="hidden" id="icon-input" value="📝">
+             </div>
+
+             <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                   <button type="button" id="editor-add-cover-btn" class="ghost-btn" style="font-size: 12px; color: var(--text-muted); padding: 4px 0;">🖼️ Tambah Sampul</button>
+                   <div style="flex: 1;"></div>
+                   <select id="folder-select" style="background: none; border: none; font-size: 12px; color: var(--primary); font-weight: 600; text-transform: uppercase;">
+                     <option value="">(Tanpa Folder)</option>
+                   </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                   <label class="ios-switch" style="transform: scale(0.6); transform-origin: left;">
+                     <input type="checkbox" id="is-secret-input">
+                     <span class="ios-slider"></span>
+                   </label>
+                   <span style="font-size: 11px; color: var(--text-muted); margin-left: -10px;">Rahasiakan</span>
+                </div>
+             </div>
+          </div>
+
+          <input id="editor-title" class="editor-title-input" placeholder="Judul Catatan" autocomplete="off" />
           <div id="editor-block-area" class="editor-block-area" contenteditable="true" placeholder="Mulai menulis atau ketik '/' untuk perintah..."></div>
-
-          <div id="editor-details" class="hidden" style="margin-top: 30px; border-top: 0.5px solid var(--border-subtle); padding-top: 20px;">
-            <div class="list-header">Atribut Arsip</div>
-            <div class="section-card" style="padding: 0;">
-              <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
-                 <span style="flex: 1; font-size: 17px;">Ikon</span>
-                 <button type="button" id="emoji-trigger" style="font-size: 20px; background: none; border: none; cursor: pointer;">📁</button>
-                 <input type="hidden" id="icon-input" value="📁">
-              </div>
-              <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
-                 <span style="flex: 1; font-size: 17px;">Folder</span>
-                 <select id="folder-select" style="border: none; background: transparent; font-size: 17px; text-align: right; color: var(--primary); font-weight: 500;">
-                   <option value="">(Tanpa Folder)</option>
-                 </select>
-              </div>
-              <div style="display: flex; align-items: center; padding: 12px 16px;">
-                 <span style="flex: 1; font-size: 17px;">Sembunyikan Catatan</span>
-                 <label class="ios-switch">
-                   <input type="checkbox" id="is-secret-input">
-                   <span class="ios-slider"></span>
-                 </label>
-              </div>
-            </div>
-          </div>
-
-          <div style="display: flex; justify-content: center; margin: 30px 0;">
-            <button type="button" id="toggle-details-btn" class="ghost-btn" style="font-size: 14px; opacity: 0.6;">Opsi Lanjutan</button>
-          </div>
         </div>
 
-        <div class="editor-toolbar" style="padding: 12px; background: var(--frosted); border-top: 0.5px solid var(--border-subtle); display: flex; justify-content: space-around; gap: 10px; overflow-x: auto;">
+        <div class="editor-toolbar">
            <button type="button" class="toolbar-btn-ios" data-cmd="bold" title="Tebal"><b>B</b></button>
            <button type="button" class="toolbar-btn-ios" data-cmd="italic" title="Miring"><i>I</i></button>
+           <div style="width:1px; height:20px; background:var(--pro-border); margin: 0 4px;"></div>
            <button type="button" class="toolbar-btn-ios" data-cmd="h2" title="H1">H1</button>
            <button type="button" class="toolbar-btn-ios" data-cmd="h3" title="H2">H2</button>
            <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas">☐</button>
@@ -174,16 +176,25 @@
     const emojiTrigger = overlay.querySelector('#emoji-trigger');
     const folderSelect = overlay.querySelector('#folder-select');
     const secretInput = overlay.querySelector('#is-secret-input');
-    const toggleDetailsBtn = overlay.querySelector('#toggle-details-btn');
-    const detailsDiv = overlay.querySelector('#editor-details');
     const saveBtn = overlay.querySelector('#save-btn');
+
+    const coverArea = overlay.querySelector('#editor-cover-area');
+    const coverImg = overlay.querySelector('#editor-cover-img');
+    const addCoverBtn = overlay.querySelector('#editor-add-cover-btn');
+    const changeCoverBtn = overlay.querySelector('#editor-change-cover-btn');
 
     // Populate Initial State
     titleInput.value = initialValue.title || '';
     blockArea.innerHTML = markdownToHtml(initialValue.content || '');
-    iconInput.value = initialValue.icon || '📁';
+    iconInput.value = initialValue.icon || '📝';
     emojiTrigger.textContent = iconInput.value;
     secretInput.checked = Boolean(initialValue.isSecret);
+
+    if (initialValue.cover) {
+      coverArea.style.display = 'block';
+      coverImg.src = initialValue.cover;
+      addCoverBtn.style.display = 'none';
+    }
 
     if (global.AbelionStorage) {
       global.AbelionStorage.getFolders().then(folders => {
@@ -201,17 +212,27 @@
     // --- Slash Menu Logic ---
     let slashMenu = null;
     let slashIndex = 0;
+    let slashQuery = '';
     const slashCommands = [
-      { id: 'h1', label: 'Heading 1', icon: 'H1', action: () => document.execCommand('formatBlock', false, 'h1') },
-      { id: 'h2', label: 'Heading 2', icon: 'H2', action: () => document.execCommand('formatBlock', false, 'h2') },
-      { id: 'h3', label: 'Heading 3', icon: 'H3', action: () => document.execCommand('formatBlock', false, 'h3') },
-      { id: 'todo', label: 'To-do List', icon: '☐', action: () => insertCheckbox() },
-      { id: 'bullet', label: 'Bulleted List', icon: '•', action: () => document.execCommand('insertUnorderedList') },
-      { id: 'quote', label: 'Quote', icon: '"', action: () => document.execCommand('formatBlock', false, 'blockquote') },
-      { id: 'toggle', label: 'Toggle List', icon: '▶', action: () => insertToggle() },
-      { id: 'code', label: 'Code Block', icon: '</>', action: () => document.execCommand('formatBlock', false, 'pre') },
-      { id: 'img', label: 'Image', icon: '🖼️', action: () => triggerImageUpload() }
+      { id: 'h1', label: 'Heading 1', icon: 'H1', keywords: ['h1', 'heading', 'judul', 'besar'], action: () => document.execCommand('formatBlock', false, 'h1') },
+      { id: 'h2', label: 'Heading 2', icon: 'H2', keywords: ['h2', 'heading', 'subjudul'], action: () => document.execCommand('formatBlock', false, 'h2') },
+      { id: 'h3', label: 'Heading 3', icon: 'H3', keywords: ['h3', 'heading', 'kecil'], action: () => document.execCommand('formatBlock', false, 'h3') },
+      { id: 'todo', label: 'To-do List', icon: '☐', keywords: ['todo', 'check', 'tugas', 'daftar'], action: () => insertCheckbox() },
+      { id: 'bullet', label: 'Bulleted List', icon: '•', keywords: ['list', 'bullet', 'poin'], action: () => document.execCommand('insertUnorderedList') },
+      { id: 'quote', label: 'Quote', icon: '"', keywords: ['quote', 'kutipan'], action: () => document.execCommand('formatBlock', false, 'blockquote') },
+      { id: 'toggle', label: 'Toggle List', icon: '▶', keywords: ['toggle', 'lipat', 'dropdown'], action: () => insertToggle() },
+      { id: 'code', label: 'Code Block', icon: '</>', keywords: ['code', 'kode', 'pre'], action: () => document.execCommand('formatBlock', false, 'pre') },
+      { id: 'img', label: 'Image', icon: '🖼️', keywords: ['image', 'gambar', 'foto', 'upload'], action: () => triggerImageUpload() }
     ];
+
+    function getFilteredCommands() {
+      if (!slashQuery) return slashCommands;
+      const q = slashQuery.toLowerCase();
+      return slashCommands.filter(cmd =>
+        cmd.label.toLowerCase().includes(q) ||
+        cmd.keywords.some(k => k.includes(q))
+      );
+    }
 
     function insertToggle() {
       const selection = window.getSelection();
@@ -274,26 +295,42 @@
     }
 
     function showSlashMenu(x, y) {
-      if (slashMenu) slashMenu.remove();
-      slashMenu = document.createElement('div');
-      slashMenu.className = 'slash-menu';
-      slashMenu.style.position = 'absolute';
+      if (!slashMenu) {
+        slashMenu = document.createElement('div');
+        slashMenu.className = 'slash-menu';
+        slashMenu.style.position = 'absolute';
+        slashMenu.style.zIndex = '10000';
+        overlay.appendChild(slashMenu);
+      }
       slashMenu.style.left = x + 'px';
       slashMenu.style.top = y + 'px';
-      slashMenu.style.zIndex = '10000';
-
-      slashCommands.forEach((cmd, i) => {
-        const item = document.createElement('div');
-        item.className = 'slash-item' + (i === slashIndex ? ' active' : '');
-        item.innerHTML = `<div class="slash-item-icon">${cmd.icon}</div> <div>${cmd.label}</div>`;
-        item.onclick = () => { cmd.action(); hideSlashMenu(); };
-        slashMenu.appendChild(item);
-      });
-      overlay.appendChild(slashMenu);
+      renderSlashMenu();
     }
 
     function hideSlashMenu() {
-      if (slashMenu) { slashMenu.remove(); slashMenu = null; }
+      if (slashMenu) {
+        slashMenu.remove();
+        slashMenu = null;
+        slashQuery = '';
+        slashIndex = 0;
+      }
+    }
+
+    function removeSlashFromEditor() {
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      const range = selection.getRangeAt(0);
+      const node = range.startContainer;
+      const offset = range.startOffset;
+      const text = node.textContent;
+      const slashPos = text.lastIndexOf('/', offset - 1);
+      if (slashPos !== -1) {
+        node.textContent = text.slice(0, slashPos) + text.slice(offset);
+        range.setStart(node, slashPos);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }
 
     blockArea.addEventListener('input', (e) => {
@@ -302,10 +339,13 @@
         const range = selection.getRangeAt(0);
         const node = range.startContainer;
         const offset = range.startOffset;
-        const textBefore = node.textContent.slice(0, offset);
+        const textContent = node.textContent || '';
+        const textBefore = textContent.slice(0, offset);
 
-        // --- Slash Menu ---
-        if (textBefore.endsWith('/')) {
+        // --- Slash Menu Detection ---
+        const lastSlash = textBefore.lastIndexOf('/');
+        if (lastSlash !== -1 && !textBefore.slice(lastSlash + 1).includes(' ')) {
+          slashQuery = textBefore.slice(lastSlash + 1);
           const rect = range.getBoundingClientRect();
           const overlayRect = overlay.getBoundingClientRect();
           showSlashMenu(rect.left - overlayRect.left, rect.bottom - overlayRect.top + 5);
@@ -345,17 +385,52 @@
 
     blockArea.addEventListener('keydown', (e) => {
       if (slashMenu) {
-        if (e.key === 'ArrowDown') { e.preventDefault(); slashIndex = (slashIndex + 1) % slashCommands.length; renderSlashMenu(); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); slashIndex = (slashIndex - 1 + slashCommands.length) % slashCommands.length; renderSlashMenu(); }
-        else if (e.key === 'Enter') { e.preventDefault(); slashCommands[slashIndex].action(); hideSlashMenu(); }
-        else if (e.key === 'Escape') { hideSlashMenu(); }
+        const filtered = getFilteredCommands();
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          slashIndex = (slashIndex + 1) % (filtered.length || 1);
+          renderSlashMenu();
+        }
+        else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          slashIndex = (slashIndex - 1 + (filtered.length || 1)) % (filtered.length || 1);
+          renderSlashMenu();
+        }
+        else if (e.key === 'Enter') {
+          if (filtered.length > 0) {
+            e.preventDefault();
+            removeSlashFromEditor();
+            filtered[slashIndex].action();
+            hideSlashMenu();
+          }
+        }
+        else if (e.key === 'Escape' || e.key === ' ') {
+          hideSlashMenu();
+        }
       }
     });
 
     function renderSlashMenu() {
       if (!slashMenu) return;
-      slashMenu.querySelectorAll('.slash-item').forEach((item, i) => {
-        item.classList.toggle('active', i === slashIndex);
+      const filtered = getFilteredCommands();
+
+      if (filtered.length === 0) {
+        slashMenu.innerHTML = '<div style="padding: 10px; color: var(--text-muted); font-size: 13px;">Tidak ada perintah ditemukan</div>';
+        return;
+      }
+
+      slashMenu.innerHTML = '';
+      filtered.forEach((cmd, i) => {
+        const item = document.createElement('div');
+        item.className = 'slash-item' + (i === slashIndex ? ' active' : '');
+        item.innerHTML = `<div class="slash-item-icon">${cmd.icon}</div> <div>${cmd.label}</div>`;
+        item.onclick = () => {
+          removeSlashFromEditor();
+          cmd.action();
+          hideSlashMenu();
+          blockArea.focus();
+        };
+        slashMenu.appendChild(item);
       });
     }
 
@@ -388,10 +463,26 @@
     });
 
     // --- UI Logic ---
-    toggleDetailsBtn.onclick = () => {
-      detailsDiv.classList.toggle('hidden');
-      toggleDetailsBtn.textContent = detailsDiv.classList.contains('hidden') ? 'Opsi Lanjutan' : 'Tutup Opsi';
+    addCoverBtn.onclick = () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            coverArea.style.display = 'block';
+            coverImg.src = ev.target.result;
+            addCoverBtn.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
     };
+
+    changeCoverBtn.onclick = addCoverBtn.onclick;
 
     emojiTrigger.onclick = (e) => {
       e.stopPropagation();
@@ -476,6 +567,7 @@
         contentHtml: blockArea.innerHTML,
         contentMarkdown: htmlToMarkdown(blockArea.innerHTML),
         icon: iconInput.value.trim(),
+        cover: coverArea.style.display !== 'none' ? coverImg.src : null,
         folderId: folderSelect.value,
         isSecret: secretInput.checked
       };

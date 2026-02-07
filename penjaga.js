@@ -19,7 +19,6 @@ const ASSETS = [
   './pustaka/aksara/tangkas.js',
   './pustaka/aksara/kotak-tulis.js',
   './pustaka/aksara/kunci.js',
-  './pustaka/aksara/contek.js',
   './pustaka/aksara/konteks.js',
   './pustaka/aksara/corak.js',
   './pustaka/aksara/pemuat.js',

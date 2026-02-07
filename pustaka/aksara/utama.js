@@ -159,11 +159,11 @@ function renderHeroContent() {
   const greetingEl = document.getElementById('dynamic-greeting');
   if (greetingEl) {
     const hour = new Date().getHours();
-    let prefix = 'Halo 👋';
-    if (hour >= 5 && hour < 11) prefix = 'Selamat Pagi 🌅';
-    else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang ☀️';
-    else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore 🌇';
-    else prefix = 'Selamat Malam 🌙';
+    let prefix = 'Halo';
+    if (hour >= 5 && hour < 11) prefix = 'Selamat Pagi';
+    else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang';
+    else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore';
+    else prefix = 'Selamat Malam';
     greetingEl.textContent = `${prefix}, silakan kelola arsip Anda hari ini.`;
   }
 }
@@ -584,7 +584,7 @@ async function renderNotes(append = false) {
             <div class="list-item-title">${sanitizeText(n.title || 'Tanpa Judul')}</div>
             <div class="list-item-subtitle">Dihapus ${formatTanggalRelative(n.deletedAt)}</div>
           </div>
-          <div class="list-item-chevron"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>
+          <div class="list-item-chevron"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>
         </div>
       </div>
     `).join('');
@@ -626,17 +626,17 @@ async function renderNotes(append = false) {
       <div class="list-item-container" data-id="${n.id}">
         <div class="list-item-actions list-item-actions-left">
           <button class="swipe-action-btn pin" data-action="pin" data-id="${n.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a10 10 0 0 0 10 10 10 10 0 0 0 10-10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             <span>${n.pinned ? 'Lepas' : 'Sematkan'}</span>
           </button>
         </div>
         <div class="list-item-actions list-item-actions-right">
           <button class="swipe-action-btn archive" data-action="archive" data-id="${n.id}">
-             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
              <span>Arsip</span>
           </button>
           <button class="swipe-action-btn delete" data-action="delete" data-id="${n.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             <span>Hapus</span>
           </button>
         </div>
@@ -651,7 +651,7 @@ async function renderNotes(append = false) {
             </div>
           </div>
           <div class="list-item-more" data-action="more">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
           </div>
         </div>
       </div>
@@ -744,12 +744,12 @@ function initCommandPalette() {
   if (!palette || !input || !results) return;
 
   const commands = [
-    { name: 'Tulis Catatan Baru', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>', action: () => openNoteModal('create') },
-    { name: 'Buka Pengaturan', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>', action: () => window.location.href = 'lembaran/setelan.html' },
-    { name: 'Buka Profil', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>', action: () => window.location.href = 'lembaran/biodata.html' },
-    { name: 'Lihat Arsip', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>', action: () => { activeFolderId = 'archived'; renderFolders(); renderNotes(); } },
-    { name: 'Lihat Sampah', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>', action: () => { activeFolderId = 'trash'; renderFolders(); renderNotes(); } },
-    { name: 'Ganti Tema', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>', action: () => {
+    { name: 'Tulis Catatan Baru', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>', action: () => openNoteModal('create') },
+    { name: 'Buka Pengaturan', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>', action: () => window.location.href = 'lembaran/setelan.html' },
+    { name: 'Buka Profil', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>', action: () => window.location.href = 'lembaran/biodata.html' },
+    { name: 'Lihat Arsip', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>', action: () => { activeFolderId = 'archived'; renderFolders(); renderNotes(); } },
+    { name: 'Lihat Sampah', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>', action: () => { activeFolderId = 'trash'; renderFolders(); renderNotes(); } },
+    { name: 'Ganti Tema', icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>', action: () => {
         const current = AbelionTheme.getTheme();
         const next = current === 'dark' ? 'light' : 'dark';
         AbelionTheme.applyTheme(next);
@@ -803,7 +803,7 @@ function initCommandPalette() {
         const item = document.createElement('div');
         item.className = 'command-item';
         item.style = 'padding: 12px 15px; border-radius: 10px; cursor: pointer; display: flex; gap: 10px; align-items: center; transition: background 0.2s;';
-        item.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> <span>${sanitizeText(n.title)}</span>`;
+        item.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> <span>${sanitizeText(n.title)}</span>`;
         item.onclick = () => { openNoteModal('edit', n); hide(); };
         item.onmouseover = () => item.style.background = 'var(--surface-alt)';
         item.onmouseout = () => item.style.background = 'transparent';
@@ -1177,6 +1177,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
     draftKey: existingNote ? existingNote.id : 'new',
     initialValue: {
       icon: existingNote?.icon || '',
+      cover: existingNote?.cover || null,
       title: existingNote?.title || '',
       content: markdownFromNote(existingNote),
       isSecret: existingNote?.isSecret || false,
@@ -1188,6 +1189,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         Object.assign(existingNote, prepareNoteForSearch({
           ...existingNote,
           icon: payload.icon,
+          cover: payload.cover,
           title: payload.title,
           content: payload.contentHtml,
           contentMarkdown: payload.contentMarkdown,

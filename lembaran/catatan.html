@@ -10,52 +10,62 @@
   <link rel="stylesheet" href="../pustaka/gaya/gayanya.css" />
 </head>
 
-<body class="page-shell">
-  <div class="main-content">
-    <header class="secondary-header">
-      <a href="../index.html" class="back-link">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-        Catatan
+<body class="page-shell" style="background: var(--pro-bg);">
+  <div class="note-editor-dialog" style="max-width: 800px; margin: 0 auto; height: auto; min-height: 100vh;">
+    <header class="note-editor-header" style="position: sticky; top: 0; background: var(--pro-bg);">
+      <a href="../index.html" class="ghost-btn" style="font-size: 15px; color: var(--pro-text-secondary); text-decoration: none;">
+        Tutup
       </a>
-      <h1 class="animated" id="detail-title-header">Edit Catatan</h1>
+      <div style="flex: 1;"></div>
+      <button type="submit" form="note-edit-form" class="btn-blue" style="padding: 6px 16px; font-size: 14px; border-radius: 6px;">Simpan</button>
     </header>
 
-    <form id="note-edit-form" autocomplete="off">
-      <div class="section-card" style="padding: 16px;">
-        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
-          <div style="position: relative;">
-            <button type="button" id="edit-icon-trigger"
-              style="width: 50px; height: 50px; font-size: 24px; background: var(--page-bg); border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">📁</button>
-            <input type="hidden" id="edit-icon" value="📁">
-          </div>
-          <input id="edit-title" class="input-control" required maxlength="100" placeholder="Judul Catatan"
-            style="padding: 8px; font-size: 20px; font-weight: 700;">
+    <div id="note-cover-area" style="width: 100%; height: 200px; background: var(--pro-surface); position: relative; overflow: hidden; display: none;">
+      <img id="note-cover-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+      <button type="button" id="change-cover-btn" class="ghost-btn" style="position: absolute; bottom: 10px; right: 20px; background: rgba(0,0,0,0.5); color: white; font-size: 12px; border-radius: 4px; padding: 4px 8px;">Ganti Sampul</button>
+    </div>
+
+    <div class="note-editor-content" style="padding-top: 20px;">
+      <form id="note-edit-form" autocomplete="off">
+        <div id="note-icon-area" style="margin-bottom: 20px; position: relative; display: inline-block;">
+           <button type="button" id="edit-icon-trigger" style="font-size: 72px; background: none; border: none; cursor: pointer; padding: 0; line-height: 1;">📝</button>
+           <input type="hidden" id="edit-icon" value="📝">
         </div>
 
-        <textarea id="edit-content" class="input-control" required maxlength="5000" placeholder="Mulai menulis..."
-          style="min-height: 300px; padding: 0; line-height: 1.6; resize: none;"></textarea>
-      </div>
-
-      <div class="list-header">Opsi Tambahan</div>
-      <div class="grouped-list">
-        <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-          <label style="font-size: 12px; font-weight: 600; color: var(--primary);">LABEL / MOOD</label>
-          <input id="edit-label" class="input-control" placeholder="Misal: penting, ide, kerja..." maxlength="20"
-            style="padding: 0;">
+        <div style="margin-bottom: 10px;">
+           <input id="edit-label" placeholder="Tambahkan kategori..." maxlength="20" style="border:none; background:none; font-size:13px; color:var(--primary); font-weight:600; outline:none; text-transform:uppercase; letter-spacing:0.5px;">
         </div>
-      </div>
 
-      <div style="padding: 24px 0;">
-        <button type="submit" class="btn-blue" style="width: 100%; margin-bottom: 12px;">Simpan Catatan</button>
-        <button type="button" class="ghost-btn" id="cancel-edit"
-          style="width: 100%; color: var(--danger);">Batal</button>
-      </div>
+        <input id="edit-title" class="editor-title-input" required maxlength="100" placeholder="Judul Catatan">
 
-      <div id="note-detail-date"
-        style="text-align: center; color: var(--text-muted); font-size: 12px; padding-bottom: 40px;"></div>
-    </form>
+        <!-- Notion-style Block Editor (contenteditable) instead of textarea -->
+        <div id="edit-content-blocks" class="editor-block-area" contenteditable="true" placeholder="Ketik '/' untuk perintah..."></div>
+        <textarea id="edit-content" style="display: none;"></textarea>
+
+        <div id="note-detail-date" style="margin-top: 40px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--pro-border); padding-top: 20px;"></div>
+      </form>
+    </div>
+
+    <!-- Slash Menu -->
+    <div id="slash-menu" class="slash-menu hidden">
+      <!-- Items will be injected by JS -->
+    </div>
+
+    <!-- Notion-style Toolbar -->
+    <div id="notion-toolbar" class="editor-toolbar">
+      <button type="button" class="toolbar-btn-ios" data-command="h1" title="Heading 1">H1</button>
+      <button type="button" class="toolbar-btn-ios" data-command="h2" title="Heading 2">H2</button>
+      <button type="button" class="toolbar-btn-ios" data-command="bold" title="Bold"><b>B</b></button>
+      <button type="button" class="toolbar-btn-ios" data-command="italic" title="Italic"><i>I</i></button>
+      <button type="button" class="toolbar-btn-ios" data-command="list" title="Bullet List">•</button>
+      <button type="button" class="toolbar-btn-ios" data-command="check" title="Checklist">✓</button>
+      <button type="button" class="toolbar-btn-ios" data-command="link" title="Link">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+      </button>
+      <button type="button" class="toolbar-btn-ios" data-command="image" title="Image">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      </button>
+    </div>
   </div>
 
   <div id="confirm-modal" class="modal-sheet">
@@ -71,46 +81,6 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a class="nav-button" href="../index.html">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        </svg>
-      </span>
-      <span class="nav-label">Beranda</span>
-    </a>
-    <a class="nav-button nav-add-btn" href="../index.html?action=new">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-      </span>
-      <span class="nav-label">Tambah</span>
-    </a>
-    <a class="nav-button" href="biodata.html">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </span>
-      <span class="nav-label">Profil</span>
-    </a>
-    <a class="nav-button" href="setelan.html">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path
-            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-          </path>
-        </svg>
-      </span>
-      <span class="nav-label">Setelan</span>
-    </a>
-  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
