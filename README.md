@@ -1,53 +1,36 @@
-# Lembaga Arsip Digital Abelion (Abelion)
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-**Lembaga Arsip Digital Abelion** adalah sistem manajemen informasi dan dokumentasi modern yang mengedepankan kedaulatan data, keamanan tingkat tinggi, dan pengalaman pengguna premium. Mengadopsi prinsip *Local-first* dan estetika iOS, platform ini dirancang untuk pelestarian ide dan catatan secara sistematis.
+## Getting Started
 
-🚀 **Akses Platform:** [https://abelion512.github.io/Notes](https://abelion512.github.io/Notes)
+First, run the development server:
 
----
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## Fitur Utama
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- **Antarmuka Khas Apple**: Implementasi desain *Glassmorphism*, *Grouped List*, dan navigasi pill-style yang responsif.
-- **Kedaulatan Data (E2EE)**: Enkripsi End-to-End menggunakan algoritma AES-GCM 256-bit langsung pada perangkat pengguna.
-- **Sistem Dokumentasi Nasional**: Gamifikasi berbasis tingkatan (Tier) dari Penyusun hingga Konservator, mendorong konsistensi penulisan.
-- **Local-first & Cloud Sync**: Prioritas penyimpanan pada IndexedDB lokal dengan opsi sinkronisasi awan melalui Supabase.
-- **Ekspor Multi-Format**: Kemampuan menghasilkan dokumen resmi dalam format PDF, DOCX, Markdown, atau JSON.
-- **Smart Search & Folders**: Kelola ide-ide Anda dengan sistem folder bertingkat dan pencarian instan.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🛠️ Stack Teknologi
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-- **Bahasa**: Vanilla JavaScript (ES6+), HTML5, CSS3.
-- **Penyimpanan**: IndexedDB (Primary), LocalStorage (UI Prefs).
-- **Library**:
-  - [SortableJS](https://github.com/SortableJS/Sortable) (Reordering)
-  - [Chart.js](https://www.chartjs.org/) (Statistik XP)
-  - [Marked](https://marked.js.org/) (Markdown Parser)
-  - [jsPDF](https://github.com/parallax/jsPDF) & [docx](https://github.com/dolanmiu/docx) (Generator Dokumen)
+## Learn More
 
-## 📦 Instalasi Lokal
+To learn more about Next.js, take a look at the following resources:
 
-1. Clone repositori ini:
-   ```bash
-   git clone https://github.com/Abelion512/Notes.git
-   ```
-2. Masuk ke direktori:
-   ```bash
-   cd Notes
-   ```
-3. Jalankan server lokal (misalnya menggunakan `http-server`):
-   ```bash
-   npx http-server . -p 3000
-   ```
-4. Buka `http://localhost:3000` di browser Anda.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 🤝 Kontribusi
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Kami sangat menghargai kontribusi dari komunitas! Silakan baca [CONTRIBUTING.md](./CONTRIBUTING.md) untuk panduan lebih lanjut.
+## Deploy on Vercel
 
-## 📄 Lisensi
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Proyek ini dilisensikan di bawah [MIT License](./LICENSE).
-
----
-*Dikelola oleh Lembaga Arsip Digital Abelion.*
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
