@@ -7,6 +7,7 @@ export interface Catatan {
   diperbaruiPada: string;
   mood?: string;
   isPinned?: boolean;
+  isArchived?: boolean;
   isLocked?: boolean;
   tags?: string[];
   deletedAt?: string;
@@ -30,6 +31,7 @@ export interface Profil {
 
 export interface Pengaturan {
   tema: 'light' | 'dark' | 'system';
+  warnaAksen: string;
   enkripsiEnabled: boolean;
   supabaseUrl?: string;
   supabaseKey?: string;

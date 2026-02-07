@@ -8,9 +8,11 @@ interface AbelionStore {
   sampah: Catatan[];
   profil: Profil;
   pengaturan: Pengaturan;
+  editingId: string | null;
 
   // Aksi
-  tambahCatatan: (catatan: Partial<Catatan>) => void;
+  setEditingId: (id: string | null) => void;
+  tambahCatatan: (catatan: Partial<Catatan>) => string;
   perbaruiCatatan: (id: string, catatan: Partial<Catatan>) => void;
   hapusCatatan: (id: string) => void;
   pindahkanKeSampah: (id: string) => void;
@@ -39,22 +41,31 @@ export const useAbelionStore = create<AbelionStore>()(
       },
       pengaturan: {
         tema: 'system',
+        warnaAksen: '#007AFF',
         enkripsiEnabled: false,
       },
+      editingId: null,
 
-      tambahCatatan: (baru) => set((state) => ({
-        catatan: [
-          {
-            id: crypto.randomUUID(),
+      setEditingId: (id) => set({ editingId: id }),
+
+      tambahCatatan: (baru) => {
+        const id = crypto.randomUUID();
+        set((state) => ({
+          catatan: [
+            {
+              id,
             judul: '',
             konten: '',
             dibuatPada: new Date().toISOString(),
             diperbaruiPada: new Date().toISOString(),
-            ...baru
-          } as Catatan,
-          ...state.catatan
-        ]
-      })),
+              ...baru
+            } as Catatan,
+            ...state.catatan
+          ],
+          editingId: id
+        }));
+        return id;
+      },
 
       perbaruiCatatan: (id, update) => set((state) => ({
         catatan: state.catatan.map((c) =>
