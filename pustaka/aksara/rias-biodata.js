@@ -248,7 +248,7 @@
       empty.className = 'badge-empty-state badge-empty-state--compact';
       empty.innerHTML = `
         <div class="badge-empty-copy">
-          <div class="badge-empty-icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5"><path d="M12 15l-2 5 2 2 2-2-2-5z"></path><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"></path><circle cx="12" cy="7" r="7"></circle></svg></div>
+          <div class="badge-empty-icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor"  style="opacity:0.5"><path d="M12 15l-2 5 2 2 2-2-2-5z"></path><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"></path><circle cx="12" cy="7" r="7"></circle></svg></div>
           <p>Pencapaian akan muncul setelah Anda membuka kualifikasi.</p>
           <a href="${XP_GUIDE_URL}" class="badge-guide-link" target="_blank" rel="noopener">Pelajari cara kualifikasi XP</a>
         </div>

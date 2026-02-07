@@ -112,47 +112,44 @@
     overlay.innerHTML = `
       <div class="note-editor-dialog" role="dialog" aria-modal="true">
         <div class="note-editor-header">
-          <button type="button" class="done-btn" data-action="cancel">Batal</button>
-          <div style="font-weight: 600; font-size: 17px;">Catatan</div>
-          <button type="button" class="done-btn" id="save-btn" style="font-weight: 700; color: var(--primary);">Selesai</button>
+          <button type="button" class="ghost-btn" data-action="cancel" style="font-size: 15px; color: var(--pro-text-secondary);">Tutup</button>
+          <div style="flex: 1;"></div>
+          <button type="button" id="toggle-details-btn" class="ghost-btn" style="font-size: 13px; opacity: 0.6; margin-right: 12px;">Properti</button>
+          <button type="button" class="btn-blue" id="save-btn" style="padding: 6px 16px; font-size: 14px; border-radius: 6px;">Simpan</button>
         </div>
-        <div class="note-editor-content" style="padding: 20px;">
-          <input id="editor-title" class="editor-title-input" placeholder="Judul" autocomplete="off" style="border:none; width:100%; font-size:28px; font-weight:700; margin-bottom:10px; background:transparent; outline:none; color:var(--text-primary);" />
-
-          <div id="editor-block-area" class="editor-block-area" contenteditable="true" placeholder="Mulai menulis atau ketik '/' untuk perintah..."></div>
-
-          <div id="editor-details" class="hidden" style="margin-top: 30px; border-top: 0.5px solid var(--border-subtle); padding-top: 20px;">
-            <div class="list-header">Atribut Arsip</div>
-            <div class="section-card" style="padding: 0;">
-              <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
-                 <span style="flex: 1; font-size: 17px;">Ikon</span>
-                 <button type="button" id="emoji-trigger" style="font-size: 20px; background: none; border: none; cursor: pointer;">📁</button>
+        <div class="note-editor-content">
+          <div id="editor-details" class="hidden" style="margin-bottom: 40px; border-bottom: 1px solid var(--pro-border); padding-bottom: 24px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="display: flex; align-items: center;">
+                 <span style="width: 100px; font-size: 14px; color: var(--pro-text-secondary);">Ikon</span>
+                 <button type="button" id="emoji-trigger" style="font-size: 18px; background: var(--pro-surface); border: 1px solid var(--pro-border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">📁</button>
                  <input type="hidden" id="icon-input" value="📁">
               </div>
-              <div style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border-subtle);">
-                 <span style="flex: 1; font-size: 17px;">Folder</span>
-                 <select id="folder-select" style="border: none; background: transparent; font-size: 17px; text-align: right; color: var(--primary); font-weight: 500;">
+              <div style="display: flex; align-items: center;">
+                 <span style="width: 100px; font-size: 14px; color: var(--pro-text-secondary);">Folder</span>
+                 <select id="folder-select" style="background: var(--pro-surface); border: 1px solid var(--pro-border); border-radius: 6px; padding: 4px 8px; font-size: 14px; color: var(--pro-text);">
                    <option value="">(Tanpa Folder)</option>
                  </select>
               </div>
-              <div style="display: flex; align-items: center; padding: 12px 16px;">
-                 <span style="flex: 1; font-size: 17px;">Sembunyikan Catatan</span>
-                 <label class="ios-switch">
+              <div style="display: flex; align-items: center;">
+                 <span style="width: 100px; font-size: 14px; color: var(--pro-text-secondary);">Privasi</span>
+                 <label class="ios-switch" style="transform: scale(0.8); transform-origin: left;">
                    <input type="checkbox" id="is-secret-input">
                    <span class="ios-slider"></span>
                  </label>
+                 <span style="font-size: 12px; color: var(--text-muted); margin-left: -4px;">Sembunyikan dari daftar utama</span>
               </div>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: center; margin: 30px 0;">
-            <button type="button" id="toggle-details-btn" class="ghost-btn" style="font-size: 14px; opacity: 0.6;">Opsi Lanjutan</button>
-          </div>
+          <input id="editor-title" class="editor-title-input" placeholder="Judul Catatan" autocomplete="off" />
+          <div id="editor-block-area" class="editor-block-area" contenteditable="true" placeholder="Mulai menulis atau ketik '/' untuk perintah..."></div>
         </div>
 
-        <div class="editor-toolbar" style="padding: 12px; background: var(--frosted); border-top: 0.5px solid var(--border-subtle); display: flex; justify-content: space-around; gap: 10px; overflow-x: auto;">
+        <div class="editor-toolbar">
            <button type="button" class="toolbar-btn-ios" data-cmd="bold" title="Tebal"><b>B</b></button>
            <button type="button" class="toolbar-btn-ios" data-cmd="italic" title="Miring"><i>I</i></button>
+           <div style="width:1px; height:20px; background:var(--pro-border); margin: 0 4px;"></div>
            <button type="button" class="toolbar-btn-ios" data-cmd="h2" title="H1">H1</button>
            <button type="button" class="toolbar-btn-ios" data-cmd="h3" title="H2">H2</button>
            <button type="button" class="toolbar-btn-ios" data-cmd="todo" title="Tugas">☐</button>
