@@ -256,11 +256,22 @@ h3 {
 }
 
 /* Grouped List Style (The iPhone look) */
+/* Grouped List Style (The iPhone look) */
 .grouped-list {
-  background: var(--surface);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--card-radius);
+  /* Use variable */
   overflow: hidden;
   margin-bottom: 30px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .grouped-list {
+  background: rgba(28, 28, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .list-header {
@@ -602,23 +613,41 @@ h3 {
 .about-modal.show[data-modal-index="0"],
 .modal-sheet.show[data-modal-index="0"],
 .note-editor-modal.show[data-modal-index="0"] {
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(15px) saturate(190%);
-  -webkit-backdrop-filter: blur(15px) saturate(190%);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .about-modal-content,
 .modal-sheet .modal-content {
   background: var(--surface);
+  /* Fallback */
+  background: rgba(255, 255, 255, 0.85);
+  /* Light mode glass */
   width: 90%;
-  max-width: 320px;
-  border-radius: 14px;
+  max-width: 340px;
+  border-radius: 24px;
+  /* Best Sheet Standard */
   padding: 0;
   overflow-y: auto;
-  max-height: 90vh;
-  animation: alertPop 0.3s cubic-bezier(0.2, 1, 0.2, 1);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 85vh;
+  animation: alertPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Bouncier pop */
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  /* Inner glow/border */
   text-align: center;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+[data-theme="dark"] .about-modal-content,
+[data-theme="dark"] .modal-sheet .modal-content {
+  background: rgba(30, 30, 32, 0.75);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 @keyframes alertPop {
