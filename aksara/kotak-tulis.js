@@ -35,9 +35,23 @@
         return `<li>${text}</li>`;
       };
 
+      // Custom renderer for blockquote
+      renderer.blockquote = (quote) => {
+        return `<blockquote class="notion-quote">${quote}</blockquote>`;
+      };
+
+      // Custom renderer for codespan
+      renderer.codespan = (code) => {
+        return `<code class="notion-inline-code">${code}</code>`;
+      };
+
       let html = marked.parse(String(markdown || ''), { renderer });
       // WikiLinks support
       html = html.replace(/\[\[(.+?)\]\]/g, '<a href="#" class="wiki-link" data-target="$1">[[$1]]</a>');
+
+      // Toggle support (minimalist)
+      html = html.replace(/<p>!toggle (.*?)<\/p>/g, '<details class="notion-toggle"><summary>$1</summary><div class="toggle-content">...</div></details>');
+
       return sanitizeRichContent(html);
     }
 
@@ -190,10 +204,29 @@
     const slashCommands = [
       { id: 'h1', label: 'Heading 1', icon: 'H1', action: () => document.execCommand('formatBlock', false, 'h1') },
       { id: 'h2', label: 'Heading 2', icon: 'H2', action: () => document.execCommand('formatBlock', false, 'h2') },
+      { id: 'h3', label: 'Heading 3', icon: 'H3', action: () => document.execCommand('formatBlock', false, 'h3') },
       { id: 'todo', label: 'To-do List', icon: '☐', action: () => insertCheckbox() },
       { id: 'bullet', label: 'Bulleted List', icon: '•', action: () => document.execCommand('insertUnorderedList') },
+      { id: 'quote', label: 'Quote', icon: '"', action: () => document.execCommand('formatBlock', false, 'blockquote') },
+      { id: 'toggle', label: 'Toggle List', icon: '▶', action: () => insertToggle() },
+      { id: 'code', label: 'Code Block', icon: '</>', action: () => document.execCommand('formatBlock', false, 'pre') },
       { id: 'img', label: 'Image', icon: '🖼️', action: () => triggerImageUpload() }
     ];
+
+    function insertToggle() {
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      const range = selection.getRangeAt(0);
+      const details = document.createElement('details');
+      details.className = 'notion-toggle';
+      details.innerHTML = '<summary>Toggle</summary><div class="toggle-content">Mulai menulis...</div>';
+      range.deleteContents();
+      range.insertNode(details);
+      range.setStart(details.querySelector('summary'), 0);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
 
     function insertCheckbox() {
       const selection = window.getSelection();
@@ -267,13 +300,45 @@
       const selection = window.getSelection();
       if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
-        const textBefore = range.startContainer.textContent.slice(0, range.startOffset);
+        const node = range.startContainer;
+        const offset = range.startOffset;
+        const textBefore = node.textContent.slice(0, offset);
+
+        // --- Slash Menu ---
         if (textBefore.endsWith('/')) {
           const rect = range.getBoundingClientRect();
           const overlayRect = overlay.getBoundingClientRect();
           showSlashMenu(rect.left - overlayRect.left, rect.bottom - overlayRect.top + 5);
         } else {
           hideSlashMenu();
+        }
+
+        // --- Live Preview Transformations ---
+        if (e.inputType === 'insertText') {
+            const lineText = textBefore;
+            if (lineText === '# ') {
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('formatBlock', false, 'h1');
+            } else if (lineText === '## ') {
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('formatBlock', false, 'h2');
+            } else if (lineText === '### ') {
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('formatBlock', false, 'h3');
+            } else if (lineText === '- [ ] ') {
+                for(let i=0; i<6; i++) document.execCommand('delete', false);
+                insertCheckbox();
+            } else if (lineText === '> ') {
+                document.execCommand('delete', false);
+                document.execCommand('delete', false);
+                document.execCommand('formatBlock', false, 'blockquote');
+            }
         }
       }
     });

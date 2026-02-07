@@ -1501,10 +1501,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   const introKey = 'abelion-last-intro-timestamp';
   const lastIntro = localStorage.getItem(introKey);
   const now = Date.now();
-  const twentyFourHours = 24 * 60 * 60 * 1000;
+  const oneHour = 60 * 60 * 1000;
 
-  // Only show intro once every 24 hours OR if it's a new session without skipIntro flag
-  if (sessionStorage.getItem('skipIntro') || (lastIntro && (now - parseInt(lastIntro)) < twentyFourHours)) {
+  // Only show intro once every 1 hour OR if it's a new session without skipIntro flag
+  if (sessionStorage.getItem('skipIntro') || (lastIntro && (now - parseInt(lastIntro)) < oneHour)) {
     intro.style.display = 'none';
     main.classList.remove('hidden');
     return;

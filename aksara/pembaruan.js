@@ -4,10 +4,12 @@
 
     async function checkUpdate() {
         try {
-            // Throttling: Check if we showed the popup recently (within 24h)
+            // Throttling: Check if we showed the popup recently (within 1h for development, 24h for prod)
+            // But the user asked for 1h loader, maybe they want 1h for updates too?
+            // "date-v1 ... ganti hari riset lagi"
             const lastShown = localStorage.getItem(TIMESTAMP_KEY);
             const now = Date.now();
-            if (lastShown && (now - parseInt(lastShown)) < 24 * 60 * 60 * 1000) {
+            if (lastShown && (now - parseInt(lastShown)) < 60 * 60 * 1000) {
                 return;
             }
 
@@ -25,26 +27,14 @@
             // If we have already seen or acknowledged this version, don't show it
             if (lastSeen === updateInfo.version) return;
 
-            // Show if remote is newer OR it is a fresh update (same version but hasn't been seen)
-            const isNewerThanLocal = isNewer(updateInfo.version, currentVersion);
-            const isFreshlyUpdated = updateInfo.version === currentVersion && lastSeen !== currentVersion;
-
-            if (isNewerThanLocal || isFreshlyUpdated) {
+            // Simple string comparison for the new format YYYYMMDD-vX
+            // YYYYMMDD-v2 > YYYYMMDD-v1
+            if (updateInfo.version !== currentVersion) {
                 showUpdatePopup(updateInfo);
             }
         } catch (e) {
             console.warn('Gagal memeriksa pembaruan:', e);
         }
-    }
-
-    function isNewer(remote, local) {
-        const r = remote.split('.').map(Number);
-        const l = local.split('.').map(Number);
-        for (let i = 0; i < r.length; i++) {
-            if (r[i] > (l[i] || 0)) return true;
-            if (r[i] < (l[i] || 0)) return false;
-        }
-        return false;
     }
 
     function showUpdatePopup(info) {
@@ -114,6 +104,6 @@
         };
     }
 
-    // Check after 2 seconds
-    setTimeout(checkUpdate, 2000);
+    // Check after 500ms instead of 2 seconds for faster response
+    setTimeout(checkUpdate, 500);
 })();

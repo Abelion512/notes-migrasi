@@ -23,31 +23,44 @@
   updateStatusBadges();
 
   // Unified Row Logic
-  document.querySelectorAll('.integration-row').forEach(row => {
+  const integrationRows = document.querySelectorAll('.integration-row');
+  integrationRows.forEach(row => {
     const header = row.querySelector('.list-item');
-    if (!header) return;
+    const target = row.dataset.target;
+    const area = document.getElementById(`${target}-config-area`);
+    const chevron = row.querySelector('.list-item-chevron');
 
-    header.onclick = (e) => {
+    if (!header || !area) return;
+
+    header.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
-      const target = row.dataset.target;
-      const area = document.getElementById(`${target}-config-area`);
+
       const isVisible = area.style.display === 'block';
 
-      // Close all first for a clean look
-      document.querySelectorAll('[id$="-config-area"]').forEach(a => a.style.display = 'none');
-      document.querySelectorAll('.list-item-chevron').forEach(c => c.style.transform = 'rotate(0deg)');
+      // Close other areas
+      integrationRows.forEach(otherRow => {
+        if (otherRow === row) return;
+        const otherTarget = otherRow.dataset.target;
+        const otherArea = document.getElementById(`${otherTarget}-config-area`);
+        const otherChevron = otherRow.querySelector('.list-item-chevron');
+        if (otherArea) otherArea.style.display = 'none';
+        if (otherChevron) otherChevron.style.transform = 'rotate(0deg)';
+      });
 
-      if (!isVisible) {
+      if (isVisible) {
+        area.style.display = 'none';
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      } else {
         area.style.display = 'block';
-        row.querySelector('.list-item-chevron').style.transform = 'rotate(90deg)';
-        area.style.animation = 'slideDown 0.3s ease-out';
+        if (chevron) chevron.style.transform = 'rotate(90deg)';
       }
-    };
-  });
+    });
 
-  // Stop propagation on config area to prevent toggling when interacting with inputs
-  document.querySelectorAll('[id$="-config-area"]').forEach(area => {
-    area.onclick = (e) => e.stopPropagation();
+    // Prevent clicks inside the config area from bubbling to the header
+    area.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
   });
 
   // Supabase Logic

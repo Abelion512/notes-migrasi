@@ -14,16 +14,13 @@
   };
 
   const APP_VERSION_BASE = Object.freeze({
-    major: 2026,
-    minor: 2,
-    patch: 6,
-    channel: 'premium-release',
+    versionString: '20260207-v1',
     codename: 'Integrasi Gemilang',
-    build: '2026-02-06',
+    build: '2026-02-07',
     environment: 'production'
   });
 
-  const INITIAL_VERSION_STRING = `${APP_VERSION_BASE.major}.${String(APP_VERSION_BASE.minor).padStart(2, '0')}.${APP_VERSION_BASE.patch}`;
+  const INITIAL_VERSION_STRING = APP_VERSION_BASE.versionString;
 
   const APP_META = Object.freeze({
     versioning: APP_VERSION_BASE,
@@ -356,10 +353,8 @@
 
   function computeVersionString(versioning) {
     if (!versioning) return INITIAL_VERSION_STRING;
-    const major = versioning.major;
-    const minor = String(versioning.minor).padStart(2, '0');
-    const patch = versioning.patch;
-    return `${major}.${minor}.${patch}`;
+    if (versioning.versionString) return versioning.versionString;
+    return INITIAL_VERSION_STRING;
   }
 
   function getVersionMeta() {
@@ -405,6 +400,21 @@
   function getVersionChangelog() {
     return APP_META.changelog.map(item => ({ ...item, highlights: [...item.highlights] }));
   }
+
+  // Global customization
+  document.addEventListener('contextmenu', (e) => {
+    // Only prevent default if we're not inside a text input/textarea/contenteditable
+    const target = e.target;
+    const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+    if (!isInput) {
+      e.preventDefault();
+      // Show general page context menu if needed
+      if (window.ContextMenu && typeof window.ContextMenu.show === 'function') {
+         // Optionally show a general menu here
+      }
+    }
+  });
 
   global.AbelionUtils = {
     STORAGE_KEYS,

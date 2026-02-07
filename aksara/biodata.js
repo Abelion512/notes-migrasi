@@ -347,10 +347,23 @@
     const notesList = await window.AbelionStorage.getNotes();
 
     const totalNotesEl = document.getElementById('total-notes-stat');
+    const totalWordsEl = document.getElementById('total-words-stat');
     const streakStatEl = document.getElementById('streak-stat');
+    const avgWordsEl = document.getElementById('avg-words-stat');
+
+    let totalWords = 0;
+    notesList.forEach(n => {
+      const content = n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '');
+      totalWords += content.trim() ? content.trim().split(/\s+/).length : 0;
+    });
 
     if (totalNotesEl) totalNotesEl.textContent = notesList.length;
-    if (streakStatEl) streakStatEl.textContent = (summary?.stats?.logins || 0) + ' hari';
+    if (totalWordsEl) totalWordsEl.textContent = totalWords.toLocaleString('id-ID') + ' kata';
+    if (streakStatEl) streakStatEl.textContent = (summary?.streaks?.note?.count || 0) + ' hari';
+    if (avgWordsEl) {
+      const avg = notesList.length > 0 ? Math.round(totalWords / notesList.length) : 0;
+      avgWordsEl.textContent = avg.toLocaleString('id-ID') + ' per catatan';
+    }
 
     // Real XP history processing
     const history = summary?.xpHistory || [];
@@ -528,7 +541,6 @@
     renderVersion();
     applyProfile();
     wireInteractions();
-    renderLeaderboard();
     try {
       await renderProductivityCharts();
     } catch (err) {

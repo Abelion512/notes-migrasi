@@ -135,10 +135,12 @@
 
   const secureLogout = document.getElementById('secure-logout-btn');
   if (secureLogout) {
-    secureLogout.addEventListener('click', () => {
-      Storage.lock();
-      alert('Data dikunci. Muat ulang untuk membuka kembali.');
-      location.reload();
+    secureLogout.addEventListener('click', async () => {
+      const ok = await AbelionUtils.confirmAction('Kunci Vault', 'Amankan data Anda sekarang? Anda akan membutuhkan kunci untuk membukanya kembali.', 'Ya, Kunci', 'Batal');
+      if (ok) {
+        Storage.lock();
+        location.reload();
+      }
     });
   }
 

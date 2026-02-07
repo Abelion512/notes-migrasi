@@ -536,9 +536,9 @@ h3 { font-size: 17px; font-weight: 600; }
 .about-modal.show[data-modal-index="0"],
 .modal-sheet.show[data-modal-index="0"],
 .note-editor-modal.show[data-modal-index="0"] {
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  background: rgba(0,0,0,0.1);
+  backdrop-filter: blur(15px) saturate(190%);
+  -webkit-backdrop-filter: blur(15px) saturate(190%);
 }
 
 .about-modal-content, .modal-sheet .modal-content {
@@ -547,7 +547,8 @@ h3 { font-size: 17px; font-weight: 600; }
   max-width: 320px;
   border-radius: 14px;
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 90vh;
   animation: alertPop 0.3s cubic-bezier(0.2, 1, 0.2, 1);
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   text-align: center;
@@ -768,12 +769,40 @@ h3 { font-size: 17px; font-weight: 600; }
   margin-bottom: 10px;
 }
 
-#editor-preview-area blockquote {
-  border-left: 4px solid var(--border-subtle);
-  padding-left: 16px;
-  color: var(--text-secondary);
+#editor-preview-area blockquote, .notion-quote {
+  border-left: 4px solid var(--primary);
+  padding: 8px 16px;
+  color: var(--text-primary);
+  background: var(--primary-soft);
   font-style: italic;
   margin-bottom: 20px;
+  border-radius: 0 8px 8px 0;
+}
+
+.notion-toggle {
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: var(--surface-strong);
+  padding: 8px;
+}
+
+.notion-toggle summary {
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.toggle-content {
+  padding: 10px 10px 10px 24px;
+  color: var(--text-secondary);
+}
+
+.notion-inline-code {
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
 }
 
 #editor-preview-area hr {
@@ -910,23 +939,23 @@ select.input-control {
 
 .selection-bar {
   position: fixed;
-  bottom: 90px;
+  bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 600px;
-  background: var(--surface-strong);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--primary);
-  border-radius: 20px;
-  padding: 12px 20px;
+  width: calc(100% - 40px);
+  max-width: 500px;
+  background: var(--surface);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 14px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-  z-index: 1100;
-  animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.2, 1);
+  box-shadow: 0 15px 45px rgba(0,0,0,0.12);
+  z-index: 2100;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .selection-info {
@@ -1071,16 +1100,17 @@ select.input-control {
   .custom-select-options {
     position: fixed;
     top: auto;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
     left: 20px;
     right: 20px;
-    width: calc(100% - 40px);
+    width: auto;
     border-radius: 14px;
     margin-top: 0;
     display: none;
-    z-index: 10000;
+    z-index: 10001;
     background: var(--surface);
-    border: none;
+    border: 0.5px solid var(--border-subtle);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
   }
 
   .custom-select-options.show {
