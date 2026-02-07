@@ -379,7 +379,7 @@
   if (themeTrigger && window.AbelionTheme) {
     const updateUI = () => {
       const current = window.AbelionTheme.getTheme();
-      const map = { 'light': '☀️ Terang', 'dark': '🌙 Gelap', 'auto': '🖥️ Sistem' };
+      const map = { 'light': 'Terang', 'dark': 'Gelap', 'auto': 'Sistem' };
       themeTrigger.innerHTML = `${map[current] || 'Sistem'} <span style="opacity: 0.5;">▼</span>`;
 
       if (themeModal) {

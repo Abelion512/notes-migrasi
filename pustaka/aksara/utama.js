@@ -159,11 +159,11 @@ function renderHeroContent() {
   const greetingEl = document.getElementById('dynamic-greeting');
   if (greetingEl) {
     const hour = new Date().getHours();
-    let prefix = 'Halo 👋';
-    if (hour >= 5 && hour < 11) prefix = 'Selamat Pagi 🌅';
-    else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang ☀️';
-    else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore 🌇';
-    else prefix = 'Selamat Malam 🌙';
+    let prefix = 'Halo';
+    if (hour >= 5 && hour < 11) prefix = 'Selamat Pagi';
+    else if (hour >= 11 && hour < 15) prefix = 'Selamat Siang';
+    else if (hour >= 15 && hour < 19) prefix = 'Selamat Sore';
+    else prefix = 'Selamat Malam';
     greetingEl.textContent = `${prefix}, silakan kelola arsip Anda hari ini.`;
   }
 }
@@ -1177,6 +1177,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
     draftKey: existingNote ? existingNote.id : 'new',
     initialValue: {
       icon: existingNote?.icon || '',
+      cover: existingNote?.cover || null,
       title: existingNote?.title || '',
       content: markdownFromNote(existingNote),
       isSecret: existingNote?.isSecret || false,
@@ -1188,6 +1189,7 @@ function openNoteModal(mode = 'create', existingNote = null) {
         Object.assign(existingNote, prepareNoteForSearch({
           ...existingNote,
           icon: payload.icon,
+          cover: payload.cover,
           title: payload.title,
           content: payload.contentHtml,
           contentMarkdown: payload.contentMarkdown,

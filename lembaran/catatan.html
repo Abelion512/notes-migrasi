@@ -20,21 +20,51 @@
       <button type="submit" form="note-edit-form" class="btn-blue" style="padding: 6px 16px; font-size: 14px; border-radius: 6px;">Simpan</button>
     </header>
 
-    <div class="note-editor-content" style="padding-top: 40px;">
+    <div id="note-cover-area" style="width: 100%; height: 200px; background: var(--pro-surface); position: relative; overflow: hidden; display: none;">
+      <img id="note-cover-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+      <button type="button" id="change-cover-btn" class="ghost-btn" style="position: absolute; bottom: 10px; right: 20px; background: rgba(0,0,0,0.5); color: white; font-size: 12px; border-radius: 4px; padding: 4px 8px;">Ganti Sampul</button>
+    </div>
+
+    <div class="note-editor-content" style="padding-top: 20px;">
       <form id="note-edit-form" autocomplete="off">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-           <button type="button" id="edit-icon-trigger" style="font-size: 24px; background: none; border: none; cursor: pointer; padding: 0;">📁</button>
-           <input type="hidden" id="edit-icon" value="📁">
-           <input id="edit-label" placeholder="Tambahkan label..." maxlength="20" style="border:none; background:none; font-size:13px; color:var(--primary); font-weight:600; outline:none; text-transform:uppercase; letter-spacing:0.5px;">
+        <div id="note-icon-area" style="margin-bottom: 20px; position: relative; display: inline-block;">
+           <button type="button" id="edit-icon-trigger" style="font-size: 72px; background: none; border: none; cursor: pointer; padding: 0; line-height: 1;">📝</button>
+           <input type="hidden" id="edit-icon" value="📝">
+        </div>
+
+        <div style="margin-bottom: 10px;">
+           <input id="edit-label" placeholder="Tambahkan kategori..." maxlength="20" style="border:none; background:none; font-size:13px; color:var(--primary); font-weight:600; outline:none; text-transform:uppercase; letter-spacing:0.5px;">
         </div>
 
         <input id="edit-title" class="editor-title-input" required maxlength="100" placeholder="Judul Catatan">
 
-        <textarea id="edit-content" class="editor-block-area" required placeholder="Mulai menulis..."
-          style="min-height: 500px; width: 100%; resize: none;"></textarea>
+        <!-- Notion-style Block Editor (contenteditable) instead of textarea -->
+        <div id="edit-content-blocks" class="editor-block-area" contenteditable="true" placeholder="Ketik '/' untuk perintah..."></div>
+        <textarea id="edit-content" style="display: none;"></textarea>
 
         <div id="note-detail-date" style="margin-top: 40px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--pro-border); padding-top: 20px;"></div>
       </form>
+    </div>
+
+    <!-- Slash Menu -->
+    <div id="slash-menu" class="slash-menu hidden">
+      <!-- Items will be injected by JS -->
+    </div>
+
+    <!-- Notion-style Toolbar -->
+    <div id="notion-toolbar" class="editor-toolbar">
+      <button type="button" class="toolbar-btn-ios" data-command="h1" title="Heading 1">H1</button>
+      <button type="button" class="toolbar-btn-ios" data-command="h2" title="Heading 2">H2</button>
+      <button type="button" class="toolbar-btn-ios" data-command="bold" title="Bold"><b>B</b></button>
+      <button type="button" class="toolbar-btn-ios" data-command="italic" title="Italic"><i>I</i></button>
+      <button type="button" class="toolbar-btn-ios" data-command="list" title="Bullet List">•</button>
+      <button type="button" class="toolbar-btn-ios" data-command="check" title="Checklist">✓</button>
+      <button type="button" class="toolbar-btn-ios" data-command="link" title="Link">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+      </button>
+      <button type="button" class="toolbar-btn-ios" data-command="image" title="Image">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      </button>
     </div>
   </div>
 

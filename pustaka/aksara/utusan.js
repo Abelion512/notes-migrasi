@@ -22,7 +22,7 @@
         if (window.AbelionSupabase.client) return;
 
         const url = customUrl || (window.PROCESS_ENV && window.PROCESS_ENV.SUPABASE_URL);
-        const key = userKey || (window.PROCESS_ENV && (window.PROCESS_ENV.SUPABASE_ANON_KEY || window.PROCESS_ENV.SUPABASE_KEY));
+        const key = customKey || (window.PROCESS_ENV && (window.PROCESS_ENV.SUPABASE_ANON_KEY || window.PROCESS_ENV.SUPABASE_KEY));
 
         if (url && key && window.supabase) {
             try {
