@@ -116,6 +116,50 @@ h3 { font-size: 17px; font-weight: 600; }
 
 .main-content.hidden { display: none; }
 
+/* iOS Switch Style */
+.ios-switch {
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 31px;
+}
+
+.ios-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ios-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--border-subtle);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.ios-slider:before {
+  position: absolute;
+  content: "";
+  height: 27px;
+  width: 27px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.ios-switch input:checked + .ios-slider {
+  background-color: #34C759;
+}
+
+.ios-switch input:checked + .ios-slider:before {
+  transform: translateX(20px);
+}
+
 /* Large Navigation Title Style */
 .hero-section {
   padding: 40px 0 20px 0;
@@ -476,32 +520,43 @@ h3 { font-size: 17px; font-weight: 600; }
 }
 
 /* Modals / Sheets */
-.about-modal {
+.about-modal, .modal-sheet {
   position: fixed;
   inset: 0;
   background: transparent;
   display: none;
-  align-items: flex-end; /* Sheet style */
+  align-items: center;
   justify-content: center;
+  z-index: 9000;
 }
 
-.about-modal.show { display: flex; }
+.about-modal.show, .modal-sheet.show { display: flex; }
 
 /* Only the bottom-most modal gets the dark backdrop and blur */
 .about-modal.show[data-modal-index="0"],
+.modal-sheet.show[data-modal-index="0"],
 .note-editor-modal.show[data-modal-index="0"] {
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.1);
+  backdrop-filter: blur(15px) saturate(190%);
+  -webkit-backdrop-filter: blur(15px) saturate(190%);
 }
 
-.about-modal-content {
+.about-modal-content, .modal-sheet .modal-content {
   background: var(--surface);
-  width: 100%;
-  max-width: 600px;
-  border-radius: 20px 20px 0 0;
-  padding: 20px;
-  animation: slideUp 0.3s ease-out;
+  width: 90%;
+  max-width: 320px;
+  border-radius: 14px;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 90vh;
+  animation: alertPop 0.3s cubic-bezier(0.2, 1, 0.2, 1);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+@keyframes alertPop {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideUp {
@@ -519,6 +574,39 @@ h3 { font-size: 17px; font-weight: 600; }
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+/* iOS Alert Style Buttons */
+.alert-buttons {
+  display: flex;
+  border-top: 0.5px solid var(--border-subtle);
+}
+
+.alert-button {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  font-size: 17px;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.alert-button:not(:last-child) {
+  border-right: 0.5px solid var(--border-subtle);
+}
+
+.alert-button.bold {
+  font-weight: 600;
+}
+
+.alert-button.danger {
+  color: var(--danger);
+}
+
+.alert-button:active {
+  background: var(--primary-soft);
 }
 
 .done-btn {
@@ -548,9 +636,10 @@ h3 { font-size: 17px; font-weight: 600; }
   border-radius: 24px 24px 0 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible; /* Allow emoji picker and other popups to float outside */
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+  position: relative;
 }
 
 .note-editor-modal {
@@ -583,25 +672,83 @@ h3 { font-size: 17px; font-weight: 600; }
   letter-spacing: -0.5px;
 }
 
-.editor-textarea {
-  font-size: 18px;
-  border: none;
+.editor-block-area {
   width: 100%;
-  height: auto;
-  min-height: 400px;
+  min-height: 60vh;
+  border: none;
   background: transparent;
   color: var(--text-primary);
-  outline: none;
-  resize: none;
-  line-height: 1.6;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-#editor-preview-area {
+  font-family: inherit;
   font-size: 18px;
   line-height: 1.6;
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  outline: none;
+  padding: 10px 0;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.editor-block-area:empty:before {
+  content: attr(placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Notion-style block margins */
+.editor-block-area p,
+.editor-block-area h1,
+.editor-block-area h2,
+.editor-block-area h3,
+.editor-block-area ul,
+.editor-block-area ol,
+.editor-block-area blockquote {
+  margin-bottom: 0.8em;
+}
+
+.editor-block-area img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+
+.editor-block-area .checkbox-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.editor-block-area .checkbox-line input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.editor-block-area .checkbox-line input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.editor-block-area .checkbox-line input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.editor-block-area .checkbox-line input[type="checkbox"]:checked + span {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
 
 #editor-preview-area h2, #editor-preview-area h3, #editor-preview-area h4 {
@@ -622,12 +769,40 @@ h3 { font-size: 17px; font-weight: 600; }
   margin-bottom: 10px;
 }
 
-#editor-preview-area blockquote {
-  border-left: 4px solid var(--border-subtle);
-  padding-left: 16px;
-  color: var(--text-secondary);
+#editor-preview-area blockquote, .notion-quote {
+  border-left: 4px solid var(--primary);
+  padding: 8px 16px;
+  color: var(--text-primary);
+  background: var(--primary-soft);
   font-style: italic;
   margin-bottom: 20px;
+  border-radius: 0 8px 8px 0;
+}
+
+.notion-toggle {
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: var(--surface-strong);
+  padding: 8px;
+}
+
+.notion-toggle summary {
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.toggle-content {
+  padding: 10px 10px 10px 24px;
+  color: var(--text-secondary);
+}
+
+.notion-inline-code {
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
 }
 
 #editor-preview-area hr {
@@ -656,27 +831,30 @@ h3 { font-size: 17px; font-weight: 600; }
 
 .slash-menu {
   position: absolute;
-  background: var(--surface);
-  border: 0.5px solid var(--border-subtle);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  z-index: 5000;
-  min-width: 200px;
-  overflow: hidden;
+  background: var(--frosted);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid var(--glass-outline);
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  z-index: 9000;
+  min-width: 220px;
   padding: 6px;
   display: flex;
   flex-direction: column;
+  animation: alertPop 0.2s ease-out;
 }
 
 .slash-item {
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  transition: background 0.2s;
+  gap: 12px;
+  transition: all 0.2s;
 }
 
 .slash-item:hover, .slash-item.active {
@@ -762,18 +940,22 @@ select.input-control {
 .selection-bar {
   position: fixed;
   bottom: 100px;
-  left: 20px;
-  right: 20px;
-  background: var(--surface-strong);
-  border: 1px solid var(--primary);
-  border-radius: 16px;
-  padding: 12px 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 500px;
+  background: var(--surface);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 0.5px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 14px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-  z-index: 1100;
-  animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.2, 1);
+  box-shadow: 0 15px 45px rgba(0,0,0,0.12);
+  z-index: 2100;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .selection-info {
@@ -796,14 +978,14 @@ select.input-control {
 
 /* More Button on List Item */
 .list-item-more {
-  padding: 8px;
-  margin-left: 8px;
+  padding: 12px;
+  margin-left: 4px;
   color: var(--text-muted);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .list-item-more:active {
@@ -822,7 +1004,7 @@ select.input-control {
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   z-index: 5000;
   min-width: 180px;
-  overflow: hidden;
+  overflow: visible;
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -918,16 +1100,17 @@ select.input-control {
   .custom-select-options {
     position: fixed;
     top: auto;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
     left: 20px;
     right: 20px;
-    width: calc(100% - 40px);
+    width: auto;
     border-radius: 14px;
     margin-top: 0;
     display: none;
-    z-index: 10000;
+    z-index: 10001;
     background: var(--surface);
-    border: none;
+    border: 0.5px solid var(--border-subtle);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
   }
 
   .custom-select-options.show {
@@ -935,17 +1118,19 @@ select.input-control {
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .custom-select-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 9999;
-    display: none;
-  }
+}
 
-  .custom-select-overlay.show {
-    display: block;
-  }
+.custom-select-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.1);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: none;
+}
+
+.custom-select-overlay.show {
+  display: block;
 }
 
 @keyframes popIn {

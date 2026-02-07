@@ -347,10 +347,23 @@
     const notesList = await window.AbelionStorage.getNotes();
 
     const totalNotesEl = document.getElementById('total-notes-stat');
+    const totalWordsEl = document.getElementById('total-words-stat');
     const streakStatEl = document.getElementById('streak-stat');
+    const avgWordsEl = document.getElementById('avg-words-stat');
+
+    let totalWords = 0;
+    notesList.forEach(n => {
+      const content = n.contentMarkdown || (n.content || '').replace(/<[^>]+>/g, '');
+      totalWords += content.trim() ? content.trim().split(/\s+/).length : 0;
+    });
 
     if (totalNotesEl) totalNotesEl.textContent = notesList.length;
-    if (streakStatEl) streakStatEl.textContent = (summary?.stats?.logins || 0) + ' hari';
+    if (totalWordsEl) totalWordsEl.textContent = totalWords.toLocaleString('id-ID') + ' kata';
+    if (streakStatEl) streakStatEl.textContent = (summary?.streaks?.note?.count || 0) + ' hari';
+    if (avgWordsEl) {
+      const avg = notesList.length > 0 ? Math.round(totalWords / notesList.length) : 0;
+      avgWordsEl.textContent = avg.toLocaleString('id-ID') + ' per catatan';
+    }
 
     // Real XP history processing
     const history = summary?.xpHistory || [];
@@ -450,8 +463,6 @@
     // Kualifikasi: Harus punya nama dan minimal 1 catatan
     const userQualifies = (summary.name && summary.name !== 'Penjelajah') && notes.length > 0;
 
-    // Only show user and official Abelion Lavv for context, or just the user.
-    // The user requested to reset dummy data.
     const allCompetitors = [];
 
     if (userQualifies) {
@@ -464,15 +475,6 @@
         notesCount: notes.length
       });
     }
-
-    // Official Abelion Lavv (as a goal/admin)
-    allCompetitors.push({
-      id: 'dev-1',
-      name: 'Abelion Lavv',
-      xp: 15000,
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abelion',
-      notesCount: 150
-    });
 
     const sorted = allCompetitors.sort((a, b) => b.xp - a.xp);
 
@@ -539,7 +541,6 @@
     renderVersion();
     applyProfile();
     wireInteractions();
-    renderLeaderboard();
     try {
       await renderProductivityCharts();
     } catch (err) {

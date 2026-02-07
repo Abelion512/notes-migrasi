@@ -175,7 +175,7 @@
   function createDefaultState() {
     const now = new Date().toISOString();
     return {
-      totalXp: 500,
+      totalXp: 0,
       stats: {
         logins: 0,
         notesCreated: 0,

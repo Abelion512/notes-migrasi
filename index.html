@@ -25,7 +25,7 @@
       <div id="offline-badge" class="offline-badge hidden">Mode Offline</div>
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <h1 class="title-abelion animated">Catatan</h1>
-        <button id="toggle-selection-mode" class="ghost-btn" style="font-size: 14px; font-weight: 600; color: var(--primary); padding: 8px 12px; border-radius: 20px; background: var(--frosted);">Pilih</button>
+        <button id="toggle-selection-mode" class="ghost-btn" style="font-size: 14px; font-weight: 600; color: var(--primary); padding: 6px 14px; border-radius: 20px; background: var(--frosted); border: 0.5px solid var(--border-subtle);">Pilih</button>
       </div>
       <p class="subtitle" id="dynamic-greeting">Selamat datang di Lembaga Arsip Digital Abelion.</p>
       <blockquote class="motto" id="dynamic-motto">“Ide adalah aset.”</blockquote>
@@ -204,13 +204,15 @@
   </div>
 
   <!-- Modal Konfirmasi -->
-  <div id="confirm-modal" class="about-modal">
-    <div class="about-modal-content" style="text-align: center; padding: 24px;">
-      <h3 id="confirm-title" style="margin-bottom: 8px;">Konfirmasi</h3>
-      <p id="confirm-message" style="margin-bottom: 24px; color: var(--text-secondary); font-size: 15px; line-height: 1.4;"></p>
-      <div style="display: flex; gap: 12px;">
-        <button id="confirm-cancel" class="btn-ghost" style="flex: 1; border: 0.5px solid var(--border-subtle);">Batal</button>
-        <button id="confirm-ok" class="btn-blue" style="flex: 1; background: var(--danger);">Hapus</button>
+  <div id="confirm-modal" class="modal-sheet">
+    <div class="modal-content">
+      <div style="padding: 20px 16px;">
+        <h3 id="confirm-title" style="margin: 0 0 8px; font-size: 17px; font-weight: 600;">Konfirmasi</h3>
+        <p id="confirm-message" style="margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.4;"></p>
+      </div>
+      <div class="alert-buttons">
+        <button id="confirm-cancel" class="alert-button">Batal</button>
+        <button id="confirm-ok" class="alert-button bold danger">Ya</button>
       </div>
     </div>
   </div>
