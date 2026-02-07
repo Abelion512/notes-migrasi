@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 
 import React from 'react';
 import { useAbelionStore } from '@/aksara/toko';
@@ -18,10 +19,10 @@ export default function Biodata() {
 
       <section className="profile-hero mb-8 flex flex-col items-center">
         <div className="relative inline-block">
-          <img
+          <Image
             src={profil.avatar}
             alt="Avatar"
-            className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+            width={96} height={96} className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
           />
           <div className="absolute bottom-0 right-0 bg-primary text-white px-2 py-1 rounded-full text-xs font-bold border-2 border-white">
             Lv {profil.level}

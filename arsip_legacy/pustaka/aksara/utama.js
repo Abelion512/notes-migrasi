@@ -58,7 +58,7 @@ const changelogAck = document.getElementById('changelog-ack');
 
 let notes = [];
 let folders = [];
-let notesLoaded = false;
+let _notesLoaded = false;
 
 async function loadFolders() {
   folders = await Storage.getFolders();
@@ -92,7 +92,7 @@ async function loadNotes() {
   }
 }
 
-function noteDraftKey(id = 'new') {
+function _noteDraftKey(id = 'new') {
   return `note-${id}`;
 }
 
@@ -108,7 +108,7 @@ function markdownFromNote(note) {
   return temp.textContent || '';
 }
 
-function renderMarkdown(markdown) {
+function _renderMarkdown(markdown) {
   if (NoteEditor && typeof NoteEditor.toHtml === 'function') {
     return NoteEditor.toHtml(markdown);
   }
@@ -231,15 +231,15 @@ function updateMood() {
 
 // --- Search & Filter ---
 let searchQuery = '';
-let filterByTag = '';
+let _filterByTag = '';
 let activeFolderId = 'all';
-let activeNoteId = null;
+let _activeNoteId = null;
 
 let isSelectionMode = false;
 let selectedNoteIds = new Set();
 
 let notesRenderLimit = 20;
-let currentNotesBatch = [];
+let _currentNotesBatch = [];
 
 function renderFolders() {
   const el = document.getElementById('folder-list');
@@ -526,7 +526,7 @@ function initSwipeLogic() {
     }
   }, { passive: true });
 
-  grid.addEventListener('touchend', (e) => {
+  grid.addEventListener('touchend', (_e) => {
     if (!activeItem) return;
     activeItem.classList.remove('swiping');
 

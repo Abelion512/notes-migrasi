@@ -1,5 +1,5 @@
 (function() {
-  const { STORAGE_KEYS, sanitizeText, sanitizeRichContent, formatTanggal } = AbelionUtils;
+  const { _STORAGE_KEYS, sanitizeText, sanitizeRichContent, formatTanggal } = AbelionUtils;
   const Storage = window.AbelionStorage;
   const Gamification = window.AbelionGamification || null;
   const NoteEditor = window.NoteEditorModal;
@@ -251,7 +251,7 @@
       }
     }
 
-    blockArea.addEventListener('input', (e) => {
+    blockArea.addEventListener('input', (_e) => {
       const selection = window.getSelection();
       if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);

@@ -1,5 +1,11 @@
 const VERSION = 'v1';
 
+interface EncryptedPayload {
+  __enc: string;
+  iv: string;
+  data: string;
+}
+
 function toBase64(buffer: ArrayBuffer | Uint8Array): string {
   return btoa(String.fromCharCode(...new Uint8Array(buffer)));
 }
@@ -37,7 +43,7 @@ export async function buatKunci(passphrase: string, salt: Uint8Array): Promise<C
   );
 }
 
-export async function enkripsi(value: any, key: CryptoKey): Promise<any> {
+export async function enkripsi(value: unknown, key: CryptoKey): Promise<EncryptedPayload> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(JSON.stringify(value));
   const ciphertext = await crypto.subtle.encrypt(
@@ -52,10 +58,12 @@ export async function enkripsi(value: any, key: CryptoKey): Promise<any> {
   };
 }
 
-export async function dekripsi(payload: any, key: CryptoKey): Promise<any> {
-  if (!payload || payload.__enc !== VERSION) return payload;
-  const iv = toBuffer(payload.iv);
-  const data = toBuffer(payload.data);
+export async function dekripsi(payload: unknown, key: CryptoKey): Promise<unknown> {
+  if (!payload || typeof payload !== 'object' || (payload as Record<string, unknown>).__enc !== VERSION) return payload;
+
+  const p = payload as EncryptedPayload;
+  const iv = toBuffer(p.iv);
+  const data = toBuffer(p.data);
   const decrypted = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: iv as unknown as ArrayBuffer },
     key,

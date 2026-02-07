@@ -21,7 +21,7 @@
                 const text = await response.text();
                 parseEnv(text);
             }
-        } catch (e) {
+        } catch (_e) {
             // Silently ignore if .env cannot be fetched
         }
     }

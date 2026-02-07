@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Catatan } from '@/aksara/jenis';
 import { ChevronLeft, MoreVertical, Share, Trash2 } from 'lucide-react';
 import { useAbelionStore } from '@/aksara/toko';
@@ -12,20 +12,13 @@ interface DialogEditorProps {
 }
 
 const DialogEditor: React.FC<DialogEditorProps> = ({ catatan, isOpen, onClose }) => {
-  const [judul, setJudul] = useState('');
-  const [konten, setKonten] = useState('');
+  const [judul, setJudul] = useState(catatan?.judul || '');
+  const [konten, setKonten] = useState(catatan?.konten || '');
   const perbaruiCatatan = useAbelionStore((state) => state.perbaruiCatatan);
   const pindahkanKeSampah = useAbelionStore((state) => state.pindahkanKeSampah);
 
-  useEffect(() => {
-    if (catatan) {
-      setJudul(catatan.judul);
-      setKonten(catatan.konten);
-    } else {
-      setJudul('');
-      setKonten('');
-    }
-  }, [catatan]);
+  // We use a key on the parent in page.tsx to reset this component's state when catatan changes.
+  // This avoids the "setState in useEffect" warning and is a more idiomatic React pattern.
 
   const handleSave = () => {
     if (catatan) {

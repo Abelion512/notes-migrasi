@@ -46,7 +46,7 @@
         overlay.remove();
         STATE.overlay = null;
         location.reload();
-      } catch (error) {
+      } catch (_error) {
         STATE.errorEl.textContent = 'Passphrase tidak valid. Coba lagi.';
       }
     });

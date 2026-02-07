@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { saveAs } from 'file-saver'; // I need to install file-saver or use native blob
+// import { saveAs } from 'file-saver'; // I need to install file-saver or use native blob
 import { Catatan } from './jenis';
 
 export async function eksporKePDF(catatan: Catatan[]) {

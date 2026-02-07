@@ -23,9 +23,9 @@ export function formatTanggalRelative(tglStr: string | undefined): string {
   return formatTanggal(tglStr);
 }
 
-export function debounce<T extends (...args: any[]) => any>(fn: T, delay = 300) {
+export function debounce<T extends (...args: unknown[]) => unknown>(fn: T, delay = 300) {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function (this: any, ...args: Parameters<T>) {
+  return function (this: unknown, ...args: Parameters<T>) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       fn.apply(this, args);
