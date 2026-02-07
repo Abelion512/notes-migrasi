@@ -1,0 +1,11 @@
+$ next dev
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1069ms
+○ Compiling / ...
+ GET / 200 in 4.2s (compile: 3.7s, render: 418ms)
+ GET /biodata 200 in 656ms (compile: 542ms, render: 114ms)
+ GET /setelan 200 in 526ms (compile: 440ms, render: 86ms)
