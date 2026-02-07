@@ -1,6 +1,6 @@
 # 🔐 Perencanaan: Sinkronisasi & Keamanan
 
-## 1. End-to-End Encryption (E2EE)
+## 1. End-to-End Encryption (E2EE) - (Selesai)
 **Tujuan:** Privasi total. Data hanya bisa dibaca oleh pemilik kunci.
 - **Mekanisme:**
   - Kunci enkripsi diturunkan dari *Vault Password* menggunakan PBKDF2.
@@ -8,7 +8,7 @@
   - Data dienkripsi sebelum dikirim ke Supabase/Notion.
   - **Peringatan:** Kunci tidak disimpan di server. Lupa password = Data hilang.
 
-## 2. Integrasi Cloud (Manual Sync & Modular)
+## 2. Integrasi Cloud (Manual Sync & Modular) - (Selesai)
 **Tujuan:** Sinkronisasi multi-perangkat yang terkontrol dengan antarmuka modular.
 - **Halaman Integrasi Khusus:**
   - Lokasi: `Settings > Integrations`.

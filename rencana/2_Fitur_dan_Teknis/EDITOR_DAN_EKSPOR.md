@@ -1,14 +1,14 @@
 # 📝 Perencanaan: Editor & Ekspor
 
-## 1. Rich Text & Markdown Real-time
+## 1. Rich Text & Markdown Real-time - (Selesai)
 **Tujuan:** Memberikan pengalaman menulis yang modern namun tetap ringan.
 - **Fitur Utama:**
   - Preview Markdown otomatis (bold, italic, list, checkbox).
   - Shortcut keyboard (Ctrl+B, Ctrl+I, dll).
-  - Dukungan Wiki-links (`[[Nama Catatan]]`) untuk menghubungkan antar catatan.
+  - Dukungan Wiki-links (`[[Nama Catatan]]`) untuk menghubungkan antar catatan. (Segera)
 - **Teknologi:** Custom light-weight parser untuk meminimalkan beban CPU pada perangkat low-tier.
 
-## 2. Smart Export (Minimalis)
+## 2. Smart Export (Minimalis) - (Selesai)
 **Tujuan:** Memungkinkan pengguna memindahkan data ke format profesional.
 - **Format yang Didukung:**
   - **PDF:** Desain bersih, font SF Pro/Inter, margin proporsional.

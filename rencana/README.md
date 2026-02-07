@@ -9,10 +9,10 @@ Selamat datang di pusat koordinasi pengembangan Abelion Notes. Folder ini telah 
 4. **[4_Arsip](./4_Arsip/)**: Kumpulan ide lama dan catatan yang sudah terealisasi.
 
 ## 🛠️ Prioritas Saat Ini
-- Perbaikan stabilitas sistem (CSP & JS Fixes).
-- Refinement UI Integrasi (iOS Style).
-- Lokalisasi Bahasa Indonesia (Baku & Premium).
-- Pembersihan file redundan.
+- **Virtual Scrolling:** Optimalisasi list untuk performa ekstrem.
+- **Wiki-links:** Implementasi penghubung antar catatan `[[Nama Catatan]]`.
+- **Haptic & Transitions:** Penambahan feedback taktil (visual) dan transisi antar halaman.
+- **Manajemen Media:** Dukungan penyimpanan gambar lokal dengan kompresi.
 
 ---
-*Dikelola oleh Jules (Agen AI) - Februari 2026*
+*Dikelola oleh Jules (Agen AI) - Terakhir diperbarui 7 Februari 2026*
