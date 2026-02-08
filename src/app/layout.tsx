@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BingkaiUtama from "./BingkaiUtama";
+import IntroAnim from "@/komponen/IntroAnim";
 
 export const metadata: Metadata = {
   title: "Abelion Notes",
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className="antialiased">
+        <IntroAnim />
         <BingkaiUtama>{children}</BingkaiUtama>
       </body>
     </html>

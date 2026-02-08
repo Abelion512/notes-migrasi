@@ -2,7 +2,7 @@ import Dexie, { type Table } from 'dexie';
 
 export interface DokumenPersisten {
   id: string;
-  data: any;
+  data: unknown;
 }
 
 export class GudangAbelion extends Dexie {
