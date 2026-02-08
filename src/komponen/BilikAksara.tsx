@@ -6,6 +6,7 @@ import { ChevronLeft, MoreVertical, Share, Trash2, Bold, Italic, List, Image as 
 import { useAbelionStore } from '@/aksara/Pundi';
 import { motion, AnimatePresence } from 'framer-motion';
 import KonfirmasiModal from './KonfirmasiModal';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface BilikAksaraProps {
   catatan: Catatan | null;
@@ -117,11 +118,13 @@ const BilikAksara: React.FC<BilikAksaraProps> = ({ catatan, isOpen, onClose }) =
                   contentEditable
                   className="editor-block-area w-full min-h-[500px]"
                   onBlur={(e) => {
-                    const newContent = e.currentTarget.innerHTML;
+                    // KEAMANAN: Sanitisasi konten sebelum disimpan untuk mencegah XSS.
+                    const newContent = DOMPurify.sanitize(e.currentTarget.innerHTML);
                     setKonten(newContent);
                     if (catatan) perbaruiCatatan(catatan.id, { konten: newContent });
                   }}
-                  dangerouslySetInnerHTML={{ __html: konten }}
+                  // KEAMANAN: Sanitisasi konten sebelum dirender melalui dangerouslySetInnerHTML.
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(konten) }}
                 />
               </div>
 
