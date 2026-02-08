@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Catatan, Folder, Profil, Pengaturan } from './jenis';
+import { GudangZustand } from './Gudang';
 
 interface AbelionStore {
   catatan: Catatan[];
@@ -8,9 +9,11 @@ interface AbelionStore {
   sampah: Catatan[];
   profil: Profil;
   pengaturan: Pengaturan;
+  editingId: string | null;
 
   // Aksi
-  tambahCatatan: (catatan: Partial<Catatan>) => void;
+  setEditingId: (id: string | null) => void;
+  tambahCatatan: (catatan: Partial<Catatan>) => string;
   perbaruiCatatan: (id: string, catatan: Partial<Catatan>) => void;
   hapusCatatan: (id: string) => void;
   pindahkanKeSampah: (id: string) => void;
@@ -40,22 +43,32 @@ export const useAbelionStore = create<AbelionStore>()(
       pengaturan: {
         tema: 'system',
         gaya: 'ios',
+        warnaAksen: '#007AFF',
         enkripsiEnabled: false,
+        kdfType: 'pbkdf2',
       },
+      editingId: null,
 
-      tambahCatatan: (baru) => set((state) => ({
-        catatan: [
-          {
-            id: crypto.randomUUID(),
-            judul: '',
-            konten: '',
-            dibuatPada: new Date().toISOString(),
-            diperbaruiPada: new Date().toISOString(),
-            ...baru
-          } as Catatan,
-          ...state.catatan
-        ]
-      })),
+      setEditingId: (id) => set({ editingId: id }),
+
+      tambahCatatan: (baru) => {
+        const id = crypto.randomUUID();
+        set((state) => ({
+          catatan: [
+            {
+              id,
+              judul: '',
+              konten: '',
+              dibuatPada: new Date().toISOString(),
+              diperbaruiPada: new Date().toISOString(),
+              ...baru
+            } as Catatan,
+            ...state.catatan
+          ],
+          editingId: id
+        }));
+        return id;
+      },
 
       perbaruiCatatan: (id, update) => set((state) => ({
         catatan: state.catatan.map((c) =>
@@ -117,7 +130,7 @@ export const useAbelionStore = create<AbelionStore>()(
     }),
     {
       name: 'abelion-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => GudangZustand),
     }
   )
 );

@@ -7,9 +7,12 @@ export interface Catatan {
   diperbaruiPada: string;
   mood?: string;
   isPinned?: boolean;
+  isArchived?: boolean;
   isLocked?: boolean;
   tags?: string[];
   deletedAt?: string;
+  konflik?: Catatan[];
+  versi?: number;
 }
 
 export interface Folder {
@@ -31,7 +34,9 @@ export interface Profil {
 export interface Pengaturan {
   tema: 'light' | 'dark' | 'system';
   gaya: 'ios' | 'nusantara';
+  warnaAksen: string;
   enkripsiEnabled: boolean;
+  kdfType: 'pbkdf2' | 'argon2id';
   supabaseUrl?: string;
   supabaseKey?: string;
 }
