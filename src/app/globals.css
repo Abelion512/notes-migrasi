@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* iOS 17+ Standard Palette */
+  /* iOS 18 Palette & Aesthetics */
   --page-bg: #F2F2F7;
   --page-gradient: none;
 
@@ -9,13 +9,13 @@
   --surface-alt: #F2F2F7;
   --surface-strong: #FFFFFF;
   --frosted: rgba(255, 255, 255, 0.7);
-  --glass-blur: 25px;
+  --glass-blur: 32px;
 
-  --card-radius: 10px;
-  --panel-radius: 10px;
-  --max-width: 800px;
+  --card-radius: 16px;
+  --panel-radius: 24px;
+  --max-width: 900px;
 
-  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
   --shadow-flat: none;
 
   --primary: #007AFF;
@@ -30,45 +30,51 @@
   --text-secondary: rgba(60, 60, 67, 0.6);
   --text-muted: rgba(60, 60, 67, 0.3);
 
-  --border-subtle: #C6C6C8; /* Hairline color */
+  --border-subtle: rgba(0, 0, 0, 0.1);
   --glass-outline: rgba(0, 0, 0, 0.05);
-  --nav-pill: rgba(255, 255, 255, 0.8);
+  --nav-pill: rgba(255, 255, 255, 0.85);
 
   --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF UI Text", "Helvetica Neue", Arial, sans-serif;
 
-  /* Pro Editor Variables (Notion/Linear Inspired) */
+  /* Pro Editor Variables */
   --pro-bg: #FFFFFF;
   --pro-text: #111827;
   --pro-text-secondary: #4B5563;
   --pro-border: #E5E7EB;
   --pro-surface: #F9FAFB;
 
-  /* Next.js defaults mapping */
   --background: var(--page-bg);
   --foreground: var(--text-primary);
 }
 
 [data-theme="dark"] {
   --page-bg: #000000;
-  --page-gradient: none;
   --surface: #1C1C1E;
   --surface-alt: #000000;
   --surface-strong: #1C1C1E;
-  --frosted: rgba(28, 28, 30, 0.8);
-  --glass-blur: 30px;
-  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --frosted: rgba(28, 28, 30, 0.85);
+  --glass-blur: 40px;
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.6);
   --text-primary: #FFFFFF;
   --text-secondary: rgba(235, 235, 245, 0.6);
   --text-muted: rgba(235, 235, 245, 0.3);
-  --border-subtle: #38383A;
+  --border-subtle: rgba(255, 255, 255, 0.1);
   --glass-outline: rgba(255, 255, 255, 0.1);
-  --nav-pill: rgba(28, 28, 30, 0.8);
+  --nav-pill: rgba(28, 28, 30, 0.85);
 
   --pro-bg: #111111;
   --pro-text: #EDEDED;
   --pro-text-secondary: #A1A1A1;
   --pro-border: #222222;
   --pro-surface: #161616;
+}
+
+/* iOS 18 Tinted Mode Support */
+[data-tinted="true"] {
+  --primary-rgb: 0, 122, 255; /* Should be dynamic */
+  --primary-soft: rgba(var(--primary-rgb), 0.15);
+  --nav-pill: rgba(var(--primary-rgb), 0.1);
+  --page-bg: rgba(var(--primary-rgb), 0.05);
 }
 
 @theme inline {
@@ -103,27 +109,58 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
   line-height: 1.4;
   overflow-x: hidden;
+}
+
+/* Sidebar Layout for Desktop */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: var(--surface-alt);
+  border-right: 0.5px solid var(--border-subtle);
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+.main-layout {
+  flex: 1;
+  max-width: 100%;
+}
+
+@media (min-width: 769px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 /* Typography iOS Style */
 h1 {
   font-size: 34px;
   font-weight: 700;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.5px;
 }
 
 h2 {
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.4px;
-}
-
-h3 {
-  font-size: 17px;
-  font-weight: 600;
 }
 
 .title-abelion {
@@ -136,63 +173,13 @@ h3 {
   opacity: 0.8;
 }
 
-.motto {
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 15px;
-  margin-top: 8px;
-}
-
-/* iOS Buttons */
-.btn-blue {
-  background: var(--primary);
-  color: #fff !important;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-blue:active {
-  opacity: 0.7;
-  transform: scale(0.98);
-}
-
-.ghost-btn {
-  background: transparent;
-  color: var(--primary);
-  border: none;
-  font-size: 17px;
-  font-weight: 400;
-  cursor: pointer;
-  padding: 10px 16px;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, opacity 0.2s;
-}
-
-.ghost-btn:active {
-  background: var(--primary-soft);
-  opacity: 0.7;
-}
-
-/* Grouped List Style (The iPhone look) */
+/* Grouped List Style */
 .grouped-list {
   background: var(--surface);
-  border-radius: 10px;
+  border-radius: var(--card-radius);
   overflow: hidden;
-  margin: 0 0 30px 0;
+  margin: 0 0 32px 0;
   border: none;
-  box-shadow: none;
 }
 
 .list-header {
@@ -200,14 +187,13 @@ h3 {
   text-transform: uppercase;
   color: var(--text-secondary);
   margin: 0 0 8px 16px;
-  font-weight: 400;
-  letter-spacing: 0.3px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
 }
 
 .list-item-container {
   position: relative;
   overflow: hidden;
-  background: var(--surface);
 }
 
 .list-item-container::after {
@@ -220,10 +206,6 @@ h3 {
   background-color: var(--border-subtle);
 }
 
-.list-item-container:last-child::after {
-  display: none;
-}
-
 .list-item {
   display: flex;
   align-items: center;
@@ -231,214 +213,102 @@ h3 {
   background: var(--surface);
   cursor: pointer;
   transition: background 0.2s;
-  text-decoration: none;
-  color: inherit;
-  position: relative;
-  z-index: 2;
-  border: none;
-  min-height: 44px;
+  min-height: 48px;
 }
 
 .list-item:active {
   background: var(--surface-alt);
 }
 
-.list-item-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.list-item-title {
-  font-size: 17px;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.list-item-subtitle {
-  font-size: 15px;
-  color: var(--text-secondary);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-/* Bottom Nav Bar - Floating iOS Style */
+/* Floating Tab Bar - iOS 18 Style */
 .bottom-nav {
   position: fixed;
   bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
   width: auto;
-  min-width: 280px;
-  max-width: calc(100% - 40px);
+  min-width: 320px;
+  max-width: calc(100% - 48px);
   background: var(--nav-pill);
-  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(210%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(210%);
   border: 0.5px solid var(--glass-outline);
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 10px 24px;
+  gap: 12px;
+  padding: 8px 12px;
   border-radius: 40px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
   z-index: 1000;
-}
-
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-nav {
-    bottom: calc(25px + env(safe-area-inset-bottom));
-  }
 }
 
 .nav-button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
-  color: var(--text-muted);
-  gap: 4px;
-  min-width: 60px;
-  background: none;
-  border: none;
-  cursor: pointer;
+  color: var(--text-secondary);
+  gap: 2px;
+  min-width: 64px;
+  height: 48px;
+  border-radius: 24px;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .nav-button.active {
   color: var(--primary);
-}
-
-.nav-icon svg {
-  width: 24px;
-  height: 24px;
+  background: var(--primary-soft);
 }
 
 .nav-label {
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .nav-add-btn {
   background: var(--primary) !important;
   color: white !important;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  margin-top: -10px;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  width: 48px !important;
+  min-width: 48px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+}
+
+/* Sidebar Items */
+.sidebar-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-/* Folder Pills */
-.folder-pill {
-  padding: 8px 16px;
-  border-radius: 20px;
-  background: #E5E5EA;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 15px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-[data-theme="dark"] .folder-pill {
-  background: #2C2C2E;
-}
-
-.folder-pill.active {
-  background: var(--primary);
-  color: #fff;
-}
-
-/* Search Bar */
-.search-bar-container {
-  background: #E3E3E8;
+  gap: 12px;
+  padding: 10px 16px;
   border-radius: 10px;
-  margin-bottom: 20px;
-  padding: 7px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-[data-theme="dark"] .search-bar-container {
-  background: #1C1C1E;
-}
-
-.search-input {
-  background: transparent;
-  border: none;
-  width: 100%;
-  font-size: 17px;
   color: var(--text-primary);
-  outline: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
-/* Selection Mode */
-.selection-bar {
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
-  max-width: 500px;
-  background: var(--surface);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 0.5px solid var(--border-subtle);
-  border-radius: 24px;
-  padding: 14px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.12);
-  z-index: 2100;
+.sidebar-item:hover {
+  background: var(--border-subtle);
 }
 
-/* Progress Bar */
-#reading-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 3px;
-  background: var(--primary);
-  z-index: 10001;
-  transition: width 0.1s;
+.sidebar-item.active {
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
-/* Modals */
-.about-modal-content {
+/* Utils */
+.glass {
   background: var(--frosted);
-  backdrop-filter: blur(30px) saturate(190%);
-  -webkit-backdrop-filter: blur(30px) saturate(190%);
-  width: 270px;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 0.5px solid var(--glass-outline);
 }
 
-/* Skeleton */
-.skeleton {
-  background: var(--border-subtle);
-  opacity: 0.5;
-  border-radius: 4px;
-  animation: skeleton-blink 1.5s infinite;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-@keyframes skeleton-blink {
-  0% { opacity: 0.5; }
-  50% { opacity: 0.2; }
-  100% { opacity: 0.5; }
-}
-
-/* Utility for hidden elements */
-.hidden {
-  display: none !important;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

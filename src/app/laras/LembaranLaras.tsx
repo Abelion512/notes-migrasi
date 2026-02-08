@@ -87,8 +87,8 @@ export default function LembaranLaras() {
             onClick={() => perbaruiPengaturan({ gaya: 'ios' })}
           >
             <div className="list-item-content">
-              <div className="list-item-title">Modern (iOS 17+)</div>
-              <div className="list-item-subtitle">Glassmorphism & Minimalis</div>
+              <div className="list-item-title">Modern (iOS 18)</div>
+              <div className="list-item-subtitle">Dynamic Glassmorphism & Pro Layout</div>
             </div>
             {pengaturan.gaya === 'ios' && <span className="text-primary">✓</span>}
           </button>

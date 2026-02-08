@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Plus, User, Settings } from 'lucide-react';
+import { Home, Plus, User, Settings, Search } from 'lucide-react';
 import { useAbelionStore } from '@/aksara/Pundi';
 
 const KemudiBawah: React.FC = () => {
@@ -12,38 +12,42 @@ const KemudiBawah: React.FC = () => {
   const tambahCatatan = useAbelionStore(state => state.tambahCatatan);
 
   const navItems = [
-    { href: '/', label: 'Beranda', icon: <Home size={24} /> },
-    { href: '/jatidiri', label: 'Profil', icon: <User size={24} /> },
-    { href: '/laras', label: 'Setelan', icon: <Settings size={24} /> },
+    { href: '/', label: 'Beranda', icon: <Home size={22} /> },
+    { href: '/jatidiri', label: 'Jatidiri', icon: <User size={22} /> },
+    { type: 'add', label: 'Tambah', icon: <Plus size={26} /> },
+    { href: '/laras', label: 'Laras', icon: <Settings size={22} /> },
+    { href: '/pencarian', label: 'Cari', icon: <Search size={22} /> },
   ];
 
   return (
     <nav className="bottom-nav">
-      {navItems.map((item, index) => {
-        // Simple hack to insert the Add button in the middle
-        const isMiddle = index === 1;
-        return (
-          <React.Fragment key={item.href}>
-            {isMiddle && (
-              <button
-                className="nav-button nav-add-btn"
-                onClick={() => {
-                  tambahCatatan({});
-                  if (pathname !== '/') router.push('/');
-                }}
-              >
-                <span className="nav-icon"><Plus size={24} /></span>
-                <span className="nav-label">Tambah</span>
-              </button>
-            )}
-            <Link
-              href={item.href}
-              className={`nav-button ${pathname === item.href ? 'active' : ''}`}
+      {navItems.map((item) => {
+        if ('type' in item && item.type === 'add') {
+          return (
+            <button
+              key="add-btn"
+              className="nav-button nav-add-btn"
+              onClick={() => {
+                tambahCatatan({});
+                if (pathname !== '/') router.push('/');
+              }}
+              aria-label="Tambah Catatan"
             >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-            </Link>
-          </React.Fragment>
+              <Plus size={26} />
+            </button>
+          );
+        }
+
+        const navItem = item as { href: string; label: string; icon: React.ReactNode };
+        return (
+          <Link
+            key={navItem.href}
+            href={navItem.href}
+            className={`nav-button ${pathname === navItem.href ? 'active' : ''}`}
+          >
+            <span className="nav-icon">{navItem.icon}</span>
+            <span className="nav-label">{navItem.label}</span>
+          </Link>
         );
       })}
     </nav>

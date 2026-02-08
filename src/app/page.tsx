@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import LembaranUtama from "./LembaranUtama";
 
 export default function Page() {
-  return <LembaranUtama />;
+  return (
+    <Suspense fallback={<div>Memuat...</div>}>
+      <LembaranUtama />
+    </Suspense>
+  );
 }

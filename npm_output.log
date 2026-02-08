@@ -1,0 +1,11 @@
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3105
+- Network:       http://192.168.0.2:3105
+
+✓ Starting...
+⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+✓ Ready in 3.4s
+○ Compiling / ...
+ GET / 200 in 16.3s (compile: 15.2s, render: 1109ms)
+ GET / 200 in 512ms (compile: 151ms, render: 362ms)
+✓ Compiled in 908ms

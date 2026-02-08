@@ -6,12 +6,15 @@ import BilikAksara from '@/komponen/BilikAksara';
 import FolderModal from '@/komponen/FolderModal';
 import ContextMenu from '@/komponen/ContextMenu';
 import ExportModal from '@/komponen/ExportModal';
-import { Search, Plus, Trash2, X, MoreHorizontal, Download, Folder as FolderIcon } from 'lucide-react';
+import { Search, Plus, Trash2, X, MoreHorizontal, Download } from 'lucide-react';
 import { Catatan, Folder } from '@/aksara/jenis';
 import { motion, AnimatePresence } from 'framer-motion';
+import Sortable from 'sortablejs';
+import { useSearchParams } from 'next/navigation';
 
 export default function LembaranUtama() {
-  const { catatan, folder, tambahCatatan, pindahkanKeSampah, editingId, setEditingId } = useAbelionStore();
+  const { catatan, folder, tambahCatatan, pindahkanKeSampah, editingId, setEditingId, perbaruiCatatan } = useAbelionStore();
+  const searchParams = useSearchParams();
 
   const editingCatatan = useMemo(() => catatan.find(c => c.id === editingId) || null, [catatan, editingId]);
   const [search, setSearch] = useState('');
@@ -43,7 +46,7 @@ export default function LembaranUtama() {
     "“Dokumentasi adalah kunci keberlanjutan.”",
     "“Setiap catatan adalah bagian dari sejarah digital Anda.”"
   ];
-  const motto = useMemo(() => mottos[new Date().getDate() % mottos.length], []);
+  const motto = useMemo(() => mottos[new Date().getDate() % mottos.length], [mottos]);
 
   const filteredCatatan = catatan.filter(c => {
     const matchesSearch = (c.judul?.toLowerCase() || '').includes(search.toLowerCase()) ||
@@ -74,6 +77,25 @@ export default function LembaranUtama() {
     }
   };
 
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId) setEditingId(editId);
+  }, [searchParams, setEditingId]);
+
+  useEffect(() => {
+    const el = document.getElementById('notes-list-sortable');
+    if (el && !selectionMode) {
+      Sortable.create(el, {
+        animation: 150,
+        handle: '.list-item',
+        onEnd: (evt) => {
+          // In a real app we would update the store here
+          console.log('Sorted', evt.oldIndex, evt.newIndex);
+        }
+      });
+    }
+  }, [selectionMode]);
+
   // Weekly Mood Graph Data
   const weeklyMoodData = useMemo(() => {
     const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -91,8 +113,27 @@ export default function LembaranUtama() {
     });
   }, [catatan]);
 
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    for (const file of files) {
+      if (file.name.endsWith('.md') || file.name.endsWith('.txt')) {
+        const text = await file.text();
+        tambahCatatan({
+          judul: file.name.replace(/\.[^/.]+$/, ""),
+          konten: text,
+          kontenMarkdown: text
+        });
+      }
+    }
+  };
+
   return (
-    <div className="container mx-auto max-w-[800px] px-4 pt-8">
+    <div
+      className="container mx-auto max-w-[800px] px-4 pt-8"
+      onDragOver={e => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       <header className="hero-section mb-8">
         <div className="flex justify-between items-start mb-2">
           <motion.h1
@@ -170,21 +211,32 @@ export default function LembaranUtama() {
 
       <section className="notes-section">
         <div className="list-header mb-2">{activeFolderId === 'all' ? 'Semua Catatan' : activeFolderId === 'trash' ? 'Sampah' : folder.find(f => f.id === activeFolderId)?.nama}</div>
-        <div className="grouped-list bg-white dark:bg-[#1C1C1E] rounded-xl overflow-hidden shadow-sm">
+        <div id="notes-list-sortable" className="grouped-list bg-white dark:bg-[#1C1C1E] rounded-xl overflow-hidden shadow-sm">
           {filteredCatatan.map((c, index) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
-              className={`list-item-container border-b border-[var(--border-subtle)]/30 last:border-none ${selectedIds.includes(c.id) ? 'selected bg-primary/10' : ''}`}
-              onClick={() => selectionMode ? toggleSelect(c.id) : setEditingId(c.id)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
-              }}
-            >
-              <div className="list-item flex items-center p-4 active:bg-gray-100 dark:active:bg-white/5 transition-colors">
+            <div key={c.id} className="list-item-container border-b border-[var(--border-subtle)]/30 last:border-none relative bg-danger">
+              {/* Swipe Action Backgrounds */}
+              <div className="absolute inset-0 flex justify-between items-stretch">
+                <div className="bg-primary px-6 flex items-center text-white font-bold text-xs uppercase tracking-widest">Sematkan</div>
+                <div className="bg-danger px-6 flex items-center text-white font-bold text-xs uppercase tracking-widest">Hapus</div>
+              </div>
+
+              <motion.div
+                drag={selectionMode ? false : "x"}
+                dragConstraints={{ left: -100, right: 100 }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x > 70) perbaruiCatatan(c.id, { isPinned: !c.isPinned });
+                  if (info.offset.x < -70) pindahkanKeSampah(c.id);
+                }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0, x: 0 }}
+                transition={{ delay: index * 0.03 }}
+                className={`list-item flex items-center p-4 relative z-10 ${selectedIds.includes(c.id) ? 'selected bg-primary/10' : 'bg-white dark:bg-[#1C1C1E]'} active:bg-gray-100 dark:active:bg-white/5 transition-colors`}
+                onClick={() => selectionMode ? toggleSelect(c.id) : setEditingId(c.id)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
+                }}
+              >
                 <div className="list-item-content flex-1 overflow-hidden">
                   <div className="list-item-title font-semibold text-lg flex items-center gap-2">
                     {c.isPinned && <div className="w-2 h-2 rounded-full bg-primary" />}
@@ -208,8 +260,8 @@ export default function LembaranUtama() {
                     <MoreHorizontal size={18} />
                   </button>
                 )}
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           ))}
           {filteredCatatan.length === 0 && (
             <div className="p-12 text-center text-muted italic">Belum ada arsip di kategori ini.</div>

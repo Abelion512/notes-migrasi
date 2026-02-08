@@ -46,6 +46,7 @@ export const useAbelionStore = create<AbelionStore>()(
         warnaAksen: '#007AFF',
         enkripsiEnabled: false,
         kdfType: 'pbkdf2',
+        tintedMode: false,
       },
       editingId: null,
 

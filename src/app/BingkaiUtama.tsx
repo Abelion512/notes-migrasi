@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import KemudiBawah from "@/komponen/KemudiBawah";
+import SidebarUtama from "@/komponen/SidebarUtama";
+import Komandan from "@/komponen/Komandan";
 import { useAbelionStore } from "@/aksara/Pundi";
 
 interface BingkaiUtamaProps {
@@ -11,7 +13,14 @@ interface BingkaiUtamaProps {
 export default function BingkaiUtama({ children }: BingkaiUtamaProps) {
   const { pengaturan } = useAbelionStore();
   const gaya = pengaturan.gaya || 'ios';
+  const tinted = pengaturan.tintedMode ? 'true' : 'false';
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    // Set theme attribute
+    document.documentElement.setAttribute('data-theme', pengaturan.tema || 'system');
+    document.documentElement.setAttribute('data-tinted', tinted);
+  }, [pengaturan.tema, tinted]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,14 +35,22 @@ export default function BingkaiUtama({ children }: BingkaiUtamaProps) {
   }, []);
 
   return (
-    <div className={`app-container gaya-${gaya} min-h-screen pb-[env(safe-area-inset-bottom)]`}>
+    <div className={`app-container gaya-${gaya} min-h-screen`} data-tinted={tinted}>
       <div id="reading-progress" style={{ width: `${scrollProgress}%` }} />
 
-      <main className="pb-32">
-        {children}
-      </main>
+      <SidebarUtama />
+      <Komandan />
 
-      <KemudiBawah />
+      <main className="main-layout relative">
+        <div className="mx-auto max-w-[900px] pb-32">
+          {children}
+        </div>
+
+        {/* Only show bottom nav on mobile */}
+        <div className="md:hidden">
+          <KemudiBawah />
+        </div>
+      </main>
 
       {gaya === 'nusantara' && (
         <div className="nusantara-overlay pointer-events-none fixed inset-0 z-[-1] opacity-20">
