@@ -1,0 +1,21 @@
+$ next build
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./src/app/page.tsx:11:3
+Parsing ecmascript source code failed
+   9 |   );
+  10 | }
+> 11 |   );
+     |   ^
+  12 | }
+  13 |
+
+Expression expected
+
+
+    at <unknown> (./src/app/page.tsx:11:3)
+error: script "build" exited with code 1
