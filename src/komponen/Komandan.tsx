@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAbelionStore } from '@/aksara/Pundi';
+import { useShallow } from 'zustand/shallow';
 import { Search, Plus, Home, User, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -9,7 +10,10 @@ import { useRouter } from 'next/navigation';
 export default function Komandan() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const { catatan, tambahCatatan } = useAbelionStore();
+  const { catatan, tambahCatatan } = useAbelionStore(useShallow(state => ({
+    catatan: state.catatan,
+    tambahCatatan: state.tambahCatatan
+  })));
   const router = useRouter();
 
   useEffect(() => {
