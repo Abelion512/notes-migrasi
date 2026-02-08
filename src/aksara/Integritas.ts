@@ -20,15 +20,17 @@ export async function verifikasiIntegritas(data: unknown, hashTersimpan: string)
 }
 
 export async function segelData<T>(data: T): Promise<T & { _hash: string; _timestamp: number }> {
-     
-    const dataBersih = { ...data } as any;
-    delete dataBersih._hash;
+  const dataBersih = { ...data } as any;
+  // KEAMANAN: _hash dan _timestamp adalah metadata dan tidak boleh menjadi bagian dari hash integritas.
+  // Kita harus menghapusnya untuk memastikan verifikasi hash yang konsisten pada pemuatan berikutnya.
+  delete dataBersih._hash;
+  delete dataBersih._timestamp;
 
-    const hash = await hitungHash(dataBersih);
+  const hash = await hitungHash(dataBersih);
 
-    return {
-        ...dataBersih,
-        _hash: hash,
-        _timestamp: Date.now()
-    };
+  return {
+    ...dataBersih,
+    _hash: hash,
+    _timestamp: Date.now(),
+  };
 }
