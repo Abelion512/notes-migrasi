@@ -2,10 +2,10 @@
 import Image from 'next/image';
 
 import React from 'react';
-import { useAbelionStore } from '@/aksara/toko';
+import { useAbelionStore } from '@/aksara/Pundi';
 import { ChevronRight } from 'lucide-react';
 
-export default function Biodata() {
+export default function LembaranJatidiri() {
   const { profil, catatan } = useAbelionStore();
 
   const totalKata = catatan.reduce((acc, c) => acc + (c.konten?.split(/\s+/).length || 0), 0);

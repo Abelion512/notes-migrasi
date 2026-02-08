@@ -5,17 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Plus, User, Settings } from 'lucide-react';
 
-interface NavigasiBawahProps {
+interface KemudiBawahProps {
   onAddClick?: () => void;
 }
 
-const NavigasiBawah: React.FC<NavigasiBawahProps> = ({ onAddClick }) => {
+const KemudiBawah: React.FC<KemudiBawahProps> = ({ onAddClick }) => {
   const pathname = usePathname();
 
   const navItems = [
     { href: '/', label: 'Beranda', icon: <Home size={24} /> },
-    { href: '/biodata', label: 'Profil', icon: <User size={24} /> },
-    { href: '/setelan', label: 'Setelan', icon: <Settings size={24} /> },
+    { href: '/jatidiri', label: 'Profil', icon: <User size={24} /> },
+    { href: '/laras', label: 'Setelan', icon: <Settings size={24} /> },
   ];
 
   return (
@@ -48,4 +48,4 @@ const NavigasiBawah: React.FC<NavigasiBawahProps> = ({ onAddClick }) => {
   );
 };
 
-export default NavigasiBawah;
+export default KemudiBawah;

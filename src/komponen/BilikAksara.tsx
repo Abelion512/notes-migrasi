@@ -3,15 +3,15 @@
 import React, { useState } from 'react';
 import { Catatan } from '@/aksara/jenis';
 import { ChevronLeft, MoreVertical, Share, Trash2 } from 'lucide-react';
-import { useAbelionStore } from '@/aksara/toko';
+import { useAbelionStore } from '@/aksara/Pundi';
 
-interface DialogEditorProps {
+interface BilikAksaraProps {
   catatan: Catatan | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const DialogEditor: React.FC<DialogEditorProps> = ({ catatan, isOpen, onClose }) => {
+const BilikAksara: React.FC<BilikAksaraProps> = ({ catatan, isOpen, onClose }) => {
   const [judul, setJudul] = useState(catatan?.judul || '');
   const [konten, setKonten] = useState(catatan?.konten || '');
   const perbaruiCatatan = useAbelionStore((state) => state.perbaruiCatatan);
@@ -70,4 +70,4 @@ const DialogEditor: React.FC<DialogEditorProps> = ({ catatan, isOpen, onClose })
   );
 };
 
-export default DialogEditor;
+export default BilikAksara;

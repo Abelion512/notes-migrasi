@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { useAbelionStore } from '@/aksara/toko';
+import { useAbelionStore } from '@/aksara/Pundi';
 import { ChevronRight, RefreshCw, ExternalLink } from 'lucide-react';
 
-export default function Setelan() {
+export default function LembaranLaras() {
   const { pengaturan, perbaruiPengaturan } = useAbelionStore();
 
   return (
@@ -42,6 +42,32 @@ export default function Setelan() {
               <div className="list-item-title">Otomatis (Sistem)</div>
             </div>
             {pengaturan.tema === 'system' && <span className="text-primary">✓</span>}
+          </button>
+        </div>
+      </div>
+
+      <div className="list-header">Gaya Estetika</div>
+      <div className="section-card">
+        <div className="grouped-list">
+          <button
+            className={`list-item ${pengaturan.gaya === 'ios' ? 'active' : ''}`}
+            onClick={() => perbaruiPengaturan({ gaya: 'ios' })}
+          >
+            <div className="list-item-content">
+              <div className="list-item-title">Modern (iOS 17+)</div>
+              <div className="list-item-subtitle">Glassmorphism & Minimalis</div>
+            </div>
+            {pengaturan.gaya === 'ios' && <span className="text-primary">✓</span>}
+          </button>
+          <button
+            className={`list-item ${pengaturan.gaya === 'nusantara' ? 'active' : ''}`}
+            onClick={() => perbaruiPengaturan({ gaya: 'nusantara' })}
+          >
+            <div className="list-item-content">
+              <div className="list-item-title">Nusantara</div>
+              <div className="list-item-subtitle">Budaya, Batik, & Harmoni Daerah</div>
+            </div>
+            {pengaturan.gaya === 'nusantara' && <span className="text-primary">✓</span>}
           </button>
         </div>
       </div>

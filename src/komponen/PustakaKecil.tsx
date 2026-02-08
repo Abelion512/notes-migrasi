@@ -4,13 +4,13 @@ import React from 'react';
 import { Catatan } from '@/aksara/jenis';
 import { formatTanggalRelative } from '@/aksara/perkakas';
 
-interface KartuCatatanProps {
+interface PustakaKecilProps {
   catatan: Catatan;
   onClick: (catatan: Catatan) => void;
   onContextMenu: (e: React.MouseEvent, catatan: Catatan) => void;
 }
 
-const KartuCatatan: React.FC<KartuCatatanProps> = ({ catatan, onClick, onContextMenu }) => {
+const PustakaKecil: React.FC<PustakaKecilProps> = ({ catatan, onClick, onContextMenu }) => {
   return (
     <div
       className="note-card"
@@ -31,4 +31,4 @@ const KartuCatatan: React.FC<KartuCatatanProps> = ({ catatan, onClick, onContext
   );
 };
 
-export default KartuCatatan;
+export default PustakaKecil;

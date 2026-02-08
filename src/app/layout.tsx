@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import NavigasiBawah from "@/komponen/NavigasiBawah";
+import BingkaiUtama from "./BingkaiUtama";
 
 export const metadata: Metadata = {
   title: "Abelion Notes",
@@ -15,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className="antialiased">
-        <main className="pb-24">
-          {children}
-        </main>
-        <NavigasiBawah />
+        <BingkaiUtama>{children}</BingkaiUtama>
       </body>
     </html>
   );

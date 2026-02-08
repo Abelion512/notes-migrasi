@@ -30,6 +30,7 @@ export interface Profil {
 
 export interface Pengaturan {
   tema: 'light' | 'dark' | 'system';
+  gaya: 'ios' | 'nusantara';
   enkripsiEnabled: boolean;
   supabaseUrl?: string;
   supabaseKey?: string;

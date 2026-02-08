@@ -39,6 +39,7 @@ export const useAbelionStore = create<AbelionStore>()(
       },
       pengaturan: {
         tema: 'system',
+        gaya: 'ios',
         enkripsiEnabled: false,
       },
 
