@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Profil } from '@/aksara/jenis';
-import { useAbelionStore } from '@/aksara/toko';
+import { useAbelionStore } from '@/aksara/Pundi';
 
 interface EditProfilModalProps {
   isOpen: boolean;
@@ -48,13 +49,16 @@ const EditProfilModal: React.FC<EditProfilModalProps> = ({ isOpen, profil, onClo
             <div className="p-4 flex flex-col gap-4">
               <div className="flex justify-center gap-4 mb-4">
                 {avatars.map((a, idx) => (
-                  <img
-                    key={a}
-                    src={a}
-                    alt={`Avatar option ${idx}`}
-                    className={`w-12 h-12 rounded-full cursor-pointer border-2 ${avatar === a ? 'border-primary' : 'border-transparent'}`}
-                    onClick={() => setAvatar(a)}
-                  />
+                  <div key={a} className="relative w-12 h-12">
+                    <Image
+                      src={a}
+                      alt={`Avatar option ${idx}`}
+                      fill
+                      className={`rounded-full cursor-pointer border-2 object-cover ${avatar === a ? 'border-primary' : 'border-transparent'}`}
+                      onClick={() => setAvatar(a)}
+                      sizes="48px"
+                    />
+                  </div>
                 ))}
               </div>
 

@@ -1,3 +1,5 @@
+import argon2 from 'argon2-browser';
+
 const VERSION = 'v1';
 
 interface EncryptedPayload {
@@ -19,7 +21,7 @@ function toBuffer(base64: string): Uint8Array {
   return bytes;
 }
 
-export async function buatKunci(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
+export async function buatKunciPBKDF2(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
@@ -41,6 +43,32 @@ export async function buatKunci(passphrase: string, salt: Uint8Array): Promise<C
     false,
     ['encrypt', 'decrypt']
   );
+}
+
+export async function buatKunciArgon2(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
+  const result = await argon2.hash({
+    pass: passphrase,
+    salt: salt,
+    time: 2,
+    mem: 19 * 1024,
+    hashLen: 32,
+    type: argon2.ArgonType.Argon2id,
+  });
+
+  return crypto.subtle.importKey(
+    'raw',
+    result.hash.buffer as ArrayBuffer,
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+export async function buatKunci(passphrase: string, salt: Uint8Array, type: 'pbkdf2' | 'argon2id' = 'pbkdf2'): Promise<CryptoKey> {
+  if (type === 'argon2id') {
+    return buatKunciArgon2(passphrase, salt);
+  }
+  return buatKunciPBKDF2(passphrase, salt);
 }
 
 export async function enkripsi(value: unknown, key: CryptoKey): Promise<EncryptedPayload> {

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Folder } from '@/aksara/jenis';
-import { useAbelionStore } from '@/aksara/toko';
+import { useAbelionStore } from '@/aksara/Pundi';
 
 interface FolderModalProps {
   isOpen: boolean;

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Catatan, Folder, Profil, Pengaturan } from './jenis';
+import { GudangZustand } from './Gudang';
 
 interface AbelionStore {
   catatan: Catatan[];
@@ -24,6 +25,10 @@ interface AbelionStore {
 
   perbaruiProfil: (profil: Partial<Profil>) => void;
   perbaruiPengaturan: (pengaturan: Partial<Pengaturan>) => void;
+
+  // Mood
+  mood: Record<string, string>;
+  setMood: (date: string, emoji: string) => void;
 }
 
 export const useAbelionStore = create<AbelionStore>()(
@@ -43,10 +48,11 @@ export const useAbelionStore = create<AbelionStore>()(
         tema: 'system',
         gaya: 'ios',
         warnaAksen: '#007AFF',
-        tintedMode: false,
         enkripsiEnabled: false,
-        kdfType: 'argon2id',
+        kdfType: 'pbkdf2',
+        tintedMode: false,
       },
+      mood: {},
       editingId: null,
 
       setEditingId: (id) => set({ editingId: id }),
@@ -127,10 +133,13 @@ export const useAbelionStore = create<AbelionStore>()(
       perbaruiPengaturan: (update) => set((state) => ({
         pengaturan: { ...state.pengaturan, ...update }
       })),
+      setMood: (date, emoji) => set((state) => ({
+        mood: { ...state.mood, [date]: emoji }
+      })),
     }),
     {
       name: 'abelion-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => GudangZustand),
     }
   )
 );

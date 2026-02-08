@@ -2,6 +2,9 @@ export interface Catatan {
   id: string;
   judul: string;
   konten: string;
+  kontenMarkdown?: string;
+  ikon?: string;
+  sampul?: string;
   folderId?: string;
   dibuatPada: string;
   diperbaruiPada: string;
@@ -9,8 +12,12 @@ export interface Catatan {
   isPinned?: boolean;
   isArchived?: boolean;
   isLocked?: boolean;
+  isFavorite?: boolean;
+  sortOrder?: number;
   tags?: string[];
   deletedAt?: string;
+  konflik?: Catatan[];
+  versi?: number;
 }
 
 export interface Folder {
@@ -31,8 +38,11 @@ export interface Profil {
 
 export interface Pengaturan {
   tema: 'light' | 'dark' | 'system';
+  gaya: 'ios' | 'nusantara';
   warnaAksen: string;
+  tintedMode: boolean;
   enkripsiEnabled: boolean;
+  kdfType: 'pbkdf2' | 'argon2id';
   supabaseUrl?: string;
   supabaseKey?: string;
 }

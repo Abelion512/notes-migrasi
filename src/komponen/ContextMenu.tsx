@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Pin, Archive, Trash2, Edit2 } from 'lucide-react';
 import { Catatan } from '@/aksara/jenis';
-import { useAbelionStore } from '@/aksara/toko';
+import { useAbelionStore } from '@/aksara/Pundi';
 
 interface ContextMenuProps {
   x: number;
