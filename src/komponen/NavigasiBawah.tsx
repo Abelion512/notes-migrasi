@@ -2,15 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, Plus, User, Settings } from 'lucide-react';
+import { useAbelionStore } from '@/aksara/toko';
 
-interface NavigasiBawahProps {
-  onAddClick?: () => void;
-}
-
-const NavigasiBawah: React.FC<NavigasiBawahProps> = ({ onAddClick }) => {
+const NavigasiBawah: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const tambahCatatan = useAbelionStore(state => state.tambahCatatan);
 
   const navItems = [
     { href: '/', label: 'Beranda', icon: <Home size={24} /> },
@@ -28,7 +27,10 @@ const NavigasiBawah: React.FC<NavigasiBawahProps> = ({ onAddClick }) => {
             {isMiddle && (
               <button
                 className="nav-button nav-add-btn"
-                onClick={onAddClick}
+                onClick={() => {
+                  tambahCatatan({});
+                  if (pathname !== '/') router.push('/');
+                }}
               >
                 <span className="nav-icon"><Plus size={24} /></span>
                 <span className="nav-label">Tambah</span>
