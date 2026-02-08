@@ -1,0 +1,54 @@
+# Konteks Pengembangan & Log Perubahan (Abelion Notes v2.0.7)
+
+Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan optimasi untuk mencapai harmoni antara fitur modern dan estetika *Glass OS* asli.
+
+## 1. Restorasi Estetika Legacy (Pixel-Perfect)
+
+**Masalah**: Versi migrasi awal kehilangan "jiwa" desain asli; blur terlalu kuat, radius terlalu bulat, dan layout terasa terlalu "Tailwind standar".
+
+**Solusi**:
+- **Sinkronisasi CSS**: Variabel di `src/app/globals.css` diselaraskan 100% dengan `arsip_legacy/pustaka/gaya/gayanya.css`. 
+- **Typography**: Mengunci penggunaan font `SF Pro` dengan fallback yang tepat untuk menjaga nuansa iOS.
+- **Efek Glassmorphism**: Mengembalikan nilai `--glass-blur: 25px` danopacity frosted glass agar konten di belakang tetap terbaca namun artistik.
+
+## 2. Perubahan Arsitektur State Management
+
+**Masalah**: Struktur lama menggunakan `toko.ts` yang mulai membengkak dan kurang terstruktur untuk fitur-fitur baru seperti mood tracking dan enkripsi tingkat tinggi.
+
+**Solusi**:
+- **Migrasi ke Pundi.ts**: Memperkenalkan `@/aksara/Pundi` sebagai sumber kebenaran (Source of Truth) baru berbasis Zustand.
+- **Pemisahan Logic & View**: Memindahkan rendering utama dari `src/app/page.tsx` ke `src/app/LembaranUtama.tsx` untuk mendukung `Suspense` dan pemuatan asinkron yang lebih baik.
+- **Cleanup**: Menghapus file `toko.ts` dan referensi lama untuk menghindari konflik sirkular.
+
+## 3. Peningkatan Keamanan & Integritas Data
+
+**Masalah**: Data disimpan secara lokal tanpa validasi integritas, rentan terhadap manipulasi eksternal atau kerusakan file.
+
+**Solusi**:
+- **Segel Digital (HMAC-like Hashing)**: Setiap catatan sekarang disimpan dengan properti `_hash` yang dihitung menggunakan SHA-256. Aplikasi akan memberikan peringatan jika data diubah di luar aplikasi.
+- **Argon2id Integration**: Mengganti KDF standar dengan Argon2id untuk derivasi kunci enkripsi, memberikan perlindungan maksimal terhadap serangan *brute-force* pada level sistem (WebAssembly).
+
+## 4. Redesign Navigasi & UX (Apple Style)
+
+**Masalah**: Tombol "Tambah" di navigasi bawah terasa datar dan kurang intuitif.
+
+**Solusi**:
+- **Floating Action Button (FAB)**: Mendesain ulang tombol "+" dengan posisi terangkat (`-top-6`) dan bayangan yang lebih dalam.
+- **Semantic Routing**: Mengubah rute teknis menjadi lebih puitis:
+  - `/setelan` → `/laras`
+  - `/biodata` → `/jatidiri`
+  - `/changelog` → `/versi`
+
+## 5. Pembersihan & Optimasi Build
+
+**Masalah**: Terdapat banyak file redundan (`NavigasiBawah.tsx` vs `KemudiBawah.tsx`) dan struktur folder ganda yang membingungkan *Turbopack*.
+
+**Solusi**:
+- **Hard Cleanup**: Menghapus total komponen dan direktori lama yang sudah tidak digunakan.
+- **Scroll Optimization**: Memperbaiki bug scroll yang macet di beberapa device dengan memaksa `overflow-y: auto` pada level root.
+- **Linting Rigorous**: Menghilangkan semua `any` yang tidak perlu dan memastikan semua `<img>` menggunakan `next/image` untuk optimasi LCP.
+
+---
+
+> [!IMPORTANT]
+> Seluruh perubahan ini telah diverifikasi melalui `bun run build` dengan status **Sukses (Exit Code 0)**.
