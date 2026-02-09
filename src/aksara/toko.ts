@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { GudangZustand } from './Gudang';
 import { Catatan, Folder, Profil, Pengaturan } from './jenis';
 
 interface AbelionStore {
@@ -130,7 +131,7 @@ export const useAbelionStore = create<AbelionStore>()(
     }),
     {
       name: 'abelion-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => GudangZustand),
     }
   )
 );

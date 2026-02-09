@@ -1,4 +1,4 @@
- 
+
 import Dexie, { type Table } from 'dexie';
 import { segelData } from './Integritas';
 import { Catatan, Folder } from './jenis';
@@ -57,7 +57,15 @@ export const GudangZustand = {
       return JSON.stringify(state);
     }
 
-    // Migrasi dari legacy
+    // Cek localStorage untuk migrasi data lama
+    if (typeof localStorage !== 'undefined') {
+      const localData = localStorage.getItem('abelion-storage');
+      if (localData) {
+        return localData;
+      }
+    }
+
+    // Migrasi dari legacy (versi sangat lama)
     const doc = await gudang.negara.get(name);
     if (!doc) return null;
 
