@@ -74,32 +74,32 @@ export const GudangZustand = {
     await gudang.transaction('rw', ['catatan', 'folder', 'sampah', 'atribut'], async () => {
       // 1. Catatan
       const catatanSelled = await Promise.all((state.catatan || []).map((c: Catatan) => segelData(c)));
-      await (gudang as any).catatan.clear();
-      await (gudang as any).catatan.bulkPut(catatanSelled);
+      await gudang.catatan.clear();
+      await gudang.catatan.bulkPut(catatanSelled);
 
       // 2. Folder
       const folderSelled = await Promise.all((state.folder || []).map((f: Folder) => segelData(f)));
-      await (gudang as any).folder.clear();
-      await (gudang as any).folder.bulkPut(folderSelled);
+      await gudang.folder.clear();
+      await gudang.folder.bulkPut(folderSelled);
 
       // 3. Sampah
       const sampahSelled = await Promise.all((state.sampah || []).map((s: Catatan) => segelData(s)));
-      await (gudang as any).sampah.clear();
-      await (gudang as any).sampah.bulkPut(sampahSelled);
+      await gudang.sampah.clear();
+      await gudang.sampah.bulkPut(sampahSelled);
 
       // 4. Atribut
-      if (state.profil) await (gudang as any).atribut.put({ id: 'profil', data: state.profil });
-      if (state.pengaturan) await (gudang as any).atribut.put({ id: 'pengaturan', data: state.pengaturan });
-      if (state.mood) await (gudang as any).atribut.put({ id: 'mood', data: state.mood });
+      if (state.profil) await gudang.atribut.put({ id: 'profil', data: state.profil });
+      if (state.pengaturan) await gudang.atribut.put({ id: 'pengaturan', data: state.pengaturan });
+      if (state.mood) await gudang.atribut.put({ id: 'mood', data: state.mood });
     });
   },
 
   removeItem: async (name: string): Promise<void> => {
     await gudang.transaction('rw', ['catatan', 'folder', 'sampah', 'atribut', 'negara'], async () => {
-      await (gudang as any).catatan.clear();
-      await (gudang as any).folder.clear();
-      await (gudang as any).sampah.clear();
-      await (gudang as any).atribut.clear();
+      await gudang.catatan.clear();
+      await gudang.folder.clear();
+      await gudang.sampah.clear();
+      await gudang.atribut.clear();
       await gudang.negara.delete(name);
     });
   }
