@@ -9,14 +9,7 @@ interface EncryptedPayload {
 }
 
 function toBase64(buffer: ArrayBuffer | Uint8Array): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  // KEAMANAN: Menggunakan loop daripada spread operator (...) untuk mencegah
-  // error "Maximum call stack size exceeded" pada data terenkripsi yang besar.
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)));
 }
 
 function toBuffer(base64: string): Uint8Array {

@@ -11,7 +11,7 @@ interface BingkaiUtamaProps {
 }
 
 export default function BingkaiUtama({ children }: BingkaiUtamaProps) {
-  const pengaturan = useAbelionStore(state => state.pengaturan);
+  const { pengaturan } = useAbelionStore();
   const gaya = pengaturan.gaya || 'ios';
   const tinted = pengaturan.tintedMode ? 'true' : 'false';
   const [scrollProgress, setScrollProgress] = useState(0);

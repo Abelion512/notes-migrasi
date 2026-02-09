@@ -5,14 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, User, Settings, Archive, Trash2, Plus } from 'lucide-react';
 import { useAbelionStore } from '@/aksara/Pundi';
-import { useShallow } from 'zustand/shallow';
 
 export default function SidebarUtama() {
   const pathname = usePathname();
-  const { folder, tambahCatatan } = useAbelionStore(useShallow(state => ({
-    folder: state.folder,
-    tambahCatatan: state.tambahCatatan
-  })));
+  const { folder, tambahCatatan } = useAbelionStore();
 
   const navItems = [
     { href: '/', label: 'Semua Catatan', icon: <Home size={20} /> },
