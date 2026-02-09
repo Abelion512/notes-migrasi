@@ -5,6 +5,7 @@ import KemudiBawah from "@/komponen/KemudiBawah";
 import SidebarUtama from "@/komponen/SidebarUtama";
 import Komandan from "@/komponen/Komandan";
 import { useAbelionStore } from "@/aksara/Pundi";
+import { migrasiLocalStorageKeIndexedDB } from "@/aksara/migrasi";
 
 interface BingkaiUtamaProps {
   children: React.ReactNode;
@@ -21,6 +22,15 @@ export default function BingkaiUtama({ children }: BingkaiUtamaProps) {
     document.documentElement.setAttribute('data-theme', pengaturan.tema || 'system');
     document.documentElement.setAttribute('data-tinted', tinted);
   }, [pengaturan.tema, tinted]);
+
+  useEffect(() => {
+    // Jalankan migrasi dari localStorage ke IndexedDB jika perlu
+    migrasiLocalStorageKeIndexedDB().then((migrated) => {
+      if (migrated) {
+        window.location.reload();
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

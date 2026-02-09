@@ -15,6 +15,7 @@ import { useSearchParams } from 'next/navigation';
 import { List } from 'react-window';
 
 // Komponen Baris Catatan untuk Virtual List
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BarisCatatan = ({ index, style, ...props }: any) => {
   const c = props.filteredCatatan[index];
   if (!c) return null;
