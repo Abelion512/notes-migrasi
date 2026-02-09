@@ -164,11 +164,13 @@ const BilikAksara: React.FC<BilikAksaraProps> = ({ catatan, isOpen, onClose }) =
                   contentEditable
                   className="editor-block-area w-full min-h-[500px]"
                   onBlur={(e) => {
-                    const newContent = e.currentTarget.innerHTML;
+                    // KEAMANAN: Sanitisasi konten sebelum disimpan untuk mencegah XSS.
+                    const newContent = DOMPurify.sanitize(e.currentTarget.innerHTML);
                     setKonten(newContent);
                     if (catatan) perbaruiCatatan(catatan.id, { konten: newContent });
                   }}
-                  dangerouslySetInnerHTML={{ __html: konten }}
+                  // KEAMANAN: Sanitisasi konten sebelum dirender melalui dangerouslySetInnerHTML.
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(konten) }}
                 />
               </div>
 

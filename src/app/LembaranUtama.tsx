@@ -2,20 +2,45 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useAbelionStore } from '@/aksara/Pundi';
+import { useShallow } from 'zustand/shallow';
 import BilikAksara from '@/komponen/BilikAksara';
 import FolderModal from '@/komponen/FolderModal';
 import ContextMenu from '@/komponen/ContextMenu';
 import ExportModal from '@/komponen/ExportModal';
-import { Search, Plus, Trash2, X, MoreHorizontal, Download } from 'lucide-react';
+import { Search, Plus, Trash2, X, Download } from 'lucide-react';
 import DialogMood from '@/komponen/DialogMood';
 import { Catatan, Folder } from '@/aksara/jenis';
+import ItemCatatan from '@/komponen/ItemCatatan';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sortable from 'sortablejs';
 import { useSearchParams } from 'next/navigation';
 import { List } from 'react-window';
 
 export default function LembaranUtama() {
-  const { catatan, folder, tambahCatatan, perbaruiCatatan, pindahkanKeSampah, mood, editingId, setEditingId } = useAbelionStore();
+  /**
+   * BOLT PERFORMANCE OPTIMIZATION:
+   * Used atomic selectors and useShallow to prevent this component from
+   * re-rendering when unrelated store state (like profil XP or other settings) changes.
+   */
+  const {
+    catatan,
+    folder,
+    tambahCatatan,
+    perbaruiCatatan,
+    pindahkanKeSampah,
+    mood,
+    editingId,
+    setEditingId
+  } = useAbelionStore(useShallow(state => ({
+    catatan: state.catatan,
+    folder: state.folder,
+    tambahCatatan: state.tambahCatatan,
+    perbaruiCatatan: state.perbaruiCatatan,
+    pindahkanKeSampah: state.pindahkanKeSampah,
+    mood: state.mood,
+    editingId: state.editingId,
+    setEditingId: state.setEditingId
+  })));
   const searchParams = useSearchParams();
 
   const editingCatatan = useMemo(() => catatan.find(c => c.id === editingId) || null, [catatan, editingId]);
@@ -62,11 +87,19 @@ export default function LembaranUtama() {
     return c.folderId === activeFolderId && !c.deletedAt && matchesSearch;
   }), [catatan, search, activeFolderId]);
 
-  const toggleSelect = (id: string) => {
+  const toggleSelect = React.useCallback((id: string) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
-  };
+  }, []);
+
+  const handleContextMenu = React.useCallback((e: React.MouseEvent, cat: Catatan) => {
+    setContextMenu({ x: e.clientX, y: e.clientY, catatan: cat });
+  }, []);
+
+  const handlePin = React.useCallback((id: string, isPinned: boolean) => {
+    perbaruiCatatan(id, { isPinned });
+  }, [perbaruiCatatan]);
 
   const handleBulkDelete = () => {
     if (confirm(`Hapus ${selectedIds.length} catatan?`)) {
