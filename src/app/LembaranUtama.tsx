@@ -10,14 +10,11 @@ import { Search, Plus, Trash2, X, MoreHorizontal, Download } from 'lucide-react'
 import DialogMood from '@/komponen/DialogMood';
 import { Catatan, Folder } from '@/aksara/jenis';
 import { motion, AnimatePresence } from 'framer-motion';
-import Sortable from 'sortablejs';
 import { useSearchParams } from 'next/navigation';
 import { List } from 'react-window';
-import type { CSSProperties } from 'react';
+import type { RowComponentProps } from 'react-window';
 
-type BarisCatatanProps = {
-  index: number;
-  style: CSSProperties;
+type BarisCatatanData = {
   filteredCatatan: Catatan[];
   selectionMode: boolean;
   selectedIds: string[];
@@ -29,7 +26,7 @@ type BarisCatatanProps = {
 };
 
 // Komponen Baris Catatan untuk Virtual List
-const BarisCatatan = ({ index, style, ...props }: BarisCatatanProps) => {
+const BarisCatatan = ({ index, style, ...props }: RowComponentProps<BarisCatatanData>) => {
   const c = props.filteredCatatan[index];
   if (!c) return null;
 
@@ -147,20 +144,6 @@ export default function LembaranUtama() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  useEffect(() => {
-    const el = document.getElementById('notes-list-sortable');
-    if (el && !selectionMode) {
-      Sortable.create(el, {
-        animation: 150,
-        handle: '.list-item',
-        onEnd: (evt) => {
-          // In a real app we would update the store here
-          console.log('Sorted', evt.oldIndex, evt.newIndex);
-        }
-      });
-    }
-  }, [selectionMode]);
-
   // Weekly Mood Graph Data
   const weeklyMoodData = useMemo(() => {
     const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -276,7 +259,7 @@ export default function LembaranUtama() {
 
       <section className="notes-section">
         <div className="list-header">{activeFolderId === 'all' ? 'Semua Catatan' : activeFolderId === 'trash' ? 'Sampah' : folder.find(f => f.id === activeFolderId)?.nama}</div>
-        <div id="notes-list-sortable" className="grouped-list h-[500px]">
+        <div className="grouped-list h-[500px]">
           {filteredCatatan.length > 0 ? (
             <List
               rowCount={filteredCatatan.length}
