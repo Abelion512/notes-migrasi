@@ -12,6 +12,7 @@ import { Catatan, Folder } from '@/aksara/jenis';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sortable from 'sortablejs';
 import { useSearchParams } from 'next/navigation';
+import { List } from 'react-window';
 
 export default function LembaranUtama() {
   const { catatan, folder, tambahCatatan, perbaruiCatatan, pindahkanKeSampah, mood, editingId, setEditingId } = useAbelionStore();
@@ -210,59 +211,62 @@ export default function LembaranUtama() {
 
       <section className="notes-section">
         <div className="list-header">{activeFolderId === 'all' ? 'Semua Catatan' : activeFolderId === 'trash' ? 'Sampah' : folder.find(f => f.id === activeFolderId)?.nama}</div>
-        <div id="notes-list-sortable" className="grouped-list">
-          {filteredCatatan.map((c, index) => (
-            <div key={c.id} className="list-item-container">
-              {/* Swipe Action Backgrounds */}
-              <div className="absolute inset-0 flex justify-between items-stretch">
-                <div className="bg-primary px-6 flex items-center text-white font-bold text-xs uppercase tracking-widest">Sematkan</div>
-                <div className="bg-danger px-6 flex items-center text-white font-bold text-xs uppercase tracking-widest">Hapus</div>
-              </div>
-
-              <motion.div
-                drag={selectionMode ? false : "x"}
-                dragConstraints={{ left: -100, right: 100 }}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x > 70) perbaruiCatatan(c.id, { isPinned: !c.isPinned });
-                  if (info.offset.x < -70) pindahkanKeSampah(c.id);
-                }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0, x: 0 }}
-                transition={{ delay: index * 0.03 }}
-                className={`list-item ${selectedIds.includes(c.id) ? 'selected' : ''}`}
-                onClick={() => selectionMode ? toggleSelect(c.id) : setEditingId(c.id)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
-                }}
-              >
-                <div className="list-item-content">
-                  <div className="list-item-title flex items-center gap-2">
-                    {c.isPinned && <div className="w-2 h-2 rounded-full bg-primary" />}
-                    <span className="truncate">{c.judul || 'Tanpa Judul'}</span>
+        <div id="notes-list-sortable" className="grouped-list h-[500px]">
+          {filteredCatatan.length > 0 ? (
+            <List
+              rowCount={filteredCatatan.length}
+              rowHeight={80}
+              style={{ height: 500 }}
+              rowProps={{ filteredCatatan, selectionMode, selectedIds, toggleSelect, setEditingId, setContextMenu, perbaruiCatatan, pindahkanKeSampah }}
+              rowComponent={({ index, style, ...props }: any) => {
+                const c = props.filteredCatatan[index];
+                return (
+                  <div style={style} className="list-item-container px-4">
+                    <motion.div
+                      drag={props.selectionMode ? false : "x"}
+                      dragConstraints={{ left: -100, right: 100 }}
+                      onDragEnd={(_, info) => {
+                        if (info.offset.x > 70) props.perbaruiCatatan(c.id, { isPinned: !c.isPinned });
+                        if (info.offset.x < -70) props.pindahkanKeSampah(c.id);
+                      }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0, x: 0 }}
+                      className={`list-item ${props.selectedIds.includes(c.id) ? 'selected' : ''}`}
+                      onClick={() => props.selectionMode ? props.toggleSelect(c.id) : props.setEditingId(c.id)}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        props.setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
+                      }}
+                    >
+                      <div className="list-item-content">
+                        <div className="list-item-title flex items-center gap-2">
+                          {c.isPinned && <div className="w-2 h-2 rounded-full bg-primary" />}
+                          <span className="truncate">{c.judul || 'Tanpa Judul'}</span>
+                        </div>
+                        <div className="list-item-subtitle text-secondary">
+                          <span className="shrink-0">{new Date(c.diperbaruiPada).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                          {c.mood && <span className="shrink-0">{c.mood}</span>}
+                          <span className="truncate opacity-60">{c.konten?.replace(/<[^>]*>/g, '').substring(0, 60) || 'Tidak ada isi...'}</span>
+                        </div>
+                      </div>
+                      {props.selectionMode ? (
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${props.selectedIds.includes(c.id) ? 'bg-primary border-primary' : 'border-border-subtle'}`}>
+                          {props.selectedIds.includes(c.id) && <Plus size={16} className="text-white rotate-45" />}
+                        </div>
+                      ) : (
+                        <button className="list-item-more" onClick={(e) => {
+                          e.stopPropagation();
+                          props.setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
+                        }}>
+                          <MoreHorizontal size={18} />
+                        </button>
+                      )}
+                    </motion.div>
                   </div>
-                  <div className="list-item-subtitle text-secondary">
-                    <span className="shrink-0">{new Date(c.diperbaruiPada).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                    {c.mood && <span className="shrink-0">{c.mood}</span>}
-                    <span className="truncate opacity-60">{c.konten?.replace(/<[^>]*>/g, '').substring(0, 60) || 'Tidak ada isi...'}</span>
-                  </div>
-                </div>
-                {selectionMode ? (
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${selectedIds.includes(c.id) ? 'bg-primary border-primary' : 'border-border-subtle'}`}>
-                    {selectedIds.includes(c.id) && <Plus size={16} className="text-white rotate-45" />}
-                  </div>
-                ) : (
-                  <button className="list-item-more" onClick={(e) => {
-                    e.stopPropagation();
-                    setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
-                  }}>
-                    <MoreHorizontal size={18} />
-                  </button>
-                )}
-              </motion.div>
-            </div>
-          ))}
-          {filteredCatatan.length === 0 && (
+                );
+              }}
+            />
+          ) : (
             <div className="p-12 text-center text-muted italic">Belum ada arsip di kategori ini.</div>
           )}
         </div>

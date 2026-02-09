@@ -21,6 +21,13 @@ function toBuffer(base64: string): Uint8Array {
   return bytes;
 }
 
+/**
+ * Membuat garam (salt) acak 32-byte untuk KDF.
+ */
+export function buatSalt(): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(32));
+}
+
 export async function buatKunciPBKDF2(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
@@ -45,12 +52,16 @@ export async function buatKunciPBKDF2(passphrase: string, salt: Uint8Array): Pro
   );
 }
 
+/**
+ * Membuat kunci menggunakan Argon2id (Memory-hard).
+ * Parameter sesuai rekomendasi OWASP: 19MB RAM, 2 iterasi.
+ */
 export async function buatKunciArgon2(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
   const result = await argon2.hash({
     pass: passphrase,
     salt: salt,
-    time: 2,
-    mem: 19 * 1024,
+    time: 2, // Iterasi
+    mem: 19 * 1024, // 19MiB
     hashLen: 32,
     type: argon2.ArgonType.Argon2id,
   });
