@@ -49,7 +49,7 @@ export const useAbelionStore = create<AbelionStore>()(
         gaya: 'ios',
         warnaAksen: '#007AFF',
         enkripsiEnabled: false,
-        kdfType: 'pbkdf2',
+        kdfType: 'argon2id',
         tintedMode: false,
       },
       mood: {},
@@ -67,6 +67,7 @@ export const useAbelionStore = create<AbelionStore>()(
               konten: '',
               dibuatPada: new Date().toISOString(),
               diperbaruiPada: new Date().toISOString(),
+              versi: 1,
               ...baru
             } as Catatan,
             ...state.catatan
@@ -76,11 +77,36 @@ export const useAbelionStore = create<AbelionStore>()(
         return id;
       },
 
-      perbaruiCatatan: (id, update) => set((state) => ({
-        catatan: state.catatan.map((c) =>
-          c.id === id ? { ...c, ...update, diperbaruiPada: new Date().toISOString() } : c
-        )
-      })),
+      perbaruiCatatan: (id, update) => set((state) => {
+        const existing = state.catatan.find((c) => c.id === id);
+        if (!existing) return state;
+
+        // Deteksi Konflik Sederhana:
+        // Jika update memiliki versi dan versinya berbeda/lebih rendah dari yang ada di memori,
+        // kita tandai sebagai konflik daripada langsung menimpa.
+        if (update.versi !== undefined && existing.versi !== undefined && update.versi < existing.versi) {
+          console.warn('[Konflik] Versi catatan tidak cocok:', id);
+          return {
+            catatan: state.catatan.map((c) =>
+              c.id === id ? {
+                ...c,
+                konflik: [...(c.konflik || []), { ...existing, ...update } as Catatan]
+              } : c
+            )
+          };
+        }
+
+        return {
+          catatan: state.catatan.map((c) =>
+            c.id === id ? {
+              ...c,
+              ...update,
+              versi: (existing.versi || 0) + 1,
+              diperbaruiPada: new Date().toISOString()
+            } : c
+          )
+        };
+      }),
 
       hapusCatatan: (id) => set((state) => ({
         catatan: state.catatan.filter((c) => c.id !== id)

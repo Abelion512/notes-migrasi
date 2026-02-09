@@ -9,14 +9,7 @@ interface EncryptedPayload {
 }
 
 function toBase64(buffer: ArrayBuffer | Uint8Array): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  // KEAMANAN: Menggunakan loop daripada spread operator (...) untuk mencegah
-  // error "Maximum call stack size exceeded" pada data terenkripsi yang besar.
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)));
 }
 
 function toBuffer(base64: string): Uint8Array {
@@ -26,6 +19,13 @@ function toBuffer(base64: string): Uint8Array {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+}
+
+/**
+ * Membuat garam (salt) acak 32-byte untuk KDF.
+ */
+export function buatSalt(): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(32));
 }
 
 export async function buatKunciPBKDF2(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
@@ -52,12 +52,16 @@ export async function buatKunciPBKDF2(passphrase: string, salt: Uint8Array): Pro
   );
 }
 
+/**
+ * Membuat kunci menggunakan Argon2id (Memory-hard).
+ * Parameter sesuai rekomendasi OWASP: 19MB RAM, 2 iterasi.
+ */
 export async function buatKunciArgon2(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
   const result = await argon2.hash({
     pass: passphrase,
     salt: salt,
-    time: 2,
-    mem: 19 * 1024,
+    time: 2, // Iterasi
+    mem: 19 * 1024, // 19MiB
     hashLen: 32,
     type: argon2.ArgonType.Argon2id,
   });

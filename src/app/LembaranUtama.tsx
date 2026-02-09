@@ -2,44 +2,71 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useAbelionStore } from '@/aksara/Pundi';
-import { useShallow } from 'zustand/shallow';
 import BilikAksara from '@/komponen/BilikAksara';
 import FolderModal from '@/komponen/FolderModal';
 import ContextMenu from '@/komponen/ContextMenu';
 import ExportModal from '@/komponen/ExportModal';
-import { Search, Plus, Trash2, X, Download } from 'lucide-react';
+import { Search, Plus, Trash2, X, MoreHorizontal, Download } from 'lucide-react';
 import DialogMood from '@/komponen/DialogMood';
 import { Catatan, Folder } from '@/aksara/jenis';
-import ItemCatatan from '@/komponen/ItemCatatan';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sortable from 'sortablejs';
 import { useSearchParams } from 'next/navigation';
+import { List } from 'react-window';
+
+// Komponen Baris Catatan untuk Virtual List
+const BarisCatatan = ({ index, style, ...props }: any) => {
+  const c = props.filteredCatatan[index];
+  if (!c) return null;
+
+  return (
+    <div style={style} className="list-item-container px-4">
+      <motion.div
+        drag={props.selectionMode ? false : "x"}
+        dragConstraints={{ left: -100, right: 100 }}
+        onDragEnd={(_, info) => {
+          if (info.offset.x > 70) props.perbaruiCatatan(c.id, { isPinned: !c.isPinned });
+          if (info.offset.x < -70) props.pindahkanKeSampah(c.id);
+        }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
+        className={`list-item ${props.selectedIds.includes(c.id) ? 'selected' : ''}`}
+        onClick={() => props.selectionMode ? props.toggleSelect(c.id) : props.setEditingId(c.id)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          props.setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
+        }}
+      >
+        <div className="list-item-content">
+          <div className="list-item-title flex items-center gap-2">
+            {c.isPinned && <div className="w-2 h-2 rounded-full bg-primary" />}
+            <span className="truncate">{c.judul || 'Tanpa Judul'}</span>
+          </div>
+          <div className="list-item-subtitle text-secondary">
+            <span className="shrink-0">{new Date(c.diperbaruiPada).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+            {c.mood && <span className="shrink-0">{c.mood}</span>}
+            <span className="truncate opacity-60">{c.konten?.replace(/<[^>]*>/g, '').substring(0, 60) || 'Tidak ada isi...'}</span>
+          </div>
+        </div>
+        {props.selectionMode ? (
+          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${props.selectedIds.includes(c.id) ? 'bg-primary border-primary' : 'border-border-subtle'}`}>
+            {props.selectedIds.includes(c.id) && <Plus size={16} className="text-white rotate-45" />}
+          </div>
+        ) : (
+          <button className="list-item-more" onClick={(e) => {
+            e.stopPropagation();
+            props.setContextMenu({ x: e.clientX, y: e.clientY, catatan: c });
+          }}>
+            <MoreHorizontal size={18} />
+          </button>
+        )}
+      </motion.div>
+    </div>
+  );
+};
 
 export default function LembaranUtama() {
-  /**
-   * BOLT PERFORMANCE OPTIMIZATION:
-   * Used atomic selectors and useShallow to prevent this component from
-   * re-rendering when unrelated store state (like profil XP or other settings) changes.
-   */
-  const {
-    catatan,
-    folder,
-    tambahCatatan,
-    perbaruiCatatan,
-    pindahkanKeSampah,
-    mood,
-    editingId,
-    setEditingId
-  } = useAbelionStore(useShallow(state => ({
-    catatan: state.catatan,
-    folder: state.folder,
-    tambahCatatan: state.tambahCatatan,
-    perbaruiCatatan: state.perbaruiCatatan,
-    pindahkanKeSampah: state.pindahkanKeSampah,
-    mood: state.mood,
-    editingId: state.editingId,
-    setEditingId: state.setEditingId
-  })));
+  const { catatan, folder, tambahCatatan, perbaruiCatatan, pindahkanKeSampah, mood, editingId, setEditingId } = useAbelionStore();
   const searchParams = useSearchParams();
 
   const editingCatatan = useMemo(() => catatan.find(c => c.id === editingId) || null, [catatan, editingId]);
@@ -86,19 +113,11 @@ export default function LembaranUtama() {
     return c.folderId === activeFolderId && !c.deletedAt && matchesSearch;
   }), [catatan, search, activeFolderId]);
 
-  const toggleSelect = React.useCallback((id: string) => {
+  const toggleSelect = (id: string) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
-  }, []);
-
-  const handleContextMenu = React.useCallback((e: React.MouseEvent, cat: Catatan) => {
-    setContextMenu({ x: e.clientX, y: e.clientY, catatan: cat });
-  }, []);
-
-  const handlePin = React.useCallback((id: string, isPinned: boolean) => {
-    perbaruiCatatan(id, { isPinned });
-  }, [perbaruiCatatan]);
+  };
 
   const handleBulkDelete = () => {
     if (confirm(`Hapus ${selectedIds.length} catatan?`)) {
@@ -243,29 +262,16 @@ export default function LembaranUtama() {
 
       <section className="notes-section">
         <div className="list-header">{activeFolderId === 'all' ? 'Semua Catatan' : activeFolderId === 'trash' ? 'Sampah' : folder.find(f => f.id === activeFolderId)?.nama}</div>
-        <div id="notes-list-sortable" className="grouped-list">
-          {/**
-            * BOLT PERFORMANCE OPTIMIZATION:
-            * Extracted note items into a memoized component (ItemCatatan).
-            * This prevents the entire list from re-rendering when only one note is updated,
-            * or when unrelated parent state changes. Combined with useCallback for handlers,
-            * this ensures O(1) re-render cost for single note updates instead of O(N).
-            */}
-          {filteredCatatan.map((c, index) => (
-            <ItemCatatan
-              key={c.id}
-              catatan={c}
-              index={index}
-              selectionMode={selectionMode}
-              isSelected={selectedIds.includes(c.id)}
-              onToggleSelect={toggleSelect}
-              onEdit={setEditingId}
-              onContextMenu={handleContextMenu}
-              onPin={handlePin}
-              onDelete={pindahkanKeSampah}
+        <div id="notes-list-sortable" className="grouped-list h-[500px]">
+          {filteredCatatan.length > 0 ? (
+            <List
+              rowCount={filteredCatatan.length}
+              rowHeight={80}
+              style={{ height: 500 }}
+              rowProps={{ filteredCatatan, selectionMode, selectedIds, toggleSelect, setEditingId, setContextMenu, perbaruiCatatan, pindahkanKeSampah }}
+              rowComponent={BarisCatatan}
             />
-          ))}
-          {filteredCatatan.length === 0 && (
+          ) : (
             <div className="p-12 text-center text-muted italic">Belum ada arsip di kategori ini.</div>
           )}
         </div>

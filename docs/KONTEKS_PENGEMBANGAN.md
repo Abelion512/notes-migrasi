@@ -48,15 +48,6 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 - **Scroll Optimization**: Memperbaiki bug scroll yang macet di beberapa device dengan memaksa `overflow-y: auto` pada level root.
 - **Linting Rigorous**: Menghilangkan semua `any` yang tidak perlu dan memastikan semua `<img>` menggunakan `next/image` untuk optimasi LCP.
 
-## 6. Optimasi Performa Skala Besar (Bolt ⚡)
-
-**Masalah**: Penggunaan store Zustand yang kurang efisien menyebabkan re-render seluruh aplikasi pada setiap perubahan state kecil. Daftar catatan juga dirender secara inline tanpa memoisasi, yang akan melambat secara signifikan saat jumlah catatan mencapai ribuan.
-
-**Solusi**:
-- **Atomic Selectors & useShallow**: Mengimplementasikan selektor atomik pada `useAbelionStore` di komponen-komponen utama (`LembaranUtama`, `BingkaiUtama`, `SidebarUtama`, `Komandan`). Ini memastikan komponen hanya melakukan update jika data yang mereka butuhkan benar-benar berubah.
-- **Ekstraksi & Memoisasi ItemCatatan**: Memindahkan logika rendering item catatan ke komponen terpisah `ItemCatatan.tsx` dan membungkusnya dengan `React.memo`. Digabungkan dengan `useCallback` untuk handler di parent, ini mengurangi biaya re-render daftar dari O(N) menjadi O(1) untuk pembaruan satu item.
-- **Stabilitas Handler**: Memastikan semua fungsi yang dikirim ke komponen anak memiliki referensi yang stabil untuk memaksimalkan efektivitas memoisasi.
-
 ---
 
 > [!IMPORTANT]

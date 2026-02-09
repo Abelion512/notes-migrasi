@@ -43,6 +43,7 @@ export interface Pengaturan {
   tintedMode: boolean;
   enkripsiEnabled: boolean;
   kdfType: 'pbkdf2' | 'argon2id';
+  salt?: string; // Salt dalam base64
   supabaseUrl?: string;
   supabaseKey?: string;
 }
