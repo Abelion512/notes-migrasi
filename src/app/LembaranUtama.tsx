@@ -13,9 +13,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Sortable from 'sortablejs';
 import { useSearchParams } from 'next/navigation';
 import { List } from 'react-window';
+import type { CSSProperties } from 'react';
+
+type BarisCatatanProps = {
+  index: number;
+  style: CSSProperties;
+  filteredCatatan: Catatan[];
+  selectionMode: boolean;
+  selectedIds: string[];
+  perbaruiCatatan: (id: string, pembaruan: Partial<Catatan>) => void;
+  pindahkanKeSampah: (id: string) => void;
+  toggleSelect: (id: string) => void;
+  setEditingId: (id: string | null) => void;
+  setContextMenu: (value: { x: number; y: number; catatan: Catatan } | null) => void;
+};
 
 // Komponen Baris Catatan untuk Virtual List
-const BarisCatatan = ({ index, style, ...props }: any) => {
+const BarisCatatan = ({ index, style, ...props }: BarisCatatanProps) => {
   const c = props.filteredCatatan[index];
   if (!c) return null;
 
