@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import { BottomNav } from "@/components/shared/BottomNav";
-import { VaultGate } from "@/components/features/vault/VaultGate";
-import { PageTransition } from "@/components/shared/PageTransition";
-import { ThemeManager } from "@/components/shared/ThemeManager";
-import { CommandPalette } from "@/components/shared/CommandPalette";
+import { BottomNav } from "@/komponen/bersama/BottomNav";
+import { VaultGate } from "@/komponen/fitur/vault/VaultGate";
+import { PageTransition } from "@/komponen/bersama/PageTransition";
+import { ThemeManager } from "@/komponen/bersama/ThemeManager";
+import { CommandPalette } from "@/komponen/bersama/CommandPalette";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 

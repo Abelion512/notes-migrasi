@@ -30,7 +30,7 @@ const DEFAULT_PROFILE: UserProfile = {
     xp: 0,
 };
 
-export const useAbelionStore = create<AbelionState>()(
+export const usePundi = create<AbelionState>()(
     persist(
         (set) => ({
             settings: DEFAULT_SETTINGS,

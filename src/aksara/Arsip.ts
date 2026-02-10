@@ -1,14 +1,14 @@
-import { Basisdata } from '@/lib/storage/basisdata';
-import { Brankas } from '@/lib/storage/brankas';
+import { Gudang } from '@/aksara/Gudang';
+import { Brankas } from '@/aksara/Brankas';
 import { Note, EntityId } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
-export const VaultRepository = {
+export const Arsip = {
     /**
      * Check if the vault has been set up with a password
      */
     async isVaultInitialized(): Promise<boolean> {
-        const validator = await Basisdata.get('meta', 'auth_validator');
+        const validator = await Gudang.get('meta', 'auth_validator');
         return !!validator;
     },
 
@@ -31,8 +31,8 @@ export const VaultRepository = {
         const ivHex = Array.from(encryptedValidator.iv).map(b => b.toString(16).padStart(2, '0')).join('');
         const base64Data = btoa(String.fromCharCode(...new Uint8Array(encryptedValidator.data)));
 
-        await Basisdata.set('meta', 'auth_salt', saltHex);
-        await Basisdata.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
+        await Gudang.set('meta', 'auth_salt', saltHex);
+        await Gudang.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
 
         // Set as active session
         Brankas.setActiveKey(key);
@@ -43,8 +43,8 @@ export const VaultRepository = {
      */
     async unlockVault(password: string): Promise<boolean> {
         try {
-            const saltHex = await Basisdata.get('meta', 'auth_salt') as string;
-            const packedValidator = await Basisdata.get('meta', 'auth_validator') as string;
+            const saltHex = await Gudang.get('meta', 'auth_salt') as string;
+            const packedValidator = await Gudang.get('meta', 'auth_validator') as string;
 
             if (!saltHex || !packedValidator) return false;
 
@@ -102,7 +102,7 @@ export const VaultRepository = {
             finalNote.createdAt = new Date().toISOString();
         }
 
-        await Basisdata.set('notes', finalNote.id, finalNote);
+        await Gudang.set('notes', finalNote.id, finalNote);
         return finalNote;
     },
 
@@ -114,7 +114,7 @@ export const VaultRepository = {
             throw new Error('Vault is locked. Cannot retrieve data.');
         }
 
-        const rawNotes = await Basisdata.getAll('notes') as Note[];
+        const rawNotes = await Gudang.getAll('notes') as Note[];
 
         const decryptedNotes = await Promise.all(rawNotes.map(async (note) => {
             try {
@@ -151,19 +151,19 @@ export const VaultRepository = {
 
     async deleteNote(id: EntityId) {
         // Secure Deletion logic: Overwrite then delete
-        const note = await Basisdata.get('notes', id) as Note;
+        const note = await Gudang.get('notes', id) as Note;
         if (note) {
             const junk = crypto.getRandomValues(new Uint8Array(note.content.length));
             const junkString = btoa(String.fromCharCode(...junk));
-            await Basisdata.set('notes', id, { ...note, content: junkString, title: 'DELETED' });
+            await Gudang.set('notes', id, { ...note, content: junkString, title: 'DELETED' });
         }
-        await Basisdata.delete('notes', id);
+        await Gudang.delete('notes', id);
     },
 
     async getNoteById(id: EntityId): Promise<Note | undefined> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
 
-        const note = await Basisdata.get('notes', id) as Note;
+        const note = await Gudang.get('notes', id) as Note;
         if (!note) return undefined;
 
         try {
@@ -188,8 +188,8 @@ export const VaultRepository = {
 
     async getStats() {
         if (Brankas.isLocked()) return { notes: 0, folders: 0 };
-        const notesCount = await Basisdata.count('notes');
-        const foldersCount = await Basisdata.count('folders');
+        const notesCount = await Gudang.count('notes');
+        const foldersCount = await Gudang.count('folders');
         return {
             notes: notesCount,
             folders: foldersCount

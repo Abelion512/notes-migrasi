@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
-import { VaultRepository } from '@/lib/storage/VaultRepository';
+import { usePundi } from '@/aksara/Pundi';
+import { Arsip } from '@/aksara/Arsip';
 import { Lock, Unlock, ArrowRight, ShieldCheck, KeyRound, Copy, Check, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateMnemonic } from '@/lib/utils/bip39';
+import { generateMnemonic } from '@/aksara/KataSandi';
 
 export const VaultLockScreen = () => {
     const [password, setPassword] = useState('');
@@ -18,12 +18,12 @@ export const VaultLockScreen = () => {
     const [error, setError] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const { setVaultLocked } = useAbelionStore();
+    const { setVaultLocked } = usePundi();
 
     useEffect(() => {
         const checkVaultStatus = async () => {
             try {
-                const initialized = await VaultRepository.isVaultInitialized();
+                const initialized = await Arsip.isVaultInitialized();
                 setIsSetupMode(!initialized);
                 if (!initialized) {
                     setPaperKey(generateMnemonic());
@@ -49,7 +49,7 @@ export const VaultLockScreen = () => {
     const finalizeSetup = async () => {
         setIsLoading(true);
         try {
-            await VaultRepository.setupVault(password);
+            await Arsip.setupVault(password);
             setVaultLocked(false);
         } catch (err) {
             console.error(err);
@@ -67,7 +67,7 @@ export const VaultLockScreen = () => {
         setError(false);
 
         try {
-            const isValid = await VaultRepository.unlockVault(password);
+            const isValid = await Arsip.unlockVault(password);
             if (isValid) {
                 setVaultLocked(false);
             } else {

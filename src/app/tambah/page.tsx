@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { VaultRepository } from '@/lib/storage/VaultRepository';
+import { Arsip } from '@/aksara/Arsip';
 import dynamic from 'next/dynamic';
 
 const TiptapEditor = dynamic(
-    () => import('@/components/features/editor/TiptapEditor').then(mod => mod.TiptapEditor),
+    () => import('@/komponen/fitur/editor/TiptapEditor').then(mod => mod.TiptapEditor),
     { ssr: false, loading: () => <div className="h-64 flex items-center justify-center text-[var(--text-secondary)]">Memuat Editor...</div> }
 );
 
@@ -22,7 +22,7 @@ export default function AddNotePage() {
 
         setIsSaving(true);
         try {
-            await VaultRepository.saveNote({
+            await Arsip.saveNote({
                 id: crypto.randomUUID(), // Let repo re-generate if needed, but good to have
                 title: title || 'Tanpa Judul',
                 content: content,

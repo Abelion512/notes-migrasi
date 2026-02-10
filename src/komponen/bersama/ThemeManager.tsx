@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
+import { usePundi } from '@/aksara/Pundi';
 
 export const ThemeManager = () => {
-    const { settings } = useAbelionStore();
+    const { settings } = usePundi();
 
     useEffect(() => {
         const applyTheme = () => {

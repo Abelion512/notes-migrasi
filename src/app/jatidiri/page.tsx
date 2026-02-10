@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { VaultRepository } from '@/lib/storage/VaultRepository';
-import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
+import { Arsip } from '@/aksara/Arsip';
+import { usePundi } from '@/aksara/Pundi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
-    const { profile } = useAbelionStore();
+    const { profile } = usePundi();
     const [stats, setStats] = useState({ notes: 0, folders: 0 });
     const [activity, setActivity] = useState<{ day: string, count: number, height: number }[]>([]);
     const [hoveredDay, setHoveredDay] = useState<number | null>(null);
@@ -14,10 +14,10 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const s = await VaultRepository.getStats();
+                const s = await Arsip.getStats();
                 setStats(s);
 
-                const allNotes = await VaultRepository.getAllNotes();
+                const allNotes = await Arsip.getAllNotes();
                 const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
                 const counts = Array(7).fill(0);
                 const now = new Date();

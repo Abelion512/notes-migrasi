@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
-import { Brankas } from '@/lib/storage/brankas';
+import { usePundi } from '@/aksara/Pundi';
+import { Brankas } from '@/aksara/Brankas';
 
-export const useVaultSync = () => {
-    const { isVaultLocked, setVaultLocked } = useAbelionStore();
+export const usePenyelaras = () => {
+    const { isVaultLocked, setVaultLocked } = usePundi();
 
     useEffect(() => {
         const channel = new BroadcastChannel('abelion-vault-sync');

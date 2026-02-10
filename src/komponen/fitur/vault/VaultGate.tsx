@@ -1,24 +1,24 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
+import { usePundi } from '@/aksara/Pundi';
 import { VaultLockScreen } from './VaultLockScreen';
-import { useVaultAutoLock } from '@/lib/hooks/useVaultAutoLock';
-import { useVaultSync } from '@/lib/hooks/useVaultSync';
+import { usePenjaga } from '@/aksara/Penjaga';
+import { usePenyelaras } from '@/aksara/Penyelaras';
 
 interface VaultGateProps {
     children: React.ReactNode;
 }
 
 export const VaultGate = ({ children }: VaultGateProps) => {
-    const { isVaultLocked } = useAbelionStore();
+    const { isVaultLocked } = usePundi();
     const [isMounted, setIsMounted] = useState(false);
 
     // Sync vault status across tabs
-    useVaultSync();
+    usePenyelaras();
 
     // Auto lock logic
-    useVaultAutoLock();
+    usePenjaga();
 
     useEffect(() => {
         setIsMounted(true);

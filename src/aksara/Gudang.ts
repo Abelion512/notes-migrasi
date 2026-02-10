@@ -52,9 +52,13 @@ export const initDB = async (): Promise<IDBPDatabase<AbelionSchema>> => {
     });
 };
 
-export const Basisdata = {
+export const Gudang = {
     async set<K extends keyof AbelionSchema>(store: K, key: string, value: AbelionSchema[K]['value']) {
         const db = await initDB();
+        // Jika store memiliki keyPath (inline keys), jangan sertakan parameter key ke db.put
+        if (store === 'notes' || store === 'folders') {
+            return db.put(store as any, value);
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.put(store as any, value, key);
     },

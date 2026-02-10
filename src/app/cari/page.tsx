@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { VaultRepository } from '@/lib/storage/VaultRepository';
+import { Arsip } from '@/aksara/Arsip';
 import { Note } from '@/types';
 import Link from 'next/link';
 import { Search as SearchIcon, ChevronRight, FileX } from 'lucide-react';
-import { stripHtml, truncate } from '@/lib/utils/html';
+import { stripHtml, truncate } from '@/aksara/Penyaring';
 
 export default function SearchPage() {
     const [query, setQuery] = useState('');
@@ -16,7 +16,7 @@ export default function SearchPage() {
     useEffect(() => {
         const loadAll = async () => {
             try {
-                const data = await VaultRepository.getAllNotes();
+                const data = await Arsip.getAllNotes();
                 setNotes(data);
             } catch (e) {
                 console.error(e);

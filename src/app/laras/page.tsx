@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { haptic } from '@/lib/utils/haptics';
+import { haptic } from '@/aksara/Indera';
 import { Moon, Shield, Database, Info, ChevronRight } from 'lucide-react';
-import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
-import { Brankas } from '@/lib/storage/brankas';
+import { usePundi } from '@/aksara/Pundi';
+import { Brankas } from '@/aksara/Brankas';
 
 export default function SettingsPage() {
-    const { setVaultLocked } = useAbelionStore();
+    const { setVaultLocked } = usePundi();
 
     const handleLock = () => {
         haptic.heavy();

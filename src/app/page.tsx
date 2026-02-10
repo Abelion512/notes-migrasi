@@ -1,6 +1,6 @@
 'use client';
 
-import { haptic } from '@/lib/utils/haptics';
+import { haptic } from '@/aksara/Indera';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import {
@@ -12,10 +12,10 @@ import {
     FilePlus,
     MoreVertical
 } from 'lucide-react';
-import { VaultRepository } from '@/lib/storage/VaultRepository';
+import { Arsip } from '@/aksara/Arsip';
 import { Note } from '@/types';
-import { truncate, stripHtml } from '@/lib/utils/html';
-import { NoteSkeleton } from '@/components/shared/NoteSkeleton';
+import { truncate, stripHtml } from '@/aksara/Penyaring';
+import { NoteSkeleton } from '@/komponen/bersama/NoteSkeleton';
 // @ts-ignore
 import { List } from 'react-window';
 import JSZip from 'jszip';
@@ -31,7 +31,7 @@ export default function Home() {
 
     const loadNotes = async () => {
         try {
-            const data = await VaultRepository.getAllNotes();
+            const data = await Arsip.getAllNotes();
             setNotes(data);
         } catch (error) {
             console.error('Failed to load notes:', error);
@@ -75,7 +75,7 @@ export default function Home() {
 
         setIsLoading(true);
         for (const id of selectedIds) {
-            await VaultRepository.deleteNote(id);
+            await Arsip.deleteNote(id);
         }
         setSelectedIds([]);
         setIsEditMode(false);
