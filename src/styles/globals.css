@@ -4,41 +4,51 @@
 
 @theme {
     --color-primary: #135bec;
-    --color-background-light: #f6f6f8;
-    --color-background-dark: #101622;
-    --font-display: "Inter", "sans-serif";
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
+    --color-background-light: #f1f2f6;
+    --color-background-dark: #000000;
+    --font-display: "SF Pro Display", "Inter", system-ui, -apple-system, sans-serif;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
+    --radius-3xl: 1.5rem;
 }
 
 :root {
     --primary: #135bec;
-    --background: #f6f6f8;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --glass-bg: rgba(255, 255, 255, 0.75);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-blur: 12px;
-    --separator: rgba(15, 23, 42, 0.1);
+    --background: #f1f2f6;
+    --text-primary: #000000;
+    --text-secondary: #8e8e93;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-blur: 25px;
+    --separator: rgba(0, 0, 0, 0.1);
+    --noise-opacity: 0.03;
 }
 
 [data-theme='dark'] {
-    --background: #101622;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --glass-bg: rgba(16, 22, 34, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.05);
+    --background: #000000;
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --glass-bg: rgba(28, 28, 30, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
     --separator: rgba(255, 255, 255, 0.1);
+    --noise-opacity: 0.05;
 }
 
 @layer base {
     body {
-        @apply bg-[var(--background)] text-[var(--text-primary)] font-display antialiased;
+        background-color: var(--background);
+        color: var(--text-primary);
+        font-family: var(--font-display);
+        @apply antialiased select-none;
         min-height: 100dvh;
         overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    /* Custom Scrollbar hiding for iOS look */
+    h1, h2, h3, h4 {
+        @apply tracking-tight font-bold;
+    }
+
     .no-scrollbar {
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -50,33 +60,96 @@
 }
 
 @layer components {
-    .glass-card {
+    .glass-card-style {
+        position: relative;
         background: var(--glass-bg);
         backdrop-filter: blur(var(--glass-blur));
         -webkit-backdrop-filter: blur(var(--glass-blur));
-        border: 1px solid var(--glass-border);
-        @apply rounded-2xl shadow-sm;
+        border: 0.5px solid var(--glass-border);
+        border-radius: 1.5rem;
+        overflow: hidden;
+    }
+
+    .glass-card-style::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        opacity: var(--noise-opacity);
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .glass-card {
+        composes: glass-card-style; /* compositor like behavior but in standard CSS we just use the class */
+        @apply shadow-sm;
+    }
+
+    /* Since composes doesn't work in standard CSS like that, let's just use the style */
+    .glass-card {
+        position: relative;
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: 0.5px solid var(--glass-border);
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    .glass-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        opacity: var(--noise-opacity);
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
     .ios-list-group {
+        position: relative;
         background: var(--glass-bg);
         backdrop-filter: blur(var(--glass-blur));
         -webkit-backdrop-filter: blur(var(--glass-blur));
-        border: 1px solid var(--glass-border);
-        @apply rounded-2xl shadow-sm overflow-hidden;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .ios-list-group::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        opacity: var(--noise-opacity);
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
     .ios-list-item {
-        @apply p-4 flex items-center justify-between transition-opacity active:opacity-60 cursor-pointer;
+        @apply p-4 flex items-center justify-between transition-opacity active:opacity-40 cursor-pointer bg-transparent;
     }
 
     .ios-separator {
         background: var(--separator);
-        @apply h-[1px] ml-16;
+        @apply h-[0.5px] ml-14;
+    }
+
+    .ios-button {
+        @apply w-full py-4 rounded-2xl font-semibold transition-opacity active:opacity-60 flex items-center justify-center gap-2;
+    }
+
+    .ios-button-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .ios-button-secondary {
+        background-color: var(--glass-bg);
+        border: 0.5px solid var(--glass-border);
+        color: var(--text-primary);
     }
 }
 
-/* Tiptap Placeholder */
 .tiptap p.is-editor-empty:first-child::before {
     color: var(--text-secondary);
     content: attr(data-placeholder);
@@ -86,8 +159,12 @@
     opacity: 0.5;
 }
 
-/* Ensure editor takes full height */
 .tiptap {
     height: 100%;
     outline: none;
+    @apply py-4;
+}
+
+.page-transition-wrapper {
+    @apply w-full min-h-screen flex flex-col;
 }

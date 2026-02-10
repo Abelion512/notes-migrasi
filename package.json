@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@mlc-ai/web-llm": "^0.2.80",
+    "@noble/ciphers": "^2.1.1",
+    "@noble/hashes": "^2.0.1",
     "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/typography": "^0.5.19",
     "@tiptap/extension-bubble-menu": "^3.19.0",

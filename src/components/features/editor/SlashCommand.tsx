@@ -1,116 +1,5 @@
 import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
-import { ReactRenderer } from '@tiptap/react';
-import tippy from 'tippy.js';
-import { CommandList } from './CommandList';
-import { Heading1, Heading2, List, ListOrdered, Quote, Code, Sparkles } from 'lucide-react';
-
-const getSuggestionItems = ({ query }: { query: string }) => {
-    return [
-        {
-            title: 'Heading 1',
-            icon: <Heading1 size={14} />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run();
-            },
-        },
-        {
-            title: 'Heading 2',
-            icon: <Heading2 size={14} />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run();
-            },
-        },
-        {
-            title: 'Bullet List',
-            icon: <List size={14} />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).toggleBulletList().run();
-            },
-        },
-        {
-            title: 'Ordered List',
-            icon: <ListOrdered size={14} />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).toggleOrderedList().run();
-            },
-        },
-        {
-            title: 'Blockquote',
-            icon: <Quote size={14} />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).toggleBlockquote().run();
-            },
-        },
-        {
-            title: 'Code Block',
-            icon: <Code size={14} />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
-            },
-        },
-        {
-            title: 'Deep Research',
-            icon: <Sparkles size={14} className="text-yellow-500" />,
-            command: ({ editor, range }: any) => {
-                editor.chain().focus().deleteRange(range).run();
-                // Mock action: Insert a loading block or just a text for now
-                editor.chain().focus().insertContent('<blockquote>✨ Melakukan Deep Research... (Implementasi di masa depan)</blockquote>').run();
-            },
-        },
-    ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase()));
-};
-
-const renderSuggestion = () => {
-    let component: ReactRenderer;
-    let popup: any;
-
-    return {
-        onStart: (props: any) => {
-            component = new ReactRenderer(CommandList, {
-                props,
-                editor: props.editor,
-            });
-
-            if (!props.clientRect) {
-                return;
-            }
-
-            popup = tippy('body', {
-                getReferenceClientRect: props.clientRect,
-                appendTo: () => document.body,
-                content: component.element,
-                showOnCreate: true,
-                interactive: true,
-                trigger: 'manual',
-                placement: 'bottom-start',
-            });
-        },
-        onUpdate(props: any) {
-            component.updateProps(props);
-
-            if (!props.clientRect) {
-                return;
-            }
-
-            popup[0].setProps({
-                getReferenceClientRect: props.clientRect,
-            });
-        },
-        onKeyDown(props: any) {
-            if (props.event.key === 'Escape') {
-                popup[0].hide();
-                return true;
-            }
-            // @ts-expect-error - ReactRenderer ref type mismatch
-            return component?.ref?.onKeyDown(props);
-        },
-        onExit() {
-            popup[0].destroy();
-            component.destroy();
-        },
-    };
-};
 
 export const SlashCommand = Extension.create({
     name: 'slashCommand',
@@ -126,6 +15,16 @@ export const SlashCommand = Extension.create({
         };
     },
 
+    addStorage() {
+        return {
+            isOpen: false,
+        };
+    },
+
+    onUpdate() {
+        this.storage.isOpen = !!this.editor.isFocused;
+    },
+
     addProseMirrorPlugins() {
         return [
             Suggestion({
@@ -138,7 +37,64 @@ export const SlashCommand = Extension.create({
 
 export const SlashCommandConfig = {
     suggestion: {
-        items: getSuggestionItems,
-        render: renderSuggestion,
-    }
-}
+        items: ({ query }: { query: string }) => {
+            return [
+                {
+                    title: 'Heading 1',
+                    icon: 'h1',
+                    command: ({ editor, range }: any) => {
+                        editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run();
+                    },
+                },
+                {
+                    title: 'Heading 2',
+                    icon: 'h2',
+                    command: ({ editor, range }: any) => {
+                        editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run();
+                    },
+                },
+                {
+                    title: 'Bullet List',
+                    icon: 'ul',
+                    command: ({ editor, range }: any) => {
+                        editor.chain().focus().deleteRange(range).toggleBulletList().run();
+                    },
+                },
+                {
+                    title: 'Code Block',
+                    icon: 'code',
+                    command: ({ editor, range }: any) => {
+                        editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
+                    },
+                },
+                {
+                    title: 'Horizontal Rule',
+                    icon: 'hr',
+                    command: ({ editor, range }: any) => {
+                        editor.chain().focus().deleteRange(range).setHorizontalRule().run();
+                    },
+                },
+            ].filter((item) => item.title.toLowerCase().startsWith(query.toLowerCase()));
+        },
+        render: () => {
+            return {
+                onStart: (props: any) => {
+                    // Logic to show a popup list
+                    console.log('Slash command started', props);
+                },
+                onUpdate: (props: any) => {
+                    console.log('Slash command updated', props);
+                },
+                onKeyDown: (props: any) => {
+                    if (props.event.key === 'Escape') {
+                        return true;
+                    }
+                    return false;
+                },
+                onExit: () => {
+                    console.log('Slash command exited');
+                },
+            };
+        },
+    },
+};

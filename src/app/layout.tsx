@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { BottomNav } from "@/components/shared/BottomNav";
 import { VaultGate } from "@/components/features/vault/VaultGate";
+import { PageTransition } from "@/components/shared/PageTransition";
+import { ThemeManager } from "@/components/shared/ThemeManager";
+import { CommandPalette } from "@/components/shared/CommandPalette";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -32,9 +35,12 @@ export default function RootLayout({
     return (
         <html lang="id">
             <body className={`${inter.variable} font-sans`}>
-                <main className="relative min-h-screen flex flex-col">
+                <main className="relative min-h-screen flex flex-col bg-[var(--background)]">
                     <VaultGate>
-                        {children}
+                        <CommandPalette />
+                        <PageTransition>
+                            {children}
+                        </PageTransition>
                         <BottomNav />
                     </VaultGate>
                 </main>

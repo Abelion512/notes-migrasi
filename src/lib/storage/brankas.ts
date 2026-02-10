@@ -1,41 +1,39 @@
+import { argon2id } from '@noble/hashes/argon2.js';
+
 /**
- * Brankas Engine: Web Crypto API implementation
- * Standards: AES-GCM 256-bit, PBKDF2-HMAC-SHA256
+ * Brankas Engine: Web Crypto API & Argon2id implementation
+ * Standards: AES-GCM 256-bit, Argon2id (Pure JS)
  */
 
-const ITERATIONS = 600000;
 const ALGO_ENC = 'AES-GCM';
-const ALGO_KDF = 'PBKDF2';
 
 export class Brankas {
     private static key: CryptoKey | null = null;
 
     /**
-     * Derives a CryptoKey from a password and salt
+     * Derives a CryptoKey from a password and salt using Argon2id
      */
     static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
-        const encoder = new TextEncoder();
-        const baseKey = await crypto.subtle.importKey(
-            'raw',
-            encoder.encode(password),
-            ALGO_KDF,
-            false,
-            ['deriveKey']
-        );
+        try {
+            // Argon2id parameters (OWASP recommended: 19MB RAM, 2 iterations, 1 parallelism)
+            const hash = argon2id(password, salt, {
+                t: 2,
+                m: 19 * 1024, // 19MB in KB
+                dkLen: 32, // 256-bit
+                p: 1, // parallelism
+            });
 
-        return crypto.subtle.deriveKey(
-            {
-                name: ALGO_KDF,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                salt: salt as any,
-                iterations: ITERATIONS,
-                hash: 'SHA-256',
-            },
-            baseKey,
-            { name: ALGO_ENC, length: 256 },
-            false,
-            ['encrypt', 'decrypt']
-        );
+            return crypto.subtle.importKey(
+                'raw',
+                hash as any,
+                { name: ALGO_ENC, length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        } catch (error) {
+            console.error('Argon2id derivation failed', error);
+            throw error;
+        }
     }
 
     static setActiveKey(key: CryptoKey) {
@@ -61,7 +59,6 @@ export class Brankas {
         const encoder = new TextEncoder();
 
         const data = await crypto.subtle.encrypt(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             { name: ALGO_ENC, iv: iv as any },
             key,
             encoder.encode(text)
@@ -78,7 +75,6 @@ export class Brankas {
         if (!key) throw new Error('Vault Locked: No active key');
 
         const decrypted = await crypto.subtle.decrypt(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             { name: ALGO_ENC, iv: iv as any },
             key,
             encryptedData

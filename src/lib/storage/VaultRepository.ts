@@ -16,20 +16,23 @@ export const VaultRepository = {
      * Set up the vault with a master password
      */
     async setupVault(password: string): Promise<void> {
-        // Derive key
-        const salt = new TextEncoder().encode('abelion-legacy-salt'); // In real app, generate random salt
+        // Generate random salt
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        // Derive key with Argon2id
         const key = await Brankas.deriveKey(password, salt);
 
         // Create validator
-        const validator = 'ABELION_SECURED';
-        const encryptedValidator = await Brankas.encrypt(validator, key); // Pass key explicitly
+        const validator = 'ABELION_SECURED_V2';
+        const encryptedValidator = await Brankas.encrypt(validator, key);
 
-        // Store validator
-        const ivString = Array.from(encryptedValidator.iv).map(b => b.toString(16).padStart(2, '0')).join('');
+        // Store validator and salt
+        const ivHex = Array.from(encryptedValidator.iv).map(b => b.toString(16).padStart(2, '0')).join('');
         const base64Data = btoa(String.fromCharCode(...new Uint8Array(encryptedValidator.data)));
-        const packedValidator = `${ivString}|${base64Data}`;
 
-        await Basisdata.set('meta', 'auth_validator', packedValidator);
+        await Basisdata.set('meta', 'auth_salt', saltHex);
+        await Basisdata.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
 
         // Set as active session
         Brankas.setActiveKey(key);
@@ -40,12 +43,17 @@ export const VaultRepository = {
      */
     async unlockVault(password: string): Promise<boolean> {
         try {
+            const saltHex = await Basisdata.get('meta', 'auth_salt') as string;
             const packedValidator = await Basisdata.get('meta', 'auth_validator') as string;
-            if (!packedValidator) return false;
 
+            if (!saltHex || !packedValidator) return false;
+
+            // Reconstruct salt
+            const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+
+            // Reconstruct validator
             const [ivHex, base64Data] = packedValidator.split('|');
             const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-
             const binaryString = atob(base64Data);
             const bytes = new Uint8Array(binaryString.length);
             for (let i = 0; i < binaryString.length; i++) {
@@ -53,13 +61,12 @@ export const VaultRepository = {
             }
 
             // Derive key from input
-            const salt = new TextEncoder().encode('abelion-legacy-salt');
             const key = await Brankas.deriveKey(password, salt);
 
             // Try to decrypt
-            const decrypted = await Brankas.decrypt(bytes.buffer, iv, key); // Pass key explicitly
+            const decrypted = await Brankas.decrypt(bytes.buffer, iv, key);
 
-            if (decrypted === 'ABELION_SECURED') {
+            if (decrypted === 'ABELION_SECURED_V2') {
                 Brankas.setActiveKey(key);
                 return true;
             }
@@ -80,19 +87,9 @@ export const VaultRepository = {
         }
 
         const encrypted = await Brankas.encrypt(note.content);
-        const ivString = Array.from(encrypted.iv).map(b => b.toString(16).padStart(2, '0')).join('');
-
-        // We store the encrypted content combined with IV in a format: "iv:content_base64"
-        // Or simpler, just store base64 encoded buffer.
-        // For simplicity and standard compliance, let's store as specifically formatted string or object.
-        // But Note.content is string. Let's use JSON stringification of { iv: ..., data: ... } or custom format.
-
-        // Revised Strategy: Store content as JSON string of { iv: number[], data: number[] } 
-        // to be compatible with simple string storage, or use a delimiter.
-        // Let's use a delimiter for efficiency: "IV_HEX|BASE64_DATA"
-
+        const ivHex = Array.from(encrypted.iv).map(b => b.toString(16).padStart(2, '0')).join('');
         const base64Data = btoa(String.fromCharCode(...new Uint8Array(encrypted.data)));
-        const secureContent = `${ivString}|${base64Data}`;
+        const secureContent = `${ivHex}|${base64Data}`;
 
         const finalNote: Note = {
             ...note,
@@ -119,19 +116,13 @@ export const VaultRepository = {
 
         const rawNotes = await Basisdata.getAll('notes') as Note[];
 
-        // Parallel decryption
         const decryptedNotes = await Promise.all(rawNotes.map(async (note) => {
             try {
-                if (!note.content.includes('|')) return note; // Assume unencrypted if no delimiter (legacy safety)
+                if (!note.content.includes('|')) return note;
 
                 const [ivHex, base64Data] = note.content.split('|');
+                const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map((byte: string) => parseInt(byte, 16)));
 
-                // Reconstruct Uint8Array from Hex IV
-                const ivMatch = ivHex.match(/.{1,2}/g);
-                if (!ivMatch) throw new Error('Invalid IV');
-                const iv = new Uint8Array(ivMatch.map((byte: string) => parseInt(byte, 16)));
-
-                // Reconstruct ArrayBuffer from Base64
                 const binaryString = atob(base64Data);
                 const bytes = new Uint8Array(binaryString.length);
                 for (let i = 0; i < binaryString.length; i++) {
@@ -148,26 +139,31 @@ export const VaultRepository = {
                 console.error(`Failed to decrypt note ${note.id}:`, err);
                 return {
                     ...note,
-                    content: '⚠️ Decryption Failed', // Fail gracefully
+                    content: '⚠️ Decryption Failed (Incorrect Key or Corrupted Data)',
                 };
             }
         }));
 
-        // Sort by updatedAt desc
         return decryptedNotes.sort((a: Note, b: Note) =>
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
     },
 
     async deleteNote(id: EntityId) {
+        // Secure Deletion logic: Overwrite then delete
+        const note = await Basisdata.get('notes', id) as Note;
+        if (note) {
+            const junk = crypto.getRandomValues(new Uint8Array(note.content.length));
+            const junkString = btoa(String.fromCharCode(...junk));
+            await Basisdata.set('notes', id, { ...note, content: junkString, title: 'DELETED' });
+        }
         await Basisdata.delete('notes', id);
     },
 
     async getNoteById(id: EntityId): Promise<Note | undefined> {
-        // Efficiency: Get single note, decrypt, return.
         if (Brankas.isLocked()) throw new Error('Vault Locked');
 
-        const note = await Basisdata.get('notes', id);
+        const note = await Basisdata.get('notes', id) as Note;
         if (!note) return undefined;
 
         try {

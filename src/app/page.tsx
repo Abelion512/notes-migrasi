@@ -4,62 +4,211 @@ import React, { useEffect, useState } from 'react';
 import { VaultRepository } from '@/lib/storage/VaultRepository';
 import { Note } from '@/types';
 import Link from 'next/link';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, ChevronRight, CheckCircle2, Download, Trash2 } from 'lucide-react';
 import { stripHtml, truncate } from '@/lib/utils/html';
+import { NoteSkeleton } from '@/components/shared/NoteSkeleton';
+// @ts-ignore
+import { List } from 'react-window';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 export default function Home() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    const loadNotes = async () => {
+        try {
+            const data = await VaultRepository.getAllNotes();
+            setNotes(data);
+        } catch (error) {
+            console.error('Failed to load notes:', error);
+        } finally {
+            setTimeout(() => setIsLoading(false), 400);
+        }
+    };
 
     useEffect(() => {
-        const loadNotes = async () => {
-            try {
-                const data = await VaultRepository.getAllNotes();
-                setNotes(data);
-            } catch (error) {
-                console.error('Failed to load notes:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         loadNotes();
     }, []);
 
-    if (isLoading) {
+    const toggleSelection = (id: string) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const handleBulkDelete = async () => {
+        if (!confirm(`Hapus ${selectedIds.length} catatan secara permanen?`)) return;
+
+        setIsLoading(true);
+        for (const id of selectedIds) {
+            await VaultRepository.deleteNote(id);
+        }
+        setSelectedIds([]);
+        setIsEditMode(false);
+        await loadNotes();
+    };
+
+    const handleBulkZip = async () => {
+        const zip = new JSZip();
+        const selectedNotes = notes.filter(n => selectedIds.includes(n.id));
+
+        selectedNotes.forEach(note => {
+            zip.file(`${note.title || 'Tanpa Judul'}.md`, note.content);
+        });
+
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, "arsip-abelion.zip");
+        setSelectedIds([]);
+        setIsEditMode(false);
+    };
+
+    const handleBulkMerge = async () => {
+        const selectedNotes = notes.filter(n => selectedIds.includes(n.id));
+        const mergedContent = selectedNotes
+            .map(n => `# ${n.title || 'Tanpa Judul'}\n\n${n.content}`)
+            .join('\n\n---\n\n');
+
+        const blob = new Blob([mergedContent], { type: "text/markdown;charset=utf-8" });
+        saveAs(blob, "gabungan-catatan.md");
+        setSelectedIds([]);
+        setIsEditMode(false);
+    };
+
+    const NoteRow = ({ index, style }: { index: number, style: React.CSSProperties }) => {
+        const note = notes[index];
+        const isSelected = selectedIds.includes(note.id);
+
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="animate-spin text-[var(--primary)]" />
+            <div style={style}>
+                <div
+                    onClick={() => isEditMode ? toggleSelection(note.id) : null}
+                    className="ios-list-item group h-full"
+                >
+                    {isEditMode && (
+                        <div className="mr-3">
+                            <CheckCircle2
+                                size={20}
+                                className={isSelected ? 'text-primary' : 'text-primary/10'}
+                                fill={isSelected ? 'currentColor' : 'none'}
+                            />
+                        </div>
+                    )}
+                    <Link
+                        href={isEditMode ? '#' : `/catatan/${note.id}`}
+                        className="flex-1 min-w-0 pr-4"
+                        onClick={(e) => isEditMode && e.preventDefault()}
+                    >
+                        <h3 className="text-base font-semibold mb-0.5 truncate">{note.title || 'Tanpa Judul'}</h3>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-medium text-primary opacity-40 whitespace-nowrap">
+                                {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </span>
+                            <p className="text-[11px] text-[var(--text-secondary)] truncate">
+                                {truncate(stripHtml(note.content), 60) || 'Tidak ada teks tambahan'}
+                            </p>
+                        </div>
+                    </Link>
+                    {!isEditMode && <ChevronRight size={14} className="text-[var(--text-secondary)]/30 group-active:text-[var(--text-secondary)]/50" />}
+                </div>
+                <div className="ios-separator"></div>
             </div>
         );
-    }
+    };
+
+    // Cast List to any to avoid incorrect typing issues in build
+    const VirtualList = List as any;
 
     return (
-        <div className="flex-1 w-full max-w-md mx-auto px-5 pt-6 pb-24">
-            <h1 className="text-3xl font-bold tracking-tight mb-6">Catatan</h1>
+        <div className="flex-1 w-full max-w-2xl mx-auto px-5 pt-14 pb-48">
+            <header className="flex items-center justify-between mb-8">
+                <h1 className="text-3xl font-bold tracking-tight">Catatan</h1>
+                <button
+                    onClick={() => { setIsEditMode(!isEditMode); setSelectedIds([]); }}
+                    className="text-primary font-medium text-sm active:opacity-40 transition-opacity"
+                >
+                    {isEditMode ? 'Selesai' : 'Edit'}
+                </button>
+            </header>
 
-            {notes.length === 0 ? (
-                <div className="text-center mt-20 opacity-50 flex flex-col items-center">
-                    <FileText className="w-16 h-16 mb-4 text-[var(--text-secondary)]" />
-                    <p className="text-sm">Belum ada catatan.</p>
-                    <Link href="/tambah" className="mt-4 text-[var(--primary)] font-semibold text-sm icon-link">
-                        Buat Catatan Baru
-                    </Link>
+            {isLoading ? (
+                <NoteSkeleton />
+            ) : notes.length === 0 ? (
+                <div className="text-center mt-32 opacity-20 flex flex-col items-center">
+                    <FileText className="w-24 h-24 mb-4 stroke-[1px]" />
+                    <p className="text-sm font-bold uppercase tracking-widest">Kosong</p>
                 </div>
             ) : (
-                <div className="space-y-3">
-                    {notes.map((note) => (
-                        <div key={note.id} className="glass-card p-4 active:scale-[0.98] transition-all cursor-pointer">
-                            <h3 className="font-semibold text-base mb-1 truncate">{note.title}</h3>
-                            <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
-                                {truncate(stripHtml(note.content), 100)}
-                            </p>
-                            <div className="flex items-center gap-2 mt-3 text-[10px] text-[var(--text-secondary)]/70 uppercase tracking-wider">
-                                <span>{new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                                {note.folderId && <span>• Folder</span>}
-                            </div>
+                <div className="ios-list-group" style={{ height: notes.length > 10 ? 'calc(100vh - 350px)' : 'auto' }}>
+                    {notes.length > 15 ? (
+                        <VirtualList
+                            height={600}
+                            rowCount={notes.length}
+                            rowHeight={72}
+                            width="100%"
+                            rowComponent={NoteRow}
+                            className="no-scrollbar"
+                        />
+                    ) : (
+                        notes.map((note, index) => (
+                            <React.Fragment key={note.id}>
+                                <div
+                                    onClick={() => isEditMode ? toggleSelection(note.id) : null}
+                                    className="ios-list-item group"
+                                >
+                                    {isEditMode && (
+                                        <div className="mr-3">
+                                            <CheckCircle2
+                                                size={20}
+                                                className={selectedIds.includes(note.id) ? 'text-primary' : 'text-primary/10'}
+                                                fill={selectedIds.includes(note.id) ? 'currentColor' : 'none'}
+                                            />
+                                        </div>
+                                    )}
+                                    <Link
+                                        href={isEditMode ? '#' : `/catatan/${note.id}`}
+                                        className="flex-1 min-w-0 pr-4"
+                                        onClick={(e) => isEditMode && e.preventDefault()}
+                                    >
+                                        <h3 className="text-base font-semibold mb-0.5 truncate">{note.title || 'Tanpa Judul'}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[11px] font-medium text-primary opacity-40 whitespace-nowrap">
+                                                {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                            </span>
+                                            <p className="text-[11px] text-[var(--text-secondary)] truncate">
+                                                {truncate(stripHtml(note.content), 60) || 'Tidak ada teks tambahan'}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                    {!isEditMode && <ChevronRight size={14} className="text-[var(--text-secondary)]/30 group-active:text-[var(--text-secondary)]/50" />}
+                                </div>
+                                {index < notes.length - 1 && <div className="ios-separator"></div>}
+                            </React.Fragment>
+                        ))
+                    )}
+                </div>
+            )}
+
+            {isEditMode && selectedIds.length > 0 && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-40">
+                    <div className="glass-card flex items-center justify-between px-6 py-4 rounded-[2rem] shadow-2xl border-primary/20 bg-primary/5">
+                        <div className="flex flex-col">
+                            <span className="text-xs font-bold text-primary uppercase">{selectedIds.length} Terpilih</span>
                         </div>
-                    ))}
+                        <div className="flex items-center gap-4">
+                            <button onClick={handleBulkZip} className="p-2 text-primary active:opacity-40" title="Zip Archive">
+                                <Download size={20} />
+                            </button>
+                            <button onClick={handleBulkMerge} className="p-2 text-primary active:opacity-40" title="Merge to Markdown">
+                                <FileText size={20} />
+                            </button>
+                            <button onClick={handleBulkDelete} className="p-2 text-red-500 active:opacity-40" title="Delete Permanent">
+                                <Trash2 size={20} />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

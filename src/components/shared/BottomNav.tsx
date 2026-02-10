@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, User, Settings, Plus } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const NAV_ITEMS = [
     { icon: Home, label: 'Beranda', path: '/' },
@@ -18,36 +17,40 @@ export const BottomNav = () => {
     const pathname = usePathname();
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 p-4 pb-8 flex justify-center z-50 pointer-events-none">
-            <nav className="glass-card flex items-center justify-around gap-2 px-6 py-3 min-w-[320px] pointer-events-auto rounded-full shadow-lg">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md pointer-events-none">
+            <nav className="glass-card flex items-center justify-around gap-1 px-4 py-2 pointer-events-auto rounded-[2.5rem] shadow-2xl border-[0.5px] border-white/20">
                 {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.path;
                     const Icon = item.icon;
 
                     if (item.isFab) {
                         return (
-                            <Link key={item.label} href={item.path} className="rounded-full shadow-md active:opacity-80 transition-opacity">
-                                <button
-                                    className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white pointer-events-none"
-                                >
-                                    <Icon size={24} />
-                                </button>
+                            <Link
+                                key={item.label}
+                                href={item.path}
+                                aria-label="Tambah Catatan Baru"
+                                className="flex items-center justify-center bg-primary text-white w-12 h-12 rounded-full active:opacity-60 transition-opacity shadow-lg shadow-primary/20"
+                            >
+                                <Icon size={24} strokeWidth={2.5} />
                             </Link>
                         );
                     }
 
                     return (
-                        <Link key={item.path} href={item.path} className="relative p-2 active:opacity-60 transition-opacity group">
+                        <Link
+                            key={item.path}
+                            href={item.path}
+                            aria-label={item.label}
+                            className="relative flex flex-col items-center justify-center p-3 active:opacity-40 transition-opacity"
+                        >
                             <Icon
-                                size={24}
-                                className={`transition-colors duration-300 ${isActive ? 'text-primary' : 'text-[var(--text-secondary)]'}`}
+                                size={22}
+                                strokeWidth={isActive ? 2.5 : 2}
+                                className={isActive ? 'text-primary' : 'text-[var(--text-secondary)]'}
                             />
-                            {isActive && (
-                                <motion.div
-                                    layoutId="nav-indicator"
-                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
-                                />
-                            )}
+                            <span className={`text-[9px] mt-1 font-medium ${isActive ? 'text-primary' : 'text-[var(--text-secondary)]'}`}>
+                                {item.label}
+                            </span>
                         </Link>
                     );
                 })}
