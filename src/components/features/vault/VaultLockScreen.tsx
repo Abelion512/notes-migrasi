@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
 import { VaultRepository } from '@/lib/storage/VaultRepository';
-import { Lock, Unlock, ArrowRight, ShieldCheck, KeyRound, Copy, Check } from 'lucide-react';
+import { Lock, Unlock, ArrowRight, ShieldCheck, KeyRound, Copy, Check, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateMnemonic } from '@/lib/utils/bip39';
 
@@ -90,123 +90,126 @@ export const VaultLockScreen = () => {
     if (checkingStatus) {
         return (
             <div className="fixed inset-0 z-[100] bg-[var(--background)] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary opacity-20"></div>
+                <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
 
     return (
-        <div className="fixed inset-0 z-[100] bg-[var(--background)] flex flex-col items-center justify-center p-8 text-center">
+        <div className="fixed inset-0 z-[100] bg-[var(--background)] flex flex-col p-6 overflow-y-auto no-scrollbar">
             <AnimatePresence mode="wait">
                 {!showPaperKey ? (
                     <motion.div
                         key="auth-form"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="w-full max-w-sm flex flex-col items-center"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        className="flex-1 flex flex-col items-center justify-center max-w-sm mx-auto w-full text-center"
                     >
-                        <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-8 ring-1 ring-primary/20">
+                        <div className="w-20 h-20 rounded-2xl bg-[var(--surface)] shadow-sm flex items-center justify-center text-[var(--primary)] mb-8">
                             {isLoading ? (
-                                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
-                                    <Unlock size={32} />
-                                </motion.div>
+                                <Unlock size={36} className="animate-pulse" />
                             ) : (
-                                isSetupMode ? <KeyRound size={32} /> : <Lock size={32} />
+                                isSetupMode ? <KeyRound size={36} /> : <Lock size={36} />
                             )}
                         </div>
 
-                        <h1 className="text-3xl font-bold tracking-tight mb-3">
-                            {isSetupMode ? 'Amankan Arsip' : 'Brankas Terkunci'}
+                        <h1 className="text-3xl font-bold mb-2 tracking-tight">
+                            {isSetupMode ? 'Amankan Arsip' : 'Abelion Vault'}
                         </h1>
-                        <p className="text-[var(--text-secondary)] text-sm mb-10 leading-relaxed px-4">
+                        <p className="text-[var(--text-secondary)] text-[15px] mb-10 leading-snug px-4">
                             {isSetupMode
                                 ? 'Tetapkan kata sandi utama untuk enkripsi Argon2id sisi klien.'
-                                : 'Data Anda terenkripsi penuh. Masukkan kata sandi untuk mendekripsi.'}
+                                : 'Arsip Anda terenkripsi secara aman. Masukkan kata sandi untuk membukanya.'}
                         </p>
 
-                        <form onSubmit={isSetupMode ? handleSetup : handleUnlock} className="w-full space-y-3">
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => { setPassword(e.target.value); setError(false); }}
-                                placeholder={isSetupMode ? "Kata Sandi Baru" : "Kata Sandi Brankas"}
-                                className="w-full px-6 py-4 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] focus:ring-2 focus:ring-primary focus:outline-none text-center tracking-[0.3em] text-lg font-bold"
-                                autoFocus
-                            />
-
-                            {isSetupMode && (
+                        <form onSubmit={isSetupMode ? handleSetup : handleUnlock} className="w-full space-y-4">
+                            <div className="ios-list-group shadow-sm">
                                 <input
                                     type="password"
-                                    value={confirmPassword}
-                                    onChange={(e) => { setConfirmPassword(e.target.value); setError(false); }}
-                                    placeholder="Ulangi Kata Sandi"
-                                    className={`w-full px-6 py-4 rounded-2xl bg-[var(--glass-bg)] border focus:ring-2 focus:outline-none text-center tracking-[0.3em] text-lg font-bold ${error ? 'border-red-500 focus:ring-red-500' : 'border-[var(--glass-border)] focus:ring-primary'}`}
+                                    value={password}
+                                    onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                                    placeholder={isSetupMode ? "Kata Sandi Baru" : "Kata Sandi Brankas"}
+                                    className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30"
+                                    autoFocus
                                 />
-                            )}
+                                {isSetupMode && (
+                                    <>
+                                        <div className="ios-separator"></div>
+                                        <input
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => { setConfirmPassword(e.target.value); setError(false); }}
+                                            placeholder="Ulangi Kata Sandi"
+                                            className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30"
+                                        />
+                                    </>
+                                )}
+                            </div>
 
                             <button
                                 type="submit"
                                 disabled={!password || (isSetupMode && !confirmPassword) || isLoading}
-                                className="ios-button-primary mt-4 disabled:opacity-20"
+                                className="ios-button ios-button-primary w-full shadow-lg shadow-[var(--primary)]/20 disabled:opacity-30"
                             >
                                 {isLoading ? 'Memproses...' : (isSetupMode ? 'Lanjutkan' : 'Buka Brankas')}
                                 {!isLoading && <ArrowRight size={18} />}
                             </button>
                         </form>
 
-                        {error && !isSetupMode && <p className="text-red-500 text-xs mt-4 font-medium animate-pulse">Kata sandi salah.</p>}
-                        {error && isSetupMode && <p className="text-red-500 text-xs mt-4 font-medium">Kata sandi tidak cocok.</p>}
+                        {error && <p className="text-red-500 text-xs mt-6 font-semibold uppercase tracking-wider animate-bounce">Kata sandi tidak valid</p>}
+
+                        <div className="mt-12 flex items-center gap-2 text-[var(--text-muted)] text-[11px] font-bold uppercase tracking-[0.2em]">
+                            <ShieldCheck size={12} />
+                            <span>Argon2id Secure Vault</span>
+                        </div>
                     </motion.div>
                 ) : (
                     <motion.div
                         key="paper-key"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="w-full max-w-md flex flex-col items-center"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex-1 flex flex-col max-w-md mx-auto w-full pt-10"
                     >
-                        <div className="w-16 h-16 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 mb-6">
-                            <ShieldCheck size={32} />
-                        </div>
-                        <h2 className="text-2xl font-bold mb-3">Simpan Kunci Kertas</h2>
-                        <p className="text-[var(--text-secondary)] text-sm mb-8 leading-relaxed">
-                            Jika Anda lupa kata sandi, 12 kata ini adalah <strong>satu-satunya</strong> cara untuk memulihkan data Anda. Simpan di tempat aman.
+                        <header className="flex items-center gap-2 mb-8">
+                            <button onClick={() => setShowPaperKey(false)} className="text-[var(--primary)] active:opacity-40">
+                                <ChevronLeft size={24} />
+                            </button>
+                            <h2 className="text-2xl font-bold tracking-tight">Kunci Kertas</h2>
+                        </header>
+
+                        <p className="text-[var(--text-secondary)] text-[15px] mb-8 leading-normal">
+                            Jika Anda lupa kata sandi, 12 kata ini adalah <strong>satu-satunya</strong> cara untuk memulihkan data Anda. Simpan di tempat yang aman dan pribadi.
                         </p>
 
-                        <div className="w-full p-6 bg-white dark:bg-black/40 rounded-3xl border border-[var(--glass-border)] mb-8 relative group">
-                            <div className="grid grid-cols-3 gap-3">
+                        <div className="ios-list-group p-6 relative group mb-10 border border-[var(--separator)]/30">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
                                 {paperKey.split(' ').map((word, i) => (
-                                    <div key={i} className="flex flex-col items-start">
-                                        <span className="text-[8px] font-bold text-primary opacity-40 uppercase mb-0.5">{i + 1}</span>
-                                        <span className="text-[13px] font-mono font-bold tracking-tight">{word}</span>
+                                    <div key={i} className="flex items-center gap-3">
+                                        <span className="text-[10px] font-bold text-[var(--primary)] opacity-30 w-4">{i + 1}</span>
+                                        <span className="text-[15px] font-mono font-bold tracking-tight">{word}</span>
                                     </div>
                                 ))}
                             </div>
                             <button
                                 onClick={copyToClipboard}
-                                className="absolute top-2 right-2 p-2 rounded-xl bg-[var(--background)] active:opacity-40 transition-opacity"
+                                className="absolute top-2 right-2 p-2 rounded-full bg-[var(--background)] active:opacity-40 transition-opacity"
                             >
-                                {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                                {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-[var(--text-secondary)]" />}
                             </button>
                         </div>
 
-                        <button onClick={finalizeSetup} className="ios-button-primary w-full">
-                            Saya Sudah Menyimpannya
-                        </button>
-
-                        <button onClick={() => setShowPaperKey(false)} className="mt-4 text-sm font-medium text-[var(--text-secondary)] active:opacity-40">
-                            Kembali
-                        </button>
+                        <div className="mt-auto pb-10">
+                            <button onClick={finalizeSetup} className="ios-button ios-button-primary w-full shadow-lg shadow-[var(--primary)]/20">
+                                Saya Sudah Menyimpannya
+                            </button>
+                            <p className="text-center text-[11px] text-[var(--text-muted)] mt-4 font-medium uppercase tracking-widest">
+                                Konfirmasi Penyimpanan Rahasia
+                            </p>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {!showPaperKey && (
-                <div className="mt-16 flex items-center gap-2 text-[var(--text-secondary)] opacity-30 text-[10px] font-bold uppercase tracking-widest">
-                    <ShieldCheck size={12} />
-                    <span>Argon2id Secure Vault</span>
-                </div>
-            )}
         </div>
     );
 };

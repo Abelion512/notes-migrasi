@@ -17,66 +17,63 @@ export default function SettingsPage() {
         <div className="flex-1 flex flex-col h-screen px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
             <h1 className="text-3xl font-bold mb-8 tracking-tight">Laras</h1>
 
-            <div className="ios-list-group">
-                <Link href="/laras/tampilan" className="ios-list-item">
+            <div className="ios-list-group shadow-sm">
+                <Link href="/laras/tampilan" className="ios-list-item group">
                     <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-md bg-blue-500 flex items-center justify-center text-white">
+                        <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center text-white shadow-sm">
                             <Moon size={18} fill="currentColor" />
                         </div>
-                        <span className="font-medium text-[15px]">Tampilan</span>
+                        <span className="font-medium text-[17px]">Tampilan</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                        <span className="text-sm">Otomatis</span>
-                        <ChevronRight size={16} />
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-[var(--text-secondary)]">Otomatis</span>
+                        <ChevronRight size={16} className="text-[var(--separator)]" />
                     </div>
                 </Link>
                 <div className="ios-separator"></div>
-                <Link href="/laras/keamanan" className="ios-list-item">
+                <Link href="/laras/keamanan" className="ios-list-item group">
                     <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-md bg-green-500 flex items-center justify-center text-white">
+                        <div className="w-7 h-7 rounded-lg bg-green-500 flex items-center justify-center text-white shadow-sm">
                             <Shield size={18} fill="currentColor" />
                         </div>
-                        <span className="font-medium text-[15px]">Keamanan Vault</span>
+                        <span className="font-medium text-[17px]">Keamanan Vault</span>
                     </div>
-                    <ChevronRight size={16} className="text-[var(--text-secondary)]" />
+                    <ChevronRight size={16} className="text-[var(--separator)]" />
                 </Link>
             </div>
 
-            <div className="ios-list-group">
-                <Link href="/laras/data" className="ios-list-item">
+            <div className="ios-list-group shadow-sm">
+                <Link href="/laras/data" className="ios-list-item group">
                     <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-md bg-orange-500 flex items-center justify-center text-white">
+                        <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center text-white shadow-sm">
                             <Database size={18} fill="currentColor" />
                         </div>
-                        <span className="font-medium text-[15px]">Data & Penyimpanan</span>
+                        <span className="font-medium text-[17px]">Data & Penyimpanan</span>
                     </div>
-                    <ChevronRight size={16} className="text-[var(--text-secondary)]" />
+                    <ChevronRight size={16} className="text-[var(--separator)]" />
                 </Link>
                 <div className="ios-separator"></div>
-                <div className="ios-list-item">
+                <div className="ios-list-item group">
                     <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-md bg-gray-400 flex items-center justify-center text-white">
+                        <div className="w-7 h-7 rounded-lg bg-gray-400 flex items-center justify-center text-white shadow-sm">
                             <Info size={18} fill="currentColor" />
                         </div>
-                        <span className="font-medium text-[15px]">Tentang Abelion</span>
+                        <span className="font-medium text-[17px]">Tentang Abelion</span>
                     </div>
-                    <ChevronRight size={16} className="text-[var(--text-secondary)]" />
+                    <ChevronRight size={16} className="text-[var(--separator)]" />
                 </div>
             </div>
 
-            <div className="mt-4">
-                <button
-                    onClick={handleLock}
-                    className="ios-button bg-red-500/10 text-red-600 active:opacity-40"
-                >
-                    <Lock size={18} />
-                    <span>Kunci Vault Sekarang</span>
-                </button>
-            </div>
+            <button
+                onClick={handleLock}
+                className="ios-list-group w-full py-4 text-red-500 font-semibold text-lg active:bg-red-500/5 transition-colors border-none"
+            >
+                Kunci Vault Sekarang
+            </button>
 
-            <p className="text-center text-[11px] text-[var(--text-secondary)] mt-8 leading-relaxed opacity-50">
-                Abelion Notes v2.0 (Glass OS) <br />
-                Penyusun Fragmen Memori Digital
+            <p className="text-center text-[12px] text-[var(--text-muted)] mt-10 leading-relaxed font-medium uppercase tracking-widest opacity-60">
+                Abelion Notes v2.0 <br />
+                Penyusun Fragmen Memori
             </p>
         </div>
     );

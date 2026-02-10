@@ -3,35 +3,39 @@
 @import 'tippy.js/dist/tippy.css';
 
 @theme {
-    --color-primary: #135bec;
-    --color-background-light: #f1f2f6;
+    --color-primary: #007AFF;
+    --color-background-light: #F2F2F7;
     --color-background-dark: #000000;
-    --font-display: "SF Pro Display", "Inter", system-ui, -apple-system, sans-serif;
-    --radius-xl: 1rem;
-    --radius-2xl: 1.25rem;
-    --radius-3xl: 1.5rem;
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    --radius-xl: 10px;
+    --radius-2xl: 12px;
+    --radius-3xl: 14px;
 }
 
 :root {
-    --primary: #135bec;
-    --background: #f1f2f6;
+    --primary: #007AFF;
+    --background: #F2F2F7;
+    --surface: #FFFFFF;
     --text-primary: #000000;
-    --text-secondary: #8e8e93;
+    --text-secondary: rgba(60, 60, 67, 0.6);
+    --text-muted: rgba(60, 60, 67, 0.3);
     --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-blur: 25px;
-    --separator: rgba(0, 0, 0, 0.1);
-    --noise-opacity: 0.03;
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-blur: 30px;
+    --separator: #C6C6C8;
+    --noise-opacity: 0.02;
 }
 
 [data-theme='dark'] {
     --background: #000000;
-    --text-primary: #ffffff;
-    --text-secondary: #8e8e93;
-    --glass-bg: rgba(28, 28, 30, 0.7);
+    --surface: #1C1C1E;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(235, 235, 245, 0.6);
+    --text-muted: rgba(235, 235, 245, 0.3);
+    --glass-bg: rgba(28, 28, 30, 0.8);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --separator: rgba(255, 255, 255, 0.1);
-    --noise-opacity: 0.05;
+    --separator: #38383A;
+    --noise-opacity: 0.04;
 }
 
 @layer base {
@@ -45,57 +49,66 @@
         -webkit-tap-highlight-color: transparent;
     }
 
-    h1, h2, h3, h4 {
-        @apply tracking-tight font-bold;
-    }
+    h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.4px; }
+    h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+    h3 { font-size: 17px; font-weight: 600; }
 
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
 @layer components {
-    .glass-card-style {
+    /* iOS Inset Grouped List */
+    .ios-list-group {
+        background-color: var(--surface);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .ios-list-item {
+        @apply p-4 flex items-center justify-between transition-colors active:bg-[var(--background)] cursor-pointer;
+        min-height: 44px;
+    }
+
+    .ios-separator {
+        background-color: var(--separator);
+        height: 0.5px;
+        margin-left: 16px;
+    }
+
+    /* iOS Buttons */
+    .ios-button {
+        @apply px-5 py-3 rounded-xl font-semibold transition-all active:opacity-60 flex items-center justify-center gap-2;
+        font-size: 17px;
+    }
+
+    .ios-button-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .ios-button-primary:active {
+        transform: scale(0.98);
+    }
+
+    .ios-button-secondary {
+        background-color: var(--glass-bg);
+        border: 0.5px solid var(--glass-border);
+        color: var(--primary);
+    }
+
+    /* Glass Effects */
+    .glass-card {
         position: relative;
         background: var(--glass-bg);
-        backdrop-filter: blur(var(--glass-blur));
-        -webkit-backdrop-filter: blur(var(--glass-blur));
+        backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
         border: 0.5px solid var(--glass-border);
-        border-radius: 1.5rem;
+        border-radius: 20px;
         overflow: hidden;
     }
 
-    .glass-card-style::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        opacity: var(--noise-opacity);
-        pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    }
-
-    .glass-card {
-        composes: glass-card-style; /* compositor like behavior but in standard CSS we just use the class */
-        @apply shadow-sm;
-    }
-
-    /* Since composes doesn't work in standard CSS like that, let's just use the style */
-    .glass-card {
-        position: relative;
-        background: var(--glass-bg);
-        backdrop-filter: blur(var(--glass-blur));
-        -webkit-backdrop-filter: blur(var(--glass-blur));
-        border: 0.5px solid var(--glass-border);
-        border-radius: 1.5rem;
-        overflow: hidden;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    }
     .glass-card::before {
         content: "";
         position: absolute;
@@ -105,49 +118,6 @@
         pointer-events: none;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
-
-    .ios-list-group {
-        position: relative;
-        background: var(--glass-bg);
-        backdrop-filter: blur(var(--glass-blur));
-        -webkit-backdrop-filter: blur(var(--glass-blur));
-        border-radius: 1.5rem;
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
-    .ios-list-group::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        opacity: var(--noise-opacity);
-        pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    }
-
-    .ios-list-item {
-        @apply p-4 flex items-center justify-between transition-opacity active:opacity-40 cursor-pointer bg-transparent;
-    }
-
-    .ios-separator {
-        background: var(--separator);
-        @apply h-[0.5px] ml-14;
-    }
-
-    .ios-button {
-        @apply w-full py-4 rounded-2xl font-semibold transition-opacity active:opacity-60 flex items-center justify-center gap-2;
-    }
-
-    .ios-button-primary {
-        background-color: var(--primary);
-        color: white;
-    }
-
-    .ios-button-secondary {
-        background-color: var(--glass-bg);
-        border: 0.5px solid var(--glass-border);
-        color: var(--text-primary);
-    }
 }
 
 .tiptap p.is-editor-empty:first-child::before {
@@ -156,7 +126,6 @@
     float: left;
     height: 0;
     pointer-events: none;
-    opacity: 0.5;
 }
 
 .tiptap {

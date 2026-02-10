@@ -7,3 +7,9 @@ $ next dev -p 3100
 ✓ Ready in 1163ms
 ○ Compiling / ...
  GET / 200 in 6.6s (compile: 6.0s, render: 563ms)
+ GET / 200 in 3.8s (compile: 2.1s, render: 1650ms)
+○ Compiling /laras ...
+ GET /laras 200 in 6.1s (compile: 6.0s, render: 126ms)
+✓ Finished writing to filesystem cache in 29.6s
+ GET / 200 in 389ms (compile: 57ms, render: 332ms)
+ GET /laras 200 in 114ms (compile: 12ms, render: 102ms)
