@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Moon, Shield, Database, Info, ChevronRight, Lock } from 'lucide-react';
+import { haptic } from '@/lib/utils/haptics';
+import { Moon, Shield, Database, Info, ChevronRight } from 'lucide-react';
 import { useAbelionStore } from '@/lib/hooks/useAbelionStore';
 import { Brankas } from '@/lib/storage/brankas';
 
@@ -9,71 +10,72 @@ export default function SettingsPage() {
     const { setVaultLocked } = useAbelionStore();
 
     const handleLock = () => {
+        haptic.heavy();
         Brankas.clearKey();
         setVaultLocked(true);
     };
 
     return (
-        <div className="flex-1 flex flex-col h-screen px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
-            <h1 className="text-3xl font-bold mb-8 tracking-tight">Laras</h1>
+        <div className="flex-1 flex flex-col h-screen bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
+            <h1 className="text-3xl font-bold mb-6 tracking-tight">Laras</h1>
 
-            <div className="ios-list-group shadow-sm">
-                <Link href="/laras/tampilan" className="ios-list-item group">
-                    <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center text-white shadow-sm">
-                            <Moon size={18} fill="currentColor" />
+            <div className="ios-list-group mb-6">
+                <Link href="/laras/tampilan" className="ios-list-item" onClick={() => haptic.light()}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
+                            <Moon size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Tampilan</span>
+                        <span className="font-medium">Tampilan</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-[var(--text-secondary)]">Otomatis</span>
-                        <ChevronRight size={16} className="text-[var(--separator)]" />
+                    <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+                        <span className="text-sm">Otomatis</span>
+                        <ChevronRight size={16} />
                     </div>
                 </Link>
                 <div className="ios-separator"></div>
-                <Link href="/laras/keamanan" className="ios-list-item group">
-                    <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-lg bg-green-500 flex items-center justify-center text-white shadow-sm">
-                            <Shield size={18} fill="currentColor" />
+                <Link href="/laras/keamanan" className="ios-list-item" onClick={() => haptic.light()}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-green-500 text-white flex items-center justify-center shadow-sm">
+                            <Shield size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Keamanan Vault</span>
+                        <span className="font-medium">Keamanan Vault</span>
                     </div>
-                    <ChevronRight size={16} className="text-[var(--separator)]" />
+                    <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                 </Link>
             </div>
 
-            <div className="ios-list-group shadow-sm">
-                <Link href="/laras/data" className="ios-list-item group">
-                    <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center text-white shadow-sm">
-                            <Database size={18} fill="currentColor" />
+            <div className="ios-list-group mb-6">
+                <Link href="/laras/data" className="ios-list-item" onClick={() => haptic.light()}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-orange-500 text-white flex items-center justify-center shadow-sm">
+                            <Database size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Data & Penyimpanan</span>
+                        <span className="font-medium">Data & Penyimpanan</span>
                     </div>
-                    <ChevronRight size={16} className="text-[var(--separator)]" />
+                    <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                 </Link>
                 <div className="ios-separator"></div>
-                <div className="ios-list-item group">
-                    <div className="flex items-center gap-4">
-                        <div className="w-7 h-7 rounded-lg bg-gray-400 flex items-center justify-center text-white shadow-sm">
-                            <Info size={18} fill="currentColor" />
+                <div className="ios-list-item cursor-pointer" onClick={() => haptic.light()}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-gray-500 text-white flex items-center justify-center shadow-sm">
+                            <Info size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Tentang Abelion</span>
+                        <span className="font-medium">Tentang Abelion</span>
                     </div>
-                    <ChevronRight size={16} className="text-[var(--separator)]" />
+                    <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                 </div>
             </div>
 
             <button
                 onClick={handleLock}
-                className="ios-list-group w-full py-4 text-red-500 font-semibold text-lg active:bg-red-500/5 transition-colors border-none"
+                className="w-full py-3.5 text-red-500 font-semibold bg-[var(--glass-bg)] border border-[var(--separator)] rounded-xl backdrop-blur-md active:opacity-70 transition-all shadow-sm"
             >
                 Kunci Vault Sekarang
             </button>
 
-            <p className="text-center text-[12px] text-[var(--text-muted)] mt-10 leading-relaxed font-medium uppercase tracking-widest opacity-60">
-                Abelion Notes v2.0 <br />
-                Penyusun Fragmen Memori
+            <p className="text-center text-xs text-[var(--text-secondary)] mt-8 opacity-60">
+                Abelion Notes v2.0 (Glass OS) <br />
+                Build 2026.02.10
             </p>
         </div>
     );

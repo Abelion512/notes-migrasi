@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, User, Settings, Plus } from 'lucide-react';
+import { Home, Search, User, Settings, Plus, Wifi, WifiOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_ITEMS = [
     { icon: Home, label: 'Beranda', path: '/' },
@@ -15,10 +16,42 @@ const NAV_ITEMS = [
 
 export const BottomNav = () => {
     const pathname = usePathname();
+    const [isOnline, setIsOnline] = useState(true);
+
+    useEffect(() => {
+        setIsOnline(navigator.onLine);
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     return (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md pointer-events-none">
-            <nav className="glass-card flex items-center justify-around gap-1 px-4 py-2 pointer-events-auto rounded-[2.5rem] shadow-2xl border-[0.5px] border-white/20">
+        <div className="fixed bottom-0 left-0 right-0 p-4 pb-8 flex flex-col items-center z-50 pointer-events-none">
+            <AnimatePresence>
+                {!isOnline && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="mb-2 px-3 py-1 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center gap-1.5 shadow-lg"
+                    >
+                        <WifiOff size={10} />
+                        MODE LURING
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <nav
+                aria-label="Navigasi Utama"
+                className="glass-card flex items-center justify-around gap-2 px-6 py-3 min-w-[320px] pointer-events-auto rounded-full shadow-lg border border-white/20"
+            >
                 {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.path;
                     const Icon = item.icon;
@@ -29,9 +62,13 @@ export const BottomNav = () => {
                                 key={item.label}
                                 href={item.path}
                                 aria-label="Tambah Catatan Baru"
-                                className="flex items-center justify-center bg-primary text-white w-12 h-12 rounded-full active:opacity-60 transition-opacity shadow-lg shadow-primary/20"
+                                className="rounded-full shadow-md active:opacity-80 transition-opacity"
                             >
-                                <Icon size={24} strokeWidth={2.5} />
+                                <div
+                                    className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white"
+                                >
+                                    <Icon size={24} />
+                                </div>
                             </Link>
                         );
                     }
@@ -41,16 +78,19 @@ export const BottomNav = () => {
                             key={item.path}
                             href={item.path}
                             aria-label={item.label}
-                            className="relative flex flex-col items-center justify-center p-3 active:opacity-40 transition-opacity"
+                            aria-current={isActive ? 'page' : undefined}
+                            className="relative p-2 active:opacity-60 transition-opacity group"
                         >
                             <Icon
-                                size={22}
-                                strokeWidth={isActive ? 2.5 : 2}
-                                className={isActive ? 'text-primary' : 'text-[var(--text-secondary)]'}
+                                size={24}
+                                className={`transition-colors duration-300 ${isActive ? 'text-blue-500' : 'text-slate-500 dark:text-slate-400'}`}
                             />
-                            <span className={`text-[9px] mt-1 font-medium ${isActive ? 'text-primary' : 'text-[var(--text-secondary)]'}`}>
-                                {item.label}
-                            </span>
+                            {isActive && (
+                                <motion.div
+                                    layoutId="nav-indicator"
+                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"
+                                />
+                            )}
                         </Link>
                     );
                 })}
