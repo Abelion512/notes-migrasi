@@ -1,0 +1,18 @@
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 27.7s
+  Running TypeScript ...
+Failed to compile.
+
+./src/lib/storage/VaultRepository.ts:65:55
+Type error: Parameter 'byte' implicitly has an 'any' type.
+
+  63 |                 const ivMatch = ivHex.match(/.{1,2}/g);
+  64 |                 if (!ivMatch) throw new Error('Invalid IV');
+> 65 |                 const iv = new Uint8Array(ivMatch.map(byte => parseInt(byte, 16)));
+     |                                                       ^
+  66 |
+  67 |                 // Reconstruct ArrayBuffer from Base64
+  68 |                 const binaryString = atob(base64Data);
+Next.js build worker exited with code: 1 and signal: null

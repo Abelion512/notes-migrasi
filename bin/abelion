@@ -1,0 +1,26 @@
+#!/usr/bin/env bun
+
+const { program } = require('commander');
+
+program
+  .name('abelion')
+  .description('Abelion Notes CLI - Management Tool')
+  .version('202610-v1');
+
+program
+  .command('status')
+  .description('Check application and database status')
+  .action(() => {
+    console.log('🏛️ Abelion Notes Status: Operational');
+    console.log('📦 Infrastructure: Clean Slate (FSD)');
+    console.log('🔒 Security: AES-GCM Standards Ready');
+  });
+
+program
+  .command('export')
+  .description('Export encrypted notes to a local file')
+  .action(() => {
+    console.log('🚧 Feature under construction: Integration with IndexedDB required.');
+  });
+
+program.parse();

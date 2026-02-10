@@ -1,0 +1,37 @@
+$ next build
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Error: Cannot apply unknown utility class `glass-card`
+    [at onInvalidCandidate (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:21:1511)]
+    [at Te (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:16:36326)]
+    [at H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:21:355]
+    [at Rr (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:3:1718)]
+    [at _ (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:3:1377)]
+    [at $e (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:21:172)]
+    [at un (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:38:294)]
+    [at async cn (H:\ican\Web\Notes-migrasi\node_modules\tailwindcss\dist\lib.js:38:631)]
+    [at async Xr (H:\ican\Web\Notes-migrasi\node_modules\@tailwindcss\node\dist\index.js:10:3417)]
+    [at async I (H:\ican\Web\Notes-migrasi\node_modules\@tailwindcss\postcss\dist\index.js:10:3977)]
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./src/styles/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: H:\ican\Web\Notes-migrasi\src\styles\globals.css:1:1: Cannot apply unknown utility class `glass-card`
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [H:\ican\Web\Notes-migrasi\.next\build\chunks\node_modules_2d7da256._.js:4651:22]
+    at Root.error (node_modules/postcss/lib/node.js:146:32) [H:\ican\Web\Notes-migrasi\.next\build\chunks\node_modules_2d7da256._.js:928:38]
+    [at Object.Once (H:\ican\Web\Notes-migrasi\node_modules\@tailwindcss\postcss\dist\index.js:10:6911)]
+    at async LazyResult.runAsync (node_modules/postcss/lib/lazy-result.js:293:11) [H:\ican\Web\Notes-migrasi\.next\build\chunks\node_modules_2d7da256._.js:6206:21]
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [H:\ican\Web\Notes-migrasi\.next\build\chunks\[root-of-the-server]__51225daf._.js:146:36]
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [H:\ican\Web\Notes-migrasi\.next\build\chunks\[root-of-the-server]__974941ed._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./src/styles/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [H:\ican\Web\Notes-migrasi\.next\build\chunks\[root-of-the-server]__51225daf._.js:146:36])
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [H:\ican\Web\Notes-migrasi\.next\build\chunks\[root-of-the-server]__974941ed._.js:443:31])
+error: script "build" exited with code 1

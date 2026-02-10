@@ -1,0 +1,18 @@
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 38.3s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/tambah/page.tsx:28:17
+Type error: Object literal may only specify known properties, and 'updatedAt' does not exist in type 'Omit<Note, "updatedAt">'.
+
+  26 |                 tags: [],
+  27 |                 createdAt: new Date().toISOString(),
+> 28 |                 updatedAt: new Date().toISOString(),
+     |                 ^
+  29 |             });
+  30 |             router.push('/');
+  31 |         } catch (error) {
+Next.js build worker exited with code: 1 and signal: null

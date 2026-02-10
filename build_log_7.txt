@@ -1,0 +1,114 @@
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 4 errors:
+./src/components/features/editor/TiptapEditor.tsx:3:1
+Export BubbleMenu doesn't exist in target module
+  1 | 'use client';
+  2 |
+> 3 | import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import StarterKit from '@tiptap/starter-kit';
+  5 | import Placeholder from '@tiptap/extension-placeholder';
+  6 | import React, { useEffect } from 'react';
+
+The export BubbleMenu was not found in module [project]/node_modules/@tiptap/react/dist/index.js [app-client] (ecmascript).
+Did you mean to import updateMarkViewAttributes?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Server Component]
+
+
+./src/components/features/editor/TiptapEditor.tsx:3:1
+Export BubbleMenu doesn't exist in target module
+  1 | 'use client';
+  2 |
+> 3 | import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import StarterKit from '@tiptap/starter-kit';
+  5 | import Placeholder from '@tiptap/extension-placeholder';
+  6 | import React, { useEffect } from 'react';
+
+The export BubbleMenu was not found in module [project]/node_modules/@tiptap/react/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import updateMarkViewAttributes?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Server Component]
+
+
+./src/components/features/editor/TiptapEditor.tsx:3:1
+Export FloatingMenu doesn't exist in target module
+  1 | 'use client';
+  2 |
+> 3 | import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import StarterKit from '@tiptap/starter-kit';
+  5 | import Placeholder from '@tiptap/extension-placeholder';
+  6 | import React, { useEffect } from 'react';
+
+The export FloatingMenu was not found in module [project]/node_modules/@tiptap/react/dist/index.js [app-client] (ecmascript).
+Did you mean to import fromString?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Server Component]
+
+
+./src/components/features/editor/TiptapEditor.tsx:3:1
+Export FloatingMenu doesn't exist in target module
+  1 | 'use client';
+  2 |
+> 3 | import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import StarterKit from '@tiptap/starter-kit';
+  5 | import Placeholder from '@tiptap/extension-placeholder';
+  6 | import React, { useEffect } from 'react';
+
+The export FloatingMenu was not found in module [project]/node_modules/@tiptap/react/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import fromString?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Client Component Browser]
+    ./src/app/tambah/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/features/editor/TiptapEditor.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Client Component SSR]
+    ./src/app/tambah/page.tsx [Server Component]
+
+
+    at <unknown> (./src/components/features/editor/TiptapEditor.tsx:3:1)
+    at <unknown> (./src/components/features/editor/TiptapEditor.tsx:3:1)
+    at <unknown> (./src/components/features/editor/TiptapEditor.tsx:3:1)
+    at <unknown> (./src/components/features/editor/TiptapEditor.tsx:3:1)

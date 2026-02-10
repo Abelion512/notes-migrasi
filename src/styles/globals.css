@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import 'tippy.js/dist/tippy.css';
+
+@theme {
+    --color-primary: #135bec;
+    --color-background-light: #f6f6f8;
+    --color-background-dark: #101622;
+    --font-display: "Inter", "sans-serif";
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+}
+
+:root {
+    --primary: #135bec;
+    --background: #f6f6f8;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-blur: 12px;
+    --separator: rgba(15, 23, 42, 0.1);
+}
+
+[data-theme='dark'] {
+    --background: #101622;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --glass-bg: rgba(16, 22, 34, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --separator: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+    body {
+        @apply bg-[var(--background)] text-[var(--text-primary)] font-display antialiased;
+        min-height: 100dvh;
+        overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar hiding for iOS look */
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@layer components {
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--glass-border);
+        @apply rounded-2xl shadow-sm;
+    }
+
+    .ios-list-group {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--glass-border);
+        @apply rounded-2xl shadow-sm overflow-hidden;
+    }
+
+    .ios-list-item {
+        @apply p-4 flex items-center justify-between transition-opacity active:opacity-60 cursor-pointer;
+    }
+
+    .ios-separator {
+        background: var(--separator);
+        @apply h-[1px] ml-16;
+    }
+}
+
+/* Tiptap Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+    color: var(--text-secondary);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Ensure editor takes full height */
+.tiptap {
+    height: 100%;
+    outline: none;
+}
