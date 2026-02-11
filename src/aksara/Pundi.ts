@@ -19,6 +19,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     accentColor: '#135bec',
     encryptionEnabled: false,
     syncEnabled: false,
+    secretMode: "none",
     lastSyncAt: null,
 };
 

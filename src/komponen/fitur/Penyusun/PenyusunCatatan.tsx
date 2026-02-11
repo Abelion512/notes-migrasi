@@ -1,11 +1,11 @@
 'use client';
 
 import { useEditor, EditorContent } from '@tiptap/react';
-
 import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisMiring';
+import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
 import React from 'react';
 import {
     Bold, Italic, Strikethrough,
@@ -37,6 +37,7 @@ export const PenyusunCatatan = ({
                 placeholder: placeholder,
             }),
             PerintahGarisMiring.configure(PerintahGarisMiringConfig),
+            EkstensiTanggalCerdas,
         ],
         content: content,
         editable: editable,
@@ -50,13 +51,6 @@ export const PenyusunCatatan = ({
         },
         immediatelyRender: false,
     });
-
-    // Sync content if it changes externally (only if needed/safe)
-    // useEffect(() => {
-    //     if (editor && content !== editor.getHTML()) {
-    //         editor.commands.setContent(content);
-    //     }
-    // }, [content, editor]);
 
     if (!editor) {
         return null;

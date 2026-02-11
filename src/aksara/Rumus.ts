@@ -28,6 +28,7 @@ export interface AppSettings {
     encryptionEnabled: boolean;
     syncEnabled: boolean;
     lastSyncAt: string | null;
+    secretMode: "none" | "gmail";
 }
 
 export interface UserProfile {

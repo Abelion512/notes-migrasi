@@ -1,0 +1,22 @@
+
+> tmp_next@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3105
+- Network:       http://192.168.0.2:3105
+
+✓ Starting...
+⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+✓ Ready in 2s
+○ Compiling / ...
+ HEAD / 200 in 6.7s (compile: 6.4s, render: 334ms)
+ GET / 200 in 163ms (compile: 7ms, render: 156ms)
+ GET /laras/keamanan 200 in 1135ms (compile: 1077ms, render: 58ms)
+ GET /laras/keamanan 200 in 70ms (compile: 6ms, render: 64ms)
+ GET /laras/keamanan 200 in 67ms (compile: 6ms, render: 61ms)
+ GET / 200 in 67ms (compile: 5ms, render: 62ms)
+ GET /laras/keamanan 200 in 110ms (compile: 8ms, render: 102ms)
+ GET /laras/keamanan 200 in 67ms (compile: 5ms, render: 62ms)
+ GET /laras/keamanan 200 in 78ms (compile: 6ms, render: 72ms)
+ GET /laras/keamanan 200 in 61ms (compile: 6ms, render: 55ms)

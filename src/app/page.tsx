@@ -1,42 +1,48 @@
 'use client';
 
-import { haptic } from '@/aksara/Indera';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import {
-    FileText,
-    ChevronRight,
-    CheckCircle2,
-    Trash2,
-    Download,
-    FilePlus,
-    MoreVertical
+    CheckCircle2, ChevronRight, FileText, MoreVertical,
+    Trash2, Download, Share2, Clock
 } from 'lucide-react';
+import { usePundi } from '@/aksara/Pundi';
 import { Arsip } from '@/aksara/Arsip';
 import { Note } from '@/aksara/Rumus';
-import { truncate, stripHtml } from '@/aksara/Penyaring';
-import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
-// @ts-ignore
-import { List } from 'react-window';
-import JSZip from 'jszip';
+import { haptic } from '@/aksara/Indera';
 import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 import Sortable from 'sortablejs';
+import { List } from 'react-window';
+import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
+import { PetaCatatan } from '@/komponen/fitur/Peta/PetaCatatan';
+import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function NoteListPage() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [showGraph, setShowGraph] = useState(false);
+    const [focusedIndex, setFocusedIndex] = useState(-1);
     const listRef = useRef<HTMLDivElement>(null);
+    const sortableRef = useRef<Sortable | null>(null);
+    const router = useRouter();
 
     const loadNotes = async () => {
+        setIsLoading(true);
         try {
-            const data = await Arsip.getAllNotes();
-            setNotes(data);
-        } catch (error) {
-            console.error('Failed to load notes:', error);
+            const allNotes = await Arsip.getAllNotes();
+            const sorted = [...allNotes].sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+            });
+            setNotes(sorted);
+        } catch (err) {
+            console.error(err);
         } finally {
-            setTimeout(() => setIsLoading(false), 400);
+            setIsLoading(false);
         }
     };
 
@@ -44,23 +50,49 @@ export default function Home() {
         loadNotes();
     }, []);
 
-    // Drag & Drop implementation
     useEffect(() => {
-        if (!isLoading && listRef.current && notes.length > 0 && notes.length <= 15) {
-            const sortable = new Sortable(listRef.current, {
+        if (!isEditMode && listRef.current && notes.length > 0 && notes.length <= 15) {
+            sortableRef.current = Sortable.create(listRef.current, {
                 animation: 150,
                 handle: '.drag-handle',
-                ghostClass: 'bg-primary/5',
-                onEnd: (evt) => {
-                    haptic.light();
-                    // In a real app, we would update the order in DB here.
-                    // Since we don't have an 'order' field yet, this is visual.
-                    console.log('Order changed:', evt.oldIndex, evt.newIndex);
+                ghostClass: 'opacity-50',
+                onEnd: async (evt) => {
+                    const { oldIndex, newIndex } = evt;
+                    if (oldIndex !== undefined && newIndex !== undefined && oldIndex !== newIndex) {
+                        haptic.light();
+                        const newNotes = [...notes];
+                        const [moved] = newNotes.splice(oldIndex, 1);
+                        newNotes.splice(newIndex, 0, moved);
+                        setNotes(newNotes);
+                    }
                 }
             });
-            return () => sortable.destroy();
         }
-    }, [isLoading, notes.length]);
+
+        return () => {
+            if (sortableRef.current) {
+                sortableRef.current.destroy();
+                sortableRef.current = null;
+            }
+        };
+    }, [isEditMode, notes.length]);
+
+    // Keyboard Navigation (J/K)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (isEditMode || showGraph || isLoading) return;
+
+            if (e.key === 'j') {
+                setFocusedIndex(prev => Math.min(prev + 1, notes.length - 1));
+            } else if (e.key === 'k') {
+                setFocusedIndex(prev => Math.max(prev - 1, 0));
+            } else if (e.key === 'Enter' && focusedIndex >= 0) {
+                router.push(`/catatan/${notes[focusedIndex].id}`);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isEditMode, showGraph, notes, focusedIndex, isLoading, router]);
 
     const toggleSelection = (id: string) => {
         haptic.light();
@@ -111,15 +143,33 @@ export default function Home() {
         haptic.success();
     };
 
+    const calculateReadingTime = (text: string) => {
+        const wordsPerMinute = 200;
+        const noOfWords = (text || '').split(/\s+/).length;
+        const minutes = noOfWords / wordsPerMinute;
+        return Math.max(1, Math.ceil(minutes));
+    };
+
+    const stripHtml = (html: string) => {
+        if (typeof document === 'undefined') return '';
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || "";
+    };
+
+    const truncate = (text: string, length: number) => {
+        return text.length > length ? text.substring(0, length) + '...' : text;
+    };
+
     const NoteRow = ({ index, style }: { index: number, style: React.CSSProperties }) => {
         const note = notes[index];
         const isSelected = selectedIds.includes(note.id);
+        const isFocused = focusedIndex === index;
 
         return (
             <div style={style}>
                 <div
                     onClick={() => isEditMode ? toggleSelection(note.id) : null}
-                    className="ios-list-item group h-full"
+                    className={`ios-list-item group h-full transition-colors ${isFocused ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
                 >
                     {isEditMode && (
                         <div className="mr-3">
@@ -141,8 +191,13 @@ export default function Home() {
                                 {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                             </span>
                             <p className="text-[11px] text-[var(--text-secondary)] truncate">
-                                {truncate(stripHtml(note.content), 60) || 'Tidak ada teks tambahan'}
+                                {truncate(stripHtml(note.content), 40) || 'Tidak ada teks tambahan'}
                             </p>
+                            <span className="mx-1 opacity-10 text-[10px]">•</span>
+                            <span className="inline-flex items-center gap-0.5 opacity-30 text-[10px] font-bold">
+                                <Clock size={10} />
+                                {calculateReadingTime(note.content)} m
+                            </span>
                         </div>
                     </Link>
                     {!isEditMode && <ChevronRight size={14} className="text-[var(--text-secondary)]/30" />}
@@ -157,7 +212,15 @@ export default function Home() {
     return (
         <div className="flex-1 w-full max-w-2xl mx-auto px-5 pt-14 pb-48">
             <header className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Catatan</h1>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold tracking-tight">Catatan</h1>
+                    <button
+                        onClick={() => { setShowGraph(true); haptic.light(); }}
+                        className="p-1.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] active:opacity-40"
+                    >
+                        <Share2 size={18} />
+                    </button>
+                </div>
                 <button
                     onClick={() => { setIsEditMode(!isEditMode); setSelectedIds([]); haptic.light(); }}
                     className="text-blue-500 font-medium text-[17px] active:opacity-40 transition-opacity"
@@ -192,7 +255,7 @@ export default function Home() {
                                 <div key={note.id} className="relative overflow-hidden">
                                     <div
                                         onClick={() => isEditMode ? toggleSelection(note.id) : null}
-                                        className="ios-list-item group"
+                                        className={`ios-list-item group ${focusedIndex === index ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
                                     >
                                         {!isEditMode && (
                                             <div className="drag-handle mr-3 cursor-grab active:cursor-grabbing text-[var(--text-secondary)] opacity-20 group-hover:opacity-100 transition-opacity">
@@ -219,8 +282,13 @@ export default function Home() {
                                                     {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                                                 </span>
                                                 <p className="text-[11px] text-[var(--text-secondary)] truncate">
-                                                    {truncate(stripHtml(note.content), 60) || 'Tidak ada teks tambahan'}
+                                                    {truncate(stripHtml(note.content), 40) || 'Tidak ada teks tambahan'}
                                                 </p>
+                                                <span className="mx-1 opacity-10 text-[10px]">•</span>
+                                                <span className="inline-flex items-center gap-0.5 opacity-30 text-[10px] font-bold">
+                                                    <Clock size={10} />
+                                                    {calculateReadingTime(note.content)} m
+                                                </span>
                                             </div>
                                         </Link>
                                         {!isEditMode && <ChevronRight size={14} className="text-[var(--text-secondary)]/30 group-active:text-[var(--text-secondary)]/50" />}
@@ -253,6 +321,8 @@ export default function Home() {
                     </div>
                 </div>
             )}
+
+            {showGraph && <PetaCatatan onClose={() => setShowGraph(false)} />}
         </div>
     );
 }

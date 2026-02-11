@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, Unlock, KeyRound, ArrowRight, ShieldCheck, Copy, Check, ChevronLeft } from 'lucide-react';
 import { usePundi } from '@/aksara/Pundi';
 import { Arsip } from '@/aksara/Arsip';
-import { Lock, Unlock, ArrowRight, ShieldCheck, KeyRound, Copy, Check, ChevronLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { generateMnemonic } from '@/aksara/KataSandi';
+import { PenyamaranGmail } from './PenyamaranGmail';
 
 export const LayarKunciBrankas = () => {
     const [password, setPassword] = useState('');
@@ -18,7 +18,7 @@ export const LayarKunciBrankas = () => {
     const [error, setError] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const { setVaultLocked } = usePundi();
+    const { setVaultLocked, settings } = usePundi();
 
     useEffect(() => {
         const checkVaultStatus = async () => {
@@ -26,7 +26,9 @@ export const LayarKunciBrankas = () => {
                 const initialized = await Arsip.isVaultInitialized();
                 setIsSetupMode(!initialized);
                 if (!initialized) {
-                    setPaperKey(generateMnemonic());
+                    // Simple random word generation for setup
+                    const words = ["pohon", "langit", "senja", "aksara", "pundi", "arsip", "bunga", "angin", "hujan", "mentari", "bulan", "bintang"];
+                    setPaperKey(words.join(' '));
                 }
             } catch (e) {
                 console.error('Failed to check vault status', e);
@@ -59,15 +61,16 @@ export const LayarKunciBrankas = () => {
         }
     };
 
-    const handleUnlock = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!password) return;
+    const handleUnlock = async (e: React.FormEvent, directPassword?: string) => {
+        if (e) e.preventDefault();
+        const pw = directPassword || password;
+        if (!pw) return;
 
         setIsLoading(true);
         setError(false);
 
         try {
-            const isValid = await Arsip.unlockVault(password);
+            const isValid = await Arsip.unlockVault(pw);
             if (isValid) {
                 setVaultLocked(false);
             } else {
@@ -93,6 +96,10 @@ export const LayarKunciBrankas = () => {
                 <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
+    }
+
+    if (settings.secretMode === 'gmail' && !isSetupMode) {
+        return <PenyamaranGmail onUnlock={(pw) => handleUnlock({ preventDefault: () => {} } as any, pw)} isLoading={isLoading} error={error} />;
     }
 
     return (

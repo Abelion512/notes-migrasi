@@ -32,3 +32,21 @@
 30. **Undo/Redo Quick Controls:** Tombol cepat di toolbar untuk membatalkan atau mengulang perubahan di mobile.
 31. **Confetti Effect on Level Up:** Animasi partikel saat pengguna mencapai level XP tertentu di profil.
 32. **Glassmorphism Intensity Toggle:** Pengaturan untuk mengatur tingkat blur/transparansi UI.
+33. **Contextual Menu (iOS Style):** Long-press pada list item untuk menampilkan menu konteks dengan efek blur dan preview singkat.
+34. **Smart Date Parsing:** Konversi otomatis teks seperti "@besok" atau "@selasa" menjadi format tanggal yang rapi di editor.
+35. **Reading Time Estimate:** Indikator estimasi waktu baca (misal: "3 menit baca") di bagian atas catatan panjang.
+36. **Reading Mode (Zen):** Opsi untuk menyembunyikan semua elemen UI kecuali teks saat membaca, dengan tipografi yang dioptimalkan.
+37. **Paper Texture Overlays:** Tekstur kertas halus (grain) yang menyesuaikan dengan tema untuk memberikan kesan fisik.
+38. **Graph View (Peta Pikiran):** Visualisasi keterkaitan antar catatan berdasarkan tag atau folder dalam bentuk graf simpul.
+39. **Keyboard Shortcuts Mastery (J/K):** Navigasi daftar catatan menggunakan tombol J dan K (Vim-style) untuk pengguna power-user.
+40. **Mood-based Accent:** Perubahan warna aksen UI secara halus berdasarkan sentimen mood yang dipilih pada catatan tersebut.
+41. **Timeline History UI:** Tampilan visual untuk melihat riwayat perubahan (versi) catatan dalam bentuk timeline vertikal.
+42. **Multi-window Pop-out:** Kemampuan untuk membuka editor catatan di jendela baru (browser pop-out) untuk multitasking.
+43. **Typewriter Sound FX:** Opsi efek suara mesin ketik yang menenangkan saat mengetik dalam mode Zen.
+44. **Interactive Metadata Sidebar:** Sidebar geser untuk melihat statistik catatan, daftar tag, dan properti tanpa menutup editor.
+45. **AI Ghost Text:** Sugesti teks otomatis (inline autocomplete) dari LLM lokal yang muncul sebagai teks abu-abu saat mengetik.
+46. **OCR Text Scanner:** Tombol untuk memindai gambar (kamera/upload) dan mengekstrak teksnya langsung ke dalam catatan.
+47. **Quick Capture Header:** Area input kecil yang selalu ada di atas list untuk mencatat ide cepat tanpa membuat catatan penuh.
+48. **Parallax Profile Header:** Efek gerakan halus pada latar belakang profil saat melakukan scrolling.
+49. **Confetti on Goal Reach:** Animasi confetti saat mencapai target jumlah kata atau menyelesaikan semua task dalam satu hari.
+50. **Custom App Icons (PWA):** Pilihan untuk mengubah ikon aplikasi di home screen (melalui manifest/browser splash).

@@ -11,7 +11,7 @@ interface VaultGateProps {
 }
 
 export const PintuBrankas = ({ children }: VaultGateProps) => {
-    const { isVaultLocked } = usePundi();
+    const { isVaultLocked, settings } = usePundi();
     const [isMounted, setIsMounted] = useState(false);
 
     // Sync vault status across tabs
@@ -23,6 +23,17 @@ export const PintuBrankas = ({ children }: VaultGateProps) => {
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (!isMounted) return;
+
+        if (isVaultLocked && settings.secretMode === 'gmail') {
+            document.title = 'Gmail - Login';
+            // Optional: change favicon link if needed
+        } else {
+            document.title = 'Abelion Notes';
+        }
+    }, [isVaultLocked, settings.secretMode, isMounted]);
 
     // Prevent hydration mismatch
     if (!isMounted) return null;
