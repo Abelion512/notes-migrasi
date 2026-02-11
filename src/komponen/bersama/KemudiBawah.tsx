@@ -15,7 +15,7 @@ const NAV_ITEMS = [
     { icon: Settings, label: 'Laras', path: '/laras' },
 ];
 
-export const BottomNav = () => {
+export const KemudiBawah = () => {
     const pathname = usePathname();
     const [isOnline, setIsOnline] = useState(true);
 
@@ -86,7 +86,7 @@ export const BottomNav = () => {
                         >
                             <Icon
                                 size={24}
-                                className={`transition-colors duration-300 ${isActive ? 'text-blue-500' : 'text-slate-500 dark:text-slate-400'}`}
+                                className={`transition-colors duration-300 ${isActive ? 'text-blue-500' : 'text-slate-600 dark:text-slate-300'}`}
                             />
                             {isActive && (
                                 <motion.div

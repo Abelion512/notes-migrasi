@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
 import { useGunakanTunda } from '@/aksara/GunakanTunda';
-import { Note } from '@/types';
+import { Note } from '@/aksara/Rumus';
 import dynamic from 'next/dynamic';
 import { ChevronLeft, Share, Trash2, MoreHorizontal, CloudCheck, Cloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const TiptapEditor = dynamic(
-    () => import('@/komponen/fitur/editor/TiptapEditor').then(mod => mod.TiptapEditor),
+const PenyusunCatatan = dynamic(
+    () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
     { ssr: false, loading: () => <div className="h-64 flex items-center justify-center text-[var(--text-secondary)]">Memuat Editor...</div> }
 );
 
@@ -219,7 +219,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     placeholder="Judul Catatan..."
                     className="w-full text-3xl font-bold bg-transparent border-none focus:outline-none placeholder:text-[var(--text-secondary)]/20 mb-6"
                 />
-                <TiptapEditor
+                <PenyusunCatatan
                     content={content}
                     onChange={(val) => {
                         setContent(val);

@@ -17,8 +17,8 @@
     --background: #F2F2F7;
     --surface: #FFFFFF;
     --text-primary: #000000;
-    --text-secondary: rgba(60, 60, 67, 0.6);
-    --text-muted: rgba(60, 60, 67, 0.3);
+    --text-secondary: rgba(60, 60, 67, 0.85);
+    --text-muted: rgba(60, 60, 67, 0.6);
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(0, 0, 0, 0.05);
     --glass-blur: 30px;
@@ -30,8 +30,8 @@
     --background: #000000;
     --surface: #1C1C1E;
     --text-primary: #FFFFFF;
-    --text-secondary: rgba(235, 235, 245, 0.6);
-    --text-muted: rgba(235, 235, 245, 0.3);
+    --text-secondary: rgba(235, 235, 245, 0.85);
+    --text-muted: rgba(235, 235, 245, 0.6);
     --glass-bg: rgba(28, 28, 30, 0.8);
     --glass-border: rgba(255, 255, 255, 0.1);
     --separator: #38383A;

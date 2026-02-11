@@ -7,8 +7,8 @@ import { haptic } from '@/aksara/Indera';
 import dynamic from 'next/dynamic';
 import { ChevronLeft } from 'lucide-react';
 
-const TiptapEditor = dynamic(
-    () => import('@/komponen/fitur/editor/TiptapEditor').then(mod => mod.TiptapEditor),
+const PenyusunCatatan = dynamic(
+    () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
     { ssr: false, loading: () => <div className="h-64 flex items-center justify-center text-[var(--text-secondary)]">Memuat Editor...</div> }
 );
 
@@ -75,7 +75,7 @@ export default function AddNotePage() {
                     className="w-full text-3xl font-bold bg-transparent border-none focus:outline-none placeholder:text-[var(--text-secondary)]/20 mb-6"
                     autoFocus
                 />
-                <TiptapEditor
+                <PenyusunCatatan
                     content={content}
                     onChange={setContent}
                     placeholder="Mulai menulis kisah Anda..."

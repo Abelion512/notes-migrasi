@@ -7,7 +7,7 @@ import { Lock, Unlock, ArrowRight, ShieldCheck, KeyRound, Copy, Check, ChevronLe
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateMnemonic } from '@/aksara/KataSandi';
 
-export const VaultLockScreen = () => {
+export const LayarKunciBrankas = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isSetupMode, setIsSetupMode] = useState(false);

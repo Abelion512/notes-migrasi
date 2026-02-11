@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePundi } from '@/aksara/Pundi';
-import { VaultLockScreen } from './VaultLockScreen';
+import { LayarKunciBrankas } from './LayarKunciBrankas';
 import { usePenjaga } from '@/aksara/Penjaga';
 import { usePenyelaras } from '@/aksara/Penyelaras';
 
@@ -10,7 +10,7 @@ interface VaultGateProps {
     children: React.ReactNode;
 }
 
-export const VaultGate = ({ children }: VaultGateProps) => {
+export const PintuBrankas = ({ children }: VaultGateProps) => {
     const { isVaultLocked } = usePundi();
     const [isMounted, setIsMounted] = useState(false);
 
@@ -28,7 +28,7 @@ export const VaultGate = ({ children }: VaultGateProps) => {
     if (!isMounted) return null;
 
     if (isVaultLocked) {
-        return <VaultLockScreen />;
+        return <LayarKunciBrankas />;
     }
 
     return <>{children}</>;

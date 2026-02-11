@@ -1,5 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { Note, Folder, AppSettings, UserProfile } from '@/types';
+import { Note, Folder, AppSettings, UserProfile } from '@/aksara/Rumus';
 
 const DB_NAME = 'abelion_next';
 const DB_VERSION = 1;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const NoteSkeleton = () => {
+export const KerangkaCatatan = () => {
     return (
         <div className="ios-list-group overflow-hidden">
             {[1, 2, 3, 4, 5, 6].map((i) => (

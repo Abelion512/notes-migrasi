@@ -1,6 +1,6 @@
 import { Gudang } from '@/aksara/Gudang';
 import { Brankas } from '@/aksara/Brankas';
-import { Note, EntityId } from '@/types';
+import { Note, EntityId } from '@/aksara/Rumus';
 import { v4 as uuidv4 } from 'uuid';
 
 export const Arsip = {

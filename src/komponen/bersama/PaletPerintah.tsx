@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, FilePlus, Settings, User, Command, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export const CommandPalette = () => {
+export const PaletPerintah = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState('');
     const router = useRouter();

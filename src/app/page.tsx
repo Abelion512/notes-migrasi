@@ -13,9 +13,9 @@ import {
     MoreVertical
 } from 'lucide-react';
 import { Arsip } from '@/aksara/Arsip';
-import { Note } from '@/types';
+import { Note } from '@/aksara/Rumus';
 import { truncate, stripHtml } from '@/aksara/Penyaring';
-import { NoteSkeleton } from '@/komponen/bersama/NoteSkeleton';
+import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 // @ts-ignore
 import { List } from 'react-window';
 import JSZip from 'jszip';
@@ -167,7 +167,7 @@ export default function Home() {
             </header>
 
             {isLoading ? (
-                <NoteSkeleton />
+                <KerangkaCatatan />
             ) : notes.length === 0 ? (
                 <div className="text-center mt-32 opacity-20 flex flex-col items-center">
                     <FileText className="w-24 h-24 mb-4 stroke-[1px]" />

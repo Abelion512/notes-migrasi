@@ -2,7 +2,7 @@ import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { ReactRenderer } from '@tiptap/react';
 import tippy from 'tippy.js';
-import { CommandList } from './CommandList';
+import { DaftarPerintah } from './DaftarPerintah';
 import React from 'react';
 import {
     Heading1,
@@ -14,8 +14,8 @@ import {
     Type
 } from 'lucide-react';
 
-export const SlashCommand = Extension.create({
-    name: 'slashCommand',
+export const PerintahGarisMiring = Extension.create({
+    name: 'perintahGarisMiring',
 
     addOptions() {
         return {
@@ -38,7 +38,7 @@ export const SlashCommand = Extension.create({
     },
 });
 
-export const SlashCommandConfig = {
+export const PerintahGarisMiringConfig = {
     suggestion: {
         items: ({ query }: { query: string }) => {
             return [
@@ -99,7 +99,7 @@ export const SlashCommandConfig = {
 
             return {
                 onStart: (props: any) => {
-                    component = new ReactRenderer(CommandList, {
+                    component = new ReactRenderer(DaftarPerintah, {
                         props,
                         editor: props.editor,
                     });

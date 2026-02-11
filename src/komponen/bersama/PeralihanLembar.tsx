@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-export const PageTransition = ({ children }: { children: React.ReactNode }) => {
+export const PeralihanLembar = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
 
     return (

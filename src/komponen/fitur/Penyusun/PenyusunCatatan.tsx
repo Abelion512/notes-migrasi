@@ -5,26 +5,26 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { SlashCommand, SlashCommandConfig } from './SlashCommand';
+import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisMiring';
 import React from 'react';
 import {
     Bold, Italic, Strikethrough,
     Heading1, Heading2, List, ListOrdered
 } from 'lucide-react';
 
-interface TiptapEditorProps {
+interface PenyusunCatatanProps {
     content: string;
     onChange: (content: string) => void;
     editable?: boolean;
     placeholder?: string;
 }
 
-export const TiptapEditor = ({
+export const PenyusunCatatan = ({
     content,
     onChange,
     editable = true,
     placeholder = 'Mulai menulis kisah Anda...'
-}: TiptapEditorProps) => {
+}: PenyusunCatatanProps) => {
 
     const editor = useEditor({
         extensions: [
@@ -36,7 +36,7 @@ export const TiptapEditor = ({
             Placeholder.configure({
                 placeholder: placeholder,
             }),
-            SlashCommand.configure(SlashCommandConfig),
+            PerintahGarisMiring.configure(PerintahGarisMiringConfig),
         ],
         content: content,
         editable: editable,

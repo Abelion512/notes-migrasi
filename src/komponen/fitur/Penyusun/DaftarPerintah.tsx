@@ -3,7 +3,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Heading1, Heading2, List, ListOrdered, CheckSquare, Quote, Code } from 'lucide-react';
 
-export const CommandList = forwardRef((props: any, ref) => {
+export const DaftarPerintah = forwardRef((props: any, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const selectItem = (index: number) => {
@@ -77,4 +77,4 @@ export const CommandList = forwardRef((props: any, ref) => {
     );
 });
 
-CommandList.displayName = 'CommandList';
+DaftarPerintah.displayName = 'CommandList';

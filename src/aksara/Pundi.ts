@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppSettings, UserProfile } from '@/types';
+import { AppSettings, UserProfile } from '@/aksara/Rumus';
 
 interface AbelionState {
     settings: AppSettings;

@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import "@/styles/globals.css";
-import { BottomNav } from "@/komponen/bersama/BottomNav";
-import { VaultGate } from "@/komponen/fitur/vault/VaultGate";
-import { PageTransition } from "@/komponen/bersama/PageTransition";
-import { ThemeManager } from "@/komponen/bersama/ThemeManager";
-import { CommandPalette } from "@/komponen/bersama/CommandPalette";
+import "@/gaya/Utama.css";
+import { KemudiBawah } from "@/komponen/bersama/KemudiBawah";
+import { PintuBrankas } from "@/komponen/fitur/Brankas/PintuBrankas";
+import { PeralihanLembar } from "@/komponen/bersama/PeralihanLembar";
+import { PengaturSuasana } from "@/komponen/bersama/PengaturSuasana";
+import { PaletPerintah } from "@/komponen/bersama/PaletPerintah";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    maximumScale: 5,
+    userScalable: true,
     viewportFit: "cover",
 };
 
@@ -36,13 +36,13 @@ export default function RootLayout({
         <html lang="id">
             <body className={`${inter.variable} font-sans`}>
                 <main className="relative min-h-screen flex flex-col bg-[var(--background)]">
-                    <VaultGate>
-                        <CommandPalette />
-                        <PageTransition>
+                    <PengaturSuasana /><PintuBrankas>
+                        <PaletPerintah />
+                        <PeralihanLembar>
                             {children}
-                        </PageTransition>
-                        <BottomNav />
-                    </VaultGate>
+                        </PeralihanLembar>
+                        <KemudiBawah />
+                    </PintuBrankas>
                 </main>
             </body>
         </html>

@@ -75,7 +75,7 @@ export default function SettingsPage() {
 
             <p className="text-center text-xs text-[var(--text-secondary)] mt-8 opacity-60">
                 Abelion Notes v2.0 (Glass OS) <br />
-                Build 2026.02.10
+                Build 2026.02.11
             </p>
         </div>
     );

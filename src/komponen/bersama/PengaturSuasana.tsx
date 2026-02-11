@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { usePundi } from '@/aksara/Pundi';
 
-export const ThemeManager = () => {
+export const PengaturSuasana = () => {
     const { settings } = usePundi();
 
     useEffect(() => {
