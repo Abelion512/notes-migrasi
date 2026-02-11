@@ -147,3 +147,14 @@
 .animate-shimmer {
     animation: shimmer 2s infinite linear;
 }
+
+/* Popup Window Aesthetic */
+.popup-container {
+    @apply w-full max-w-[480px] mx-auto min-h-screen bg-[var(--background)] shadow-[0_0_50px_rgba(0,0,0,0.1)] relative overflow-hidden;
+}
+
+@media (min-width: 640px) {
+    .popup-container {
+        @apply min-h-[90vh] my-[5vh] rounded-[3rem] border border-[var(--separator)]/20;
+    }
+}

@@ -34,16 +34,19 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="id">
-            <body className={`${inter.variable} font-sans`}>
-                <main className="relative min-h-screen flex flex-col bg-[var(--background)]">
-                    <PengaturSuasana /><PintuBrankas>
-                        <PaletPerintah />
-                        <PeralihanLembar>
-                            {children}
-                        </PeralihanLembar>
-                        <KemudiBawah />
-                    </PintuBrankas>
-                </main>
+            <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-black`}>
+                <div className="min-h-screen flex items-center justify-center p-0 sm:p-4">
+                    <main className="popup-container flex flex-col">
+                        <PengaturSuasana />
+                        <PintuBrankas>
+                            <PaletPerintah />
+                            <PeralihanLembar>
+                                {children}
+                            </PeralihanLembar>
+                            <KemudiBawah />
+                        </PintuBrankas>
+                    </main>
+                </div>
             </body>
         </html>
     );

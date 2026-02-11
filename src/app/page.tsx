@@ -4,12 +4,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import {
     CheckCircle2, ChevronRight, FileText, MoreVertical,
-    Trash2, Download, Share2, Clock
+    Trash2, Download, Share2, Clock, Copy, Check
 } from 'lucide-react';
 import { usePundi } from '@/aksara/Pundi';
 import { Arsip } from '@/aksara/Arsip';
 import { Note } from '@/aksara/Rumus';
 import { haptic } from '@/aksara/Indera';
+import { getIconForService } from '@/aksara/IkonLayanan';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
 import Sortable from 'sortablejs';
@@ -25,6 +26,7 @@ export default function NoteListPage() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showGraph, setShowGraph] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [copiedId, setCopiedId] = useState<string | null>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const sortableRef = useRef<Sortable | null>(null);
     const router = useRouter();
@@ -160,10 +162,21 @@ export default function NoteListPage() {
         return text.length > length ? text.substring(0, length) + '...' : text;
     };
 
+    const handleCopy = (e: React.MouseEvent, note: Note) => {
+        e.preventDefault();
+        e.stopPropagation();
+        haptic.light();
+        const plainContent = stripHtml(note.content);
+        navigator.clipboard.writeText(plainContent);
+        setCopiedId(note.id);
+        setTimeout(() => setCopiedId(null), 2000);
+    };
+
     const NoteRow = ({ index, style }: { index: number, style: React.CSSProperties }) => {
         const note = notes[index];
         const isSelected = selectedIds.includes(note.id);
         const isFocused = focusedIndex === index;
+        const serviceIcon = getIconForService(note.title);
 
         return (
             <div style={style}>
@@ -171,13 +184,17 @@ export default function NoteListPage() {
                     onClick={() => isEditMode ? toggleSelection(note.id) : null}
                     className={`ios-list-item group h-full transition-colors ${isFocused ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
                 >
-                    {isEditMode && (
+                    {isEditMode ? (
                         <div className="mr-3">
                             <CheckCircle2
                                 size={20}
                                 className={isSelected ? 'text-blue-500' : 'text-blue-500/10'}
                                 fill={isSelected ? 'currentColor' : 'none'}
                             />
+                        </div>
+                    ) : (
+                        <div className="mr-3 w-6 flex items-center justify-center">
+                            {serviceIcon || <div className="drag-handle text-[var(--text-secondary)] opacity-20 group-hover:opacity-100 transition-opacity"><MoreVertical size={18} /></div>}
                         </div>
                     )}
                     <Link
@@ -200,6 +217,14 @@ export default function NoteListPage() {
                             </span>
                         </div>
                     </Link>
+                    {!isEditMode && (
+                        <button
+                            onClick={(e) => handleCopy(e, note)}
+                            className="p-2 rounded-full hover:bg-[var(--primary)]/5 transition-colors mr-1"
+                        >
+                            {copiedId === note.id ? <Check size={14} className="text-green-500" /> : <Copy size={14} className="text-[var(--text-secondary)]/30" />}
+                        </button>
+                    )}
                     {!isEditMode && <ChevronRight size={14} className="text-[var(--text-secondary)]/30" />}
                 </div>
                 <div className="ios-separator"></div>
@@ -251,24 +276,28 @@ export default function NoteListPage() {
                         </div>
                     ) : (
                         <div ref={listRef}>
-                            {notes.map((note, index) => (
+                            {notes.map((note, index) => {
+                                const isFocused = focusedIndex === index;
+                                const isSelected = selectedIds.includes(note.id);
+                                const serviceIcon = getIconForService(note.title);
+
+                                return (
                                 <div key={note.id} className="relative overflow-hidden">
                                     <div
                                         onClick={() => isEditMode ? toggleSelection(note.id) : null}
-                                        className={`ios-list-item group ${focusedIndex === index ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
+                                        className={`ios-list-item group ${isFocused ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
                                     >
-                                        {!isEditMode && (
-                                            <div className="drag-handle mr-3 cursor-grab active:cursor-grabbing text-[var(--text-secondary)] opacity-20 group-hover:opacity-100 transition-opacity">
-                                                <MoreVertical size={18} />
-                                            </div>
-                                        )}
-                                        {isEditMode && (
+                                        {isEditMode ? (
                                             <div className="mr-3">
                                                 <CheckCircle2
                                                     size={20}
-                                                    className={selectedIds.includes(note.id) ? 'text-blue-500' : 'text-blue-500/10'}
-                                                    fill={selectedIds.includes(note.id) ? 'currentColor' : 'none'}
+                                                    className={isSelected ? 'text-blue-500' : 'text-blue-500/10'}
+                                                    fill={isSelected ? 'currentColor' : 'none'}
                                                 />
+                                            </div>
+                                        ) : (
+                                            <div className="mr-3 w-6 flex items-center justify-center">
+                                                {serviceIcon || <div className="drag-handle text-[var(--text-secondary)] opacity-20 group-hover:opacity-100 transition-opacity"><MoreVertical size={18} /></div>}
                                             </div>
                                         )}
                                         <Link
@@ -291,11 +320,20 @@ export default function NoteListPage() {
                                                 </span>
                                             </div>
                                         </Link>
+                                        {!isEditMode && (
+                                            <button
+                                                onClick={(e) => handleCopy(e, note)}
+                                                className="p-2 rounded-full hover:bg-[var(--primary)]/5 transition-colors mr-1"
+                                            >
+                                                {copiedId === note.id ? <Check size={14} className="text-green-500" /> : <Copy size={14} className="text-[var(--text-secondary)]/30" />}
+                                            </button>
+                                        )}
                                         {!isEditMode && <ChevronRight size={14} className="text-[var(--text-secondary)]/30 group-active:text-[var(--text-secondary)]/50" />}
                                     </div>
                                     {index < notes.length - 1 && <div className="ios-separator"></div>}
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

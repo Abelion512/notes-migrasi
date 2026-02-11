@@ -587,3 +587,31 @@ https://nextjs.org/docs/messages/module-not-found
 ✓ Compiled in 272ms
 ✓ Compiled in 111ms
 ✓ Compiled in 806ms
+Persisting failed: Unable to open static sorted file referenced from 00000247.meta
+
+Caused by:
+    0: Unable to open static sorted file 00000246.sst
+    1: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+✓ Compiled in 1707ms
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (159396) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EsmAssetReference as ChunkableModuleReference>::chunking_type (TaskId 183984))
+
+Caused by:
+    0: Looking up data for TaskId 183984 from database failed
+    1: Unable to open static sorted file referenced from 00000210.meta
+    2: Unable to open static sorted file 00000207.sst
+    3: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to /tmp/next-panic-c42e490eecfab24ec85080f4a24a7cf5.log.
+
+To help make Turbopack better, report this error by clicking here: https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20%5Bproject%5D%2Fsrc%2Fapp%2Fpage.tsx%20%5Bapp-client%5D%20%28ecmascript%29&body=Turbopack%20version%3A%20%600c06f068%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ATurbopack%20Error%3A%20%5Bproject%5D%2Fsrc%2Fapp%2Fpage.tsx%20%5Bapp-client%5D%20%28ecmascript%29%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+✓ Compiled in 4.3s
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

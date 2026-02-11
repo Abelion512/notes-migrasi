@@ -26,9 +26,10 @@ export const PenyamaranGmail = ({ onUnlock, isLoading, error }: PenyamaranGmailP
     return (
         <div className="fixed inset-0 z-[110] bg-white flex items-center justify-center p-4">
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-[450px] bg-white border border-gray-200 rounded-lg p-10 flex flex-col items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-[450px] bg-white border border-gray-300 rounded-lg p-10 flex flex-col items-center shadow-md"
             >
                 {/* Google Logo */}
                 <svg viewBox="0 0 75 24" width="75" height="24" className="mb-4">
@@ -43,7 +44,7 @@ export const PenyamaranGmail = ({ onUnlock, isLoading, error }: PenyamaranGmailP
                 <h1 className="text-2xl font-normal text-[#202124] mb-2">
                     {showPassword ? 'Selamat datang' : 'Login'}
                 </h1>
-                <p className="text-base text-[#202124] mb-8">
+                <p className="text-base font-medium text-[#202124] mb-8">
                     {showPassword ? email : 'Gunakan Akun Google Anda'}
                 </p>
 
@@ -55,10 +56,10 @@ export const PenyamaranGmail = ({ onUnlock, isLoading, error }: PenyamaranGmailP
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Email atau ponsel"
-                                className="w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base transition-all"
+                                className="w-full px-4 py-3 border border-gray-400 rounded focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none text-base text-black transition-all"
                                 autoFocus
                             />
-                            <button type="button" className="text-blue-600 font-semibold text-sm mt-2 hover:bg-blue-50 px-1 py-0.5 rounded transition-colors">
+                            <button type="button" className="text-blue-700 font-bold text-sm mt-2 hover:bg-blue-50 px-1 py-0.5 rounded transition-colors">
                                 Lupa email?
                             </button>
                         </div>
@@ -69,42 +70,42 @@ export const PenyamaranGmail = ({ onUnlock, isLoading, error }: PenyamaranGmailP
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Masukkan sandi Anda"
-                                className="w-full px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base transition-all"
+                                className="w-full px-4 py-3 border border-gray-400 rounded focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none text-base text-black transition-all"
                                 autoFocus
                             />
-                            <button type="button" className="text-blue-600 font-semibold text-sm mt-2 hover:bg-blue-50 px-1 py-0.5 rounded transition-colors">
+                            <button type="button" className="text-blue-700 font-bold text-sm mt-2 hover:bg-blue-50 px-1 py-0.5 rounded transition-colors">
                                 Tampilkan sandi
                             </button>
                         </div>
                     )}
 
-                    <div className="text-sm text-[#5f6368] mb-10">
+                    <div className="text-sm text-[#3c4043] font-medium mb-10">
                         Bukan komputer Anda? Gunakan jendela Tamu untuk login secara pribadi.{' '}
-                        <a href="#" className="text-blue-600 font-semibold hover:underline">Pelajari lebih lanjut</a>
+                        <a href="#" className="text-blue-700 font-bold hover:underline">Pelajari lebih lanjut</a>
                     </div>
 
                     <div className="flex justify-between items-center">
                         <button
                             type="button"
                             onClick={() => showPassword ? setShowPassword(false) : null}
-                            className="text-blue-600 font-semibold text-sm hover:bg-blue-50 px-3 py-2 rounded transition-colors"
+                            className="text-blue-700 font-bold text-sm hover:bg-blue-50 px-3 py-2 rounded transition-colors"
                         >
                             {showPassword ? 'Kembali' : 'Buat akun'}
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-colors disabled:opacity-50"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded transition-colors disabled:opacity-50"
                         >
                             Berikutnya
                         </button>
                     </div>
                 </form>
 
-                {error && <p className="text-[#d93025] text-sm mt-6">Sandi salah. Coba lagi atau klik 'Lupa sandi' untuk meresetnya.</p>}
+                {error && <p className="text-[#d93025] text-sm font-bold mt-6">Sandi salah. Coba lagi atau klik 'Lupa sandi' untuk meresetnya.</p>}
             </motion.div>
 
-            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[450px] flex justify-between text-xs text-[#5f6368]">
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[450px] flex justify-between text-xs text-[#5f6368] font-medium">
                 <div className="flex gap-4">
                     <span>Indonesia</span>
                 </div>
