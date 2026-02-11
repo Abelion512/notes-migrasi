@@ -1,20 +1,20 @@
 # Saran Peningkatan Frontend Abelion Notes (Min. 30)
 
-1.  **Skeleton Loading Lanjutan:** Implementasi shimmer effect pada list item catatan saat loading pertama kali.
+1.  ✅ **Skeleton Loading Lanjutan:** Implementasi shimmer effect pada list item catatan saat loading pertama kali.
 2.  **Pull-to-Refresh:** Gesture tarik ke bawah untuk memperbarui daftar catatan secara manual di mobile.
 3.  **Swipe Actions:** Gesture geser kanan untuk Pin/Favorit dan geser kiri untuk Hapus/Arsip pada list item.
 4.  **Floating Action Toolbar:** Toolbar melayang di bawah saat mode multi-select aktif untuk aksi massal.
 5.  **Shared Element Transitions:** Gunakan `layoutId` Framer Motion untuk transisi judul catatan dari list ke editor.
-6.  **Search Highlighting:** Sorot kata kunci yang dicari pada judul dan cuplikan konten di hasil pencarian.
+6.  ✅ **Search Highlighting:** Sorot kata kunci yang dicari pada judul dan cuplikan konten di hasil pencarian.
 7.  **BottomSheet Filter:** UI filter menggunakan BottomSheet (iOS style) untuk memilih kriteria pengurutan dan kategori.
 8.  **Adaptive Editor Toolbar:** Toolbar Tiptap yang menempel di atas keyboard (Sticky Input Accessory View).
 9.  **Markdown Rendering:** Preview Markdown yang lebih kaya (dukungan tabel, checkbox task, dan callouts).
 10. **Dynamic Accent Colors:** Opsi pemilihan warna tema utama aplikasi dengan palet warna iOS.
-11. **Granular Haptic Feedback:** Vibrasi yang berbeda untuk sukses (dua getaran pendek) dan gagal (getaran panjang).
+11. ✅ **Granular Haptic Feedback:** Vibrasi yang berbeda untuk sukses (dua getaran pendek) dan gagal (getaran panjang).
 12. **Sync Pulse Indicator:** Indikator titik kecil yang berdenyut saat data sedang ditulis ke IndexedDB.
 13. **Drag-and-Drop Organization:** Memindahkan catatan antar folder dengan menahan dan menarik item.
 14. **Compact Command Palette:** Penyesuaian ukuran palette agar tidak terlalu mendominasi layar pada desktop.
-15. **Autosave Status:** Teks kecil "Tersimpan di Lokal" yang muncul sesaat setelah perubahan berhenti di editor.
+15. ✅ **Autosave Status:** Teks kecil "Tersimpan di Lokal" yang muncul sesaat setelah perubahan berhenti di editor.
 16. **View Switcher (Grid/List):** Opsi untuk beralih antara tampilan daftar rapat atau kartu grid.
 17. **Recent Notes Widget:** Area horizontal di atas home untuk akses cepat ke 3 catatan terakhir.
 18. **Interactive Activity Chart:** Grafik di profil yang bisa diklik untuk memfilter catatan berdasarkan tanggal tersebut.

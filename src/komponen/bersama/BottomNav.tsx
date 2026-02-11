@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, User, Settings, Plus, Wifi, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { haptic } from '@/aksara/Indera';
 
 const NAV_ITEMS = [
     { icon: Home, label: 'Beranda', path: '/' },
@@ -61,8 +62,9 @@ export const BottomNav = () => {
                             <Link
                                 key={item.label}
                                 href={item.path}
+                                onClick={() => haptic.medium()}
                                 aria-label="Tambah Catatan Baru"
-                                className="rounded-full shadow-md active:opacity-80 transition-opacity"
+                                className="rounded-full shadow-md active:scale-90 transition-transform"
                             >
                                 <div
                                     className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white"
@@ -77,6 +79,7 @@ export const BottomNav = () => {
                         <Link
                             key={item.path}
                             href={item.path}
+                            onClick={() => !isActive && haptic.light()}
                             aria-label={item.label}
                             aria-current={isActive ? 'page' : undefined}
                             className="relative p-2 active:opacity-60 transition-opacity group"

@@ -6,6 +6,21 @@ import { Note } from '@/types';
 import Link from 'next/link';
 import { Search as SearchIcon, ChevronRight, FileX } from 'lucide-react';
 import { stripHtml, truncate } from '@/aksara/Penyaring';
+import { NoteSkeleton } from '@/komponen/bersama/NoteSkeleton';
+
+const Highlight = ({ text, query }: { text: string, query: string }) => {
+    if (!query.trim()) return <>{text}</>;
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    return (
+        <>
+            {parts.map((part, i) =>
+                part.toLowerCase() === query.toLowerCase()
+                    ? <mark key={i} className="bg-yellow-200 dark:bg-yellow-500/50 text-inherit rounded-sm px-0.5">{part}</mark>
+                    : part
+            )}
+        </>
+    );
+};
 
 export default function SearchPage() {
     const [query, setQuery] = useState('');
@@ -58,7 +73,9 @@ export default function SearchPage() {
             </div>
 
             <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
-                {!query.trim() ? (
+                {isLoading ? (
+                    <NoteSkeleton />
+                ) : !query.trim() ? (
                     <div className="text-center mt-20 opacity-30 px-10">
                         <p className="text-sm font-semibold uppercase tracking-widest mb-2">Jelajah Arsip</p>
                         <p className="text-xs font-medium">Ketik untuk mencari di dalam brankas terenkripsi.</p>
@@ -74,13 +91,15 @@ export default function SearchPage() {
                             <React.Fragment key={note.id}>
                                 <Link href={`/catatan/${note.id}`} className="ios-list-item group">
                                     <div className="flex-1 min-w-0 pr-4">
-                                        <h3 className="text-base font-semibold mb-0.5 truncate">{note.title || 'Tanpa Judul'}</h3>
+                                        <h3 className="text-base font-semibold mb-0.5 truncate">
+                                            <Highlight text={note.title || 'Tanpa Judul'} query={query} />
+                                        </h3>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[11px] font-bold text-[var(--primary)] opacity-40">
                                                 {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                                             </span>
                                             <p className="text-[11px] text-[var(--text-secondary)] truncate">
-                                                {truncate(stripHtml(note.content), 60)}
+                                                <Highlight text={truncate(stripHtml(note.content), 80)} query={query} />
                                             </p>
                                         </div>
                                     </div>
