@@ -31,7 +31,8 @@ Caused by:
     1: Unable to open static sorted file 00000229.sst
     2: No such file or directory (os error 2)
 Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
-[90m 10 |[39m
+[?25h
+ |[39m
  [90m 11 |[39m [36mexport[39m [36mconst[39m [33mLayarKunciBrankas[39m [33m=[39m () [33m=>[39m {[0m
 
 
@@ -615,3 +616,10 @@ To help make Turbopack better, report this error by clicking here: https://githu
 
 ✓ Compiled in 4.3s
 Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+[?25h

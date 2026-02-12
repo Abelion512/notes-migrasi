@@ -10,6 +10,7 @@ export interface Note {
     tags: string[];
     createdAt: string;
     updatedAt: string;
+    isCredentials?: boolean;
 }
 
 export interface Folder {
