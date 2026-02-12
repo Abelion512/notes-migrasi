@@ -13,7 +13,6 @@ import {
     ChevronLeft, Share, Trash2, MoreHorizontal,
     CloudCheck, Cloud, ShieldCheck, ShieldAlert
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const PenyusunCatatan = dynamic(
     () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
@@ -48,9 +47,8 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 } else {
                     router.push('/');
                 }
-            } catch (error) {
-                console.error('Failed to load note:', error);
-                router.push('/');
+            } catch (err) {
+                console.error(err);
             } finally {
                 setIsLoaded(true);
             }
@@ -58,10 +56,11 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
         loadNote();
     }, [id, router]);
 
-    // Autosave Effect
     useEffect(() => {
-        if (isLoaded && note && (debouncedTitle !== note.title || debouncedContent !== note.content || debouncedIsCreds !== note.isCredentials)) {
+        if (isLoaded && note) {
             const autosave = async () => {
+                if (debouncedTitle === note.title && debouncedContent === note.content && debouncedIsCreds === note.isCredentials) return;
+
                 setSaveStatus('saving');
                 try {
                     const updatedNote = await Arsip.saveNote({
@@ -116,18 +115,11 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
         }
     };
 
-    const toggleCredentials = () => {
-        haptic.medium();
-        setIsCredentials(!isCredentials);
-    };
-
     if (!isLoaded) {
         return (
-            <div className="flex-1 flex flex-col h-screen bg-[var(--background)] animate-pulse p-10">
-                <div className="h-8 w-1/3 bg-[var(--separator)]/20 rounded-lg mb-8"></div>
-                <div className="h-4 w-full bg-[var(--separator)]/10 rounded-lg mb-4"></div>
-                <div className="h-4 w-full bg-[var(--separator)]/10 rounded-lg mb-4"></div>
-                <div className="h-4 w-2/3 bg-[var(--separator)]/10 rounded-lg mb-4"></div>
+            <div className="flex-1 flex flex-col h-screen bg-[var(--background)] p-10">
+                <div className="h-8 w-1/3 bg-[var(--separator)]/20 rounded-lg mb-8 animate-pulse"></div>
+                <div className="h-4 w-full bg-[var(--separator)]/10 rounded-lg mb-4 animate-pulse"></div>
             </div>
         );
     }
@@ -137,7 +129,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     return (
         <div className="flex-1 flex flex-col h-screen bg-[var(--background)]">
             {/* Toolbar */}
-            <div className="px-5 py-4 flex items-center justify-between border-b border-[var(--separator)] bg-[var(--glass-bg)] backdrop-blur-md sticky top-0 z-40">
+            <div className="snappy-header">
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => { haptic.light(); router.back(); }}
@@ -153,21 +145,10 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 </div>
 
                 <div className="flex items-center gap-5">
-                    <AnimatePresence>
-                        {saveStatus === 'saved' && (
-                            <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                className="text-green-500"
-                            >
-                                <CloudCheck size={20} />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    {saveStatus === 'saved' && <CloudCheck size={20} className="text-green-500" />}
 
                     <button
-                        onClick={toggleCredentials}
+                        onClick={() => { haptic.medium(); setIsCredentials(!isCredentials); }}
                         className={`p-2 rounded-full transition-all ${isCredentials ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-muted)] opacity-50'}`}
                         title="Identitas Credentials"
                     >
@@ -190,62 +171,34 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 </div>
             </div>
 
-            <AnimatePresence>
-                {showOptions && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowOptions(false)}
-                            className="fixed inset-0 z-50 bg-black/20 backdrop-blur-[2px]"
-                        />
-                        <motion.div
-                            initial={{ y: 100, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 100, opacity: 0 }}
-                            className="fixed bottom-0 left-0 right-0 z-[60] p-4 pb-12"
-                        >
-                            <div className="ios-list-group shadow-2xl bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-white/20">
-                                <button className="ios-list-item w-full text-left" onClick={() => { haptic.light(); setShowOptions(false); }}>
-                                    <div className="flex items-center gap-3">
-                                        <Share size={20} className="text-[var(--primary)]" />
-                                        <span className="font-medium">Bagikan Catatan</span>
-                                    </div>
-                                </button>
-                                <div className="ios-separator"></div>
-                                <button
-                                    className="ios-list-item w-full text-left"
-                                    onClick={() => { setShowOptions(false); handleDelete(); }}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <Trash2 size={20} className="text-red-500" />
-                                        <span className="font-medium text-red-500">Hapus Permanen</span>
-                                    </div>
-                                </button>
+            {showOptions && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px]" onClick={() => setShowOptions(false)} />
+                    <div className="w-full max-w-sm glass-card p-2 z-10 shadow-2xl">
+                        <button className="ios-list-item w-full text-left" onClick={() => setShowOptions(false)}>
+                            <div className="flex items-center gap-3">
+                                <Share size={18} className="text-[var(--primary)]" />
+                                <span className="font-semibold">Bagikan</span>
                             </div>
-                            <button
-                                onClick={() => setShowOptions(false)}
-                                className="w-full mt-3 py-4 bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-2xl font-bold text-[var(--primary)] text-lg shadow-lg"
-                            >
-                                Tutup
-                            </button>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                        </button>
+                        <div className="ios-separator"></div>
+                        <button className="ios-list-item w-full text-left" onClick={() => { setShowOptions(false); handleDelete(); }}>
+                            <div className="flex items-center gap-3 text-red-500">
+                                <Trash2 size={18} />
+                                <span className="font-semibold">Hapus Permanen</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Editor */}
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-6 max-w-4xl mx-auto w-full">
                     {isCredentials && (
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10"
-                        >
+                        <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
                             {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
-                        </motion.div>
+                        </div>
                     )}
                     <input
                         type="text"
@@ -255,21 +208,20 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                         className="flex-1 text-3xl font-bold bg-transparent border-none focus:outline-none placeholder:text-[var(--text-secondary)]/20"
                     />
                 </div>
-                <PenyusunCatatan
-                    content={content}
-                    onChange={(val) => {
-                        setContent(val);
-                        if (saveStatus === 'saved' || saveStatus === 'idle') {
-                            setSaveStatus('idle');
-                        }
-                    }}
-                    placeholder={isCredentials ? "Tulis password, email, atau detail login lainnya..." : "Lanjutkan kisah Anda..."}
-                />
-
+                <div className="max-w-4xl mx-auto w-full">
+                    <PenyusunCatatan
+                        content={content}
+                        onChange={(val) => {
+                            setContent(val);
+                            if (saveStatus === 'saved' || saveStatus === 'idle') {
+                                setSaveStatus('idle');
+                            }
+                        }}
+                        placeholder={isCredentials ? "Tulis detail akun..." : "Lanjutkan kisah..."}
+                    />
+                </div>
                 <div className="h-32" />
             </div>
-
-            <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
         </div>
     );
 }

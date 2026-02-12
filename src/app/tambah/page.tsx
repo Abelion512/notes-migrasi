@@ -7,7 +7,6 @@ import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import dynamic from 'next/dynamic';
 import { ChevronLeft, ShieldCheck, ShieldAlert } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const PenyusunCatatan = dynamic(
     () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
@@ -58,13 +57,13 @@ export default function AddNotePage() {
     return (
         <div className="flex-1 flex flex-col h-screen bg-[var(--background)]">
             {/* Toolbar */}
-            <div className="px-5 py-4 flex items-center justify-between border-b border-[var(--separator)] bg-[var(--glass-bg)] backdrop-blur-md sticky top-0 z-40">
+            <div className="snappy-header">
                 <button
                     onClick={() => { haptic.light(); router.back(); }}
                     className="text-[var(--primary)] flex items-center gap-1 active:opacity-40 transition-opacity"
                 >
                     <ChevronLeft size={24} />
-                    <span className="text-[17px]">Batal</span>
+                    <span className="text-[17px] font-semibold">Batal</span>
                 </button>
 
                 <div className="flex items-center gap-4">
@@ -87,15 +86,11 @@ export default function AddNotePage() {
 
             {/* Editor */}
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-6 max-w-4xl mx-auto w-full">
                     {isCredentials && (
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10"
-                        >
+                        <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
                             {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
-                        </motion.div>
+                        </div>
                     )}
                     <input
                         type="text"
@@ -106,15 +101,15 @@ export default function AddNotePage() {
                         autoFocus
                     />
                 </div>
-                <PenyusunCatatan
-                    content={content}
-                    onChange={setContent}
-                    placeholder={isCredentials ? "Tulis password, email, atau detail login lainnya..." : "Mulai menulis kisah Anda..."}
-                />
+                <div className="max-w-4xl mx-auto w-full">
+                    <PenyusunCatatan
+                        content={content}
+                        onChange={setContent}
+                        placeholder={isCredentials ? "Tulis password, email, atau detail login lainnya..." : "Mulai menulis kisah Anda..."}
+                    />
+                </div>
                 <div className="h-32" />
             </div>
-
-            <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
         </div>
     );
 }

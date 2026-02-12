@@ -34,18 +34,13 @@ export const KemudiBawah = () => {
     }, []);
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 p-4 pb-8 flex flex-col items-center z-50 pointer-events-none">
+        <div className="kemudi-bawah fixed bottom-0 left-0 right-0 p-4 pb-8 flex flex-col items-center z-50 pointer-events-none md:hidden">
             <AnimatePresence>
                 {!isOnline && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="mb-2 px-3 py-1 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center gap-1.5 shadow-lg"
-                    >
+                    <div className="mb-2 px-3 py-1 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center gap-1.5 shadow-lg">
                         <WifiOff size={10} />
                         MODE LURING
-                    </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
 
@@ -89,10 +84,7 @@ export const KemudiBawah = () => {
                                 className={`transition-colors duration-300 ${isActive ? 'text-blue-500' : 'text-slate-600 dark:text-slate-300'}`}
                             />
                             {isActive && (
-                                <motion.div
-                                    layoutId="nav-indicator"
-                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"
-                                />
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-blue-500" />
                             )}
                         </Link>
                     );

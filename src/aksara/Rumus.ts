@@ -13,6 +13,7 @@ export interface Note {
     isCredentials?: boolean;
     _hash?: string;
     _timestamp?: string;
+    syncStatus?: "synced" | "pending" | "error";
 }
 
 export interface Folder {

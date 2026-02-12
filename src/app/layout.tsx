@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/gaya/Utama.css";
 import { KemudiBawah } from "@/komponen/bersama/KemudiBawah";
+import { SidebarUtama } from "@/komponen/bersama/SidebarUtama";
 import { PintuBrankas } from "@/komponen/fitur/Brankas/PintuBrankas";
-import { PeralihanLembar } from "@/komponen/bersama/PeralihanLembar";
 import { PengaturSuasana } from "@/komponen/bersama/PengaturSuasana";
 import { PaletPerintah } from "@/komponen/bersama/PaletPerintah";
 import { PencarianCepat } from "@/komponen/bersama/PencarianCepat";
@@ -35,20 +35,21 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="id">
-            <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-black`}>
-                <div className="min-h-screen flex items-center justify-center p-0 sm:p-4">
-                    <main className="popup-container flex flex-col">
-                        <PengaturSuasana />
-                        <PintuBrankas>
+            <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-black overflow-x-hidden`}>
+                <main className="min-h-screen w-full flex">
+                    <PengaturSuasana />
+                    <PintuBrankas>
+                        <SidebarUtama />
+                        <div className="flex-1 flex flex-col relative min-h-screen bg-[var(--background)]">
                             <PaletPerintah />
                             <PencarianCepat />
-                            <PeralihanLembar>
+                            <div className="flex-1 w-full">
                                 {children}
-                            </PeralihanLembar>
+                            </div>
                             <KemudiBawah />
-                        </PintuBrankas>
-                    </main>
-                </div>
+                        </div>
+                    </PintuBrankas>
+                </main>
             </body>
         </html>
     );
