@@ -18,7 +18,8 @@ export const LayarKunciBrankas = () => {
     const [error, setError] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const { setVaultLocked, settings } = usePundi();
+    const setVaultLocked = usePundi(s => s.setVaultLocked);
+    const secretMode = usePundi(s => s.settings.secretMode);
 
     useEffect(() => {
         const checkVaultStatus = async () => {
@@ -98,7 +99,7 @@ export const LayarKunciBrankas = () => {
         );
     }
 
-    if (settings.secretMode === 'gmail' && !isSetupMode) {
+    if (secretMode === 'gmail' && !isSetupMode) {
         return <PenyamaranGmail onUnlock={(pw) => handleUnlock({ preventDefault: () => {} } as any, pw)} isLoading={isLoading} error={error} />;
     }
 

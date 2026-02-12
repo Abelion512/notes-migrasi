@@ -6,6 +6,7 @@ import { PintuBrankas } from "@/komponen/fitur/Brankas/PintuBrankas";
 import { PeralihanLembar } from "@/komponen/bersama/PeralihanLembar";
 import { PengaturSuasana } from "@/komponen/bersama/PengaturSuasana";
 import { PaletPerintah } from "@/komponen/bersama/PaletPerintah";
+import { PencarianCepat } from "@/komponen/bersama/PencarianCepat";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -40,6 +41,7 @@ export default function RootLayout({
                         <PengaturSuasana />
                         <PintuBrankas>
                             <PaletPerintah />
+                            <PencarianCepat />
                             <PeralihanLembar>
                                 {children}
                             </PeralihanLembar>

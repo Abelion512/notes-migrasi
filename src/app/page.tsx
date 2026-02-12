@@ -182,6 +182,14 @@ export default function NoteListPage() {
             <div style={style}>
                 <div
                     onClick={() => isEditMode ? toggleSelection(note.id) : null}
+                                        onDoubleClick={(e) => {
+                                            if (!isEditMode) {
+                                                navigator.clipboard.writeText(note.title || "Tanpa Judul");
+                                                setCopiedId(note.id);
+                                                haptic.success();
+                                                setTimeout(() => setCopiedId(null), 2000);
+                                            }
+                                        }}
                     className={`ios-list-item group h-full transition-colors ${isFocused ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
                 >
                     {isEditMode ? (
@@ -285,6 +293,14 @@ export default function NoteListPage() {
                                 <div key={note.id} className="relative overflow-hidden">
                                     <div
                                         onClick={() => isEditMode ? toggleSelection(note.id) : null}
+                                        onDoubleClick={(e) => {
+                                            if (!isEditMode) {
+                                                navigator.clipboard.writeText(note.title || "Tanpa Judul");
+                                                setCopiedId(note.id);
+                                                haptic.success();
+                                                setTimeout(() => setCopiedId(null), 2000);
+                                            }
+                                        }}
                                         className={`ios-list-item group ${isFocused ? 'bg-[var(--primary)]/5 border-l-2 border-[var(--primary)]' : ''}`}
                                     >
                                         {isEditMode ? (

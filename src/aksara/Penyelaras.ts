@@ -5,7 +5,8 @@ import { usePundi } from '@/aksara/Pundi';
 import { Brankas } from '@/aksara/Brankas';
 
 export const usePenyelaras = () => {
-    const { isVaultLocked, setVaultLocked } = usePundi();
+    const isVaultLocked = usePundi(s => s.isVaultLocked);
+    const setVaultLocked = usePundi(s => s.setVaultLocked);
 
     useEffect(() => {
         const channel = new BroadcastChannel('abelion-vault-sync');

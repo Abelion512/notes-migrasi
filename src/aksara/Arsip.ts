@@ -2,6 +2,7 @@ import { Gudang } from '@/aksara/Gudang';
 import { Brankas } from '@/aksara/Brankas';
 import { Note, EntityId } from '@/aksara/Rumus';
 import { v4 as uuidv4 } from 'uuid';
+import { Integritas } from '@/aksara/Integritas';
 
 export const Arsip = {
     /**
@@ -91,10 +92,13 @@ export const Arsip = {
         const base64Data = btoa(String.fromCharCode(...new Uint8Array(encrypted.data)));
         const secureContent = `${ivHex}|${base64Data}`;
 
+        const checkHash = await Integritas.hitungHash(note);
+
         const finalNote: Note = {
             ...note,
             content: secureContent,
             updatedAt: new Date().toISOString(),
+            _hash: checkHash,
         };
 
         if (!finalNote.id) {

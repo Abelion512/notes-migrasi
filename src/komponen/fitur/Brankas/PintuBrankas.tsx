@@ -11,7 +11,8 @@ interface VaultGateProps {
 }
 
 export const PintuBrankas = ({ children }: VaultGateProps) => {
-    const { isVaultLocked, settings } = usePundi();
+    const isVaultLocked = usePundi(state => state.isVaultLocked);
+    const secretMode = usePundi(state => state.settings.secretMode);
     const [isMounted, setIsMounted] = useState(false);
 
     // Sync vault status across tabs
@@ -27,13 +28,16 @@ export const PintuBrankas = ({ children }: VaultGateProps) => {
     useEffect(() => {
         if (!isMounted) return;
 
-        if (isVaultLocked && settings.secretMode === 'gmail') {
-            document.title = 'Gmail - Login';
-            // Optional: change favicon link if needed
+        // Note: Gmail camouflage handles its own title in PenyamaranGmail component.
+        // This effect handles the title for non-gmail locked states or unlocked state.
+        if (isVaultLocked) {
+            if (secretMode !== 'gmail') {
+                document.title = 'Abelion - Terkunci';
+            }
         } else {
             document.title = 'Abelion Notes';
         }
-    }, [isVaultLocked, settings.secretMode, isMounted]);
+    }, [isVaultLocked, secretMode, isMounted]);
 
     // Prevent hydration mismatch
     if (!isMounted) return null;

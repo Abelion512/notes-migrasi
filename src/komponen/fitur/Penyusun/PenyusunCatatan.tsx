@@ -6,10 +6,10 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisMiring';
 import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Bold, Italic, Strikethrough,
-    Heading1, Heading2, List, ListOrdered
+    Heading1, Heading2, List, ListOrdered, Type, Code
 } from 'lucide-react';
 
 interface PenyusunCatatanProps {
@@ -25,6 +25,7 @@ export const PenyusunCatatan = ({
     editable = true,
     placeholder = 'Mulai menulis kisah Anda...'
 }: PenyusunCatatanProps) => {
+    const [isMonospace, setIsMonospace] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -46,7 +47,7 @@ export const PenyusunCatatan = ({
         },
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none min-h-[calc(100vh-300px)] text-[var(--text-primary)]',
+                class: `prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none min-h-[calc(100vh-300px)] text-[var(--text-primary)] ${isMonospace ? 'font-mono' : 'font-sans'}`,
             },
         },
         immediatelyRender: false,
@@ -60,6 +61,16 @@ export const PenyusunCatatan = ({
         <div className="relative w-full h-full">
             {editable && (
                 <>
+                    <div className="absolute top-[-45px] right-0 flex items-center gap-2 z-10">
+                        <button
+                            onClick={() => setIsMonospace(!isMonospace)}
+                            className={`p-1.5 rounded-md border transition-all ${isMonospace ? 'bg-blue-500/10 border-blue-500/30 text-blue-500' : 'bg-[var(--surface)] border-[var(--separator)]/30 text-[var(--text-secondary)] opacity-40 hover:opacity-100'}`}
+                            title="Tampilan Monospace (Developer Mode)"
+                        >
+                            <Code size={16} />
+                        </button>
+                    </div>
+
                     <BubbleMenu
                         editor={editor}
                         className="flex items-center gap-1 p-1 rounded-xl bg-[var(--background)] border border-[var(--separator)] shadow-lg backdrop-blur-md"

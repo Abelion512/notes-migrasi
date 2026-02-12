@@ -11,6 +11,8 @@ export interface Note {
     createdAt: string;
     updatedAt: string;
     isCredentials?: boolean;
+    _hash?: string;
+    _timestamp?: string;
 }
 
 export interface Folder {
