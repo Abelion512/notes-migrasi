@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, use } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
@@ -11,8 +10,9 @@ import { getIconForService } from '@/aksara/IkonLayanan';
 import dynamic from 'next/dynamic';
 import {
     ChevronLeft, Share, Trash2, MoreHorizontal,
-    CloudCheck, Cloud, ShieldCheck, ShieldAlert
+    CloudCheck, ShieldCheck, ShieldAlert
 } from 'lucide-react';
+import { PenyusunKredensial } from '@/komponen/fitur/Kredensial/PenyusunKredensial';
 
 const PenyusunCatatan = dynamic(
     () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
@@ -26,6 +26,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isCredentials, setIsCredentials] = useState(false);
+    const [kredensial, setKredensial] = useState({ username: '', password: '', url: '' });
     const [isSaving, setIsSaving] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -34,6 +35,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     const debouncedTitle = useGunakanTunda(title, 2000);
     const debouncedContent = useGunakanTunda(content, 2000);
     const debouncedIsCreds = useGunakanTunda(isCredentials, 2000);
+    const debouncedKred = useGunakanTunda(kredensial, 2000);
 
     useEffect(() => {
         const loadNote = async () => {
@@ -44,6 +46,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     setTitle(data.title);
                     setContent(data.content);
                     setIsCredentials(!!data.isCredentials);
+                    if (data.kredensial) setKredensial(data.kredensial as any);
                 } else {
                     router.push('/');
                 }
@@ -59,7 +62,12 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     useEffect(() => {
         if (isLoaded && note) {
             const autosave = async () => {
-                if (debouncedTitle === note.title && debouncedContent === note.content && debouncedIsCreds === note.isCredentials) return;
+                const isUnchanged = debouncedTitle === note.title &&
+                                  debouncedContent === note.content &&
+                                  debouncedIsCreds === note.isCredentials &&
+                                  JSON.stringify(debouncedKred) === JSON.stringify(note.kredensial);
+
+                if (isUnchanged) return;
 
                 setSaveStatus('saving');
                 try {
@@ -68,6 +76,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                         title: debouncedTitle || 'Tanpa Judul',
                         content: debouncedContent,
                         isCredentials: debouncedIsCreds,
+                        kredensial: debouncedKred
                     });
                     setNote(updatedNote);
                     setSaveStatus('saved');
@@ -79,7 +88,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
             };
             autosave();
         }
-    }, [debouncedTitle, debouncedContent, debouncedIsCreds, isLoaded, note]);
+    }, [debouncedTitle, debouncedContent, debouncedIsCreds, debouncedKred, isLoaded, note]);
 
     const handleSaveManual = async () => {
         if (!note) return;
@@ -91,6 +100,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 title: title || 'Tanpa Judul',
                 content: content,
                 isCredentials: isCredentials,
+                kredensial: kredensial
             });
             setNote(updatedNote);
             haptic.success();
@@ -116,57 +126,36 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     };
 
     if (!isLoaded) {
-        return (
-            <div className="flex-1 flex flex-col h-screen bg-[var(--background)] p-10">
-                <div className="h-8 w-1/3 bg-[var(--separator)]/20 rounded-lg mb-8 animate-pulse"></div>
-                <div className="h-4 w-full bg-[var(--separator)]/10 rounded-lg mb-4 animate-pulse"></div>
-            </div>
-        );
+        return <div className="p-20 text-center opacity-30">Menyiapkan Enkripsi...</div>;
     }
 
     const currentIcon = isCredentials ? getIconForService(title, 28) : null;
 
     return (
         <div className="flex-1 flex flex-col h-screen bg-[var(--background)]">
-            {/* Toolbar */}
             <div className="snappy-header">
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => { haptic.light(); router.back(); }}
-                        className="text-[var(--primary)] flex items-center gap-1 active:opacity-40 transition-opacity"
-                    >
+                    <button onClick={() => { haptic.light(); router.back(); }} className="text-[var(--primary)] active:opacity-40">
                         <ChevronLeft size={24} />
                     </button>
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-50">
-                            {saveStatus === 'saving' ? 'Menyimpan...' : saveStatus === 'saved' ? 'Tersimpan' : 'Editor'}
-                        </span>
-                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-50">
+                        {saveStatus === 'saving' ? 'Menyimpan...' : saveStatus === 'saved' ? 'Tersimpan' : 'Editor'}
+                    </span>
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-4">
                     {saveStatus === 'saved' && <CloudCheck size={20} className="text-green-500" />}
-
                     <button
-                        onClick={() => { haptic.medium(); setIsCredentials(!isCredentials); }}
+                        onClick={() => { haptic.medium(); setIsCredentials(!isCredentials); }} title='Identitas Credentials'
                         className={`p-2 rounded-full transition-all ${isCredentials ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-muted)] opacity-50'}`}
-                        title="Identitas Credentials"
                     >
                         {isCredentials ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
                     </button>
-
-                    <button
-                        onClick={() => { haptic.light(); setShowOptions(!showOptions); }}
-                        className="text-[var(--text-primary)] active:opacity-40"
-                    >
+                    <button onClick={() => { haptic.light(); setShowOptions(!showOptions); }} className="text-[var(--text-primary)]">
                         <MoreHorizontal size={22} />
                     </button>
-                    <button
-                        onClick={handleSaveManual}
-                        disabled={isSaving || (title === note?.title && content === note?.content && isCredentials === note?.isCredentials)}
-                        className="text-[var(--primary)] text-[17px] font-bold disabled:opacity-30 transition-opacity"
-                    >
-                        {isSaving ? '...' : 'Selesai'}
+                    <button onClick={handleSaveManual} disabled={isSaving} className="text-[var(--primary)] text-[17px] font-bold">
+                        Selesai
                     </button>
                 </div>
             </div>
@@ -175,13 +164,6 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px]" onClick={() => setShowOptions(false)} />
                     <div className="w-full max-w-sm glass-card p-2 z-10 shadow-2xl">
-                        <button className="ios-list-item w-full text-left" onClick={() => setShowOptions(false)}>
-                            <div className="flex items-center gap-3">
-                                <Share size={18} className="text-[var(--primary)]" />
-                                <span className="font-semibold">Bagikan</span>
-                            </div>
-                        </button>
-                        <div className="ios-separator"></div>
                         <button className="ios-list-item w-full text-left" onClick={() => { setShowOptions(false); handleDelete(); }}>
                             <div className="flex items-center gap-3 text-red-500">
                                 <Trash2 size={18} />
@@ -192,7 +174,6 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 </div>
             )}
 
-            {/* Editor */}
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
                 <div className="flex items-center gap-3 mb-6 max-w-4xl mx-auto w-full">
                     {isCredentials && (
@@ -204,20 +185,22 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder={isCredentials ? "Nama Layanan / Akun..." : "Judul Catatan..."}
+                        placeholder={isCredentials ? "Layanan / Akun..." : "Judul..."}
                         className="flex-1 text-3xl font-bold bg-transparent border-none focus:outline-none placeholder:text-[var(--text-secondary)]/20"
                     />
                 </div>
+
                 <div className="max-w-4xl mx-auto w-full">
+                    {isCredentials && (
+                        <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as any)} />
+                    )}
                     <PenyusunCatatan
                         content={content}
                         onChange={(val) => {
                             setContent(val);
-                            if (saveStatus === 'saved' || saveStatus === 'idle') {
-                                setSaveStatus('idle');
-                            }
+                            if (saveStatus !== 'saving') setSaveStatus('idle');
                         }}
-                        placeholder={isCredentials ? "Tulis detail akun..." : "Lanjutkan kisah..."}
+                        placeholder={isCredentials ? "Catatan tambahan (seperti pertanyaan keamanan)..." : "Mulai menulis..."}
                     />
                 </div>
                 <div className="h-32" />

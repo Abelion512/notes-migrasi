@@ -3,7 +3,7 @@ export type EntityId = string;
 export interface Note {
     id: EntityId;
     title: string;
-    content: string; // Encrypted string
+    content: string; // Encrypted blob (iv|data)
     folderId: EntityId | null;
     isPinned: boolean;
     isFavorite: boolean;
@@ -11,6 +11,11 @@ export interface Note {
     createdAt: string;
     updatedAt: string;
     isCredentials?: boolean;
+    kredensial?: {
+        username?: string;
+        password?: string;
+        url?: string;
+    };
     _hash?: string;
     _timestamp?: string;
     syncStatus?: "synced" | "pending" | "error";

@@ -7,6 +7,7 @@ import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import dynamic from 'next/dynamic';
 import { ChevronLeft, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { PenyusunKredensial } from '@/komponen/fitur/Kredensial/PenyusunKredensial';
 
 const PenyusunCatatan = dynamic(
     () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
@@ -18,10 +19,11 @@ export default function AddNotePage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isCredentials, setIsCredentials] = useState(false);
+    const [kredensial, setKredensial] = useState({ username: '', password: '', url: '' });
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSave = async () => {
-        if (!content.trim() && !title.trim()) return;
+        if (!content.trim() && !title.trim() && !kredensial.username) return;
 
         setIsSaving(true);
         try {
@@ -35,56 +37,41 @@ export default function AddNotePage() {
                 tags: [],
                 createdAt: new Date().toISOString(),
                 isCredentials: isCredentials,
+                kredensial: isCredentials ? kredensial : undefined
             });
             haptic.success();
             router.push('/');
         } catch (error) {
             console.error('Failed to save note:', error);
             haptic.error();
-            alert('Gagal menyimpan catatan. Pastikan Vault terbuka.');
         } finally {
             setIsSaving(false);
         }
-    };
-
-    const toggleCredentials = () => {
-        haptic.medium();
-        setIsCredentials(!isCredentials);
     };
 
     const currentIcon = isCredentials ? getIconForService(title, 28) : null;
 
     return (
         <div className="flex-1 flex flex-col h-screen bg-[var(--background)]">
-            {/* Toolbar */}
             <div className="snappy-header">
-                <button
-                    onClick={() => { haptic.light(); router.back(); }}
-                    className="text-[var(--primary)] flex items-center gap-1 active:opacity-40 transition-opacity"
-                >
+                <button onClick={() => { haptic.light(); router.back(); }} className="text-[var(--primary)] flex items-center gap-1 active:opacity-40 transition-opacity">
                     <ChevronLeft size={24} />
                     <span className="text-[17px] font-semibold">Batal</span>
                 </button>
 
                 <div className="flex items-center gap-4">
                     <button
-                        onClick={toggleCredentials}
+                        onClick={() => { haptic.medium(); setIsCredentials(!isCredentials); }} title='Identitas Credentials'
                         className={`p-2 rounded-full transition-all ${isCredentials ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-muted)] opacity-50'}`}
-                        title="Identitas Credentials"
                     >
                         {isCredentials ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
                     </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving || (!title && !content)}
-                        className="text-[var(--primary)] text-[17px] font-bold disabled:opacity-30 transition-opacity"
-                    >
-                        {isSaving ? '...' : 'Simpan'}
+                    <button onClick={handleSave} disabled={isSaving || (!title && !content && !kredensial.username)} className="text-[var(--primary)] text-[17px] font-bold">
+                        Simpan
                     </button>
                 </div>
             </div>
 
-            {/* Editor */}
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
                 <div className="flex items-center gap-3 mb-6 max-w-4xl mx-auto w-full">
                     {isCredentials && (
@@ -102,10 +89,13 @@ export default function AddNotePage() {
                     />
                 </div>
                 <div className="max-w-4xl mx-auto w-full">
+                    {isCredentials && (
+                        <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as any)} />
+                    )}
                     <PenyusunCatatan
                         content={content}
                         onChange={setContent}
-                        placeholder={isCredentials ? "Tulis password, email, atau detail login lainnya..." : "Mulai menulis kisah Anda..."}
+                        placeholder={isCredentials ? "Catatan tambahan..." : "Mulai menulis kisah Anda..."}
                     />
                 </div>
                 <div className="h-32" />
