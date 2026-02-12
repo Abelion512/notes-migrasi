@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/gaya/Utama.css";
 import { KemudiBawah } from "@/komponen/bersama/KemudiBawah";
-import { SidebarUtama } from "@/komponen/bersama/SidebarUtama";
 import { PintuBrankas } from "@/komponen/fitur/Brankas/PintuBrankas";
 import { PengaturSuasana } from "@/komponen/bersama/PengaturSuasana";
 import { PaletPerintah } from "@/komponen/bersama/PaletPerintah";
@@ -39,11 +38,10 @@ export default function RootLayout({
                 <main className="min-h-screen w-full flex">
                     <PengaturSuasana />
                     <PintuBrankas>
-                        <SidebarUtama />
                         <div className="flex-1 flex flex-col relative min-h-screen bg-[var(--background)]">
                             <PaletPerintah />
                             <PencarianCepat />
-                            <div className="flex-1 w-full">
+                            <div className="flex-1 w-full pb-32">
                                 {children}
                             </div>
                             <KemudiBawah />

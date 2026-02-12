@@ -74,6 +74,14 @@ export const Arsip = {
             throw new Error('Vault is locked. Cannot save data.');
         }
 
+        const checkHash = await Integritas.hitungHash(note);
+
+        // Check if we actually need to save (Compare decrypted content hash)
+        const existing = await Gudang.get("notes", note.id || "");
+        if (existing && existing._hash === checkHash) {
+            return existing;
+        }
+
         // Encrypt main content
         const encrypted = await Brankas.encrypt(note.content);
         const ivHex = Array.from(encrypted.iv).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -87,11 +95,8 @@ export const Arsip = {
             const encCred = await Brankas.encrypt(credString);
             const credIvHex = Array.from(encCred.iv).map(b => b.toString(16).padStart(2, '0')).join('');
             const credBase64 = btoa(String.fromCharCode(...new Uint8Array(encCred.data)));
-            // We reuse the 'kredensial' field but store it as an encrypted string (type casting hack for DB)
             (secureKredensial as any) = `${credIvHex}|${credBase64}`;
         }
-
-        const checkHash = await Integritas.hitungHash(note);
 
         const finalNote: Note = {
             ...note,
@@ -130,27 +135,33 @@ export const Arsip = {
         try {
             let decryptedContent = note.content;
             if (note.content.includes('|')) {
-                const [ivHex, base64Data] = note.content.split('|');
-                const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-                const binaryString = atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
+                const parts = note.content.split('|');
+                if (parts.length === 2) {
+                    const [ivHex, base64Data] = parts;
+                    const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+                    const binaryString = atob(base64Data);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    decryptedContent = await Brankas.decrypt(bytes.buffer, iv);
                 }
-                decryptedContent = await Brankas.decrypt(bytes.buffer, iv);
             }
 
             let decryptedCreds = note.kredensial;
             if (typeof note.kredensial === 'string' && (note.kredensial as any as string).includes('|')) {
-                const [ivHex, base64Data] = (note.kredensial as string).split('|');
-                const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-                const binaryString = atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
+                const parts = (note.kredensial as string).split('|');
+                if (parts.length === 2) {
+                    const [ivHex, base64Data] = parts;
+                    const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+                    const binaryString = atob(base64Data);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    const credString = await Brankas.decrypt(bytes.buffer, iv);
+                    decryptedCreds = JSON.parse(credString);
                 }
-                const credString = await Brankas.decrypt(bytes.buffer, iv);
-                decryptedCreds = JSON.parse(credString);
             }
 
             return {
@@ -168,12 +179,6 @@ export const Arsip = {
     },
 
     async deleteNote(id: EntityId) {
-        const note = await Gudang.get('notes', id) as Note;
-        if (note) {
-            const junk = crypto.getRandomValues(new Uint8Array(100));
-            const junkString = btoa(String.fromCharCode(...junk));
-            await Gudang.set('notes', id, { ...note, content: junkString, title: 'DELETED' });
-        }
         await Gudang.delete('notes', id);
     },
 

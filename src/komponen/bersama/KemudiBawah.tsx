@@ -50,7 +50,7 @@ export const KemudiBawah = () => {
     };
 
     return (
-        <div className="kemudi-bawah fixed bottom-0 left-0 right-0 p-4 pb-10 flex flex-col items-center z-[100] pointer-events-none md:hidden">
+        <div className="kemudi-bawah fixed bottom-0 left-0 right-0 p-4 pb-8 flex flex-col items-center z-[100] pointer-events-none">
             <AnimatePresence>
                 {!isOnline && (
                     <motion.div
@@ -125,7 +125,7 @@ export const KemudiBawah = () => {
 
             <nav
                 aria-label="Navigasi Utama"
-                className="glass-card flex items-center justify-around gap-2 px-6 py-3 min-w-[320px] pointer-events-auto rounded-full shadow-lg border border-white/20 relative"
+                className="glass-card flex items-center justify-around gap-2 px-6 py-3 min-w-[320px] max-w-lg w-full pointer-events-auto rounded-full shadow-lg border border-white/20 relative !overflow-visible"
             >
                 {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.path;
@@ -141,7 +141,7 @@ export const KemudiBawah = () => {
                             >
                                 <motion.div
                                     animate={{ rotate: isMenuOpen ? 135 : 0 }}
-                                    className={`w-14 h-14 -mt-8 rounded-full flex items-center justify-center text-white shadow-xl transition-colors ${isMenuOpen ? 'bg-red-500' : 'bg-blue-500'}`}
+                                    className={`w-14 h-14 -mt-10 rounded-full flex items-center justify-center text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-4 border-[var(--background)] transition-colors ${isMenuOpen ? 'bg-red-500' : 'bg-blue-500'}`}
                                 >
                                     {isMenuOpen ? <X size={28} /> : <Plus size={28} />}
                                 </motion.div>

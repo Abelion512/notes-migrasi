@@ -6,7 +6,7 @@ import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import dynamic from 'next/dynamic';
-import { ChevronLeft, ShieldCheck, ShieldAlert, CheckSquare, Terminal } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { PenyusunKredensial } from '@/komponen/fitur/Kredensial/PenyusunKredensial';
 
 const PenyusunCatatan = dynamic(
@@ -25,7 +25,14 @@ function AddNoteContent() {
     const [kredensial, setKredensial] = useState({ username: '', password: '', url: '' });
     const [isSaving, setIsSaving] = useState(false);
 
+    // Reset and apply mode when URL changes
     useEffect(() => {
+        // Reset state first
+        setTitle('');
+        setContent('');
+        setIsCredentials(false);
+        setKredensial({ username: '', password: '', url: '' });
+
         if (mode === 'credentials') {
             setIsCredentials(true);
         } else if (mode === 'checklist') {
@@ -87,7 +94,7 @@ function AddNoteContent() {
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
                 <div className="flex items-center gap-3 mb-6 max-w-6xl mx-auto w-full">
                     {isCredentials && (
-                        <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
+                        <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10 overflow-hidden">
                             {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
                         </div>
                     )}

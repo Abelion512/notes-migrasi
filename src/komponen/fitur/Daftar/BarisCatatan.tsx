@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
 import {
     CheckCircle2, FileText, Pin, Copy, Check
@@ -19,7 +19,17 @@ interface BarisCatatanProps {
     isCopied: boolean;
 }
 
-export const BarisCatatan = ({
+// Global parser instance to avoid re-creation
+let sharedParser: DOMParser | null = null;
+
+const stripHtml = (html: string) => {
+    if (typeof window === 'undefined') return "";
+    if (!sharedParser) sharedParser = new DOMParser();
+    const doc = sharedParser.parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+};
+
+export const BarisCatatan = memo(({
     note, isSelected, isEditMode, onToggle, onCopy, isCopied
 }: BarisCatatanProps) => {
     const [preview, setPreview] = useState<string>('Memuat...');
@@ -34,36 +44,29 @@ export const BarisCatatan = ({
                 if (note.content.includes('|')) {
                     const decrypted = await Arsip.decryptNote(note);
                     if (isMounted) {
-                        const stripHtml = (html: string) => {
-                            if (typeof window === 'undefined') return "";
-                            const doc = new DOMParser().parseFromString(html, 'text/html');
-                            return doc.body.textContent || "";
-                        };
                         const text = stripHtml(decrypted.content);
                         setPreview(text.length > 80 ? text.substring(0, 80) + '...' : text || 'Tanpa isi');
                     }
                 } else {
-                    setPreview(note.content || 'Tanpa isi');
+                    if (isMounted) setPreview(note.content || 'Tanpa isi');
                 }
             } catch (err) {
                 if (isMounted) setPreview('⚠️ Terkunci');
             }
         };
 
-        // We use a small timeout to avoid blocking initial render of multiple items
-        const timeout = setTimeout(loadPreview, 10);
+        // Delay decryption slightly to prioritize UI smoothness
+        const timeout = setTimeout(loadPreview, 50);
         return () => {
             isMounted = false;
             clearTimeout(timeout);
         };
-    }, [note]);
+    }, [note.id, note.content, note.updatedAt]); // Only re-run if these specific fields change
 
     const handleDoubleClick = () => {
         if (!isEditMode) {
             navigator.clipboard.writeText(note.title || "Tanpa Judul");
             haptic.success();
-            // We rely on parent for visual feedback if needed,
-            // but double click usually implies silent success in this app
         }
     };
 
@@ -123,4 +126,4 @@ export const BarisCatatan = ({
             </div>
         </div>
     );
-};
+});

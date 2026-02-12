@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
@@ -38,6 +38,9 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     const debouncedIsCreds = useGunakanTunda(isCredentials, 1000);
     const debouncedKred = useGunakanTunda(kredensial, 1000);
 
+    // Track last saved state to prevent infinite loops
+    const lastSavedHash = useRef("");
+
     useEffect(() => {
         const loadNote = async () => {
             try {
@@ -48,6 +51,14 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     setContent(data.content);
                     setIsCredentials(!!data.isCredentials);
                     if (data.kredensial) setKredensial(data.kredensial as any);
+
+                    // Initialize hash
+                    lastSavedHash.current = JSON.stringify({
+                        title: data.title,
+                        content: data.content,
+                        isCredentials: !!data.isCredentials,
+                        kredensial: data.kredensial
+                    });
                 } else {
                     router.push('/');
                 }
@@ -63,12 +74,23 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     useEffect(() => {
         if (isLoaded && note) {
             const autosave = async () => {
-                const isUnchanged = debouncedTitle === note.title &&
+                const currentDataStr = JSON.stringify({
+                    title: debouncedTitle,
+                    content: debouncedContent,
+                    isCredentials: debouncedIsCreds,
+                    kredensial: debouncedKred
+                });
+
+                // Prevent recursive saves if content hasn't changed from what we just saved
+                if (lastSavedHash.current === currentDataStr) return;
+
+                // Compare with original note to avoid unnecessary work
+                const isUnchangedFromOriginal = debouncedTitle === note.title &&
                                   debouncedContent === note.content &&
                                   debouncedIsCreds === note.isCredentials &&
                                   JSON.stringify(debouncedKred) === JSON.stringify(note.kredensial);
 
-                if (isUnchanged) return;
+                if (isUnchangedFromOriginal) return;
 
                 setSaveStatus('saving');
                 try {
@@ -80,6 +102,9 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                         kredensial: debouncedKred
                     });
 
+                    lastSavedHash.current = currentDataStr;
+
+                    // Update local note reference but keep decrypted values
                     setNote({
                         ...updatedNote,
                         content: debouncedContent,
@@ -109,6 +134,8 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 isCredentials: isCredentials,
                 kredensial: kredensial
             });
+
+            lastSavedHash.current = JSON.stringify({ title, content, isCredentials, kredensial });
 
             setNote({
                 ...updatedNote,
