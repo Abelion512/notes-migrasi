@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     Home, Search, PlusSquare, User, Settings,
-    ShieldCheck, Database, LayoutGrid
+    ShieldCheck, Database, LayoutGrid, FileText, CheckSquare
 } from 'lucide-react';
 import { haptic } from '@/aksara/Indera';
 
@@ -15,9 +15,14 @@ export const SidebarUtama = () => {
     const menuItems = [
         { icon: Home, label: 'Beranda', path: '/' },
         { icon: Search, label: 'Cari', path: '/cari' },
-        { icon: PlusSquare, label: 'Tambah', path: '/tambah' },
         { icon: User, label: 'Jatidiri', path: '/jatidiri' },
         { icon: Settings, label: 'Laras', path: '/laras' },
+    ];
+
+    const quickActions = [
+        { icon: FileText, label: 'Catatan Baru', path: '/tambah', color: 'text-blue-500' },
+        { icon: ShieldCheck, label: 'Kredensial', path: '/tambah?mode=credentials', color: 'text-purple-500' },
+        { icon: CheckSquare, label: 'Log & Tugas', path: '/tambah?mode=checklist', color: 'text-emerald-500' },
     ];
 
     return (
@@ -29,26 +34,48 @@ export const SidebarUtama = () => {
                 <span className="font-bold text-lg tracking-tight">Abelion</span>
             </div>
 
-            <nav className="flex-1 space-y-1">
-                {menuItems.map((item) => {
-                    const isActive = pathname === item.path;
-                    return (
+            <div className="mb-8">
+                <p className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Navigasi</p>
+                <nav className="space-y-1">
+                    {menuItems.map((item) => {
+                        const isActive = pathname === item.path;
+                        return (
+                            <Link
+                                key={item.path}
+                                href={item.path}
+                                onClick={() => haptic.light()}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                                    isActive
+                                    ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'
+                                }`}
+                            >
+                                <item.icon size={20} className={isActive ? 'text-white' : 'opacity-70'} />
+                                <span className="font-medium text-[15px] truncate">{item.label}</span>
+                            </Link>
+                        );
+                    })}
+                </nav>
+            </div>
+
+            <div className="mb-8">
+                <p className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Aksi Cepat</p>
+                <div className="space-y-1">
+                    {quickActions.map((action) => (
                         <Link
-                            key={item.path}
-                            href={item.path}
+                            key={action.path}
+                            href={action.path}
                             onClick={() => haptic.light()}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
-                                isActive
-                                ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
-                                : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'
-                            }`}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[var(--text-secondary)] hover:bg-[var(--background)] transition-all group"
                         >
-                            <item.icon size={20} className={isActive ? 'text-white' : 'opacity-70'} />
-                            <span className="font-medium text-[15px]">{item.label}</span>
+                            <div className={`p-1.5 rounded-lg bg-current/5 ${action.color}`}>
+                                <action.icon size={18} />
+                            </div>
+                            <span className="font-medium text-[14px] truncate">{action.label}</span>
                         </Link>
-                    );
-                })}
-            </nav>
+                    ))}
+                </div>
+            </div>
 
             <div className="mt-auto p-4 bg-[var(--background)] rounded-2xl border border-[var(--separator)]/10">
                 <div className="flex items-center gap-2 text-xs font-bold text-blue-500 uppercase tracking-widest mb-1">

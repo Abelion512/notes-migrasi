@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import dynamic from 'next/dynamic';
-import { ChevronLeft, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, ShieldAlert, CheckSquare, Terminal } from 'lucide-react';
 import { PenyusunKredensial } from '@/komponen/fitur/Kredensial/PenyusunKredensial';
 
 const PenyusunCatatan = dynamic(
@@ -14,13 +14,25 @@ const PenyusunCatatan = dynamic(
     { ssr: false, loading: () => <div className="h-64 flex items-center justify-center text-[var(--text-secondary)]">Memuat Editor...</div> }
 );
 
-export default function AddNotePage() {
+function AddNoteContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const mode = searchParams.get('mode');
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isCredentials, setIsCredentials] = useState(false);
     const [kredensial, setKredensial] = useState({ username: '', password: '', url: '' });
     const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (mode === 'credentials') {
+            setIsCredentials(true);
+        } else if (mode === 'checklist') {
+            setTitle('Log & Tugas - ' + new Date().toLocaleDateString('id-ID'));
+            setContent('<ul data-type="taskList"><li data-checked="false"><p>Tugas Utama</p></li><li data-checked="false"><p></p></li></ul>');
+        }
+    }, [mode]);
 
     const handleSave = async () => {
         if (!content.trim() && !title.trim() && !kredensial.username) return;
@@ -73,7 +85,7 @@ export default function AddNotePage() {
             </div>
 
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-3 mb-6 max-w-4xl mx-auto w-full">
+                <div className="flex items-center gap-3 mb-6 max-w-6xl mx-auto w-full">
                     {isCredentials && (
                         <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
                             {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
@@ -88,18 +100,26 @@ export default function AddNotePage() {
                         autoFocus
                     />
                 </div>
-                <div className="max-w-4xl mx-auto w-full">
+                <div className="max-w-6xl mx-auto w-full">
                     {isCredentials && (
                         <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as any)} />
                     )}
                     <PenyusunCatatan
                         content={content}
                         onChange={setContent}
-                        placeholder={isCredentials ? "Catatan tambahan..." : "Mulai menulis kisah Anda..."}
+                        placeholder={isCredentials ? "Catatan tambahan..." : "Mulai menulis..."}
                     />
                 </div>
                 <div className="h-32" />
             </div>
         </div>
+    );
+}
+
+export default function AddNotePage() {
+    return (
+        <Suspense fallback={<div className="p-20 text-center opacity-30">Menyiapkan...</div>}>
+            <AddNoteContent />
+        </Suspense>
     );
 }

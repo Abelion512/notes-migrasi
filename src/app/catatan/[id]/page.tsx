@@ -9,7 +9,7 @@ import { Note } from '@/aksara/Rumus';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import dynamic from 'next/dynamic';
 import {
-    ChevronLeft, Share, Trash2, MoreHorizontal,
+    ChevronLeft, Trash2, MoreHorizontal,
     CloudCheck, ShieldCheck, ShieldAlert
 } from 'lucide-react';
 import { PenyusunKredensial } from '@/komponen/fitur/Kredensial/PenyusunKredensial';
@@ -32,10 +32,11 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     const [showOptions, setShowOptions] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
-    const debouncedTitle = useGunakanTunda(title, 2000);
-    const debouncedContent = useGunakanTunda(content, 2000);
-    const debouncedIsCreds = useGunakanTunda(isCredentials, 2000);
-    const debouncedKred = useGunakanTunda(kredensial, 2000);
+    // Debounce for autosave
+    const debouncedTitle = useGunakanTunda(title, 1000);
+    const debouncedContent = useGunakanTunda(content, 1000);
+    const debouncedIsCreds = useGunakanTunda(isCredentials, 1000);
+    const debouncedKred = useGunakanTunda(kredensial, 1000);
 
     useEffect(() => {
         const loadNote = async () => {
@@ -78,7 +79,13 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                         isCredentials: debouncedIsCreds,
                         kredensial: debouncedKred
                     });
-                    setNote(updatedNote);
+
+                    setNote({
+                        ...updatedNote,
+                        content: debouncedContent,
+                        kredensial: debouncedKred as any
+                    });
+
                     setSaveStatus('saved');
                     setTimeout(() => setSaveStatus('idle'), 3000);
                 } catch (error) {
@@ -102,7 +109,13 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 isCredentials: isCredentials,
                 kredensial: kredensial
             });
-            setNote(updatedNote);
+
+            setNote({
+                ...updatedNote,
+                content: content,
+                kredensial: kredensial as any
+            });
+
             haptic.success();
             setSaveStatus('saved');
             setTimeout(() => setSaveStatus('idle'), 3000);
@@ -175,7 +188,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
             )}
 
             <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-3 mb-6 max-w-4xl mx-auto w-full">
+                <div className="flex items-center gap-3 mb-6 max-w-6xl mx-auto w-full">
                     {isCredentials && (
                         <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
                             {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
@@ -190,7 +203,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     />
                 </div>
 
-                <div className="max-w-4xl mx-auto w-full">
+                <div className="max-w-6xl mx-auto w-full">
                     {isCredentials && (
                         <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as any)} />
                     )}

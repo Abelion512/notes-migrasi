@@ -4,13 +4,19 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { common, createLowlight } from 'lowlight';
 import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisMiring';
 import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
 import React, { useState } from 'react';
 import {
-    Bold, Italic, Strikethrough,
-    Heading1, Heading2, List, ListOrdered, Type, Code
+    Bold, Italic, Heading1, Heading2, List, Code, Terminal
 } from 'lucide-react';
+
+// Import highlight.js styles
+import 'highlight.js/styles/github-dark.css';
+
+const lowlight = createLowlight(common);
 
 interface PenyusunCatatanProps {
     content: string;
@@ -33,6 +39,10 @@ export const PenyusunCatatan = ({
                 heading: {
                     levels: [1, 2],
                 },
+                codeBlock: false,
+            }),
+            CodeBlockLowlight.configure({
+                lowlight,
             }),
             Placeholder.configure({
                 placeholder: placeholder,
@@ -67,7 +77,7 @@ export const PenyusunCatatan = ({
                             className={`p-1.5 rounded-md border transition-all ${isMonospace ? 'bg-blue-500/10 border-blue-500/30 text-blue-500' : 'bg-[var(--surface)] border-[var(--separator)]/30 text-[var(--text-secondary)] opacity-40 hover:opacity-100'}`}
                             title="Tampilan Monospace (Developer Mode)"
                         >
-                            <Code size={16} />
+                            <Terminal size={16} />
                         </button>
                     </div>
 
@@ -88,10 +98,10 @@ export const PenyusunCatatan = ({
                             <Italic size={16} />
                         </button>
                         <button
-                            onClick={() => editor.chain().focus().toggleStrike().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('strike') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
+                            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('codeBlock') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
                         >
-                            <Strikethrough size={16} />
+                            <Code size={16} />
                         </button>
                     </BubbleMenu>
 
@@ -118,10 +128,10 @@ export const PenyusunCatatan = ({
                             <List size={16} />
                         </button>
                         <button
-                            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('orderedList') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
+                            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('codeBlock') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
                         >
-                            <ListOrdered size={16} />
+                            <Terminal size={16} />
                         </button>
                     </FloatingMenu>
                 </>

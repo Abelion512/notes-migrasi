@@ -1,24 +1,20 @@
-# Peta Jalan Peningkatan Abelion Notes (Terarah & Tepat Sasaran)
+# Peta Jalan Peningkatan Abelion Notes (V3 - Developer Focused)
 
 ## ✅ Selesai Diimplementasikan
-1.  **Popup Window Aesthetic:** Aplikasi berjalan dalam kontainer popup terpusat pada desktop untuk kesan "native app".
-2.  **Identitas Credentials Otomatis:** Deteksi ikon brand (Google, GitHub, Gemini, Claude, dsb) secara real-time berdasarkan judul catatan.
-3.  **Quick Copy:** Tombol salin cepat di daftar catatan untuk akses instan ke kredensial tanpa membuka detail.
-4.  **Gmail Camouflage (Secret Mode):** Penyamaran brankas dengan layar login Google yang identik (font, kontras, dan spacing ditingkatkan).
-5.  **Smart Date Parser:** Ekstensi editor untuk mengubah "@besok" dsb menjadi tanggal terformat.
-6.  **Peta Memori (Graph View):** Visualisasi hubungan antar catatan.
+1.  **Fixed Autosave Loop:** Optimasi mesin enkripsi agar tidak terus-menerus menyimpan data yang sama.
+2.  **Full-Screen Support:** Kontainer catatan melebar secara responsif di desktop (macOS) untuk kenyamanan monitor lebar.
+3.  **Quick Capture Menu:** Menu ekspansi bergaya Telegram untuk membuat Catatan, Kredensial, atau Checklist dalam 1 klik.
+4.  **Syntax Highlighting:** Dukungan blok kode berwarna di dalam editor (Developer-friendly).
+5.  **Portable Export (Markdown ZIP):** Fitur ekspor seluruh arsip ke dalam file ZIP berisi Markdown untuk portabilitas ke Obsidian/Notion.
+6.  **Contextual Toolbar:** Editor tetap bersih, toolbar hanya muncul saat dibutuhkan (Bubble/Floating).
+7.  **Monospace Toggle:** Mode Terminal di editor untuk menulis kode atau log teknis.
 
-## 🚀 Prioritas Berikutnya (Saran untuk Disimpan)
-1.  **Swipe Actions (Mobile):** Gesture geser kanan untuk Pin dan geser kiri untuk Hapus. Sangat intuitif untuk manajemen cepat.
-2.  **Adaptive Editor Toolbar:** Toolbar yang menempel di atas keyboard untuk akses cepat format teks di perangkat mobile.
-3.  **Tagging Interface:** UI chip untuk menambahkan label ke catatan agar organisasi lebih fleksibel dari sekadar folder.
-4.  **Markdown Rich Rendering:** Peningkatan preview untuk tabel dan checkbox task (berguna untuk daftar kredensial/langganan).
-5.  **Typography Customization:** Pengaturan ukuran font dan line-height untuk kenyamanan baca arsip panjang.
+## 🚀 Prioritas Berikutnya
+1.  **Vim Mode Integration:** Penambahan keybindings Vim untuk navigasi editor tanpa mouse.
+2.  **Biometric Lock (WebAuthn):** Menggunakan FaceID/Fingerprint untuk unlock lokal.
+3.  **Conflict Resolution UI:** Antarmuka untuk memilih versi saat terjadi konflik sinkronisasi.
+4.  **Offline-first Persistence:** Peningkatan stabilitas IndexedDB pada kondisi penyimpanan hampir penuh.
 
-## 🗑️ Usulan Penghapusan (Dihapus dari Rencana agar Tepat Sasaran)
-*   *Confetti Effects:* Terlalu "noisy" dan mengurangi kesan premium/serius.
-*   *Skeleton Loading Lanjutan:* Cukup loading spinner sederhana agar tidak terlalu banyak animasi.
-*   *Shared Element Transitions:* Kompleksitas tinggi namun dampak fungsional rendah.
-*   *View Switcher (Grid/List):* List view saat ini sudah sangat optimal untuk teks dan kredensial.
-*   *Interactive Activity Chart:* Terlalu banyak ruang yang terbuang untuk fitur statistik yang jarang dilihat.
-*   *OCR Text Scanner:* Bergantung pada library pihak ketiga yang besar, lebih baik fokus pada input manual yang cepat.
+## 🗑️ Usulan Penghapusan
+*   *Skeleton Animations Berlebihan:* Lebih baik instan loading untuk kesan snappy.
+*   *Heavy UI Transitions:* Mengurangi penggunaan Framer Motion pada navigasi utama agar tidak terasa "lambat".

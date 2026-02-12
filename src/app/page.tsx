@@ -111,7 +111,7 @@ export default function NoteListPage() {
                         <p className="text-xs font-bold uppercase tracking-widest">Kosong</p>
                     </div>
                 ) : (
-                    <div className="max-w-3xl mx-auto w-full py-4">
+                    <div className="max-w-5xl mx-auto w-full py-4">
                         {notes.map((note, index) => (
                             <BarisCatatan
                                 key={note.id}

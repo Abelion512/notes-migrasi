@@ -1,10 +1,27 @@
 'use client';
 
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Heading1, Heading2, List, ListOrdered, CheckSquare, Quote, Code } from 'lucide-react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 
-export const DaftarPerintah = forwardRef((props: any, ref) => {
+interface Item {
+    title: string;
+    icon: React.ReactNode;
+    command: (props: any) => void;
+}
+
+interface DaftarPerintahProps {
+    items: Item[];
+    command: (item: Item) => void;
+}
+
+export const DaftarPerintah = forwardRef((props: DaftarPerintahProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [prevItems, setPrevItems] = useState(props.items);
+
+    // Adjust state when items change (React recommended pattern instead of useEffect)
+    if (props.items !== prevItems) {
+        setSelectedIndex(0);
+        setPrevItems(props.items);
+    }
 
     const selectItem = (index: number) => {
         const item = props.items[index];
@@ -24,10 +41,6 @@ export const DaftarPerintah = forwardRef((props: any, ref) => {
     const enterHandler = () => {
         selectItem(selectedIndex);
     };
-
-    useEffect(() => {
-        setSelectedIndex(0);
-    }, [props.items]);
 
     useImperativeHandle(ref, () => ({
         onKeyDown: ({ event }: { event: KeyboardEvent }) => {
@@ -50,7 +63,7 @@ export const DaftarPerintah = forwardRef((props: any, ref) => {
     return (
         <div className="flex flex-col p-1 w-64 bg-[var(--background)]/80 backdrop-blur-xl border border-[var(--separator)] rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
             {props.items.length ? (
-                props.items.map((item: any, index: number) => (
+                props.items.map((item: Item, index: number) => (
                     <button
                         key={index}
                         onClick={() => selectItem(index)}
@@ -64,7 +77,6 @@ export const DaftarPerintah = forwardRef((props: any, ref) => {
                         </div>
                         <div>
                             <p className="font-medium">{item.title}</p>
-                            {/* <p className="text-[10px] opacity-70">{item.description}</p> */}
                         </div>
                     </button>
                 ))
