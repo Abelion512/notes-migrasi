@@ -140,10 +140,10 @@ export const KemudiBawah = () => {
                                 className="relative z-10"
                             >
                                 <motion.div
-                                    animate={{ rotate: isMenuOpen ? 135 : 0 }}
+                                    animate={{ rotate: isMenuOpen ? 45 : 0 }}
                                     className={`w-14 h-14 -mt-10 rounded-full flex items-center justify-center text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-4 border-[var(--background)] transition-colors ${isMenuOpen ? 'bg-red-500' : 'bg-blue-500'}`}
                                 >
-                                    {isMenuOpen ? <X size={28} /> : <Plus size={28} />}
+                                    <Plus size={28} />
                                 </motion.div>
                             </button>
                         );

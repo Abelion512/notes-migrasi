@@ -85,10 +85,10 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
         }
     };
 
-    const inputClass = "w-full bg-transparent border-none focus:outline-none text-[15px] py-2 placeholder:opacity-30";
+    const inputClass = "w-full bg-transparent border-none focus:outline-none text-[15px] py-1.5 placeholder:opacity-30";
 
     return (
-        <div className="space-y-3 mb-6">
+        <div className="space-y-2 mb-4">
             <div className="flex items-center justify-between px-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] opacity-50 flex items-center gap-1.5">
                     <Sparkles size={12} /> Data Kredensial

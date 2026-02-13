@@ -214,8 +214,8 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 </div>
             )}
 
-            <div className="flex-1 p-5 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-3 mb-6 max-w-6xl mx-auto w-full">
+            <div className="flex-1 px-4 py-2 overflow-y-auto no-scrollbar">
+                <div className="flex items-center gap-3 mb-4 max-w-6xl mx-auto w-full">
                     {isCredentials && (
                         <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
                             {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
