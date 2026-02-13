@@ -8,6 +8,7 @@ import { Search as SearchIcon, ChevronRight, FileX } from 'lucide-react';
 import { stripHtml, truncate } from '@/aksara/Penyaring';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 import { useGunakanTunda } from '@/aksara/GunakanTunda';
+import { IlustrasiKosong } from "@/komponen/bersama/IlustrasiKosong";
 
 const Highlight = React.memo(({ text, query }: { text: string, query: string }) => {
     if (!query.trim()) return <>{text}</>;
@@ -80,9 +81,8 @@ export default function SearchPage() {
                         <p className="text-xs font-medium">Ketik untuk mencari di dalam brankas terenkripsi.</p>
                     </div>
                 ) : filteredNotes.length === 0 ? (
-                    <div className="text-center mt-20 opacity-30 flex flex-col items-center">
-                        <FileX className="w-16 h-16 mb-4 stroke-[1px]" />
-                        <p className="text-base font-semibold">Tidak ada hasil untuk "{query}"</p>
+                    <div className="mt-10">
+                        <IlustrasiKosong pesan="Hasil Tidak Ditemukan" />
                     </div>
                 ) : (
                     <div className="ios-list-group shadow-sm">

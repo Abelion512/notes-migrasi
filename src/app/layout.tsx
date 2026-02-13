@@ -1,3 +1,4 @@
+import { PenyamarIdentitas } from "@/komponen/bersama/PenyamarIdentitas";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/gaya/Utama.css";
@@ -36,6 +37,7 @@ export default function RootLayout({
         <html lang="id">
             <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-black overflow-x-hidden`}>
                 <main className="min-h-screen w-full flex">
+                    <PenyamarIdentitas />
                     <PengaturSuasana />
                     <PintuBrankas>
                         <div className="flex-1 flex flex-col relative min-h-screen bg-[var(--background)]">

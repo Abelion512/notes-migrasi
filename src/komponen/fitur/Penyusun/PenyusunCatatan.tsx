@@ -10,8 +10,10 @@ import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisM
 import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
 import React, { useState } from 'react';
 import {
-    Bold, Italic, Heading1, Heading2, List, Code, Terminal
+    Bold, Italic, Heading1, Heading2, List, Code, Terminal, Sparkles, Loader2
 } from 'lucide-react';
+import { Pujangga } from '@/aksara/Pujangga';
+import { haptic } from '@/aksara/Indera';
 
 // Import highlight.js styles
 import 'highlight.js/styles/github-dark.css';
@@ -32,21 +34,16 @@ export const PenyusunCatatan = ({
     placeholder = 'Mulai menulis kisah Anda...'
 }: PenyusunCatatanProps) => {
     const [isMonospace, setIsMonospace] = useState(false);
+    const [isSummarizing, setIsSummarizing] = useState(false);
 
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                heading: {
-                    levels: [1, 2],
-                },
+                heading: { levels: [1, 2] },
                 codeBlock: false,
             }),
-            CodeBlockLowlight.configure({
-                lowlight,
-            }),
-            Placeholder.configure({
-                placeholder: placeholder,
-            }),
+            CodeBlockLowlight.configure({ lowlight }),
+            Placeholder.configure({ placeholder }),
             PerintahGarisMiring.configure(PerintahGarisMiringConfig),
             EkstensiTanggalCerdas,
         ],
@@ -63,6 +60,24 @@ export const PenyusunCatatan = ({
         immediatelyRender: false,
     });
 
+    const handleAISummary = async () => {
+        if (!editor || isSummarizing) return;
+
+        setIsSummarizing(true);
+        haptic.medium();
+
+        try {
+            const summary = await Pujangga.ringkasCatatan(editor.getHTML());
+            editor.chain().focus().insertContent(`<p><strong>${summary}</strong></p>`).run();
+            haptic.success();
+        } catch (err) {
+            console.error(err);
+            haptic.error();
+        } finally {
+            setIsSummarizing(false);
+        }
+    };
+
     if (!editor) {
         return null;
     }
@@ -75,63 +90,38 @@ export const PenyusunCatatan = ({
                         <button
                             onClick={() => setIsMonospace(!isMonospace)}
                             className={`p-1.5 rounded-md border transition-all ${isMonospace ? 'bg-blue-500/10 border-blue-500/30 text-blue-500' : 'bg-[var(--surface)] border-[var(--separator)]/30 text-[var(--text-secondary)] opacity-40 hover:opacity-100'}`}
-                            title="Tampilan Monospace (Developer Mode)"
+                            title="Tampilan Monospace"
                         >
                             <Terminal size={16} />
+                        </button>
+                        <button
+                            onClick={handleAISummary}
+                            disabled={isSummarizing}
+                            className={`p-1.5 rounded-md border transition-all ${isSummarizing ? 'bg-purple-500/10 text-purple-500 border-purple-500/30' : 'bg-[var(--surface)] border-[var(--separator)]/30 text-purple-500 opacity-40 hover:opacity-100'}`}
+                            title="Ringkas Catatan (AI)"
+                        >
+                            {isSummarizing ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                         </button>
                     </div>
 
-                    <BubbleMenu
-                        editor={editor}
-                        className="flex items-center gap-1 p-1 rounded-xl bg-[var(--background)] border border-[var(--separator)] shadow-lg backdrop-blur-md"
-                    >
-                        <button
-                            onClick={() => editor.chain().focus().toggleBold().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('bold') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
+                    <BubbleMenu editor={editor} className="flex items-center gap-1 p-1 rounded-xl bg-[var(--background)] border border-[var(--separator)] shadow-lg backdrop-blur-md">
+                        <button onClick={() => editor.chain().focus().toggleBold().run()} className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('bold') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}>
                             <Bold size={16} />
                         </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleItalic().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('italic') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
+                        <button onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('italic') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}>
                             <Italic size={16} />
-                        </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('codeBlock') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
-                            <Code size={16} />
                         </button>
                     </BubbleMenu>
 
-                    <FloatingMenu
-                        editor={editor}
-                        className="flex items-center gap-1 p-1 rounded-xl bg-[var(--background)] border border-[var(--separator)] shadow-lg backdrop-blur-md"
-                    >
-                        <button
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('heading', { level: 1 }) ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
+                    <FloatingMenu editor={editor} className="flex items-center gap-1 p-1 rounded-xl bg-[var(--background)] border border-[var(--separator)] shadow-lg backdrop-blur-md">
+                        <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('heading', { level: 1 }) ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}>
                             <Heading1 size={16} />
                         </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('heading', { level: 2 }) ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
-                            <Heading2 size={16} />
-                        </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleBulletList().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('bulletList') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
+                        <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('bulletList') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}>
                             <List size={16} />
                         </button>
-                        <button
-                            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                            className={`p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors ${editor.isActive('codeBlock') ? 'text-[var(--primary)] bg-[var(--primary)]/10' : 'text-[var(--text-secondary)]'}`}
-                        >
-                            <Terminal size={16} />
+                        <button onClick={handleAISummary} className="p-2 rounded-lg hover:bg-[var(--glass-bg)] text-purple-500">
+                            <Sparkles size={16} />
                         </button>
                     </FloatingMenu>
                 </>

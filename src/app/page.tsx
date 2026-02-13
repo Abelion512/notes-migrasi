@@ -12,6 +12,7 @@ import JSZip from 'jszip';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 import { PetaCatatan } from '@/komponen/fitur/Peta/PetaCatatan';
 import { BarisCatatan } from '@/komponen/fitur/Daftar/BarisCatatan';
+import { IlustrasiKosong } from "@/komponen/bersama/IlustrasiKosong";
 
 export default function NoteListPage() {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -106,9 +107,8 @@ export default function NoteListPage() {
                 {isLoading ? (
                     <div className="p-5"><KerangkaCatatan /></div>
                 ) : notes.length === 0 ? (
-                    <div className="text-center mt-32 opacity-10 flex flex-col items-center">
-                        <FileText className="w-24 h-24 mb-4 stroke-[1px]" />
-                        <p className="text-xs font-bold uppercase tracking-widest">Kosong</p>
+                    <div className="mt-12">
+                        <IlustrasiKosong pesan="Brankas Kosong" />
                     </div>
                 ) : (
                     <div className="max-w-5xl mx-auto w-full py-4">

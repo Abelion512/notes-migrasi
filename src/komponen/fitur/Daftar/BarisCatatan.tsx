@@ -9,6 +9,7 @@ import { Note } from '@/aksara/Rumus';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
+import { formatWaktuRelatif } from '@/aksara/Waktu';
 
 interface BarisCatatanProps {
     note: Note;
@@ -19,7 +20,6 @@ interface BarisCatatanProps {
     isCopied: boolean;
 }
 
-// Global parser instance to avoid re-creation
 let sharedParser: DOMParser | null = null;
 
 const stripHtml = (html: string) => {
@@ -40,7 +40,6 @@ export const BarisCatatan = memo(({
 
         const loadPreview = async () => {
             try {
-                // Decrypt only if it's currently encrypted
                 if (note.content.includes('|')) {
                     const decrypted = await Arsip.decryptNote(note);
                     if (isMounted) {
@@ -55,13 +54,12 @@ export const BarisCatatan = memo(({
             }
         };
 
-        // Delay decryption slightly to prioritize UI smoothness
         const timeout = setTimeout(loadPreview, 50);
         return () => {
             isMounted = false;
             clearTimeout(timeout);
         };
-    }, [note.id, note.content, note.updatedAt]); // Only re-run if these specific fields change
+    }, [note.id, note.content, note.updatedAt]);
 
     const handleDoubleClick = () => {
         if (!isEditMode) {
@@ -71,7 +69,7 @@ export const BarisCatatan = memo(({
     };
 
     return (
-        <div className="relative">
+        <div className="relative animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div
                 onClick={() => isEditMode ? onToggle(note.id) : null}
                 onDoubleClick={handleDoubleClick}
@@ -86,7 +84,7 @@ export const BarisCatatan = memo(({
                         />
                     </div>
                 ) : (
-                    <div className="w-12 h-12 rounded-full bg-blue-500/5 flex items-center justify-center flex-shrink-0 text-blue-500 overflow-hidden border border-blue-500/10">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/5 flex items-center justify-center flex-shrink-0 text-blue-500 overflow-hidden border border-blue-500/10 shadow-sm transition-transform group-hover:scale-105">
                         {serviceIcon || <FileText size={20} className="opacity-40" />}
                     </div>
                 )}
@@ -103,8 +101,8 @@ export const BarisCatatan = memo(({
                             </h3>
                             {note.isPinned && <Pin size={12} className="text-blue-500 fill-blue-500 rotate-45 flex-shrink-0" />}
                         </div>
-                        <span className="text-[11px] font-medium text-[var(--text-muted)] whitespace-nowrap">
-                            {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] whitespace-nowrap opacity-60 uppercase tracking-tighter">
+                            {formatWaktuRelatif(note.updatedAt)}
                         </span>
                     </div>
                     <div className="flex items-center justify-between gap-2">
@@ -115,7 +113,7 @@ export const BarisCatatan = memo(({
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={(e) => onCopy(e, note)}
-                                    className="p-1 rounded-md hover:bg-blue-500/10 text-blue-500"
+                                    className="p-1 rounded-md hover:bg-blue-500/10 text-blue-500 active:scale-90 transition-transform"
                                 >
                                     {isCopied ? <Check size={14} /> : <Copy size={14} className="opacity-40" />}
                                 </button>
