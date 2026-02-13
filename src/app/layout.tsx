@@ -41,7 +41,7 @@ export default function RootLayout({
                         <div className="flex-1 flex flex-col relative min-h-screen bg-[var(--background)]">
                             <PaletPerintah />
                             <PencarianCepat />
-                            <div className="flex-1 w-full pb-32">
+                            <div className="flex-1 w-full min-w-0">
                                 {children}
                             </div>
                             <KemudiBawah />

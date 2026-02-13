@@ -120,7 +120,7 @@
 
 /* Telegram-esque snappy elements */
 .snappy-header {
-    @apply sticky top-0 z-50 px-5 py-4 flex items-center justify-between backdrop-blur-2xl bg-[var(--glass-bg)] border-b border-[var(--glass-border)];
+    @apply sticky top-0 z-50 px-4 py-2 flex items-center justify-between backdrop-blur-2xl bg-[var(--glass-bg)] border-b border-[var(--glass-border)];
 }
 
 .swipe-action {

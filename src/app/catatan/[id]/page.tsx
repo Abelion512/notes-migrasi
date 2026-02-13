@@ -13,6 +13,8 @@ import {
     CloudCheck, ShieldCheck, ShieldAlert
 } from 'lucide-react';
 import { PenyusunKredensial } from '@/komponen/fitur/Kredensial/PenyusunKredensial';
+import { SaranLayanan } from '@/komponen/fitur/Kredensial/SaranLayanan';
+import { AnimatePresence } from 'framer-motion';
 
 const PenyusunCatatan = dynamic(
     () => import('@/komponen/fitur/Penyusun/PenyusunCatatan').then(mod => mod.PenyusunCatatan),
@@ -31,14 +33,13 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     const [isLoaded, setIsLoaded] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
-    // Debounce for autosave
     const debouncedTitle = useGunakanTunda(title, 1000);
     const debouncedContent = useGunakanTunda(content, 1000);
     const debouncedIsCreds = useGunakanTunda(isCredentials, 1000);
     const debouncedKred = useGunakanTunda(kredensial, 1000);
 
-    // Track last saved state to prevent infinite loops
     const lastSavedHash = useRef("");
 
     useEffect(() => {
@@ -52,7 +53,6 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     setIsCredentials(!!data.isCredentials);
                     if (data.kredensial) setKredensial(data.kredensial as any);
 
-                    // Initialize hash
                     lastSavedHash.current = JSON.stringify({
                         title: data.title,
                         content: data.content,
@@ -81,10 +81,8 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     kredensial: debouncedKred
                 });
 
-                // Prevent recursive saves if content hasn't changed from what we just saved
                 if (lastSavedHash.current === currentDataStr) return;
 
-                // Compare with original note to avoid unnecessary work
                 const isUnchangedFromOriginal = debouncedTitle === note.title &&
                                   debouncedContent === note.content &&
                                   debouncedIsCreds === note.isCredentials &&
@@ -103,8 +101,6 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     });
 
                     lastSavedHash.current = currentDataStr;
-
-                    // Update local note reference but keep decrypted values
                     setNote({
                         ...updatedNote,
                         content: debouncedContent,
@@ -154,6 +150,13 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
         }
     };
 
+    const handleSelectSuggestion = (name: string, domain: string) => {
+        setTitle(name.charAt(0).toUpperCase() + name.slice(1));
+        setKredensial(prev => ({ ...prev, url: domain }));
+        setShowSuggestions(false);
+        haptic.light();
+    };
+
     const handleDelete = async () => {
         if (!confirm('Hapus catatan ini secara permanen?')) return;
         haptic.heavy();
@@ -172,33 +175,33 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
     const currentIcon = isCredentials ? getIconForService(title, 28) : null;
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-[var(--background)]">
-            <div className="snappy-header">
-                <div className="flex items-center gap-2">
-                    <button onClick={() => { haptic.light(); router.back(); }} className="text-[var(--primary)] active:opacity-40">
+        <div className="flex-1 flex flex-col min-h-0 w-full max-w-full overflow-hidden bg-[var(--background)]">
+            <header className="snappy-header w-full flex items-center justify-between gap-2 px-3 sm:px-4">
+                <div className="flex items-center gap-1 min-w-0 flex-shrink-0">
+                    <button onClick={() => { haptic.light(); router.back(); }} className="text-[var(--primary)] active:opacity-40 p-1">
                         <ChevronLeft size={24} />
                     </button>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-50">
+                    <span className="text-[10px] font-bold uppercase tracking-tight text-[var(--text-secondary)] opacity-50 truncate hidden sm:inline">
                         {saveStatus === 'saving' ? 'Menyimpan...' : saveStatus === 'saved' ? 'Tersimpan' : 'Editor'}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    {saveStatus === 'saved' && <CloudCheck size={20} className="text-green-500" />}
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                    {saveStatus === 'saved' && <CloudCheck size={18} className="text-green-500" />}
                     <button
-                        onClick={() => { haptic.medium(); setIsCredentials(!isCredentials); }} title='Identitas Credentials'
-                        className={`p-2 rounded-full transition-all ${isCredentials ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-muted)] opacity-50'}`}
+                        onClick={() => { haptic.medium(); setIsCredentials(!isCredentials); }}
+                        className={`p-1.5 rounded-full transition-all ${isCredentials ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-muted)] opacity-50'}`}
                     >
                         {isCredentials ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
                     </button>
-                    <button onClick={() => { haptic.light(); setShowOptions(!showOptions); }} className="text-[var(--text-primary)]">
+                    <button onClick={() => { haptic.light(); setShowOptions(!showOptions); }} className="p-1.5 text-[var(--text-primary)]">
                         <MoreHorizontal size={22} />
                     </button>
-                    <button onClick={handleSaveManual} disabled={isSaving} className="text-[var(--primary)] text-[17px] font-bold">
+                    <button onClick={handleSaveManual} disabled={isSaving} className="text-[var(--primary)] text-[15px] sm:text-[17px] font-bold active:opacity-40 px-2 py-1">
                         Selesai
                     </button>
                 </div>
-            </div>
+            </header>
 
             {showOptions && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -214,20 +217,29 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 </div>
             )}
 
-            <div className="flex-1 px-4 py-2 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-3 mb-4 max-w-6xl mx-auto w-full">
-                    {isCredentials && (
-                        <div className="w-10 h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10">
-                            {currentIcon || <ShieldCheck size={24} className="text-[var(--primary)]" />}
-                        </div>
-                    )}
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder={isCredentials ? "Layanan / Akun..." : "Judul..."}
-                        className="flex-1 text-3xl font-bold bg-transparent border-none focus:outline-none placeholder:text-[var(--text-secondary)]/20"
-                    />
+            <div className="flex-1 px-3 sm:px-4 py-2 overflow-y-auto no-scrollbar w-full">
+                <div className="relative mb-3 max-w-6xl mx-auto w-full">
+                    <div className="flex items-center gap-2">
+                        {isCredentials && (
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-[var(--surface)] rounded-xl shadow-sm border border-[var(--separator)]/10 flex-shrink-0">
+                                {currentIcon || <ShieldCheck size={22} className="text-[var(--primary)]" />}
+                            </div>
+                        )}
+                        <input
+                            type="text"
+                            value={title}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                            onChange={(e) => { setTitle(e.target.value); setShowSuggestions(true); }}
+                            placeholder={isCredentials ? "Layanan / Akun..." : "Judul..."}
+                            className="flex-1 text-lg sm:text-2xl font-bold bg-transparent border-none focus:outline-none placeholder:text-[var(--text-secondary)]/20 min-w-0"
+                        />
+                    </div>
+                    <AnimatePresence>
+                        {isCredentials && showSuggestions && (
+                            <SaranLayanan input={title} onSelect={handleSelectSuggestion} />
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 <div className="max-w-6xl mx-auto w-full">
@@ -240,7 +252,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                             setContent(val);
                             if (saveStatus !== 'saving') setSaveStatus('idle');
                         }}
-                        placeholder={isCredentials ? "Catatan tambahan (seperti pertanyaan keamanan)..." : "Mulai menulis..."}
+                        placeholder={isCredentials ? "Catatan tambahan..." : "Mulai menulis..."}
                     />
                 </div>
                 <div className="h-32" />

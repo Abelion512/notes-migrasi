@@ -20,3 +20,7 @@ $ next dev -p "3100"
  GET / 200 in 56ms (compile: 6ms, render: 50ms)
  GET /tambah 200 in 42ms (compile: 6ms, render: 36ms)
 ✓ Compiled in 2.2s
+✓ Compiled in 982ms
+✓ Compiled in 547ms
+✓ Compiled in 85ms
+✓ Compiled in 64ms

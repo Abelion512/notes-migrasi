@@ -44,36 +44,43 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
 
             const newData: KredensialData = { ...data };
 
-            // Basic Smart Detection
-            // Pattern 1: user:pass
-            if (text.includes(':') && !text.includes('://') && text.split(':').length === 2) {
-                const [u, p] = text.split(':');
-                newData.username = u.trim();
-                newData.password = p.trim();
-            }
-            // Pattern 2: Multiline
-            else if (text.includes('\n')) {
-                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                if (lines.length >= 2) {
-                    // If first line is URL-like
-                    if (lines[0].includes('.') && (lines[0].includes('http') || !lines[0].includes(' '))) {
-                        newData.url = lines[0];
-                        newData.username = lines[1];
-                        if (lines[2]) newData.password = lines[2];
-                    } else {
-                        newData.username = lines[0];
-                        newData.password = lines[1];
-                        if (lines[2]) newData.url = lines[2];
+            // 1. Regex Match for labeled data
+            const userMatch = text.match(/(?:username|user|email|id|pengguna):\s*([^\n\r,]+)/i);
+            const passMatch = text.match(/(?:password|pass|sandi|pwd):\s*([^\n\r,]+)/i);
+            const urlMatch = text.match(/(?:url|link|site|tautan):\s*([^\n\r\s,]+)/i);
+
+            if (userMatch) newData.username = userMatch[1].trim();
+            if (passMatch) newData.password = passMatch[1].trim();
+            if (urlMatch) newData.url = urlMatch[1].trim();
+
+            // 2. Fallback to simple separators if no labels found
+            if (!userMatch && !passMatch) {
+                if (text.includes(':') && !text.includes('://') && text.split(':').length === 2) {
+                    const [u, p] = text.split(':');
+                    newData.username = u.trim();
+                    newData.password = p.trim();
+                } else if (text.includes('\n')) {
+                    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                    if (lines.length >= 2) {
+                        if (lines[0].includes('.') && (lines[0].includes('http') || !lines[0].includes(' '))) {
+                            newData.url = lines[0];
+                            newData.username = lines[1];
+                            if (lines[2]) newData.password = lines[2];
+                        } else {
+                            newData.username = lines[0];
+                            newData.password = lines[1];
+                            if (lines[2]) newData.url = lines[2];
+                        }
                     }
                 }
             }
-            // Pattern 3: URL only
-            else if (text.startsWith('http') || (text.includes('.') && !text.includes(' '))) {
-                newData.url = text;
+
+            // 3. Isolated detection
+            if (!newData.url && (text.startsWith('http') || (text.includes('.') && !text.includes(' ')))) {
+                newData.url = text.trim();
             }
-            // Pattern 4: Email only
-            else if (text.includes('@')) {
-                newData.username = text;
+            if (!newData.username && text.includes('@') && !text.includes(' ')) {
+                newData.username = text.trim();
             }
 
             onChange(newData);
@@ -85,27 +92,27 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
         }
     };
 
-    const inputClass = "w-full bg-transparent border-none focus:outline-none text-[15px] py-1.5 placeholder:opacity-30";
+    const inputClass = "flex-1 bg-transparent border-none focus:outline-none text-[13px] sm:text-[14px] py-1 placeholder:opacity-30 min-w-0";
 
     return (
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-3 w-full">
             <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] opacity-50 flex items-center gap-1.5">
-                    <Sparkles size={12} /> Data Kredensial
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] opacity-50 flex items-center gap-1.5">
+                    <Sparkles size={10} /> Kredensial
                 </span>
                 <button
                     onClick={handleSmartPaste}
-                    className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full border border-blue-500/20 text-blue-500 hover:bg-blue-500/5 transition-all ${isPasting ? 'animate-pulse' : ''}`}
+                    className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-500/20 text-blue-500 hover:bg-blue-500/5 transition-all ${isPasting ? 'animate-pulse' : ''}`}
                 >
-                    <Wand2 size={12} />
+                    <Wand2 size={10} />
                     Tempel Pintar
                 </button>
             </div>
 
-            <div className="ios-list-group border border-[var(--separator)]/20 shadow-sm overflow-hidden">
+            <div className="ios-list-group border border-[var(--separator)]/20 shadow-sm overflow-hidden w-full mb-0">
                 {/* Username */}
-                <div className="flex items-center px-4 gap-3 group">
-                    <User size={18} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                <div className="flex items-center px-3 gap-2 sm:gap-3 group">
+                    <User size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
                     <input
                         type="text"
                         value={data.username || ''}
@@ -115,16 +122,16 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                     />
                     <button
                         onClick={() => handleCopy(data.username, 'user')}
-                        className="p-2 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500"
+                        className="p-1.5 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500 flex-shrink-0"
                     >
-                        {copiedField === 'user' ? <Check size={16} /> : <Copy size={16} />}
+                        {copiedField === 'user' ? <Check size={14} /> : <Copy size={14} />}
                     </button>
                 </div>
                 <div className="ios-separator"></div>
 
                 {/* Password */}
-                <div className="flex items-center px-4 gap-3 group">
-                    <Lock size={18} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                <div className="flex items-center px-3 gap-2 sm:gap-3 group">
+                    <Lock size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
                     <input
                         type={showPassword ? "text" : "password"}
                         value={data.password || ''}
@@ -132,26 +139,26 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                         placeholder="Kata Sandi"
                         className={inputClass}
                     />
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                         <button
                             onClick={() => { setShowPassword(!showPassword); haptic.light(); }}
-                            className="p-2 opacity-20 hover:opacity-100 transition-opacity"
+                            className="p-1.5 opacity-20 hover:opacity-100 transition-opacity"
                         >
-                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
                         <button
                             onClick={() => handleCopy(data.password, 'pass')}
-                            className="p-2 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500"
+                            className="p-1.5 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500"
                         >
-                            {copiedField === 'pass' ? <Check size={16} /> : <Copy size={16} />}
+                            {copiedField === 'pass' ? <Check size={14} /> : <Copy size={14} />}
                         </button>
                     </div>
                 </div>
                 <div className="ios-separator"></div>
 
                 {/* URL */}
-                <div className="flex items-center px-4 gap-3 group">
-                    <LinkIcon size={18} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                <div className="flex items-center px-3 gap-2 sm:gap-3 group">
+                    <LinkIcon size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
                     <input
                         type="text"
                         value={data.url || ''}
@@ -161,9 +168,9 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                     />
                     <button
                         onClick={() => handleCopy(data.url, 'url')}
-                        className="p-2 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500"
+                        className="p-1.5 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500 flex-shrink-0"
                     >
-                        {copiedField === 'url' ? <Check size={16} /> : <Copy size={16} />}
+                        {copiedField === 'url' ? <Check size={14} /> : <Copy size={14} />}
                     </button>
                 </div>
             </div>
