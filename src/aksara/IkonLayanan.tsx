@@ -86,6 +86,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "mysql": "mysql.com",
     "mongodb": "mongodb.com",
     "redis": "redis.io",
+    "redis.io": "redis.io",
     "dropbox": "dropbox.com",
     "s3": "aws.amazon.com/s3",
     "mistral": "mistral.ai",
@@ -118,7 +119,19 @@ export const MAP_LAYANAN: Record<string, string> = {
     "nasa": "nasa.gov",
     "odoo": "odoo.com",
     "bubble": "bubble.io",
-    "seatable": "seatable.io"
+    "seatable": "seatable.io",
+    "n8n": "n8n.io",
+    "make": "make.com",
+    "zapier": "zapier.com",
+    "ifttt": "ifttt.com",
+    "pabbly": "pabbly.com",
+    "pabbly connect": "pabbly.com/connect",
+    "retool": "retool.com",
+    "appwrite": "appwrite.io",
+    "railway": "railway.app",
+    "render": "render.com",
+    "digitalocean": "digitalocean.com",
+    "heroku": "heroku.com"
 };
 
 /**
