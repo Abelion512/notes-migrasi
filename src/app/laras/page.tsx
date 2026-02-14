@@ -16,7 +16,7 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="flex-1 flex flex-col min-h-screen bg-[var(--background)] pb-32">
+        <div className="flex-1 flex flex-col min-min-h-0 bg-[var(--background)] pb-32">
             <header className="snappy-header">
                 <h1 className="text-xl font-extrabold tracking-tight">Setelan</h1>
             </header>

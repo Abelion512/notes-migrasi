@@ -9,7 +9,7 @@ export const Integritas = {
      * Metadata fields are stripped before calculation using a replacer function.
      * This is more efficient than cloning and deleting keys.
      */
-    async hitungHash(data: any): Promise<string> {
+    async hitungHash(data: unknown): Promise<string> {
         // Exclude transient metadata per policy using JSON.stringify replacer
         const text = JSON.stringify(data, (key, value) => {
             if (key === '_hash' || key === '_timestamp' || key === 'updatedAt') {

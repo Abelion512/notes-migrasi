@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-    Home, Search, User, Settings, Plus, Wifi, WifiOff,
-    FileText, ShieldCheck, CheckSquare, X
+    Home, Search, User, Settings, Plus, WifiOff,
+    FileText, ShieldCheck, CheckSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/aksara/Indera';
@@ -25,18 +25,28 @@ export const KemudiBawah = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
+        // Only run on client
         setIsOnline(navigator.onLine);
+
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
 
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
 
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isMenuOpen) {
+                setIsMenuOpen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
+            window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [isMenuOpen]);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -80,9 +90,12 @@ export const KemudiBawah = () => {
                             initial={{ scale: 0.8, opacity: 0, y: 50 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.8, opacity: 0, y: 50 }}
+                            role="menu"
+                            aria-label="Aksi Cepat Catatan"
                             className="glass-card mb-6 p-2 rounded-[2rem] shadow-2xl pointer-events-auto border border-white/10 flex flex-col gap-1 min-w-[200px]"
                         >
                             <button
+                                role="menuitem"
                                 onClick={() => handleQuickAction('/tambah')}
                                 className="flex items-center gap-4 px-5 py-4 hover:bg-white/5 rounded-2xl transition-colors active:opacity-50"
                             >
@@ -95,6 +108,7 @@ export const KemudiBawah = () => {
                                 </div>
                             </button>
                             <button
+                                role="menuitem"
                                 onClick={() => handleQuickAction('/tambah?mode=credentials')}
                                 className="flex items-center gap-4 px-5 py-4 hover:bg-white/5 rounded-2xl transition-colors active:opacity-50"
                             >
@@ -107,6 +121,7 @@ export const KemudiBawah = () => {
                                 </div>
                             </button>
                             <button
+                                role="menuitem"
                                 onClick={() => handleQuickAction('/tambah?mode=checklist')}
                                 className="flex items-center gap-4 px-5 py-4 hover:bg-white/5 rounded-2xl transition-colors active:opacity-50"
                             >
@@ -136,7 +151,9 @@ export const KemudiBawah = () => {
                             <button
                                 key={item.label}
                                 onClick={toggleMenu}
-                                aria-label="Menu Aksi"
+                                aria-label="Menu Aksi Cepat"
+                                aria-expanded={isMenuOpen}
+                                aria-haspopup="menu"
                                 className="relative z-10"
                             >
                                 <motion.div
