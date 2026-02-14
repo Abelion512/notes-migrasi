@@ -1,8 +1,12 @@
+import { PenyamarIdentitas } from "@/komponen/bersama/PenyamarIdentitas";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import "@/styles/globals.css";
-import { BottomNav } from "@/components/shared/BottomNav";
-import { VaultGate } from "@/components/features/vault/VaultGate";
+import "@/gaya/Utama.css";
+import { KemudiBawah } from "@/komponen/bersama/KemudiBawah";
+import { PintuBrankas } from "@/komponen/fitur/Brankas/PintuBrankas";
+import { PengaturSuasana } from "@/komponen/bersama/PengaturSuasana";
+import { PaletPerintah } from "@/komponen/bersama/PaletPerintah";
+import { PencarianCepat } from "@/komponen/bersama/PencarianCepat";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -19,8 +23,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    maximumScale: 5,
+    userScalable: true,
     viewportFit: "cover",
 };
 
@@ -31,12 +35,20 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="id">
-            <body className={`${inter.variable} font-sans`}>
-                <main className="relative min-h-screen flex flex-col">
-                    <VaultGate>
-                        {children}
-                        <BottomNav />
-                    </VaultGate>
+            <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-black overflow-x-hidden`}>
+                <main className="min-h-screen w-full flex">
+                    <PenyamarIdentitas />
+                    <PengaturSuasana />
+                    <PintuBrankas>
+                        <div className="flex-1 flex flex-col relative min-h-screen bg-[var(--background)]">
+                            <PaletPerintah />
+                            <PencarianCepat />
+                            <div className="flex-1 w-full min-w-0">
+                                {children}
+                            </div>
+                            <KemudiBawah />
+                        </div>
+                    </PintuBrankas>
                 </main>
             </body>
         </html>

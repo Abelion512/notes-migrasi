@@ -1,0 +1,209 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import 'tippy.js/dist/tippy.css';
+
+@theme {
+    --color-primary: #007AFF;
+    --color-background-light: #F2F2F7;
+    --color-background-dark: #000000;
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    --radius-xl: 10px;
+    --radius-2xl: 12px;
+    --radius-3xl: 14px;
+}
+
+:root {
+    --primary: #007AFF;
+    --background: #F2F2F7;
+    --surface: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: rgba(60, 60, 67, 0.85);
+    --text-muted: rgba(60, 60, 67, 0.6);
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-blur: 32px;
+    --separator: #C6C6C8;
+    --noise-opacity: 0.02;
+}
+
+[data-theme='dark'] {
+    --background: #000000;
+    --surface: #1C1C1E;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(235, 235, 245, 0.85);
+    --text-muted: rgba(235, 235, 245, 0.6);
+    --glass-bg: rgba(28, 28, 30, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --separator: #38383A;
+    --noise-opacity: 0.04;
+}
+
+@layer base {
+    body {
+        background-color: var(--background);
+        color: var(--text-primary);
+        font-family: var(--font-display);
+        @apply antialiased select-none;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.4px; }
+    h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+    h3 { font-size: 17px; font-weight: 600; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer components {
+    /* iOS Inset Grouped List */
+    .ios-list-group {
+        background-color: var(--surface);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .ios-list-item {
+        @apply p-4 flex items-center justify-between transition-colors active:bg-[var(--background)] cursor-pointer;
+        min-height: 48px;
+    }
+
+    .ios-separator {
+        background-color: var(--separator);
+        height: 0.5px;
+        margin-left: 16px;
+    }
+
+    /* iOS Buttons */
+    .ios-button {
+        @apply px-5 py-3 rounded-xl font-semibold transition-all active:opacity-60 flex items-center justify-center gap-2;
+        font-size: 17px;
+    }
+
+    .ios-button-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .ios-button-primary:active {
+        transform: scale(0.98);
+    }
+
+    /* Glass Effects */
+    .glass-card {
+        position: relative;
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        border: 0.5px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+    color: var(--text-secondary);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+.tiptap {
+    height: 100%;
+    outline: none;
+    @apply py-4;
+}
+
+/* Telegram-esque snappy elements */
+.snappy-header {
+    @apply sticky top-0 z-50 px-4 py-2 flex items-center justify-between backdrop-blur-2xl bg-[var(--glass-bg)] border-b border-[var(--glass-border)];
+}
+
+.swipe-action {
+    @apply absolute inset-0 flex items-center justify-end px-6 transition-transform;
+}
+
+/* Tiptap Code Block Lowlight Styles */
+pre {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'JetBrainsMono', monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.8rem;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+  color: #79c0ff;
+}
+
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: #ffa657;
+}
+
+.hljs-attribute {
+  color: #d2a8ff;
+}
+
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #a5d6ff;
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #ff7b72;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Accessibility Utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
