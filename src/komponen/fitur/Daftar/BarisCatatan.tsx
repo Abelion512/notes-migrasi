@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { memo } from 'react';
 import Link from 'next/link';
 import {
     CheckCircle2, FileText, Pin, Copy, Check
 } from 'lucide-react';
 import { Note } from '@/aksara/Rumus';
-import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import { formatWaktuRelatif } from '@/aksara/Waktu';
@@ -20,46 +19,15 @@ interface BarisCatatanProps {
     isCopied: boolean;
 }
 
-let sharedParser: DOMParser | null = null;
-
-const stripHtml = (html: string) => {
-    if (typeof window === 'undefined') return "";
-    if (!sharedParser) sharedParser = new DOMParser();
-    const doc = sharedParser.parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
-};
-
+/**
+ * BarisCatatan: Optimized list item component.
+ * Now uses pre-generated 'preview' field from Note object to avoid on-the-fly decryption.
+ */
 export const BarisCatatan = memo(({
     note, isSelected, isEditMode, onToggle, onCopy, isCopied
 }: BarisCatatanProps) => {
-    const [preview, setPreview] = useState<string>('Memuat...');
     const serviceIcon = getIconForService(note.title, 24);
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const loadPreview = async () => {
-            try {
-                if (note.content.includes('|')) {
-                    const decrypted = await Arsip.decryptNote(note);
-                    if (isMounted) {
-                        const text = stripHtml(decrypted.content);
-                        setPreview(text.length > 80 ? text.substring(0, 80) + '...' : text || 'Tanpa isi');
-                    }
-                } else {
-                    if (isMounted) setPreview(note.content || 'Tanpa isi');
-                }
-            } catch (err) {
-                if (isMounted) setPreview('⚠️ Terkunci');
-            }
-        };
-
-        const timeout = setTimeout(loadPreview, 50);
-        return () => {
-            isMounted = false;
-            clearTimeout(timeout);
-        };
-    }, [note.id, note.content, note.updatedAt]);
+    const preview = note.preview || 'Tanpa isi';
 
     const handleDoubleClick = () => {
         if (!isEditMode) {

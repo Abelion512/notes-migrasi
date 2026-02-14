@@ -82,6 +82,17 @@ export const Arsip = {
             return existing;
         }
 
+        // Generate plain-text preview before encryption for performance in list views
+        // Strips HTML tags and replaces common entities
+        const plainText = note.content
+            .replace(/<[^>]*>?/gm, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .trim();
+        const preview = plainText.substring(0, 100);
+
         // Encrypt main content
         const encrypted = await Brankas.encrypt(note.content);
         const ivHex = Array.from(encrypted.iv).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -101,6 +112,7 @@ export const Arsip = {
         const finalNote: Note = {
             ...note,
             content: secureContent,
+            preview: preview,
             kredensial: secureKredensial,
             updatedAt: new Date().toISOString(),
             _hash: checkHash,
@@ -123,9 +135,8 @@ export const Arsip = {
             throw new Error('Vault is locked.');
         }
         const rawNotes = await Gudang.getAll('notes') as Note[];
-        return rawNotes.sort((a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
+        // Optimization: Use a more direct sort if possible, but updatedAt is ISO string so this is fine.
+        return rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
 
     /**

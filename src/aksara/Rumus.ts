@@ -4,6 +4,7 @@ export interface Note {
     id: EntityId;
     title: string;
     content: string; // Encrypted blob (iv|data)
+    preview?: string; // Plain-text snippet for list view
     folderId: EntityId | null;
     isPinned: boolean;
     isFavorite: boolean;
