@@ -83,4 +83,23 @@ export class Brankas {
         const decoder = new TextDecoder();
         return decoder.decode(decrypted);
     }
+
+    static async encryptPacked(text: string): Promise<string> {
+        const { data, iv } = await this.encrypt(text);
+        const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+        return `${ivHex}|${base64}`;
+    }
+
+    static async decryptPacked(packed: string): Promise<string> {
+        if (!packed || !packed.includes('|')) return packed;
+        const [ivHex, base64] = packed.split('|');
+        const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return await this.decrypt(bytes.buffer, iv);
+    }
 }

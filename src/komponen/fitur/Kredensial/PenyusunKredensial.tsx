@@ -38,9 +38,11 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
 
     const generatePassword = () => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+        const randomValues = new Uint32Array(genLength);
+        window.crypto.getRandomValues(randomValues);
         let result = "";
         for (let i = 0; i < genLength; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
+            result += chars.charAt(randomValues[i] % chars.length);
         }
         updateField('password', result);
         setShowPassword(true);

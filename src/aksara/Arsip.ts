@@ -74,7 +74,14 @@ export const Arsip = {
             throw new Error('Vault is locked. Cannot save data.');
         }
 
-        const checkHash = await Integritas.hitungHash(note);
+        // Ensure ID and timestamps are present before hashing for consistency
+        const noteWithId = {
+            ...note,
+            id: note.id || uuidv4(),
+            createdAt: note.createdAt || new Date().toISOString(),
+        } as Note;
+
+        const checkHash = await Integritas.hitungHash(noteWithId);
 
         // Check if we actually need to save (Compare decrypted content hash)
         const existing = await Gudang.get("notes", note.id || "");
@@ -93,99 +100,84 @@ export const Arsip = {
             .trim();
         const preview = plainText.substring(0, 100);
 
-        // Encrypt main content
-        const encrypted = await Brankas.encrypt(note.content);
-        const ivHex = Array.from(encrypted.iv).map(b => b.toString(16).padStart(2, '0')).join('');
-        const base64Data = btoa(String.fromCharCode(...new Uint8Array(encrypted.data)));
-        const secureContent = `${ivHex}|${base64Data}`;
+        // Encrypt everything
+        const [secureTitle, secureContent, securePreview] = await Promise.all([
+            Brankas.encryptPacked(note.title || 'Tanpa Judul'),
+            Brankas.encryptPacked(note.content),
+            Brankas.encryptPacked(preview)
+        ]);
 
         // Encrypt credential fields if they exist
         let secureKredensial = note.kredensial;
         if (note.kredensial) {
-            const credString = JSON.stringify(note.kredensial);
-            const encCred = await Brankas.encrypt(credString);
-            const credIvHex = Array.from(encCred.iv).map(b => b.toString(16).padStart(2, '0')).join('');
-            const credBase64 = btoa(String.fromCharCode(...new Uint8Array(encCred.data)));
-            (secureKredensial as any) = `${credIvHex}|${credBase64}`;
+            secureKredensial = await Brankas.encryptPacked(JSON.stringify(note.kredensial)) as any;
         }
 
         const finalNote: Note = {
-            ...note,
+            ...noteWithId,
+            title: secureTitle,
             content: secureContent,
-            preview: preview,
+            preview: securePreview,
             kredensial: secureKredensial,
             updatedAt: new Date().toISOString(),
             _hash: checkHash,
         };
-
-        if (!finalNote.id) {
-            finalNote.id = uuidv4();
-            finalNote.createdAt = new Date().toISOString();
-        }
 
         await Gudang.set('notes', finalNote.id, finalNote);
         return finalNote;
     },
 
     /**
-     * Retrieve all notes (Content remains encrypted for performance)
+     * Retrieve all notes (Metadata is decrypted for UI)
      */
     async getAllNotes(): Promise<Note[]> {
-        if (Brankas.isLocked()) {
-            throw new Error('Vault is locked.');
-        }
+        if (Brankas.isLocked()) throw new Error('Vault Locked');
         const rawNotes = await Gudang.getAll('notes') as Note[];
-        // Optimization: Use a more direct sort if possible, but updatedAt is ISO string so this is fine.
-        return rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        const decrypted = await Promise.all(rawNotes.map(async n => {
+            try {
+                return {
+                    ...n,
+                    title: await Brankas.decryptPacked(n.title),
+                    preview: await Brankas.decryptPacked(n.preview || '')
+                };
+            } catch (e) {
+                return { ...n, title: '🔒 Terkunci', preview: '🔒 Terkunci' };
+            }
+        }));
+        return decrypted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
 
     /**
-     * Decrypt specific note parts on-demand
+     * Decrypt specific note parts on-demand & verify integrity
      */
     async decryptNote(note: Note): Promise<Note> {
         try {
-            let decryptedContent = note.content;
-            if (note.content.includes('|')) {
-                const parts = note.content.split('|');
-                if (parts.length === 2) {
-                    const [ivHex, base64Data] = parts;
-                    const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-                    const binaryString = atob(base64Data);
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    decryptedContent = await Brankas.decrypt(bytes.buffer, iv);
-                }
-            }
+            const [title, content, credsRaw] = await Promise.all([
+                Brankas.decryptPacked(note.title),
+                Brankas.decryptPacked(note.content),
+                typeof note.kredensial === 'string' ? Brankas.decryptPacked(note.kredensial) : null
+            ]);
 
-            let decryptedCreds = note.kredensial;
-            if (typeof note.kredensial === 'string' && (note.kredensial as any as string).includes('|')) {
-                const parts = (note.kredensial as string).split('|');
-                if (parts.length === 2) {
-                    const [ivHex, base64Data] = parts;
-                    const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-                    const binaryString = atob(base64Data);
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    const credString = await Brankas.decrypt(bytes.buffer, iv);
-                    decryptedCreds = JSON.parse(credString);
-                }
-            }
-
-            return {
+            const decryptedNote = {
                 ...note,
-                content: decryptedContent,
-                kredensial: decryptedCreds as any
+                title,
+                content,
+                kredensial: credsRaw ? JSON.parse(credsRaw) : note.kredensial
             };
+
+            // VERIFIKASI INTEGRITAS (SEGEL DIGITAL)
+            if (note._hash) {
+                const actualHash = await Integritas.hitungHash(decryptedNote);
+                if (actualHash !== note._hash) {
+                    console.warn('Integritas data rusak pada catatan:', note.id);
+                    decryptedNote.content = `⚠️ PERINGATAN: Segel digital rusak! Data ini mungkin telah dimanipulasi secara tidak sah.\n\n` + decryptedNote.content;
+                }
+            }
+
+            return decryptedNote;
         } catch (err) {
             console.error('Decryption failed', err);
-            return {
-                ...note,
-                content: '⚠️ Gagal Dekripsi Data'
-            };
+            return { ...note, content: '⚠️ Gagal Dekripsi Data' };
         }
     },
 
