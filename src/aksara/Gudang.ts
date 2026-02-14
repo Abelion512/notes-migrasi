@@ -24,8 +24,12 @@ export interface AbelionSchema extends DBSchema {
     };
 }
 
+let dbInstance: IDBPDatabase<AbelionSchema> | null = null;
+
 export const initDB = async (): Promise<IDBPDatabase<AbelionSchema>> => {
-    return openDB<AbelionSchema>(DB_NAME, DB_VERSION, {
+    if (dbInstance) return dbInstance;
+
+    dbInstance = await openDB<AbelionSchema>(DB_NAME, DB_VERSION, {
         upgrade(db) {
             // Notes store
             if (!db.objectStoreNames.contains('notes')) {
@@ -50,6 +54,8 @@ export const initDB = async (): Promise<IDBPDatabase<AbelionSchema>> => {
             }
         },
     });
+
+    return dbInstance;
 };
 
 export const Gudang = {

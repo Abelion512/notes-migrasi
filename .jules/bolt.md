@@ -23,3 +23,7 @@
 **Measurement:**
 - CPU usage dropped during static editing.
 - Navigation clicks reduced by 40% for common actions (creating a credential/checklist).
+
+## 2026-02-11 - Optimized Hashing & List Rendering
+**Learning:** List rendering was a major bottleneck due to on-the-fly decryption of all notes for previews. Hashing logic was also inefficient, stringifying the same object twice.
+**Action:** Implemented a pre-generated `preview` field in the `Note` schema to eliminate list-time decryption. Optimized `hitungHash` using a `JSON.stringify` replacer to avoid redundant object cloning and double-stringification.
