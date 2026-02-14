@@ -25,7 +25,9 @@ export const KemudiBawah = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
+        // Only run on client
         setIsOnline(navigator.onLine);
+
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
 

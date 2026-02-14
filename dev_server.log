@@ -21,3 +21,6 @@ https://nextjs.org/telemetry
  GET /tambah 200 in 30ms (compile: 5ms, render: 25ms)
  GET / 200 in 24ms (compile: 4ms, render: 19ms)
 ✓ Compiled in 86ms
+ GET /tambah?mode=credentials 200 in 4.7s (compile: 3.1s, render: 1588ms)
+ GET /tambah?mode=credentials 200 in 731ms (compile: 363ms, render: 369ms)
+ GET /tambah?mode=credentials 200 in 307ms (compile: 94ms, render: 213ms)

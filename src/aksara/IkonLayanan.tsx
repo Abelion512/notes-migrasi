@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import {
     Key, Mail, Github, Globe,
-    Laptop, Layout, Cpu, Cloud, Ghost, Boxes, Bot, ShieldCheck
+    Laptop, Layout, Cpu, Cloud, Ghost, Boxes, Bot, ShieldCheck,
+    FileText, Calendar, Play
 } from 'lucide-react';
 
 /**
@@ -175,45 +176,54 @@ export const getIconForService = (name: string, size: number = 20) => {
 const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
     const [imgError, setImgError] = useState(false);
     const domain = extractDomain(name);
+    const lowerName = name.toLowerCase();
 
-    const getFallback = () => {
-        const lowerName = name.toLowerCase();
-        if (lowerName.includes('gmail')) return <Mail size={size} className="text-[#ea4335]" />;
-        if (lowerName.includes('mail')) return <Mail size={size} className="text-[#ea4335]" />;
-        if (lowerName.includes('drive')) return <Cloud size={size} className="text-[#34a853]" />;
-        if (lowerName.includes('stitch')) return <Layout size={size} className="text-purple-500" />;
-        if (lowerName.includes('antigravity')) return <Cpu size={size} className="text-orange-500 shadow-sm" />;
-        if (lowerName.includes('github')) return <Github size={size} className="text-gray-900 dark:text-white" />;
-        if (lowerName.includes('bot') || lowerName.includes('ai')) return <Bot size={size} className="text-[#4285f4]" />;
-        if (lowerName.includes('credentials') || lowerName.includes('login')) return <Key size={size} className="text-yellow-600" />;
+    const getFallback = (searchString: string) => {
+        const s = searchString.toLowerCase();
+        // Specific brand detection keywords (prioritize Lucide icons for better dark mode consistency)
+        if (s.includes('gmail')) return <Mail size={size} className="text-[#ea4335]" />;
+        if (s.includes('mail')) return <Mail size={size} className="text-[#ea4335]" />;
+        if (s.includes('drive')) return <Cloud size={size} className="text-[#34a853]" />;
+        if (s.includes('docs') || s.includes('sheet') || s.includes('excel')) return <FileText size={size} className="text-[#4285f4]" />;
+        if (s.includes('calendar')) return <Calendar size={size} className="text-[#ea4335]" />;
+        if (s.includes('youtube') || s.includes('yt')) return <Play size={size} className="text-[#ff0000]" />;
+        if (s.includes('stitch')) return <Layout size={size} className="text-purple-500" />;
+        if (s.includes('antigravity')) return <Cpu size={size} className="text-orange-500 shadow-sm" />;
+        if (s.includes('github')) return <Github size={size} className="text-gray-900 dark:text-white" />;
+        if (s.includes('bot') || s.includes('ai')) return <Bot size={size} className="text-[#4285f4]" />;
+        if (s.includes('credentials') || s.includes('login')) return <Key size={size} className="text-yellow-600" />;
 
         return <ShieldCheck size={size} className="text-blue-500 opacity-20" />;
     };
 
-    // Special handling for common problematic logos or those that default to main domain logo
-    let finalDomain = domain;
-    if (finalDomain === 'drive.google.com') finalDomain = 'google.com/drive';
-    if (finalDomain === 'mail.google.com') finalDomain = 'gmail.com';
+    // Determine if we should use fallback based on either the name or the derived domain
+    const searchContext = `${lowerName} ${domain || ''}`;
+    const needsSpecificIcon =
+        searchContext.includes('gmail') ||
+        searchContext.includes('drive') ||
+        searchContext.includes('doc') ||
+        searchContext.includes('sheet') ||
+        searchContext.includes('calendar') ||
+        searchContext.includes('stitch') ||
+        searchContext.includes('antigravity');
 
-    // If it's a known service, use fallback icon first for better UI consistency if image is generic
-    const lower = name.toLowerCase();
-    if (lower === 'gmail' || lower === 'drive' || lower === 'stitch' || lower === 'antigravity') {
-        return getFallback();
+    if (needsSpecificIcon) {
+        return getFallback(searchContext);
     }
 
-    if (finalDomain && !imgError) {
+    if (domain && !imgError && domain !== 'google.com') {
         return (
             <img
-                src={`https://www.google.com/s2/favicons?domain=${finalDomain}&sz=64`}
+                src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
                 alt={name}
                 width={size}
                 height={size}
-                key={finalDomain}
+                key={domain}
                 className="rounded-sm object-contain"
                 onError={() => setImgError(true)}
             />
         );
     }
 
-    return getFallback();
+    return getFallback(lowerName);
 };
