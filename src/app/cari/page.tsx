@@ -56,7 +56,7 @@ export default function SearchPage() {
     }, [debouncedQuery, notes]);
 
     return (
-        <div className="flex-1 flex flex-col h-screen px-5 pt-14 pb-32 overflow-hidden bg-[var(--background)]">
+        <div className="flex-1 flex flex-col min-h-0 px-5 pt-14 pb-32 overflow-hidden bg-[var(--background)]">
             <h1 className="text-3xl font-bold mb-6 tracking-tight">Cari</h1>
 
             <div className="relative mb-8">

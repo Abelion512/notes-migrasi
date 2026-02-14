@@ -84,7 +84,7 @@ export default function NoteListPage() {
     };
 
     return (
-        <div className="flex-1 w-full flex flex-col h-screen">
+        <div className="flex-1 w-full flex flex-col min-h-0">
             <header className="snappy-header">
                 <div className="flex items-center gap-3">
                     <h1 className="text-xl font-extrabold tracking-tight text-[var(--text-primary)]">Catatan</h1>

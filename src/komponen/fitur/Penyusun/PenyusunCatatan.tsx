@@ -54,7 +54,7 @@ export const PenyusunCatatan = ({
         },
         editorProps: {
             attributes: {
-                class: `prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl my-4 px-1 focus:outline-none min-h-[calc(100vh-300px)] text-[var(--text-primary)] ${isMonospace ? 'font-mono' : 'font-sans'}`,
+                class: `prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl dark:prose-invert my-4 px-1 focus:outline-none min-h-[calc(100vh-300px)] text-[var(--text-primary)] ${isMonospace ? 'font-mono' : 'font-sans'}`,
             },
         },
         immediatelyRender: false,

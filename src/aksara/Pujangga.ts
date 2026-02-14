@@ -11,6 +11,6 @@ export const Pujangga = {
         const cleanText = konten.replace(/<[^>]*>?/gm, '');
         if (cleanText.length < 50) return "Catatan terlalu pendek untuk diringkas.";
 
-        return "✨ Ringkasan AI: " + cleanText.substring(0, 100) + "... [Diringkas secara lokal]";
+        return `<span style="color: #007AFF">✨ Ringkasan AI:</span> ${cleanText.substring(0, 100)}... [Diringkas secara lokal]`;
     }
 };

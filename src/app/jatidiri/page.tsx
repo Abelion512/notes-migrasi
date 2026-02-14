@@ -33,7 +33,7 @@ export default function ProfilePage() {
     }, []);
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
+        <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
             <PerayaanXP active={profile.xp > 0} />
             <div className="flex flex-col items-center text-center mb-10">
                 <motion.div
@@ -58,7 +58,7 @@ export default function ProfilePage() {
                 </div>
             </div>
 
-            <div className="ios-list-group p-6 mb-6">
+            <div className="ios-list-group p-6 pb-8 mb-6 !overflow-visible">
                 <div className="flex items-center justify-between mb-8">
                     <h3 className="font-semibold text-[15px]">Aktivitas Menulis</h3>
                     <span className="text-[10px] font-bold text-[var(--primary)] uppercase bg-[var(--primary)]/10 px-2 py-1 rounded-md">7 Hari Terakhir</span>

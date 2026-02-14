@@ -78,7 +78,7 @@ export default function DataManagementPage() {
     };
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
+        <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
             <Link href="/laras" className="flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit">
                 <ChevronLeft size={24} />
                 <span className="text-[17px]">Pengaturan</span>

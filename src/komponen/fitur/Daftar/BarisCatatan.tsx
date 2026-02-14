@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import Link from 'next/link';
 import {
     CheckCircle2, FileText, Pin, Copy, Check
@@ -9,6 +9,7 @@ import { Note } from '@/aksara/Rumus';
 import { haptic } from '@/aksara/Indera';
 import { getIconForService } from '@/aksara/IkonLayanan';
 import { formatWaktuRelatif } from '@/aksara/Waktu';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BarisCatatanProps {
     note: Note;
@@ -26,6 +27,7 @@ interface BarisCatatanProps {
 export const BarisCatatan = memo(({
     note, isSelected, isEditMode, onToggle, onCopy, isCopied
 }: BarisCatatanProps) => {
+    const [justCopied, setJustCopied] = useState(false);
     const serviceIcon = getIconForService(note.title, 24);
     const preview = note.preview || 'Tanpa isi';
 
@@ -33,6 +35,8 @@ export const BarisCatatan = memo(({
         if (!isEditMode) {
             navigator.clipboard.writeText(note.title || "Tanpa Judul");
             haptic.success();
+            setJustCopied(true);
+            setTimeout(() => setJustCopied(false), 2000);
         }
     };
 
@@ -63,10 +67,22 @@ export const BarisCatatan = memo(({
                     onClick={(e) => isEditMode && e.preventDefault()}
                 >
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                        <div className="flex items-center gap-1.5 min-w-0">
+                        <div className="flex items-center gap-1.5 min-w-0 relative">
                             <h3 className="text-[15px] font-bold truncate tracking-tight text-[var(--text-primary)]">
                                 {note.title || 'Tanpa Judul'}
                             </h3>
+                            <AnimatePresence>
+                                {justCopied && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                                        animate={{ opacity: 1, y: -20, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        className="absolute left-0 top-0 bg-blue-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 pointer-events-none whitespace-nowrap uppercase tracking-widest"
+                                    >
+                                        Tersalin!
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                             {note.isPinned && <Pin size={12} className="text-blue-500 fill-blue-500 rotate-45 flex-shrink-0" />}
                         </div>
                         <span className="text-[10px] font-bold text-[var(--text-muted)] whitespace-nowrap opacity-60 uppercase tracking-tighter">
@@ -93,3 +109,5 @@ export const BarisCatatan = memo(({
         </div>
     );
 });
+
+BarisCatatan.displayName = 'BarisCatatan';
