@@ -16,7 +16,7 @@ export default function SecurityManagementPage() {
     };
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
+        <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
             <Link href="/laras" className="flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit">
                 <ChevronLeft size={24} />
                 <span className="text-[17px]">Pengaturan</span>
@@ -24,7 +24,7 @@ export default function SecurityManagementPage() {
 
             <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan</h1>
 
-            <div className="ios-list-group mb-8">
+            <div className="ios-list-group mb-10">
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
                         <div className="p-1.5 rounded-md bg-green-500 text-white flex items-center justify-center shadow-sm">
@@ -47,7 +47,7 @@ export default function SecurityManagementPage() {
             </div>
 
             <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Penyamaran</h2>
-            <div className="ios-list-group mb-8">
+            <div className="ios-list-group mb-10">
                 <button
                     onClick={toggleSecretMode}
                     className="w-full ios-list-item active:bg-[var(--surface-active)]"

@@ -20,3 +20,4 @@ https://nextjs.org/telemetry
  GET / 200 in 82ms (compile: 6ms, render: 77ms)
  GET /tambah 200 in 30ms (compile: 5ms, render: 25ms)
  GET / 200 in 24ms (compile: 4ms, render: 19ms)
+✓ Compiled in 86ms

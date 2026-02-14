@@ -11,13 +11,14 @@ import {
  */
 export const MAP_LAYANAN: Record<string, string> = {
     "google": "google.com",
-    "gmail": "mail.google.com",
+    "gmail": "gmail.com",
     "gsheet": "sheets.google.com",
     "sheet": "sheets.google.com",
     "gdocs": "docs.google.com",
     "doc": "docs.google.com",
     "gdrive": "drive.google.com",
     "drive": "drive.google.com",
+    "google drive": "drive.google.com",
     "google translate": "translate.google.com",
     "gtask": "tasks.google.com",
     "calendar": "calendar.google.com",
@@ -115,7 +116,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "kafka": "kafka.apache.org",
     "wordpress": "wordpress.org",
     "pipedrive": "pipedrive.com",
-    "antigravity": "antigravity.com",
+    "antigravity": "antigravity.id",
     "nasa": "nasa.gov",
     "odoo": "odoo.com",
     "bubble": "bubble.io",
@@ -177,7 +178,11 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
 
     const getFallback = () => {
         const lowerName = name.toLowerCase();
+        if (lowerName.includes('gmail')) return <Mail size={size} className="text-[#ea4335]" />;
         if (lowerName.includes('mail')) return <Mail size={size} className="text-[#ea4335]" />;
+        if (lowerName.includes('drive')) return <Cloud size={size} className="text-[#34a853]" />;
+        if (lowerName.includes('stitch')) return <Layout size={size} className="text-purple-500" />;
+        if (lowerName.includes('antigravity')) return <Cpu size={size} className="text-orange-500 shadow-sm" />;
         if (lowerName.includes('github')) return <Github size={size} className="text-gray-900 dark:text-white" />;
         if (lowerName.includes('bot') || lowerName.includes('ai')) return <Bot size={size} className="text-[#4285f4]" />;
         if (lowerName.includes('credentials') || lowerName.includes('login')) return <Key size={size} className="text-yellow-600" />;
@@ -185,14 +190,25 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
         return <ShieldCheck size={size} className="text-blue-500 opacity-20" />;
     };
 
-    if (domain && !imgError) {
+    // Special handling for common problematic logos or those that default to main domain logo
+    let finalDomain = domain;
+    if (finalDomain === 'drive.google.com') finalDomain = 'google.com/drive';
+    if (finalDomain === 'mail.google.com') finalDomain = 'gmail.com';
+
+    // If it's a known service, use fallback icon first for better UI consistency if image is generic
+    const lower = name.toLowerCase();
+    if (lower === 'gmail' || lower === 'drive' || lower === 'stitch' || lower === 'antigravity') {
+        return getFallback();
+    }
+
+    if (finalDomain && !imgError) {
         return (
             <img
-                src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+                src={`https://www.google.com/s2/favicons?domain=${finalDomain}&sz=64`}
                 alt={name}
                 width={size}
                 height={size}
-                key={domain}
+                key={finalDomain}
                 className="rounded-sm object-contain"
                 onError={() => setImgError(true)}
             />
