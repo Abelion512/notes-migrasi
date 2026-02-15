@@ -4,18 +4,8 @@ $ next dev
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
-✓ Ready in 1141ms
+✓ Ready in 1106ms
 ○ Compiling / ...
- GET / 200 in 8.3s (compile: 7.8s, render: 505ms)
- GET /tambah 200 in 2.9s (compile: 2.7s, render: 135ms)
- GET / 200 in 79ms (compile: 7ms, render: 71ms)
- GET /tambah 200 in 63ms (compile: 7ms, render: 56ms)
- GET / 200 in 60ms (compile: 6ms, render: 54ms)
- GET /tambah 200 in 68ms (compile: 4ms, render: 63ms)
- GET / 200 in 58ms (compile: 4ms, render: 54ms)
- GET /tambah 200 in 68ms (compile: 7ms, render: 61ms)
+ GET / 200 in 6.1s (compile: 5.6s, render: 507ms)
+ GET / 200 in 68ms (compile: 7ms, render: 61ms)
+ GET / 200 in 73ms (compile: 7ms, render: 65ms)
