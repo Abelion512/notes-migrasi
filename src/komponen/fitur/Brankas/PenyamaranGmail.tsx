@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface PenyamaranGmailProps {
     onUnlock: (password: string) => void;
     isLoading: boolean;
-    error: boolean;
+    error: string | boolean;
 }
 
 type Bahasa = 'id' | 'en';

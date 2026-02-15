@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, KeyRound, ArrowRight, ShieldCheck, Copy, Check, ChevronLeft } from 'lucide-react';
 import { usePundi } from '@/aksara/Pundi';
+import { generateMnemonic } from '@/aksara/KataSandi';
 import { Arsip } from '@/aksara/Arsip';
 import { PenyamaranGmail } from './PenyamaranGmail';
 
@@ -15,7 +16,7 @@ export const LayarKunciBrankas = () => {
     const [showPaperKey, setShowPaperKey] = useState(false);
     const [checkingStatus, setCheckingStatus] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<string | boolean>(false);
     const [copied, setCopied] = useState(false);
 
     const setVaultLocked = usePundi(s => s.setVaultLocked);
@@ -27,9 +28,9 @@ export const LayarKunciBrankas = () => {
                 const initialized = await Arsip.isVaultInitialized();
                 setIsSetupMode(!initialized);
                 if (!initialized) {
-                    // Simple random word generation for setup
-                    const words = ["pohon", "langit", "senja", "aksara", "pundi", "arsip", "bunga", "angin", "hujan", "mentari", "bulan", "bintang"];
-                    setPaperKey(words.join(' '));
+                     // Secure mnemonic generation for setup
+                    const words = generateMnemonic();
+                    setPaperKey(words);
                 }
             } catch (e) {
                 console.error('Failed to check vault status', e);
@@ -42,8 +43,12 @@ export const LayarKunciBrankas = () => {
 
     const handleSetup = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (password.length < 8) {
+            setError("Minimal 8 karakter");
+            return;
+        }
         if (password !== confirmPassword) {
-            setError(true);
+            setError("Kata sandi tidak cocok");
             return;
         }
         setShowPaperKey(true);
@@ -56,7 +61,7 @@ export const LayarKunciBrankas = () => {
             setVaultLocked(false);
         } catch (err) {
             console.error(err);
-            setError(true);
+            setError("Gagal menyiapkan brankas");
         } finally {
             setIsLoading(false);
         }
@@ -75,11 +80,11 @@ export const LayarKunciBrankas = () => {
             if (isValid) {
                 setVaultLocked(false);
             } else {
-                setError(true);
+                setError("Kata sandi salah");
             }
         } catch (err) {
             console.error(err);
-            setError(true);
+            setError("Gagal membuka brankas");
         } finally {
             setIsLoading(false);
         }
@@ -100,7 +105,7 @@ export const LayarKunciBrankas = () => {
     }
 
     if (secretMode === 'gmail' && !isSetupMode) {
-        return <PenyamaranGmail onUnlock={(pw) => handleUnlock({ preventDefault: () => {} } as any, pw)} isLoading={isLoading} error={error} />;
+        return <PenyamaranGmail onUnlock={(pw) => handleUnlock({ preventDefault: () => {} } as unknown as React.FormEvent, pw)} isLoading={isLoading} error={error} />;
     }
 
     return (
@@ -165,7 +170,7 @@ export const LayarKunciBrankas = () => {
                             </button>
                         </form>
 
-                        {error && <p className="text-red-500 text-xs mt-6 font-semibold uppercase tracking-wider animate-bounce">Kata sandi tidak valid</p>}
+                        {error && <p className="text-red-500 text-xs mt-6 font-semibold uppercase tracking-wider animate-bounce">{typeof error === "string" ? error : "Terjadi kesalahan"}</p>}
 
                         <div className="mt-12 flex items-center gap-2 text-[var(--text-muted)] text-[11px] font-bold uppercase tracking-[0.2em]">
                             <ShieldCheck size={12} />
