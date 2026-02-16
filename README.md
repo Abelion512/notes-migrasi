@@ -48,3 +48,16 @@ Saat ini aplikasi dikonfigurasi melalui antarmuka **Setelan (Laras)** di dalam a
 ## License
 
 MIT - Dikelola oleh Lembaga Arsip Digital Abelion.
+
+---
+
+## 🧠 Agent Skills
+
+Repositori ini mendukung sistem **Agent Skills** untuk efisiensi pengembangan menggunakan AI.
+
+1. **Setup Skills**:
+   ```bash
+   ./skills.sh
+   ```
+
+Tersedia skill untuk: Next.js App Router patterns, best practices, security reviews, dan advanced TypeScript.
