@@ -4,8 +4,16 @@ $ next dev
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-✓ Ready in 1106ms
-○ Compiling / ...
- GET / 200 in 6.1s (compile: 5.6s, render: 507ms)
- GET / 200 in 68ms (compile: 7ms, render: 61ms)
- GET / 200 in 73ms (compile: 7ms, render: 65ms)
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 3.4s
+○ Compiling /laras ...
+ GET /laras 200 in 10.5s (compile: 10.1s, render: 470ms)
+ GET / 200 in 1522ms (compile: 1404ms, render: 117ms)
+ GET /laras 200 in 65ms (compile: 6ms, render: 59ms)
+ GET / 200 in 66ms (compile: 5ms, render: 61ms)
+ GET /laras 200 in 37ms (compile: 5ms, render: 32ms)
+ GET /bantuan 200 in 997ms (compile: 955ms, render: 42ms)
