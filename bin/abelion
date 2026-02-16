@@ -5,7 +5,7 @@ import { TUI } from '../src/aksara/TUI';
 program
   .name('abelion')
   .description('Abelion Notes CLI - Management Tool')
-  .version('202610-v1');
+  .version('2.3.0-dev');
 
 program
   .command('status')
