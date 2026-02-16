@@ -2,6 +2,14 @@ import prompts from 'prompts';
 import pc from 'picocolors';
 
 export const TUI = {
+    /**
+     * Menjalankan antarmuka terminal interaktif (TUI).
+     *
+     * @returns Promise void.
+     *
+     * @example
+     * await TUI.jalankan();
+     */
     async jalankan() {
         console.clear();
         console.log(pc.blue(pc.bold('🏛️  ABELION NOTES - MANAGEMENT TUI')));
@@ -46,6 +54,9 @@ export const TUI = {
         }
     },
 
+    /**
+     * Menampilkan status kesehatan sistem di terminal.
+     */
     async tampilkanStatus() {
         console.log('\n' + pc.bold('📊 STATUS SISTEM:'));
         console.log(pc.green('  ✅ Core Logic: Ready'));
@@ -54,6 +65,9 @@ export const TUI = {
         await this.tungguLanjut();
     },
 
+    /**
+     * Menunggu input ENTER dari pengguna sebelum kembali ke menu utama.
+     */
     async tungguLanjut() {
         console.log('');
         await prompts({
