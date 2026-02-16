@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { haptic } from '@/aksara/Indera';
-import { Moon, Shield, Database, Info, ChevronRight, LogOut, User } from 'lucide-react';
+import { Moon, Shield, Database, BookOpen, ChevronRight, LogOut, User } from 'lucide-react';
 import { usePundi } from '@/aksara/Pundi';
 import { Brankas } from '@/aksara/Brankas';
 
@@ -71,6 +71,16 @@ export default function SettingsPage() {
                         </div>
                         <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                     </Link>
+                    <div className="ios-separator"></div>
+                    <Link href="/bantuan" className="ios-list-item" onClick={() => haptic.light()}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center">
+                                <BookOpen size={18} />
+                            </div>
+                            <span className="font-semibold">Dokumentasi</span>
+                        </div>
+                        <ChevronRight size={16} className="text-[var(--text-secondary)]" />
+                    </Link>
                 </div>
 
                 <div className="ios-list-group">
@@ -89,7 +99,7 @@ export default function SettingsPage() {
 
                 <div className="p-8 text-center opacity-40">
                     <div className="font-bold text-xs uppercase tracking-[0.2em] mb-1">Abelion Notes</div>
-                    <div className="text-[10px] font-medium">Build 2026.02.12 • Version 2.1.0 (Snappy)</div>
+                    <div className="text-[10px] font-medium">Build 2026.02.16 • Version 2.3.0 (Developer Edition)</div>
                 </div>
             </div>
         </div>

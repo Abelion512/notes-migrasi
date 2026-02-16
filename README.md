@@ -1,65 +1,63 @@
-# Abelion Notes (Arsip Digital Personal)
+# Abelion Notes
 
-**Abelion Notes** adalah platform manajemen informasi dan dokumentasi modern yang mengedepankan kedaulatan data, keamanan tingkat tinggi, dan pengalaman pengguna premium ala iOS. Dirancang untuk pelestarian ide secara sistematis dengan filosofi *Local-first*.
+Abelion Notes adalah platform arsip digital personal yang aman, berbasis local-first, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
 
----
+## Quick Start
 
-## 🏛️ Visi & Karakter Utama
+1. **Install Bun Runtime**: [bun.sh](https://bun.sh)
+2. **Clone & Setup**:
+   ```bash
+   git clone https://github.com/Abelion-National-Archives/Abelion-Notes.git
+   cd Abelion-Notes
+   bun install
+   ```
+3. **Run Web Interface**:
+   ```bash
+   bun run dev
+   ```
+4. **Run Management TUI**:
+   ```bash
+   bun bin/abelion ui
+   ```
 
-*   **Premium Glass App**: Antarmuka *Glassmorphism* yang dinamis dan hidup.
-*   **Kedaulatan Data**: Enkripsi AES-GCM 256-bit sisi klien secara standar.
-*   **Skalabilitas Enterprise**: Dirancang untuk menangani ribuan catatan dengan performa instan.
-*   **Fokus Navigasi**: Layout modern berbasis navigasi bawah (Pill-style) yang konsisten di semua perangkat.
+## Features
 
----
+- **End-to-End Encryption**: Data dienkripsi menggunakan AES-GCM 256-bit sisi klien.
+- **Local-First Architecture**: Database utama menggunakan IndexedDB (via Dixie).
+- **Interactive TUI/CLI**: Alat manajemen terminal yang efisien untuk developer.
+- **Credential Storage**: Template khusus untuk menyimpan username, password, dan URL secara aman.
+- **Gmail Camouflage**: Mode rahasia untuk menyamarkan layar kunci brankas.
 
-## 🛠️ Stack Teknologi Modern
+## Configuration
 
-*   **Frontend**: Next.js 15 (App Router), React 19, TypeScript.
-*   **Styling**: Tailwind CSS v4, Framer Motion.
-*   **Penyimpanan**: IndexedDB (Utama), Supabase (Sync Opsional).
-*   **Keamanan**: Web Crypto API (E2EE), PBKDF2 Key Derivation.
-*   **Infrastruktur**: Docker & CLI Management Support.
+Saat ini aplikasi dikonfigurasi melalui antarmuka **Setelan (Laras)** di dalam aplikasi.
 
----
+| Fitur | Deskripsi | Default |
+|-------|-----------|---------|
+| Tema | Tampilan Terang, Gelap, atau Otomatis | Otomatis |
+| Mode Rahasia | Penyamaran sebagai login Gmail | Mati |
+| Kunci Otomatis | Durasi sebelum brankas terkunci otomatis | 1 Menit |
 
-## 📂 Struktur Proyek (Feature-Sliced Design)
+## Documentation
 
-*   `src/app`: Gerbang utama aplikasi (Routing & Pages).
-*   `src/components`: Komponen modular (Atomic UI & Shareable Shells).
-*   `src/lib/storage`: Jantung aplikasi—Manajemen enkripsi dan database lokal.
-*   `src/lib/sync`: Jembatan sinkronisasi data ke awan.
-*   `src/types`: Definisi kontrak data lintas sistem.
+- [Manajemen CLI & API](./docs/CLI_API.md)
+- [Peningkatan Masa Depan](./docs/FUTURE_IMPROVEMENTS.md)
+- [Log Perubahan (Changelog)](./CHANGELOG.md)
+- [Architecture Decision Records (ADR)](./docs/ADR-001_TUI_Implementation.md)
 
----
+## License
 
-## 🚀 Persiapan Pengembangan
-
-1.  **Clone & Install**:
-    ```bash
-    git clone https://github.com/Abelion-National-Archives/Abelion-Notes.git
-    cd Abelion-Notes
-    bun install
-    ```
-
-2.  **Jalankan Lingkungan Pengembangan**:
-    ```bash
-    bun run dev
-    ```
-
-3.  **Docker & CLI**:
-    Aplikasi siap dijalankan dengan Docker:
-    ```bash
-    docker compose up -d
-    ```
+MIT - Dikelola oleh Lembaga Arsip Digital Abelion.
 
 ---
 
-## 🤝 Standar Kontribusi & Sintaks
+## 🧠 Agent Skills
 
-Kami menjaga kualitas kode dengan standar ketat:
-- Semua fungsi inti wajib memiliki penanganan error yang jelas dan ramah pengguna.
-- UI harus mengikuti pedoman [Spesifikasi Teknis](./docs/specifications.md).
-- Menghindari penggunaan data statis (*hardcoded*), semua harus ditarik dari sistem konfigurasi yang dinamis.
+Repositori ini mendukung sistem **Agent Skills** untuk efisiensi pengembangan menggunakan AI.
 
-*Dikelola oleh Lembaga Arsip Digital Abelion.*
+1. **Setup Skills**:
+   ```bash
+   ./skills.sh
+   ```
+
+Tersedia skill untuk: Next.js App Router patterns, best practices, security reviews, dan advanced TypeScript.

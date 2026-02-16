@@ -52,3 +52,16 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 
 > [!IMPORTANT]
 > Seluruh perubahan ini telah diverifikasi melalui `bun run build` dengan status **Sukses (Exit Code 0)**.
+
+## 6. Ekspansi Antarmuka & Dokumentasi (v2.3.0)
+
+**Masalah**: Pengguna developer membutuhkan akses yang lebih cepat daripada sekadar antarmuka web, serta panduan teknis yang mudah diakses dan digunakan.
+
+**Solusi**:
+- **Manajemen Terminal (CLI/TUI)**: Membangun binary `abelion` berbasis Bun yang mendukung perintah langsung (`list`, `status`, `hapus`) dan antarmuka visual terminal (TUI) interaktif.
+- **Integrated Help System**: Menambahkan halaman `/bantuan` (Dokumentasi) yang dirancang khusus untuk developer dengan fitur salin kode satu-klik.
+- **Roadmap Skalabilitas**: Menyusun rencana masa depan di `docs/FUTURE_IMPROVEMENTS.md` untuk mengarahkan proyek menuju standar *Enterprise*.
+
+---
+> [!NOTE]
+> Proyek ini sekarang diposisikan sebagai alat bantu utama developer untuk pengelolaan kredensial secara aman dan efisien.

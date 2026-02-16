@@ -6,7 +6,9 @@ import { Integritas } from '@/aksara/Integritas';
 
 export const Arsip = {
     /**
-     * Check if the vault has been set up with a password
+     * Memeriksa apakah brankas sudah diinisialisasi dengan kata sandi.
+     *
+     * @returns Boolean yang menunjukkan status inisialisasi.
      */
     async isVaultInitialized(): Promise<boolean> {
         const validator = await Gudang.get('meta', 'auth_validator');
@@ -14,7 +16,13 @@ export const Arsip = {
     },
 
     /**
-     * Set up the vault with a master password
+     * Menyiapkan brankas dengan kata sandi utama.
+     *
+     * @param password - Kata sandi utama yang akan digunakan untuk enkripsi.
+     * @returns Promise void.
+     *
+     * @example
+     * await Arsip.setupVault('password_rahasia_123');
      */
     async setupVault(password: string): Promise<void> {
         const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -34,7 +42,10 @@ export const Arsip = {
     },
 
     /**
-     * Unlock the vault
+     * Membuka kunci brankas menggunakan kata sandi.
+     *
+     * @param password - Kata sandi utama.
+     * @returns Boolean yang menunjukkan apakah pembukaan kunci berhasil.
      */
     async unlockVault(password: string): Promise<boolean> {
         try {
@@ -67,14 +78,16 @@ export const Arsip = {
     },
 
     /**
-     * Create or Update a note with automatic encryption
+     * Menyimpan atau memperbarui catatan dengan enkripsi otomatis.
+     *
+     * @param note - Objek catatan (tanpa updatedAt).
+     * @returns Catatan yang telah disimpan dan dienkripsi.
      */
     async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
         if (Brankas.isLocked()) {
             throw new Error('Vault is locked. Cannot save data.');
         }
 
-        // Ensure ID and timestamps are present before hashing for consistency
         const noteWithId = {
             ...note,
             id: note.id || uuidv4(),
@@ -83,14 +96,11 @@ export const Arsip = {
 
         const checkHash = await Integritas.hitungHash(noteWithId);
 
-        // Check if we actually need to save (Compare decrypted content hash)
         const existing = await Gudang.get("notes", note.id || "");
         if (existing && existing._hash === checkHash) {
             return existing;
         }
 
-        // Generate plain-text preview before encryption for performance in list views
-        // Strips HTML tags and replaces common entities
         const plainText = note.content
             .replace(/<[^>]*>?/gm, '')
             .replace(/&nbsp;/g, ' ')
@@ -100,14 +110,12 @@ export const Arsip = {
             .trim();
         const preview = plainText.substring(0, 100);
 
-        // Encrypt everything
         const [secureTitle, secureContent, securePreview] = await Promise.all([
             Brankas.encryptPacked(note.title || 'Tanpa Judul'),
             Brankas.encryptPacked(note.content),
             Brankas.encryptPacked(preview)
         ]);
 
-        // Encrypt credential fields if they exist
         let secureKredensial = note.kredensial;
         if (note.kredensial) {
             secureKredensial = await Brankas.encryptPacked(JSON.stringify(note.kredensial)) as any;
@@ -128,7 +136,9 @@ export const Arsip = {
     },
 
     /**
-     * Retrieve all notes (Metadata is decrypted for UI)
+     * Mengambil semua catatan (Metadata didekripsi untuk UI).
+     *
+     * @returns Array berisi objek Note.
      */
     async getAllNotes(): Promise<Note[]> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
@@ -148,7 +158,10 @@ export const Arsip = {
     },
 
     /**
-     * Decrypt specific note parts on-demand & verify integrity
+     * Mendekripsi bagian catatan tertentu sesuai permintaan & verifikasi integritas.
+     *
+     * @param note - Objek catatan terenkripsi.
+     * @returns Catatan yang telah didekripsi.
      */
     async decryptNote(note: Note): Promise<Note> {
         try {
@@ -165,7 +178,6 @@ export const Arsip = {
                 kredensial: credsRaw ? JSON.parse(credsRaw) : note.kredensial
             };
 
-            // VERIFIKASI INTEGRITAS (SEGEL DIGITAL)
             if (note._hash) {
                 const actualHash = await Integritas.hitungHash(decryptedNote);
                 if (actualHash !== note._hash) {
@@ -181,10 +193,21 @@ export const Arsip = {
         }
     },
 
+    /**
+     * Menghapus catatan secara permanen.
+     *
+     * @param id - ID unik catatan.
+     */
     async deleteNote(id: EntityId) {
         await Gudang.delete('notes', id);
     },
 
+    /**
+     * Mendapatkan satu catatan berdasarkan ID.
+     *
+     * @param id - ID unik catatan.
+     * @returns Objek Note atau undefined jika tidak ditemukan.
+     */
     async getNoteById(id: EntityId): Promise<Note | undefined> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
         const note = await Gudang.get('notes', id) as Note;
@@ -192,6 +215,11 @@ export const Arsip = {
         return this.decryptNote(note);
     },
 
+    /**
+     * Mendapatkan statistik jumlah catatan dan folder.
+     *
+     * @returns Objek statistik.
+     */
     async getStats() {
         if (Brankas.isLocked()) return { notes: 0, folders: 0 };
         const notesCount = await Gudang.count('notes');

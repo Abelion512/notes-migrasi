@@ -1,0 +1,16 @@
+# Abelion Notes
+> Personal Digital Archive with Sentinel-grade Security.
+
+## Core Files
+- [bin/abelion]: CLI entry point and TUI management.
+- [src/aksara/Arsip.ts]: High-level encryption and storage manager.
+- [src/aksara/Brankas.ts]: Cryptographic engine (AES-GCM & Argon2id).
+- [src/aksara/Gudang.ts]: IndexedDB abstraction layer.
+- [src/aksara/TUI.ts]: Interactive terminal interface logic.
+- [src/app/page.tsx]: Main GUI landing page (Note list).
+
+## Key Concepts
+- Sentinel Standard: Client-side encryption using AES-GCM 256-bit and Argon2id key derivation.
+- Poetic Indonesian: Naming convention for core modules (Aksara, Brankas, Gudang, Pundi).
+- Local-First: Data sovereignty prioritized with local storage (IndexedDB) as primary source.
+- Developer Vibes: Efficient terminal-first management tools for power users.
