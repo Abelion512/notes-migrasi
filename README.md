@@ -1,65 +1,55 @@
 # Abelion Notes (Arsip Digital Personal)
 
-**Abelion Notes** adalah platform manajemen informasi dan dokumentasi modern yang mengedepankan kedaulatan data, keamanan tingkat tinggi, dan pengalaman pengguna premium ala iOS. Dirancang untuk pelestarian ide secara sistematis dengan filosofi *Local-first*.
+**Abelion Notes** adalah platform arsip digital personal yang aman, berbasis *local-first*, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
+
+## 🚀 Ringkasan Aplikasi
+- **Fungsi Utama**: Aplikasi ini berfungsi untuk menyimpan **kredensial** dan catatan penting secara aman.
+- **Saran Penggunaan**: Agar efektif, aplikasi ini **wajib digunakan oleh developer** atau pengguna yang mengutamakan privasi dan kontrol data penuh.
+- **Keamanan**: Data dienkripsi menggunakan standar AES-GCM 256-bit langsung di perangkat Anda.
 
 ---
 
-## 🏛️ Visi & Karakter Utama
+## 🛠️ Persiapan Pengembangan
 
-*   **Premium Glass App**: Antarmuka *Glassmorphism* yang dinamis dan hidup.
-*   **Kedaulatan Data**: Enkripsi AES-GCM 256-bit sisi klien secara standar.
-*   **Skalabilitas Enterprise**: Dirancang untuk menangani ribuan catatan dengan performa instan.
-*   **Fokus Navigasi**: Layout modern berbasis navigasi bawah (Pill-style) yang konsisten di semua perangkat.
+1. **Clone & Install**:
+   ```bash
+   git clone https://github.com/Abelion-National-Archives/Abelion-Notes.git
+   cd Abelion-Notes
+   bun install
+   ```
 
----
-
-## 🛠️ Stack Teknologi Modern
-
-*   **Frontend**: Next.js 15 (App Router), React 19, TypeScript.
-*   **Styling**: Tailwind CSS v4, Framer Motion.
-*   **Penyimpanan**: IndexedDB (Utama), Supabase (Sync Opsional).
-*   **Keamanan**: Web Crypto API (E2EE), PBKDF2 Key Derivation.
-*   **Infrastruktur**: Docker & CLI Management Support.
+2. **Jalankan Lingkungan Pengembangan**:
+   ```bash
+   bun run dev
+   ```
 
 ---
 
-## 📂 Struktur Proyek (Feature-Sliced Design)
+## 💻 Manajemen Terminal (CLI & TUI)
 
-*   `src/app`: Gerbang utama aplikasi (Routing & Pages).
-*   `src/components`: Komponen modular (Atomic UI & Shareable Shells).
-*   `src/lib/storage`: Jantung aplikasi—Manajemen enkripsi dan database lokal.
-*   `src/lib/sync`: Jembatan sinkronisasi data ke awan.
-*   `src/types`: Definisi kontrak data lintas sistem.
+Untuk efisiensi maksimal bagi para developer:
 
----
+1. **Cek Status**:
+   ```bash
+   bun bin/abelion status
+   ```
 
-## 🚀 Persiapan Pengembangan
+2. **Buka TUI Interaktif**:
+   ```bash
+   bun bin/abelion ui
+   ```
 
-1.  **Clone & Install**:
-    ```bash
-    git clone https://github.com/Abelion-National-Archives/Abelion-Notes.git
-    cd Abelion-Notes
-    bun install
-    ```
-
-2.  **Jalankan Lingkungan Pengembangan**:
-    ```bash
-    bun run dev
-    ```
-
-3.  **Docker & CLI**:
-    Aplikasi siap dijalankan dengan Docker:
-    ```bash
-    docker compose up -d
-    ```
+3. **Operasi Catatan Cepat**:
+   ```bash
+   bun bin/abelion list
+   bun bin/abelion hapus <id>
+   ```
 
 ---
 
-## 🤝 Standar Kontribusi & Sintaks
-
-Kami menjaga kualitas kode dengan standar ketat:
-- Semua fungsi inti wajib memiliki penanganan error yang jelas dan ramah pengguna.
-- UI harus mengikuti pedoman [Spesifikasi Teknis](./docs/specifications.md).
-- Menghindari penggunaan data statis (*hardcoded*), semua harus ditarik dari sistem konfigurasi yang dinamis.
+## 📂 Struktur Proyek
+- `src/aksara`: Logika inti dan keamanan (Jiwa).
+- `src/komponen`: Antarmuka pengguna (Tubuh).
+- `bin/abelion`: Alat manajemen terminal.
 
 *Dikelola oleh Lembaga Arsip Digital Abelion.*

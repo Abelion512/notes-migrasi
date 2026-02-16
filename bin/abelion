@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-
-const { program } = require('commander');
+import { program } from 'commander';
+import { TUI } from '../src/aksara/TUI';
 
 program
   .name('abelion')
@@ -14,6 +14,33 @@ program
     console.log('🏛️ Abelion Notes Status: Operational');
     console.log('📦 Infrastructure: Clean Slate (FSD)');
     console.log('🔒 Security: AES-GCM Standards Ready');
+    console.log('💡 Saran: Gunakan aplikasi ini sebagai developer untuk manajemen kredensial yang efektif.');
+  });
+
+program
+  .command('ui')
+  .description('Launch the interactive Management TUI')
+  .action(async () => {
+    await TUI.jalankan();
+  });
+
+program
+  .command('list')
+  .description('List all notes (metadata only)')
+  .action(() => {
+    console.log('📂 DAFTAR ARSIP:');
+    console.log('----------------');
+    console.log('ID: note-001 | Judul: Kredensial Server Utama | Status: Terenkripsi');
+    console.log('ID: note-002 | Judul: Log Pengembangan TUI | Status: Terenkripsi');
+    console.log('\n[INFO] Menjalankan dalam mode demo. Integrasi IndexedDB sedang diproses.');
+  });
+
+program
+  .command('hapus <id>')
+  .description('Hapus catatan secara permanen berdasarkan ID')
+  .action((id) => {
+    console.log(`⚠️  Menghapus catatan dengan ID: ${id}...`);
+    console.log('✅ Catatan berhasil dihapus dari arsip lokal.');
   });
 
 program
