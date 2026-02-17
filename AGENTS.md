@@ -18,10 +18,15 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 3. **Integritas**: SHA-256 untuk deteksi manipulasi data.
 4. **Mnemonic**: 12 kata aksara untuk pemulihan.
 
+## ⚡ Optimasi Performa (Bolt Standard)
+1. **Virtualisasi**: Gunakan virtualization (`react-window`) untuk setiap daftar komponen yang berpotensi memiliki > 100 item.
+2. **Session Cache**: Gunakan `Map` memori untuk menyimpan hasil dekripsi sementara selama sesi aktif untuk mempercepat fitur pencarian (Smart Find).
+3. **Background Tasks**: Lakukan tugas berat (seperti dekripsi massal) dalam batch kecil di latar belakang untuk menjaga UI tetap responsif.
+
 ## ✨ Landing Page & UI
 1. **Landing Page (`/`)**: Berisi instruksi instalasi CLI dan perbandingan user role.
 2. **Dashboard (`/arsip`)**: Area utama manajemen catatan setelah brankas dibuka.
-3. **Penyamaran Gmail**: Fitur privasi yang mengubah identitas tab menjadi Gmail.
+3. **Dokumentasi Publik (`/bantuan/publik`)**: Panduan teknis yang dapat diakses tanpa membuka brankas.
 
 ## 🛠️ Konvensi Coding
 1. **Workspace Imports**: Gunakan `@lembaran/core` untuk mengimpor logika bersama di CLI atau Web.
@@ -33,5 +38,6 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 - `bun run dev`: Jalankan Web (port 1400).
 - `bun run cli`: Jalankan CLI TUI.
 - `bun run build`: Build seluruh proyek.
+- `bun run test:perf`: Menjalankan stress-test 1000 catatan.
 
 *Dokumentasi ini adalah sumber kebenaran tunggal untuk pengembangan Lembaran.*

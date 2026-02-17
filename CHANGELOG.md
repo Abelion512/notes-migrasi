@@ -2,6 +2,18 @@
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
+## [2.6.0] - 2026-02-18
+### Added
+- **Virtualisasi Daftar**: Implementasi `react-window` di halaman Arsip untuk menangani ribuan catatan dengan mulus.
+- **Smart Find Search**: Pengindeksan latar belakang untuk pencarian instan di dalam isi catatan terenkripsi.
+- **Dokumentasi Publik**: Halaman baru `/bantuan/publik` yang dapat diakses tanpa membuka brankas.
+- **Fitur "Beri Tahu Saya"**: Tombol notifikasi untuk ekosistem native yang akan datang.
+- **Skrip Benchmark**: Perintah `bun run test:perf` untuk pengujian beban 1000 catatan.
+### Fixed
+- **GitHub 404**: Memperbaiki tautan repositori global dari `Lembaran512` ke `Abelion512`.
+- **Content Leak**: Memastikan highlight pencarian tidak membocorkan data mentah base64.
+
+
 ## [2.5.0] - 2026-02-18
 ### Added
 - **Landing Page Premium**: Halaman depan baru di `/` dengan widget instalasi CLI (curl, npm, bun, brew, paru).
