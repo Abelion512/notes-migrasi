@@ -8,7 +8,7 @@
 
 ## Fase 2: CLI & Keamanan Puitis (`lembaran`)
 - [x] Tambahkan field `bin` ke `package.json`
-- [x] Ubah `bin/abelion` dengan perintah: `pantau`, `jelajah`, `hangus`, `petik`, `kuncung`, `tanam`, `mulai`
+- [x] Ubah `bin/lembaran` dengan perintah: `pantau`, `jelajah`, `hangus`, `petik`, `kuncung`, `tanam`, `mulai`
 - [x] Implementasikan alur `kuncung` (login manual/web)
 - [x] Implementasikan pesan edukasi Mantra Pemulihan untuk registrasi
 - [x] Tambahkan instruksi UX (Enter/Space) pada `TUI.ts`
@@ -43,7 +43,7 @@
 - [x] Update `llms.txt` untuk visibilitas AI
 
 ## Fase 7: Redesign Dokumentasi & UX
-- [x] Update Link GitHub ke `Abelion512/lembaran` (Global)
+- [x] Update Link GitHub ke `Lembaran512/lembaran` (Global)
 - [x] Redesign `/bantuan`: Fokus "Cara Download CLI" & Step-by-step
 - [x] Pindahkan akses `/tentang` ke Halaman Setelan (`/laras`)
 - [x] Hapus akses `/tentang` dari `/bantuan` (Diganti Guide CLI)

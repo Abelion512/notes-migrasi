@@ -1,13 +1,13 @@
-# Abelion Notes
+# Lembaran Notes
 
-Abelion Notes adalah platform arsip digital personal yang aman, berbasis local-first, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
+Lembaran Notes adalah platform arsip digital personal yang aman, berbasis local-first, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
 
 ## Quick Start
 
 1. **Install Bun Runtime**: [bun.sh](https://bun.sh)
 2. **Clone & Setup**:
    ```bash
-   git clone https://github.com/Abelion512/lembaran.git
+   git clone https://github.com/Lembaran512/lembaran.git
    cd lembaran
    bun install
    ```
@@ -48,7 +48,7 @@ Saat ini aplikasi dikonfigurasi melalui antarmuka **Setelan (Laras)** di dalam a
 
 ## License
 
-MIT - Dikelola oleh Lembaga Arsip Digital Abelion.
+MIT - Dikelola oleh Lembaga Arsip Digital Lembaran.
 
 ---
 

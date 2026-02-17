@@ -1,12 +1,12 @@
 # CLI API Reference
 
-`lembaran` (atau `abelion`) adalah antarmuka baris perintah untuk manajemen Abelion Notes.
+`lembaran` (atau `lembaran`) adalah antarmuka baris perintah untuk manajemen Lembaran Notes.
 
 ## Instalasi
 ```bash
 bun install -g .
 # atau
-ln -s ./bin/abelion /usr/local/bin/lembaran
+ln -s ./bin/lembaran /usr/local/bin/lembaran
 ```
 
 ## Perintah Dasar
@@ -45,7 +45,7 @@ Menghapus catatan secara permanen.
 - **Perhatian**: Tindakan ini tidak dapat dibatalkan.
 
 ## Struktur Data (JSON)
-Jika menggunakan penyimpanan file (`.abelion-db.json`), struktur data adalah:
+Jika menggunakan penyimpanan file (`.lembaran-db.json`), struktur data adalah:
 ```json
 {
   "meta": { "version": "2.4.0" },

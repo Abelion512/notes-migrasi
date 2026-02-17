@@ -17,7 +17,7 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 ## [2.3.0] - 2026-02-16
 ### Added
 - Modul TUI interaktif (`src/aksara/TUI.ts`) untuk manajemen sistem.
-- Perintah CLI `list`, `status`, dan `hapus` pada binary `bin/abelion`.
+- Perintah CLI `list`, `status`, dan `hapus` pada binary `bin/lembaran`.
 - Halaman Dokumentasi interaktif (`/bantuan`) dengan fitur salin kode.
 - Dokumen roadmap masa depan di `docs/FUTURE_IMPROVEMENTS.md`.
 ### Fixed

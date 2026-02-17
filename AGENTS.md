@@ -1,7 +1,7 @@
-# Abelion Notes - Agent Guidelines
+# Lembaran Notes - Agent Guidelines
 
 ## Overview
-**Abelion Notes** adalah platform arsip digital personal yang aman, berbasis *local-first*, dengan fokus pada kedaulatan data dan pengalaman pengguna premium terinspirasi dari iOS 18.
+**Lembaran Notes** adalah platform arsip digital personal yang aman, berbasis *local-first*, dengan fokus pada kedaulatan data dan pengalaman pengguna premium terinspirasi dari iOS 18.
 
 ## 🏛️ Arsitektur & Penamaan (Poetic Indonesian)
 Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' untuk logika inti:
@@ -42,4 +42,4 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' untuk logika inti:
 - `bun run lint`: Verifikasi ESLint dan aturan tipe.
 - `bun run build`: Membuat build produksi.
 
-*Dokumentasi ini adalah sumber kebenaran tunggal untuk pengembangan Abelion Notes.*
+*Dokumentasi ini adalah sumber kebenaran tunggal untuk pengembangan Lembaran Notes.*

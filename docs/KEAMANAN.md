@@ -1,6 +1,6 @@
 # Keamanan & Privasi Data
 
-Di Abelion Notes, keamanan bukan sekadar fitur tambahan, melainkan fondasi utama. Kami menerapkan prinsip **Zero-Knowledge** dan **Integritas Kriptografis** yang terinspirasi dari teknologi blockchain.
+Di Lembaran Notes, keamanan bukan sekadar fitur tambahan, melainkan fondasi utama. Kami menerapkan prinsip **Zero-Knowledge** dan **Integritas Kriptografis** yang terinspirasi dari teknologi blockchain.
 
 ## 1. Segel Digital (Integritas Data)
 

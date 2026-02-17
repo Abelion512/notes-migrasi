@@ -1,6 +1,6 @@
 # Panduan Kontribusi
 
-Terima kasih atas minat Anda untuk berkontribusi pada **Abelion Notes**.
+Terima kasih atas minat Anda untuk berkontribusi pada **Lembaran Notes**.
 
 Proyek ini menjunjung tinggi filosofi **"Kedaulatan Data & Estetika Puitis"**.
 

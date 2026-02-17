@@ -2,7 +2,7 @@
 
 **Terakhir Diperbarui: 17 Februari 2026**
 
-Privasi adalah hak fundamental di Abelion Notes.
+Privasi adalah hak fundamental di Lembaran Notes.
 
 ## 1. Pengumpulan Data
 Kami **tidak mengumpulkan** data pribadi, catatan, atau password Anda.

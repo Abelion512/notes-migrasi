@@ -1,6 +1,6 @@
 # Audit UI/UX Side-by-Side: Legacy vs. Migration
 
-This audit compares the legacy Abelion Notes (`arsip_legacy`) with the current Migration project by acting as a QA/User.
+This audit compares the legacy Lembaran Notes (`arsip_legacy`) with the current Migration project by acting as a QA/User.
 
 ---
 

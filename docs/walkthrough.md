@@ -16,9 +16,9 @@ Folder skill telah direstrukturisasi untuk menghilangkan kebingungan symlink.
 Antarmuka baris perintah (CLI) telah diubah total untuk mencerminkan etos puitis aplikasi.
 
 ### Alias Global
-- **Command**: `lembaran` (menggantikan `bun bin/abelion ui`)
+- **Command**: `lembaran` (menggantikan `bun bin/lembaran ui`)
 - **Akses**: Dapat dijalankan dari mana saja di terminal setelah `bun link`.
-- **Repository**: [Abelion512/lembaran](https://github.com/Abelion512/lembaran)
+- **Repository**: [Lembaran512/lembaran](https://github.com/Lembaran512/lembaran)
 
 ### Kosa Kata Baru
 | Perintah | Deskripsi | Vibe |
@@ -43,7 +43,7 @@ Antarmuka baris perintah (CLI) telah diubah total untuk mencerminkan etos puitis
 ## 4. Arsitektur Decoupled (Web vs CLI)
 - **Adapter Pattern**: `Gudang.ts` kini mendeteksi environment.
   - **Browser**: Menggunakan `BrowserAdapter` (IndexedDB).
-  - **CLI**: Menggunakan `FileAdapter` (JSON `.abelion-db.json`).
+  - **CLI**: Menggunakan `FileAdapter` (JSON `.lembaran-db.json`).
 - **Build Safety**: Menggunakan shim pada `package.json` "browser" field untuk mencegah modul `fs` Node.js ter-bundle ke Web App.
 
 ## 5. Dokumentasi & Konteks

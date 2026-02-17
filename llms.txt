@@ -1,13 +1,14 @@
-# Abelion Notes
+# Lembaran Notes
 > Personal Digital Archive with Sentinel-grade Security.
 
 ## Core Files
-- [bin/abelion]: CLI entry point and TUI management.
+- [bin/lembaran]: CLI entry point and TUI management.
 - [src/aksara/Arsip.ts]: High-level encryption and storage manager.
 - [src/aksara/Brankas.ts]: Cryptographic engine (AES-GCM & Argon2id).
 - [src/aksara/Gudang.ts]: IndexedDB abstraction layer (with Adapter Pattern).
 - [src/aksara/TUI.ts]: Interactive terminal interface logic.
-- [src/app/page.tsx]: Main GUI landing page (Note list).
+- [src/app/page.tsx]: Main marketing landing page.
+- [src/app/arsip/page.tsx]: Main GUI application (Note list).
 
 ## Documentation & Context
 - [docs/CLI_API.md]: CLI Command Reference.
@@ -22,5 +23,5 @@
 - Sentinel Standard: Client-side encryption using AES-GCM 256-bit and Argon2id key derivation.
 - Poetic Indonesian: Naming convention for core modules (Aksara, Brankas, Gudang, Pundi).
 - Local-First: Data sovereignty prioritized with local storage (IndexedDB) as primary source.
-- Decoupled Storage: Web uses IDB, CLI uses JSON (`.abelion-db.json`) via Adapter Pattern to ensure portable/offline capability.
+- Decoupled Storage: Web uses IDB, CLI uses JSON (`.lembaran-db.json`) via Adapter Pattern to ensure portable/offline capability.
 - Developer Vibes: Efficient terminal-first management tools for power users.

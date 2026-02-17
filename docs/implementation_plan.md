@@ -37,8 +37,8 @@ Menggunakan istilah yang lebih progresif dan puitis sesuai tema "Aksara/Brankas"
    - Arahan eksplisit ke URL registrasi web.
 
 ### Teknis:
-1. Perbarui `package.json` dengan `"bin": { "lembaran": "./bin/abelion" }`.
-2. Modifikasi `bin/abelion` dan `TUI.ts` untuk mendukung perintah baru dan instruksi UX.
+1. Perbarui `package.json` dengan `"bin": { "lembaran": "./bin/lembaran" }`.
+2. Modifikasi `bin/lembaran` dan `TUI.ts` untuk mendukung perintah baru dan instruksi UX.
 
 ---
 
