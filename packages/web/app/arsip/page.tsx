@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {
     Share2, Download, Trash2
 } from 'lucide-react';
@@ -9,10 +9,48 @@ import { Note } from '@lembaran/core/Rumus';
 import { haptic } from '@lembaran/core/Indera';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
+import { List, RowComponentProps } from 'react-window';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 import { PetaCatatan } from '@/komponen/fitur/Peta/PetaCatatan';
 import { BarisCatatan } from '@/komponen/fitur/Daftar/BarisCatatan';
 import { IlustrasiKosong } from "@/komponen/bersama/IlustrasiKosong";
+
+interface ItemData {
+    notes: Note[];
+    selectedIds: string[];
+    isEditMode: boolean;
+    onToggle: (id: string) => void;
+    onCopy: (e: React.MouseEvent, note: Note) => void;
+    copiedId: string | null;
+}
+
+// Row component for virtualization (compatible with react-window v2.x)
+const Row = (props: RowComponentProps<ItemData>) => {
+    const { index, style, notes, selectedIds, isEditMode, onToggle, onCopy, copiedId } = props;
+
+    // Add spacer at the end for bottom navigation
+    if (index === notes.length) {
+        return <div style={style} className="h-32" />;
+    }
+
+    const note = notes[index];
+    if (!note) return null;
+
+    return (
+        <div style={style}>
+            <div className="max-w-5xl mx-auto w-full">
+                <BarisCatatan
+                    note={note}
+                    isSelected={selectedIds.includes(note.id)}
+                    isEditMode={isEditMode}
+                    onToggle={onToggle}
+                    onCopy={onCopy}
+                    isCopied={copiedId === note.id}
+                />
+            </div>
+        </div>
+    );
+};
 
 export default function NoteListPage() {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -21,6 +59,10 @@ export default function NoteListPage() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [showGraph, setShowGraph] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    // Virtualization container measurements
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
     const loadNotes = async () => {
         setIsLoading(true);
@@ -37,6 +79,26 @@ export default function NoteListPage() {
     useEffect(() => {
         loadNotes();
     }, []);
+
+    // Handle container resizing
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        const updateSize = () => {
+            if (containerRef.current) {
+                setDimensions({
+                    width: containerRef.current.offsetWidth,
+                    height: containerRef.current.offsetHeight
+                });
+            }
+        };
+
+        const observer = new ResizeObserver(updateSize);
+        observer.observe(containerRef.current);
+        updateSize();
+
+        return () => observer.disconnect();
+    }, [isLoading]);
 
     const toggleSelection = (id: string) => {
         setSelectedIds(prev =>
@@ -83,6 +145,15 @@ export default function NoteListPage() {
         haptic.success();
     };
 
+    const rowProps = useMemo(() => ({
+        notes,
+        selectedIds,
+        isEditMode,
+        onToggle: toggleSelection,
+        onCopy: handleCopy,
+        copiedId
+    }), [notes, selectedIds, isEditMode, copiedId]);
+
     return (
         <div className="flex-1 w-full flex flex-col min-h-0">
             <header className="snappy-header">
@@ -103,7 +174,7 @@ export default function NoteListPage() {
                 </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
+            <div className="flex-1 min-h-0 relative" ref={containerRef}>
                 {isLoading ? (
                     <div className="p-5"><KerangkaCatatan /></div>
                 ) : notes.length === 0 ? (
@@ -111,19 +182,16 @@ export default function NoteListPage() {
                         <IlustrasiKosong pesan="Brankas Kosong" />
                     </div>
                 ) : (
-                    <div className="max-w-5xl mx-auto w-full py-4">
-                        {notes.map((note, _index) => (
-                            <BarisCatatan
-                                key={note.id}
-                                note={note}
-                                isSelected={selectedIds.includes(note.id)}
-                                isEditMode={isEditMode}
-                                onToggle={toggleSelection}
-                                onCopy={handleCopy}
-                                isCopied={copiedId === note.id}
-                            />
-                        ))}
-                    </div>
+                    dimensions.height > 0 && (
+                        <List<ItemData>
+                            style={{ height: dimensions.height, width: dimensions.width }}
+                            rowCount={notes.length + 1}
+                            rowHeight={76}
+                            rowProps={rowProps}
+                            rowComponent={Row}
+                            className="no-scrollbar"
+                        />
+                    )
                 )}
             </div>
 

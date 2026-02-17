@@ -10,7 +10,8 @@
     "build": "bun --filter @lembaran/web build",
     "start": "bun --filter @lembaran/web start",
     "cli": "bun --filter @lembaran/cli start",
-    "lint": "bun --filter \"*\" lint"
+    "lint": "bun --filter \"*\" lint",
+    "test:perf": "bun packages/core/src/scripts/inject-perf-data.ts"
   },
   "devDependencies": {
     "typescript": "^5",
