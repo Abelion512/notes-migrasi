@@ -62,7 +62,7 @@ export default function DocumentationPage() {
                                 Tanpa perlu install Bun/Node.js. Cukup download file <code>lembaran.exe</code> dari halaman Rilis GitHub.
                             </p>
                             <Link
-                                href="https://github.com/Lembaran512/lembaran/releases"
+                                href="https://github.com/Abelion512/lembaran/releases"
                                 target="_blank"
                                 className='inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-lg active:opacity-80'
                             >
@@ -130,7 +130,7 @@ export default function DocumentationPage() {
             </div>
 
             <div className='mt-8 text-center'>
-                <Link href='https://github.com/Lembaran512/lembaran' target='_blank' className='text-xs text-blue-500 font-medium hover:underline'>
+                <Link href='https://github.com/Abelion512/lembaran' target='_blank' className='text-xs text-blue-500 font-medium hover:underline'>
                     Lihat Source Code di GitHub
                 </Link>
             </div>

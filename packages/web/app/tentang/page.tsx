@@ -51,7 +51,7 @@ export default function TentangPage() {
             </div>
 
             <div className='ios-list-group'>
-                <Link href='https://github.com/Lembaran512/lembaran' target='_blank' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
+                <Link href='https://github.com/Abelion512/lembaran' target='_blank' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
                     <div className='flex items-center gap-3'>
                         <div className='p-1.5 rounded-md bg-zinc-800 text-white flex items-center justify-center'>
                             <Github size={16} />
