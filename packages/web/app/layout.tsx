@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
     title: "Lembaran",
-    description: "Secure, Local-First, Premium Notes App",
+    description: "Brankas Aksara Personal yang Berdikari",
     appleWebApp: {
         capable: true,
         statusBarStyle: "default",

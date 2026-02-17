@@ -87,7 +87,7 @@ export default function NoteListPage() {
         <div className="flex-1 w-full flex flex-col min-h-0">
             <header className="snappy-header">
                 <div className="flex items-center gap-3">
-                    <h1 className="text-xl font-extrabold tracking-tight text-[var(--text-primary)]">Catatan</h1>
+                    <h1 className="text-xl font-extrabold tracking-tight text-[var(--text-primary)]">Arsip</h1>
                     <button
                         onClick={() => { setShowGraph(true); haptic.light(); }}
                         className="p-1.5 rounded-full hover:bg-blue-500/10 text-blue-500 active:opacity-40 transition-colors"

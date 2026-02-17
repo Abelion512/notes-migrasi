@@ -54,7 +54,7 @@ export default function LandingPage() {
                             <span className="text-blue-500">Berdikari.</span>
                         </h1>
                         <p className="text-lg md:text-2xl text-gray-500 max-w-3xl mx-auto mb-12 leading-relaxed font-medium">
-                            Platform pengelolaan pengetahuan personal yang mengutamakan
+                            Brankas aksara personal yang mengutamakan
                             privasi absolut, performa instan, dan kecerdasan buatan on-device.
                         </p>
 

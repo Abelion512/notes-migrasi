@@ -1,14 +1,18 @@
 # Lembaran
-> Personal Digital Archive with Sentinel-grade Security.
+> Brankas Aksara Personal yang Berdikari.
 
-## Core Files
-- [bin/lembaran]: CLI entry point and TUI management.
-- [src/aksara/Arsip.ts]: High-level encryption and storage manager.
-- [src/aksara/Brankas.ts]: Cryptographic engine (AES-GCM & Argon2id).
-- [src/aksara/Gudang.ts]: IndexedDB abstraction layer (with Adapter Pattern).
-- [src/aksara/TUI.ts]: Interactive terminal interface logic.
-- [src/app/page.tsx]: Main marketing landing page.
-- [src/app/arsip/page.tsx]: Main GUI application (Note list).
+## Core Workspaces
+- [packages/core]: Shared logic, encryption, and storage adapters.
+- [packages/cli]: Interactive terminal interface (TUI) and command-line tools.
+- [packages/web]: Next.js application (Landing page and GUI).
+
+## Key Files
+- [packages/core/src/Arsip.ts]: High-level encryption and storage manager.
+- [packages/core/src/Brankas.ts]: Cryptographic engine (AES-GCM & Argon2id).
+- [packages/core/src/Gudang.ts]: Storage abstraction layer (Adapter Pattern).
+- [packages/cli/src/main.ts]: CLI entry point.
+- [packages/web/app/page.tsx]: Main marketing landing page.
+- [packages/web/app/arsip/page.tsx]: Main GUI application dashboard.
 
 ## Documentation & Context
 - [docs/CLI_API.md]: CLI Command Reference.
@@ -20,8 +24,7 @@
 - [PRIVACY.md]: Privacy Policy.
 
 ## Key Concepts
-- Sentinel Standard: Client-side encryption using AES-GCM 256-bit and Argon2id key derivation.
+- Berdikari (Independent): Local-first data sovereignty with on-device AI.
 - Poetic Indonesian: Naming convention for core modules (Aksara, Brankas, Gudang, Pundi).
-- Local-First: Data sovereignty prioritized with local storage (IndexedDB) as primary source.
-- Decoupled Storage: Web uses IDB, CLI uses JSON (`.lembaran-db.json`) via Adapter Pattern to ensure portable/offline capability.
-- Developer Vibes: Efficient terminal-first management tools for power users.
+- Sentinel Security: Client-side encryption using AES-GCM 256-bit and Argon2id.
+- Decoupled Storage: Web uses IndexedDB, CLI uses local JSON, unified by Adapter Pattern.
