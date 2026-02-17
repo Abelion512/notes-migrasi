@@ -1,0 +1,19 @@
+{
+  "name": "@lembaran/core",
+  "version": "2.5.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "browser": {
+    "./src/storage/FileAdapter.ts": "./src/storage/FileAdapter.shim.ts"
+  },
+  "dependencies": {
+    "@noble/ciphers": "^2.1.1",
+    "@noble/hashes": "^2.0.1",
+    "uuid": "^13.0.0",
+    "idb": "^8.0.3"
+  }
+}

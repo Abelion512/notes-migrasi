@@ -1,4 +1,4 @@
-# Konteks Pengembangan & Log Perubahan (Abelion Notes v2.0.7)
+# Konteks Pengembangan & Log Perubahan (Lembaran v2.0.7)
 
 Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan optimasi untuk mencapai harmoni antara fitur modern dan estetika *Glass OS* asli.
 
@@ -58,7 +58,7 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 **Masalah**: Pengguna developer membutuhkan akses yang lebih cepat daripada sekadar antarmuka web, serta panduan teknis yang mudah diakses dan digunakan.
 
 **Solusi**:
-- **Manajemen Terminal (CLI/TUI)**: Membangun binary `abelion` berbasis Bun yang mendukung perintah langsung (`list`, `status`, `hapus`) dan antarmuka visual terminal (TUI) interaktif.
+- **Manajemen Terminal (CLI/TUI)**: Membangun binary `lembaran` berbasis Bun yang mendukung perintah langsung (`list`, `status`, `hapus`) dan antarmuka visual terminal (TUI) interaktif.
 - **Integrated Help System**: Menambahkan halaman `/bantuan` (Dokumentasi) yang dirancang khusus untuk developer dengan fitur salin kode satu-klik.
 - **Roadmap Skalabilitas**: Menyusun rencana masa depan di `docs/FUTURE_IMPROVEMENTS.md` untuk mengarahkan proyek menuju standar *Enterprise*.
 

@@ -1,6 +1,6 @@
-# Abelion Notes: AI Handoff Document 🚀
+# Lembaran: AI Handoff Document 🚀
 
-Dokumen ini disiapkan untuk asisten AI berikutnya agar dapat melanjutkan pengembangan Abelion Notes (Migrasi/Redesign) tanpa kehilangan konteks.
+Dokumen ini disiapkan untuk asisten AI berikutnya agar dapat melanjutkan pengembangan Lembaran (Migrasi/Redesign) tanpa kehilangan konteks.
 
 ## 🏗️ Core Architecture (FSD)
 Proyek menggunakan **Next.js 15 (App Router)** dengan struktur **Feature-Sliced Design (FSD)**:
@@ -13,7 +13,7 @@ Proyek menggunakan **Next.js 15 (App Router)** dengan struktur **Feature-Sliced 
 Fitur paling kritikal adalah **Secure Vault**:
 - **Enkripsi**: AES-GCM 256-bit (Sisi klien).
 - **Auth**: Kunci diturunkan dari password melalui **PBKDF2**.
-- **Validator**: Sistem tidak menyimpan password. Saat setup, sebuah string `"ABELION_SECURED"` dienkripsi dan disimpan di `meta` store. Unlock berhasil jika string ini bisa didekripsi dengan benar.
+- **Validator**: Sistem tidak menyimpan password. Saat setup, sebuah string `"LEMBARAN_SECURED"` dienkripsi dan disimpan di `meta` store. Unlock berhasil jika string ini bisa didekripsi dengan benar.
 - **Auto-CRUD**: `VaultRepository.ts` menangani enkripsi/dekripsi otomatis saat proses Save/Get.
 
 ## ✍️ Notion-like Editor

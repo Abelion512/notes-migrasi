@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Abelion Notes - Agent Skills Installation Script
+# Lembaran - Agent Skills Installation Script
 # This script installs highly recommended skills for AI agents working on this repo.
 
-echo "🚀 Installing Abelion Recommended Skills..."
+echo "🚀 Installing Lembaran Recommended Skills..."
 
 # 1. Discovery Skill
 bun x skills add vercel-labs/skills@find-skills -y --agent "*"
