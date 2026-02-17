@@ -108,7 +108,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="p-8 text-center opacity-40">
-                    <div className="font-bold text-xs uppercase tracking-[0.2em] mb-1">Lembaran Notes</div>
+                    <div className="font-bold text-xs uppercase tracking-[0.2em] mb-1">Lembaran</div>
                     <div className="text-[10px] font-medium">Build 2026.02.16 • Version 2.3.0 (Developer Edition)</div>
                 </div>
             </div>

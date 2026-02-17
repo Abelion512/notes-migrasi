@@ -45,7 +45,7 @@ export default function DocumentationPage() {
             <div className='mb-8'>
                 <h1 className='text-3xl font-bold tracking-tight mb-2'>Dokumentasi</h1>
                 <p className='text-[15px] text-[var(--text-secondary)] leading-snug'>
-                    Panduan singkat penggunaan CLI Lembaran Notes.
+                    Panduan singkat penggunaan CLI Lembaran.
                 </p>
             </div>
 

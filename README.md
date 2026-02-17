@@ -1,6 +1,6 @@
-# Lembaran Notes
+# Lembaran
 
-Lembaran Notes adalah platform arsip digital personal yang aman, berbasis local-first, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
+Lembaran adalah platform arsip digital personal yang aman, berbasis local-first, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
 
 ## Quick Start
 

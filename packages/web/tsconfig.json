@@ -21,8 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@lembaran/core": ["packages/core/src/index.ts"],
-      "@lembaran/core/*": ["packages/core/src/*"]
+      "@lembaran/core": ["../core/src/index.ts"],
+      "@lembaran/core/*": ["../core/src/*"]
     }
   },
   "include": [
@@ -33,5 +33,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "packages/cli", "packages/core"]
+  "exclude": ["node_modules"]
 }

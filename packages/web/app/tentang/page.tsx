@@ -14,7 +14,7 @@ export default function TentangPage() {
                 <div className='w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl shadow-xl shadow-blue-500/20 flex items-center justify-center mb-4'>
                     <Heart size={40} className='text-white fill-white' />
                 </div>
-                <h1 className='text-2xl font-bold tracking-tight'>Lembaran Notes</h1>
+                <h1 className='text-2xl font-bold tracking-tight'>Lembaran</h1>
                 <p className='text-[var(--text-secondary)] text-sm'>Versi {packageJson.version}</p>
             </div>
 

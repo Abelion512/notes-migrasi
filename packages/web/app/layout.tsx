@@ -8,7 +8,7 @@ import { PenyaringRute } from "@/komponen/bersama/PenyaringRute";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-    title: "Lembaran Notes",
+    title: "Lembaran",
     description: "Secure, Local-First, Premium Notes App",
     appleWebApp: {
         capable: true,

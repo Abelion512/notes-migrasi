@@ -1,4 +1,4 @@
-# Lembaran Notes
+# Lembaran
 > Personal Digital Archive with Sentinel-grade Security.
 
 ## Core Files
