@@ -26,8 +26,8 @@ export default function LandingPage() {
                 <div className="flex items-center gap-4">
                     <nav className="hidden md:flex items-center gap-6 text-sm font-bold uppercase tracking-widest text-gray-500">
                         <Link href="/changelog" className="hover:text-blue-500 transition-colors">Changelog</Link>
-                        <a href="https://github.com/Lembaran512/lembaran" target="_blank" className="hover:text-blue-500 transition-colors">GitHub</a>
-                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Docs</Link>
+                        <a href="https://github.com/Abelion512/lembaran" target="_blank" className="hover:text-blue-500 transition-colors">GitHub</a>
+                        <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Docs</Link>
                     </nav>
                     <div className="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
                     <ThemeToggle />
@@ -97,7 +97,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-black">
                         <Link href="/privasi" className="hover:text-blue-500 transition-colors">Privasi</Link>
                         <Link href="/ketentuan" className="hover:text-blue-500 transition-colors">Ketentuan</Link>
-                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Bantuan</Link>
+                        <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Bantuan</Link>
                     </div>
                 </div>
             </footer>

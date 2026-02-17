@@ -43,7 +43,7 @@
 - [x] Update `llms.txt` untuk visibilitas AI
 
 ## Fase 7: Redesign Dokumentasi & UX
-- [x] Update Link GitHub ke `Lembaran512/lembaran` (Global)
+- [x] Update Link GitHub ke `Abelion512/lembaran` (Global)
 - [x] Redesign `/bantuan`: Fokus "Cara Download CLI" & Step-by-step
 - [x] Pindahkan akses `/tentang` ke Halaman Setelan (`/laras`)
 - [x] Hapus akses `/tentang` dari `/bantuan` (Diganti Guide CLI)

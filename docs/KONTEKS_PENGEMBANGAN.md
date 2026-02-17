@@ -65,3 +65,17 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Proyek ini sekarang diposisikan sebagai alat bantu utama developer untuk pengelolaan kredensial secara aman dan efisien.
+
+## 7. Optimasi Performa & UX (v2.6.0 - Misi Bolt ⚡)
+
+**Masalah**: Rendering daftar catatan yang besar (>1000) mulai memperlambat browser, dan pencarian di dalam isi catatan (enkripsi) terlalu lambat karena harus didekripsi satu per satu.
+
+**Solusi**:
+- **Virtualisasi Daftar (List Virtualization)**: Menggunakan `react-window` untuk merender ribuan catatan dengan lancar tanpa membebani memori DOM.
+- **Smart Find (Background Indexing)**: Memperkenalkan mekanisme pengindeksan latar belakang yang mendekripsi konten catatan ke dalam *session cache* memori. Hal ini memungkinkan pencarian instan di seluruh isi catatan tanpa mengorbankan keamanan jangka panjang.
+- **Akses Dokumentasi Publik**: Memisahkan dokumentasi teknis ke rute `/bantuan/publik` agar calon pengguna dapat mempelajari sistem sebelum melakukan inisialisasi brankas.
+- **Koreksi Tautan Kritis**: Memperbaiki tautan GitHub yang rusak (404) di seluruh aplikasi.
+
+---
+> [!NOTE]
+> Fokus versi ini adalah "Speed is a Feature". Aplikasi kini siap menangani ribuan catatan dengan performa instan.

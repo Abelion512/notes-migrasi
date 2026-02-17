@@ -10,8 +10,9 @@ import { PencarianCepat } from '@/komponen/bersama/PencarianCepat';
 export const PenyaringRute = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const isLandingPage = pathname === '/';
+    const isPublicDocs = pathname.startsWith('/bantuan/publik');
 
-    if (isLandingPage) {
+    if (isLandingPage || isPublicDocs) {
         return <div className="flex-1 flex flex-col w-full">{children}</div>;
     }
 

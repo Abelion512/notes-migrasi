@@ -7,7 +7,7 @@ Lembaran adalah platform arsip digital personal yang aman, berbasis local-first,
 1. **Install Bun Runtime**: [bun.sh](https://bun.sh)
 2. **Clone & Setup**:
    ```bash
-   git clone https://github.com/Lembaran512/lembaran.git
+   git clone https://github.com/Abelion512/lembaran.git
    cd lembaran
    bun install
    ```
