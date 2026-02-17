@@ -1,30 +1,24 @@
 # Lembaran
-> Brankas Aksara Personal yang Berdikari.
+> Brankas Aksara Personal yang Berdikari (v2.5.0)
 
 ## Core Workspaces
-- [packages/core]: Shared logic, encryption, and storage adapters.
-- [packages/cli]: Interactive terminal interface (TUI) and command-line tools.
-- [packages/web]: Next.js application (Landing page and GUI).
+- [packages/core]: Shared logic, encryption (AES-GCM/Argon2id), and storage adapters.
+- [packages/cli]: Interactive terminal interface (TUI) and puitis commands.
+- [packages/web]: Next.js application (Landing page at / and Dashboard at /arsip).
 
 ## Key Files
 - [packages/core/src/Arsip.ts]: High-level encryption and storage manager.
-- [packages/core/src/Brankas.ts]: Cryptographic engine (AES-GCM & Argon2id).
-- [packages/core/src/Gudang.ts]: Storage abstraction layer (Adapter Pattern).
+- [packages/core/src/Brankas.ts]: Cryptographic engine.
 - [packages/cli/src/main.ts]: CLI entry point.
-- [packages/web/app/page.tsx]: Main marketing landing page.
-- [packages/web/app/arsip/page.tsx]: Main GUI application dashboard.
+- [packages/web/app/page.tsx]: Premium landing page.
+- [packages/web/app/arsip/page.tsx]: Main application dashboard.
 
-## Documentation & Context
-- [docs/CLI_API.md]: CLI Command Reference.
-- [docs/walkthrough.md]: Current architecture & features overview.
-- [CHANGELOG.md]: History of changes.
-- [CONTRIBUTING.md]: Guide for contributors.
-- [LICENSE]: MIT License.
-- [TERMS.md]: Terms of Service.
-- [PRIVACY.md]: Privacy Policy.
+## Documentation
+- [CHANGELOG.md]: History of changes (Latest: v2.5.0).
+- [docs/walkthrough.md]: Monorepo architecture & features overview.
+- [AGENTS.md]: Development guidelines and core principles.
 
 ## Key Concepts
-- Berdikari (Independent): Local-first data sovereignty with on-device AI.
-- Poetic Indonesian: Naming convention for core modules (Aksara, Brankas, Gudang, Pundi).
-- Sentinel Security: Client-side encryption using AES-GCM 256-bit and Argon2id.
-- Decoupled Storage: Web uses IndexedDB, CLI uses local JSON, unified by Adapter Pattern.
+- Berdikari: Local-first data sovereignty.
+- Sentinel Security: Client-side encryption.
+- Monorepo: Unified workspace for Core, CLI, and Web.

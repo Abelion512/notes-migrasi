@@ -1,52 +1,34 @@
-# Walkthrough: Integrasi Skill & CLI Puitis 'Lembaran'
+# Walkthrough: Struktur Monorepo & Rebranding 'Lembaran'
 
-Implementasi penuh dari visi **Aksara/Brankas** kini telah selesai. Walkthrough ini mencakup integrasi skill Vercel, revitalisasi CLI dengan kosa kata puitis, dan pembersihan sistem secara menyeluruh.
+Implementasi penuh dari visi **Lembaran** kini telah mencapai milestone besar dengan migrasi ke arsitektur monorepo dan rebranding total.
 
-## 1. Konsolidasi Agen & Instalasi Skill
-Folder skill telah direstrukturisasi untuk menghilangkan kebingungan symlink.
-- **Path Baru**: `.agent/skills/` (Tunggal & Terpusat)
-- **Skill Terinstall**:
-  - `find-skills`: Penemuan kapabilitas agen.
-  - `nextjs-app-router-patterns`: Arsitektur V16 App Router.
-  - `nextjs-best-practices`: Standar performa & SEO.
-  - `security-review`: Audit kriptografi Sentinel.
-  - `typescript-advanced-types`: Keamanan tipe ketat.
+## 1. Arsitektur Monorepo (Bun Workspaces)
+Proyek ini sekarang dibagi menjadi tiga paket utama untuk pemisahan tanggung jawab yang lebih baik:
 
-## 2. CLI Puitis: `lembaran`
-Antarmuka baris perintah (CLI) telah diubah total untuk mencerminkan etos puitis aplikasi.
+- **`packages/core`**: Jiwa aplikasi. Berisi logika enkripsi (Sentinel), manajemen storage (Gudang), dan model data (Aksara).
+- **`packages/cli`**: Antarmuka terminal. Menyediakan TUI puitis untuk pengguna power user.
+- **`packages/web`**: Antarmuka grafis (GUI) berbasis Next.js. Mencakup landing page marketing dan dashboard arsip.
 
-### Alias Global
-- **Command**: `lembaran` (menggantikan `bun bin/lembaran ui`)
-- **Akses**: Dapat dijalankan dari mana saja di terminal setelah `bun link`.
-- **Repository**: [Lembaran512/lembaran](https://github.com/Lembaran512/lembaran)
+## 2. Rebranding: Dari Abelion ke Lembaran
+Nama "Abelion" telah sepenuhnya diganti dengan **Lembaran**.
+- Semua referensi di kode sumber, metadata, dan dokumentasi telah disinkronkan.
+- Domain imajiner dialihkan ke `lembaran.ai`.
+- Filosofi "Berdikari" diperkuat sebagai pilar utama branding.
 
-### Kosa Kata Baru
-| Perintah | Deskripsi | Vibe |
-|----------|-----------|------|
-| `mulai` | Menjalankan TUI Interaktif | Gerbang Utama |
-| `pantau` | Cek status sistem & enkripsi | Penjaga Menara |
-| `jelajah` | Lihat daftar arsip terenkripsi | Penelusur Lorong |
-| `kuncung` | Login / Buka Brankas | Pemegang Kunci |
-| `tanam` | Import data eksternal | Penabur Benih |
-| `hangus` | Hapus permanen | Api Pemusnah |
-| `petik` | Export data | Pemanen Hasil |
+## 3. Landing Page & UX Baru
+Halaman utama (`/`) kini berfungsi sebagai gerbang informasi:
+- **Widget Instalasi**: Cara cepat memasang CLI via berbagai package manager.
+- **Tabel Perbandingan**: Panduan memilih antara CLI (Master), WEB (Junior), atau APP (Explorer).
+- **Dashboard (`/arsip`)**: Aplikasi utama kini berada di sub-path terproteksi.
 
-### UX Terpadu
-- **Navigasi**: Instruksi eksplisit `(Gunakan panah ↑↓ dan Tekan ENTER)` ditambahkan di setiap menu TUI untuk menghilangkan kebingungan.
-- **Edukasi**: Saat registrasi via CLI, pengguna diarahkan ke Web dengan narasi tentang "Mantra Pemulihan" (12 Kata Aksara).
+## 4. CLI Puitis: `lembaran`
+CLI tetap menjadi fitur unggulan dengan kosa kata puitis:
+| Perintah | Deskripsi |
+|----------|-----------|
+| `mulai` | Gerbang Utama TUI |
+| `pantau` | Penjaga Menara (Status) |
+| `jelajah` | Penelusur Lorong (List) |
 
-## 3. Optimasi & Pembersihan
-- **Sampah Dibuang**: 18+ file log/diff/saran lama dihapus. `arsip_legacy/` (63 file) dimusnahkan.
-- **Library Ramping**: `dexie` dan `argon2-browser` dihapus. Digantikan oleh `idb` dan `@noble/hashes` yang lebih efisien.
-- **Tipe Ketat**: Perbaikan interface `Note` di `Rumus.ts` untuk mendukung properti `kredensial` sebagai string terenkripsi.
-
-## 4. Arsitektur Decoupled (Web vs CLI)
-- **Adapter Pattern**: `Gudang.ts` kini mendeteksi environment.
-  - **Browser**: Menggunakan `BrowserAdapter` (IndexedDB).
-  - **CLI**: Menggunakan `FileAdapter` (JSON `.lembaran-db.json`).
-- **Build Safety**: Menggunakan shim pada `package.json` "browser" field untuk mencegah modul `fs` Node.js ter-bundle ke Web App.
-
-## 5. Dokumentasi & Konteks
-- **Halaman Baru**: `/tentang`, `/changelog`, `/ketentuan`, `/privasi`.
-- **Files**: `LICENSE`, `CONTRIBUTING.md` standar ditambahkan.
-- **QA**: Laporan audit tersedia di `qa_report.md`.
+## 5. Deployment & Performa
+- **Vercel**: Menggunakan konfigurasi monorepo dengan `output: standalone`.
+- **Local-First**: Tetap menggunakan IndexedDB (Web) dan JSON Local (CLI) yang disatukan oleh Adapter Pattern di `@lembaran/core`.
