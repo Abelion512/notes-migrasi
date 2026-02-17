@@ -18,7 +18,7 @@ export const PenyamarIdentitas = () => {
                 favicon.href = "https://ssl.gstatic.com/ui/v1/icons/mail/images/2/favicon.ico";
             }
         } else {
-            document.title = "Lembaran Notes";
+            document.title = "Lembaran";
             if (favicon && originalFavicon) {
                 favicon.href = "/favicon.ico";
             }

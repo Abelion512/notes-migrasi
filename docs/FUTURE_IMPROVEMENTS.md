@@ -1,6 +1,6 @@
-# Rencana Peningkatan Masa Depan (Lembaran Notes)
+# Rencana Peningkatan Masa Depan (Lembaran)
 
-Dokumen ini berisi saran teknis dan fungsional untuk meningkatkan Lembaran Notes menjadi platform manajemen data tingkat tinggi.
+Dokumen ini berisi saran teknis dan fungsional untuk meningkatkan Lembaran menjadi platform manajemen data tingkat tinggi.
 
 ## 🔒 Keamanan & Enkripsi
 1.  **Integrasi WebAuthn (Biometrik)**: Mendukung pembukaan brankas via sidik jari (TouchID) atau pengenalan wajah (FaceID/Windows Hello) menggunakan standar WebAuthn.

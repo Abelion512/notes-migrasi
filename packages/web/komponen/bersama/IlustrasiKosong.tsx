@@ -26,7 +26,7 @@ export const IlustrasiKosong = ({ pesan = "Belum ada data" }: { pesan?: string }
             </motion.div>
 
             <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1 opacity-80">{pesan}</h3>
-            <p className="text-xs font-medium text-[var(--text-secondary)] opacity-40 uppercase tracking-[0.2em]">Lembaran Notes</p>
+            <p className="text-xs font-medium text-[var(--text-secondary)] opacity-40 uppercase tracking-[0.2em]">Lembaran</p>
         </div>
     );
 };

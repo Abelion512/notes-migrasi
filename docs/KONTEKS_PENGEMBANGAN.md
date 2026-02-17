@@ -1,4 +1,4 @@
-# Konteks Pengembangan & Log Perubahan (Lembaran Notes v2.0.7)
+# Konteks Pengembangan & Log Perubahan (Lembaran v2.0.7)
 
 Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan optimasi untuk mencapai harmoni antara fitur modern dan estetika *Glass OS* asli.
 

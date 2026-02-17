@@ -40,7 +40,7 @@ export const PintuBrankas = ({ children }: VaultGateProps) => {
                 document.title = 'Lembaran - Terkunci';
             }
         } else {
-            document.title = 'Lembaran Notes';
+            document.title = 'Lembaran';
         }
     }, [isVaultLocked, secretMode, isMounted]);
 

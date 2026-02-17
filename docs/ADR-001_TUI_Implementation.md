@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-Aplikasi Lembaran Notes ditujukan untuk developer dan power user yang sering bekerja di lingkungan terminal. Meskipun antarmuka web (GUI) sudah tersedia, dibutuhkan cara yang lebih cepat untuk melakukan pemeliharaan data dan pengecekan sistem tanpa harus membuka browser.
+Aplikasi Lembaran ditujukan untuk developer dan power user yang sering bekerja di lingkungan terminal. Meskipun antarmuka web (GUI) sudah tersedia, dibutuhkan cara yang lebih cepat untuk melakukan pemeliharaan data dan pengecekan sistem tanpa harus membuka browser.
 
 ## Decision
 Kami memutuskan untuk mengimplementasikan antarmuka visual terminal (TUI) menggunakan library `prompts` dan `picocolors`. TUI ini akan diintegrasikan ke dalam binary `bin/lembaran` yang sudah ada.

@@ -1,6 +1,6 @@
-# Lembaran Notes: AI Handoff Document 🚀
+# Lembaran: AI Handoff Document 🚀
 
-Dokumen ini disiapkan untuk asisten AI berikutnya agar dapat melanjutkan pengembangan Lembaran Notes (Migrasi/Redesign) tanpa kehilangan konteks.
+Dokumen ini disiapkan untuk asisten AI berikutnya agar dapat melanjutkan pengembangan Lembaran (Migrasi/Redesign) tanpa kehilangan konteks.
 
 ## 🏗️ Core Architecture (FSD)
 Proyek menggunakan **Next.js 15 (App Router)** dengan struktur **Feature-Sliced Design (FSD)**:

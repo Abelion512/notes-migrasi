@@ -1,6 +1,6 @@
 # CLI API Reference
 
-`lembaran` (atau `lembaran`) adalah antarmuka baris perintah untuk manajemen Lembaran Notes.
+`lembaran` (atau `lembaran`) adalah antarmuka baris perintah untuk manajemen Lembaran.
 
 ## Instalasi
 ```bash

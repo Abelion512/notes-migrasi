@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Lembaran Notes - Agent Skills Installation Script
+# Lembaran - Agent Skills Installation Script
 # This script installs highly recommended skills for AI agents working on this repo.
 
 echo "🚀 Installing Lembaran Recommended Skills..."
