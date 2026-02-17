@@ -25,7 +25,7 @@ export class Brankas {
 
             return crypto.subtle.importKey(
                 'raw',
-                hash as any,
+                hash as BufferSource,
                 { name: ALGO_ENC, length: 256 },
                 false,
                 ['encrypt', 'decrypt']
@@ -59,7 +59,7 @@ export class Brankas {
         const encoder = new TextEncoder();
 
         const data = await crypto.subtle.encrypt(
-            { name: ALGO_ENC, iv: iv as any },
+            { name: ALGO_ENC, iv },
             key,
             encoder.encode(text)
         );
@@ -75,7 +75,7 @@ export class Brankas {
         if (!key) throw new Error('Vault Locked: No active key');
 
         const decrypted = await crypto.subtle.decrypt(
-            { name: ALGO_ENC, iv: iv as any },
+            { name: ALGO_ENC, iv: iv as BufferSource },
             key,
             encryptedData
         );

@@ -1,60 +1,55 @@
-# Dokumentasi CLI & TUI Abelion
+# CLI API Reference
 
-Panduan perintah untuk alat manajemen terminal `bin/abelion`.
+`lembaran` (atau `abelion`) adalah antarmuka baris perintah untuk manajemen Abelion Notes.
 
-## bun bin/abelion ui
+## Instalasi
+```bash
+bun install -g .
+# atau
+ln -s ./bin/abelion /usr/local/bin/lembaran
+```
 
-Membuka antarmuka visual terminal (TUI) interaktif.
+## Perintah Dasar
 
-**Parameters:**
-(None)
+### `lembaran mulai`
+Menjalankan TUI (Terminal User Interface) interaktif.
+- **Navigasi**: Gunakan Panah Atas/Bawah.
+- **Pilih**: Tekan Enter.
+- **Keluar**: Tekan Esc atau pilih menu Keluar.
 
-**Behavior:**
-- Membersihkan terminal dan menampilkan menu pilihan.
-- Memungkinkan navigasi menggunakan keyboard.
+### `lembaran pantau`
+Menampilkan status kesehatan sistem:
+- Ketersediaan Enkripsi (Sentinel).
+- Status Database (IndexedDB/File).
+- Versi Aplikasi.
 
----
+### `lembaran jelajah`
+Menampilkan daftar catatan yang tersimpan (ID, Judul, Tanggal).
+- Output terenkripsi jika brankas terkunci.
 
-## bun bin/abelion status
+### `lembaran kuncung`
+Membuka kunci brankas (Login).
+- Meminta input password secara aman.
+- Mendukung verifikasi via Web (jika diaktifkan).
 
-Mengecek status kesehatan infrastruktur aplikasi.
+### `lembaran tanam <file>`
+Mengimport file teks eksternal ke dalam arsip.
+- Contoh: `lembaran tanam catatanku.txt`
 
-**Parameters:**
-(None)
+### `lembaran petik <id>`
+Mengekspor catatan ke format teks.
+- Contoh: `lembaran petik note_123`
 
-**Response:**
-- Konfirmasi kesehatan Core Logic, Security Engine, dan Storage.
+### `lembaran hangus <id>`
+Menghapus catatan secara permanen.
+- **Perhatian**: Tindakan ini tidak dapat dibatalkan.
 
----
-
-## bun bin/abelion list
-
-Menampilkan daftar singkat seluruh catatan (metadata).
-
-**Parameters:**
-(None)
-
-**Response:**
-- Daftar ID dan Judul catatan yang tersimpan.
-
----
-
-## bun bin/abelion hapus <id>
-
-Menghapus catatan secara permanen berdasarkan ID.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| id | string | Yes | ID unik catatan (EntityId) |
-
-**Response:**
-- Pesan konfirmasi penghapusan data dari arsip lokal.
-
----
-
-## bun bin/abelion export
-
-Mengekspor arsip terenkripsi ke file lokal.
-
-**Status:** Under Construction 🚧
+## Struktur Data (JSON)
+Jika menggunakan penyimpanan file (`.abelion-db.json`), struktur data adalah:
+```json
+{
+  "meta": { "version": "2.4.0" },
+  "notes": { ... },
+  "folders": { ... }
+}
+```

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Arsip } from '@/aksara/Arsip';
 import { Note } from '@/aksara/Rumus';
 import Link from 'next/link';
-import { Search as SearchIcon, ChevronRight, FileX } from 'lucide-react';
+import { Search as SearchIcon, ChevronRight } from 'lucide-react';
 import { stripHtml, truncate } from '@/aksara/Penyaring';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 import { useGunakanTunda } from '@/aksara/GunakanTunda';

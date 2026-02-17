@@ -51,7 +51,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     setTitle(data.title);
                     setContent(data.content);
                     setIsCredentials(!!data.isCredentials);
-                    if (data.kredensial) setKredensial(data.kredensial as any);
+                    if (data.kredensial) setKredensial(data.kredensial as { username: string; password: string; url: string });
 
                     lastSavedHash.current = JSON.stringify({
                         title: data.title,
@@ -84,9 +84,9 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                 if (lastSavedHash.current === currentDataStr) return;
 
                 const isUnchangedFromOriginal = debouncedTitle === note.title &&
-                                  debouncedContent === note.content &&
-                                  debouncedIsCreds === note.isCredentials &&
-                                  JSON.stringify(debouncedKred) === JSON.stringify(note.kredensial);
+                    debouncedContent === note.content &&
+                    debouncedIsCreds === note.isCredentials &&
+                    JSON.stringify(debouncedKred) === JSON.stringify(note.kredensial);
 
                 if (isUnchangedFromOriginal) return;
 
@@ -104,7 +104,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
                     setNote({
                         ...updatedNote,
                         content: debouncedContent,
-                        kredensial: debouncedKred as any
+                        kredensial: debouncedKred
                     });
 
                     setSaveStatus('saved');
@@ -136,7 +136,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
             setNote({
                 ...updatedNote,
                 content: content,
-                kredensial: kredensial as any
+                kredensial: kredensial
             });
 
             haptic.success();
@@ -244,7 +244,7 @@ export default function EditNotePage({ params }: { params: Promise<{ id: string 
 
                 <div className="max-w-6xl mx-auto w-full">
                     {isCredentials && (
-                        <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as any)} />
+                        <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as { username: string; password: string; url: string })} />
                     )}
                     <PenyusunCatatan
                         content={content}

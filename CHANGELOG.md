@@ -2,6 +2,18 @@
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
+## [2.4.0] - 2026-02-17
+### Added
+- **CLI Puitis (`lembaran`)**: Perintah baru `pantau`, `jelajah`, `kuncung` (login), `tanam` (import), `hangus`, `petik`, dan `mulai` (TUI default).
+- **Agent Skills**: Integrasi 5 skill inti Vercel di `.agent/skills/`.
+- **Instruksi UX**: Penambahan panduan navigasi eksplisit pada TUI (Panah & Enter).
+### Changed
+- Refactor tipe `Note` untuk mendukung enkripsi kredensial yang lebih fleksibel (string/object).
+- Migrasi penyimpanan dari `dexie` ke `idb` murni.
+- Pembersihan library `argon2-browser` (diganti `@noble/hashes`).
+### Removed
+- Direktori `arsip_legacy/` dan file log/dokumentasi redundant.
+
 ## [2.3.0] - 2026-02-16
 ### Added
 - Modul TUI interaktif (`src/aksara/TUI.ts`) untuk manajemen sistem.

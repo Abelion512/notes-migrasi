@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-    FileText, Share2, Download, Trash2
+    Share2, Download, Trash2
 } from 'lucide-react';
 import { Arsip } from '@/aksara/Arsip';
 import { Note } from '@/aksara/Rumus';
@@ -112,7 +112,7 @@ export default function NoteListPage() {
                     </div>
                 ) : (
                     <div className="max-w-5xl mx-auto w-full py-4">
-                        {notes.map((note, index) => (
+                        {notes.map((note, _index) => (
                             <BarisCatatan
                                 key={note.id}
                                 note={note}

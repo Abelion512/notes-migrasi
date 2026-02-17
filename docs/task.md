@@ -1,47 +1,50 @@
-# STATUS: READY FOR HANDOFF 🚀
-# Task: Legacy Analysis & Re-Planning (Redesign Phase)
+# Task: Integrasi Skill, Alias CLI & Pembersihan Redundansi
 
-- [x] Analyze `arsip_legacy` codebase (structure, logic, style) <!-- id: 0 -->
-- [x] Audit spesifikasi lengkap & Perbarui README (Source of Truth) <!-- id: 13 -->
-- [x] Review folder stitch & design baru.md <!-- id: 14 -->
-- [x] Create comprehensive `implementation_plan.md` (Docker, CLI, Security, Realtime) <!-- id: 1 -->
-- [x] Verify plan with user <!-- id: 2 -->
+## Fase 1: Konsolidasi & Skill (Fokus: `.agent`)
+- [x] Hapus symlink rusak `skills/` dan folder `.agents`
+- [x] Konsolidasi instruksi ke `.agent/skills/`
+- [x] Instal ulang 5 skill inti via npx
+- [x] Verifikasi aksesibilitas skill
 
-# Task: Infrastructure & Base Setup (Clean Slate)
+## Fase 2: CLI & Keamanan Puitis (`lembaran`)
+- [x] Tambahkan field `bin` ke `package.json`
+- [x] Ubah `bin/abelion` dengan perintah: `pantau`, `jelajah`, `hangus`, `petik`, `kuncung`, `tanam`, `mulai`
+- [x] Implementasikan alur `kuncung` (login manual/web)
+- [x] Implementasikan pesan edukasi Mantra Pemulihan untuk registrasi
+- [x] Tambahkan instruksi UX (Enter/Space) pada `TUI.ts`
+- [x] Jalankan `bun link` untuk registrasi global
 
-- [x] Wipe `src` directory (sanitize environment) <!-- id: 3 -->
-- [x] Initialize scalable project structure (Feature-slice/Atomic design) <!-- id: 4 -->
-- [x] Setup Docker & CLI integration <!-- id: 5 -->
-- [x] Setup Global State & Storage (IndexedDB + Supabase Realtime) <!-- id: 6 -->
+## Fase 3: Pembersihan Sampah & Audit
+- [x] Hapus 18+ file sampah (logs, diffs, saran docs)
+- [x] Hapus direktori `arsip_legacy/`
+- [x] Hapus library `dexie` dan `argon2-browser` dari `package.json`
+- [x] Konsolidasi logika `Arsip.ts` dengan `Penyaring.ts`
+- [x] Perbarui referensi port di `AGENTS.md` (3000 -> 1400)
+- [x] Verifikasi `bun run build` dan `lint`
 
-# Task: Core UI Implementation (Bottom Nav Only)
+## Fase 4: Distribusi & Standalone
+- [x] Tambahkan script `build:cli` ke `package.json`
+- [x] Kompilasi `lembaran.exe` (Standalone Binary)
+- [x] Verifikasi eksekusi binary
 
-- [x] Implement iOS-style Design System (Variables, Typography, Glassmorphism from scratch) <!-- id: 7 -->
-- [x] Build Bottom Navigation Layout (No Sidebar) <!-- id: 8 -->
-- [x] Implement "Lembaran" (Pages) Routing <!-- id: 9 -->
+## Fase 5: Decoupling Arsitektur (Web/CLI/Native)
+- [x] Refactor `Gudang.ts` dengan Adapter Pattern
+- [x] Implementasi `BrowserAdapter` (IndexedDB)
+- [x] Implementasi `FileAdapter` (JSON/Bun:File untuk CLI)
+- [x] Verifikasi CLI `lembaran` berjalan tanpa crash IDB
+- [x] Dokumentasi arsitektur modular di `walkthrough.md`
 
-# Task: Features & Logic (Dynamic & Secure)
+## Fase 6: Dokumentasi & Halaman Informasi
+- [x] Buat file root: `LICENSE`, `CONTRIBUTING.md`, `TERMS.md`, `PRIVACY.md`
+- [x] Implementasi Halaman `/tentang` (About App + Links)
+- [x] Implementasi Halaman `/changelog` (Render MD)
+- [x] Implementasi Halaman `/ketentuan` & `/privasi`
+- [x] Update `/bantuan` dengan link ke `/tentang`
+- [x] Update `llms.txt` untuk visibilitas AI
 
-- [x] Implement Secure Vault (Encryption at rest/transit) <!-- id: 10 -->
-    - [x] Vault UI (Lock Screen & Gate)
-    - [x] Vault Logic (Repository Pattern for Auto-Encryption)
-- [x] Implement Editor (Rich Text, Slash Commands, no dummy data) <!-- id: 11 -->
-    - [x] Setup Tiptap Component (StarterKit + Placeholder)
-    - [x] Implement Floating Menu (Slash Command alternative) & Bubble Menu
-    - [x] Integrate with Add/Edit Pages
-    - [x] **Fix**: Placeholder CSS (Make it look like a placeholder, not text)
-    - [x] **Feature**: Slash Command "Deep Research" (UI Only)
-- [x] Implement Missing Frontend Pages (Static UI) <!-- id: 14 -->
-    - [x] **Search Page** (`/cari`): Search bar & results mock.
-    - [x] **Profile Page** (`/jatidiri`): User info & stats mock.
-    - [x] **Settings Page** (`/laras`): Preferences mock.
-- [x] Implement Profile & Settings (Dynamic Charts, Real Storage API) <!-- id: 12 -->
-    - [x] **Dynamic Data**: `VaultRepository.getStats()` for Profile.
-    - [x] **Secure Auth**: `VaultLockScreen` with Validator (Set Password/Unlock).
-    - [x] **Secure Auth**: `VaultLockScreen` with Validator (Set Password/Unlock).
-    - [x] **Navigation**: Fix `BottomNav` FAB & Settings Links.
-
-# Task: Advanced Logic & Polish (Notion-like)
-- [ ] **Functional Search**: Implement client-side filtering with decryption. <!-- id: 15 -->
-- [ ] **Real Activity Chart**: Visualize actual `updatedAt` data on Profile page. <!-- id: 16 -->
-- [ ] **Search Logic**: Connect `/cari` input to `VaultRepository` filter.
+## Fase 7: Redesign Dokumentasi & UX
+- [x] Update Link GitHub ke `Abelion512/lembaran` (Global)
+- [x] Redesign `/bantuan`: Fokus "Cara Download CLI" & Step-by-step
+- [x] Pindahkan akses `/tentang` ke Halaman Setelan (`/laras`)
+- [x] Hapus akses `/tentang` dari `/bantuan` (Diganti Guide CLI)
+- [x] Verifikasi alur navigasi baru

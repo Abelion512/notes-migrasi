@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import {
-    Key, Mail, Github, Globe,
-    Laptop, Layout, Cpu, Cloud, Ghost, Boxes, Bot, ShieldCheck,
+    Key, Mail, Github,
+    Layout, Cpu, Cloud, Bot, ShieldCheck,
     FileText, Calendar, Play
 } from 'lucide-react';
 
@@ -147,7 +147,7 @@ const extractDomain = (input: string) => {
     if (lower.startsWith('http')) {
         try {
             return new URL(lower).hostname;
-        } catch (e) {
+        } catch (_e) {
             return null;
         }
     }
@@ -213,6 +213,7 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
 
     if (domain && !imgError && domain !== 'google.com') {
         return (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
                 src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
                 alt={name}

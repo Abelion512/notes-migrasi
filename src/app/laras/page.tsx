@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { haptic } from '@/aksara/Indera';
-import { Moon, Shield, Database, BookOpen, ChevronRight, LogOut, User } from 'lucide-react';
+import { Moon, Shield, Database, BookOpen, ChevronRight, LogOut, User, Info } from 'lucide-react';
 import { usePundi } from '@/aksara/Pundi';
 import { Brankas } from '@/aksara/Brankas';
 
@@ -78,6 +78,16 @@ export default function SettingsPage() {
                                 <BookOpen size={18} />
                             </div>
                             <span className="font-semibold">Dokumentasi</span>
+                        </div>
+                        <ChevronRight size={16} className="text-[var(--text-secondary)]" />
+                    </Link>
+                    <div className="ios-separator"></div>
+                    <Link href="/tentang" className="ios-list-item" onClick={() => haptic.light()}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gray-500 text-white flex items-center justify-center">
+                                <Info size={18} />
+                            </div>
+                            <span className="font-semibold">Tentang Aplikasi</span>
                         </div>
                         <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                     </Link>

@@ -10,7 +10,7 @@ import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisM
 import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
 import React, { useState } from 'react';
 import {
-    Bold, Italic, Heading1, Heading2, List, Code, Terminal, Sparkles, Loader2
+    Bold, Italic, Heading1, List, Terminal, Sparkles, Loader2
 } from 'lucide-react';
 import { Pujangga } from '@/aksara/Pujangga';
 import { haptic } from '@/aksara/Indera';

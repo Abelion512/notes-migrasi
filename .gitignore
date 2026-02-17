@@ -90,3 +90,7 @@ dev_output.log
 # Catch-all for skills directories
 **/skills/
 .*/*/skills/
+
+# CLI Artifacts
+lembaran.exe
+.abelion-db.json

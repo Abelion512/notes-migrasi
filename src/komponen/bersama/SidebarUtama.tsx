@@ -4,8 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-    Home, Search, PlusSquare, User, Settings,
-    ShieldCheck, Database, LayoutGrid, FileText, CheckSquare
+    Home, Search, User, Settings,
+    ShieldCheck, LayoutGrid, FileText, CheckSquare
 } from 'lucide-react';
 import { haptic } from '@/aksara/Indera';
 
@@ -44,11 +44,10 @@ export const SidebarUtama = () => {
                                 key={item.path}
                                 href={item.path}
                                 onClick={() => haptic.light()}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
-                                    isActive
-                                    ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
-                                    : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'
-                                }`}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isActive
+                                        ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
+                                        : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'
+                                    }`}
                             >
                                 <item.icon size={20} className={isActive ? 'text-white' : 'opacity-70'} />
                                 <span className="font-medium text-[15px] truncate">{item.label}</span>

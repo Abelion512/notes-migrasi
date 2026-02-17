@@ -21,11 +21,11 @@ export const TUI = {
         const response = await prompts({
             type: 'select',
             name: 'aksi',
-            message: 'Pilih tindakan:',
+            message: 'Pilih tindakan (Gunakan panah ↑↓ dan Tekan ENTER):',
             choices: [
-                { title: 'Status Sistem', value: 'status', description: 'Cek kesehatan infrastruktur' },
-                { title: 'Daftar Catatan', value: 'list', description: 'Lihat ringkasan arsip' },
-                { title: 'Buka Brankas', value: 'unlock', description: 'Masuk ke mode aman' },
+                { title: 'Status Sistem', value: 'pantau', description: 'Cek kesehatan infrastruktur' },
+                { title: 'Daftar  Catatan', value: 'jelajah', description: 'Lihat ringkasan arsip' },
+                { title: 'Buka Brankas', value: 'kuncung', description: 'Masuk ke mode aman' },
                 { title: 'Keluar', value: 'exit' },
             ],
         });
@@ -36,14 +36,14 @@ export const TUI = {
         }
 
         switch (response.aksi) {
-            case 'status':
+            case 'pantau':
                 await this.tampilkanStatus();
                 break;
-            case 'list':
+            case 'jelajah':
                 console.log(pc.cyan('\n🚧 Fitur Daftar Catatan sedang dalam pengembangan...'));
                 await this.tungguLanjut();
                 break;
-            case 'unlock':
+            case 'kuncung':
                 console.log(pc.magenta('\n🔒 Fitur Buka Brankas memerlukan integrasi Web Crypto.'));
                 await this.tungguLanjut();
                 break;

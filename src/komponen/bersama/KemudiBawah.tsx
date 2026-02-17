@@ -21,12 +21,10 @@ const NAV_ITEMS = [
 export const KemudiBawah = () => {
     const pathname = usePathname();
     const router = useRouter();
-    const [isOnline, setIsOnline] = useState(true);
+    const [isOnline, setIsOnline] = useState(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
-        // Only run on client
-        setIsOnline(navigator.onLine);
 
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);

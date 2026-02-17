@@ -38,7 +38,7 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' untuk logika inti:
 
 ## 🚀 Perintah Eksekusi
 - `bun install`: Setup dependensi.
-- `bun run dev`: Menjalankan server pengembangan (port 3000).
+- `bun run dev`: Menjalankan server pengembangan (port 1400).
 - `bun run lint`: Verifikasi ESLint dan aturan tipe.
 - `bun run build`: Membuat build produksi.
 

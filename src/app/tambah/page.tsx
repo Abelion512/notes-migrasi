@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
@@ -127,7 +127,7 @@ function AddNoteContent() {
 
                 <div className="max-w-6xl mx-auto w-full">
                     {isCredentials && (
-                        <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as any)} />
+                        <PenyusunKredensial data={kredensial} onChange={(data) => setKredensial(data as { username: string; password: string; url: string })} />
                     )}
                     <PenyusunCatatan
                         content={content}

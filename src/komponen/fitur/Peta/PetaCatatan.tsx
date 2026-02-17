@@ -19,7 +19,7 @@ export const PetaCatatan = ({ onClose }: { onClose: () => void }) => {
     useEffect(() => {
         const loadGraph = async () => {
             const allNotes = await Arsip.getAllNotes();
-            const graphNodes: Node[] = allNotes.map((note, i) => ({
+            const graphNodes: Node[] = allNotes.map((note, _i) => ({
                 ...note,
                 x: 50 + Math.random() * 800,
                 y: 50 + Math.random() * 500,

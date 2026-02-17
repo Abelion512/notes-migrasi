@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Download, Trash2, Database, FileText, Package } from 'lucide-react';
+import { ChevronLeft, Trash2, Database, Package } from 'lucide-react';
 import { Arsip } from '@/aksara/Arsip';
 import { haptic } from '@/aksara/Indera';
 import { saveAs } from 'file-saver';
@@ -47,9 +47,10 @@ export default function DataManagementPage() {
                 fileContent += `Dibuat: ${note.createdAt}\n`;
                 fileContent += `Diperbarui: ${note.updatedAt}\n`;
                 if (note.isCredentials) {
+                    const creds = typeof decrypted.kredensial === 'object' ? decrypted.kredensial : {};
                     fileContent += `\n--- KREDENSIAL ---\n`;
-                    fileContent += `Username: ${decrypted.kredensial?.username || '-'}\n`;
-                    fileContent += `URL: ${decrypted.kredensial?.url || '-'}\n`;
+                    fileContent += `Username: ${creds?.username || '-'}\n`;
+                    fileContent += `URL: ${creds?.url || '-'}\n`;
                     fileContent += `------------------\n\n`;
                 }
                 fileContent += `\n${stripHtml(decrypted.content)}`;

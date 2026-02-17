@@ -12,7 +12,7 @@ export interface Note {
     createdAt: string;
     updatedAt: string;
     isCredentials?: boolean;
-    kredensial?: {
+    kredensial?: string | {
         username?: string;
         password?: string;
         url?: string;

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
     ChevronLeft, Terminal, Layout, ShieldCheck,
-    BookOpen, HardDrive, Cpu, Command, Copy, Check
+    BookOpen, HardDrive, Cpu, Command, Copy, Check, Download, Play
 } from 'lucide-react';
 import { haptic } from '@/aksara/Indera';
 
@@ -19,7 +19,7 @@ const BlokKode = ({ kode }: { kode: string }) => {
     };
 
     return (
-        <div className='relative group'>
+        <div className='relative group my-2'>
             <div className='bg-black/5 dark:bg-white/5 p-3 pr-10 rounded-xl font-mono text-[12px] border border-[var(--separator)]/10 break-all'>
                 {kode}
             </div>
@@ -37,128 +37,102 @@ const BlokKode = ({ kode }: { kode: string }) => {
 export default function DocumentationPage() {
     return (
         <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar'>
-            <Link href='/' className='flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit'>
+            <Link href='/laras' className='flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit'>
                 <ChevronLeft size={24} />
-                <span className='text-[17px]'>Beranda</span>
+                <span className='text-[17px]'>Setelan</span>
             </Link>
 
-            <div className='flex items-center gap-3 mb-2'>
-                <div className='p-2 rounded-xl bg-blue-500 text-white shadow-lg shadow-blue-500/20'>
-                    <BookOpen size={24} />
-                </div>
-                <h1 className='text-3xl font-bold tracking-tight'>Dokumentasi</h1>
-            </div>
-            <p className='text-[15px] text-[var(--text-secondary)] mb-8 leading-snug'>
-                Panduan lengkap untuk menguasai Abelion Notes, dari GUI premium hingga kekuatan terminal.
-            </p>
-
-            <h2 className='text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4'>Persiapan Sistem</h2>
-            <div className='ios-list-group mb-8'>
-                <div className='p-4 space-y-4'>
-                    <section>
-                        <h3 className='text-[15px] font-bold flex items-center gap-2 mb-1'>
-                            <Cpu size={14} className='text-blue-500' />
-                            Instalasi Bun
-                        </h3>
-                        <p className='text-[13px] text-[var(--text-secondary)] opacity-80 mb-2'>
-                            Aplikasi ini memerlukan runtime Bun untuk performa maksimal.
-                        </p>
-                        <BlokKode kode='curl -fsSL https://bun.sh/install | bash' />
-                    </section>
-
-                    <div className='ios-separator'></div>
-
-                    <section>
-                        <h3 className='text-[15px] font-bold flex items-center gap-2 mb-1'>
-                            <HardDrive size={14} className='text-blue-500' />
-                            Setup Project
-                        </h3>
-                        <div className='space-y-2'>
-                            <BlokKode kode='git clone https://github.com/Abelion-National-Archives/Abelion-Notes.git' />
-                            <BlokKode kode='bun install' />
-                            <BlokKode kode='bun run dev' />
-                        </div>
-                    </section>
-                </div>
-            </div>
-
-            <h2 className='text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4'>Antarmuka Grafis (GUI)</h2>
-            <div className='ios-list-group mb-8'>
-                <div className='ios-list-item'>
-                    <div className='flex items-center gap-3'>
-                        <div className='p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center'>
-                            <Layout size={16} />
-                        </div>
-                        <span className='font-medium text-[16px]'>Local-First (IndexedDB)</span>
-                    </div>
-                </div>
-                <div className='p-4 pt-0 text-[13px] text-[var(--text-secondary)] opacity-70 italic'>
-                    Data disimpan secara lokal di browser Anda via Dixie/IndexedDB.
-                </div>
-                <div className='ios-separator'></div>
-                <div className='ios-list-item'>
-                    <div className='flex items-center gap-3'>
-                        <div className='p-1.5 rounded-md bg-green-500 text-white flex items-center justify-center'>
-                            <ShieldCheck size={16} />
-                        </div>
-                        <span className='font-medium text-[16px]'>Enkripsi AES-GCM</span>
-                    </div>
-                </div>
-                <div className='p-4 pt-0 text-[13px] text-[var(--text-secondary)] opacity-70 italic'>
-                    Catatan, Kredensial, dan Preview dienkripsi secara otomatis.
-                </div>
-            </div>
-
-            <h2 className='text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4'>Terminal (CLI & TUI)</h2>
-            <div className='ios-list-group mb-10'>
-                <div className='p-4 space-y-5'>
-                    <section>
-                        <h3 className='text-[15px] font-bold flex items-center gap-2 mb-1'>
-                            <Terminal size={14} className='text-blue-500' />
-                            Manajemen TUI Interaktif
-                        </h3>
-                        <p className='text-[13px] text-[var(--text-secondary)] mb-3'>
-                            Akses dashboard interaktif (Status, List, Unlock):
-                        </p>
-                        <BlokKode kode='bun bin/abelion ui' />
-                    </section>
-
-                    <div className='ios-separator'></div>
-
-                    <section>
-                        <h3 className='text-[15px] font-bold flex items-center gap-2 mb-2'>
-                            <Command size={14} className='text-blue-500' />
-                            Perintah Cepat CLI
-                        </h3>
-                        <div className='space-y-3'>
-                            <div>
-                                <div className='flex items-center justify-between mb-1'>
-                                    <span className='text-[12px] font-bold text-blue-500'>Cek Status</span>
-                                </div>
-                                <BlokKode kode='bun bin/abelion status' />
-                            </div>
-                            <div>
-                                <div className='flex items-center justify-between mb-1'>
-                                    <span className='text-[12px] font-bold text-blue-500'>Daftar Arsip</span>
-                                </div>
-                                <BlokKode kode='bun bin/abelion list' />
-                            </div>
-                            <div>
-                                <div className='flex items-center justify-between mb-1'>
-                                    <span className='text-[12px] font-bold text-blue-500'>Hapus Data</span>
-                                </div>
-                                <BlokKode kode='bun bin/abelion hapus <id>' />
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-
-            <div className='bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5'>
-                <h3 className='text-blue-500 font-bold text-xs uppercase tracking-widest mb-2'>Pesan Untuk Developer</h3>
-                <p className='text-[13px] text-[var(--text-secondary)] leading-relaxed'>
-                    Aplikasi ini dirancang untuk efisiensi maksimal. Gunakan GUI untuk menulis konten, dan CLI/TUI untuk manajemen cepat.
+            <div className='mb-8'>
+                <h1 className='text-3xl font-bold tracking-tight mb-2'>Dokumentasi</h1>
+                <p className='text-[15px] text-[var(--text-secondary)] leading-snug'>
+                    Panduan singkat penggunaan CLI Abelion Notes.
                 </p>
+            </div>
+
+            <h2 className='text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4'>Langkah 1: Instalasi CLI</h2>
+            <div className='ios-list-group mb-8'>
+                <div className='p-4'>
+                    <div className='flex items-start gap-4 mb-4'>
+                        <div className='p-2 bg-blue-500/10 text-blue-500 rounded-lg shrink-0'>
+                            <Download size={20} />
+                        </div>
+                        <div>
+                            <h3 className='font-bold text-[15px] mb-1'>Opsi A: Download Binary (Mudah)</h3>
+                            <p className='text-xs text-[var(--text-secondary)] mb-2'>
+                                Tanpa perlu install Bun/Node.js. Cukup download file <code>lembaran.exe</code> dari halaman Rilis GitHub.
+                            </p>
+                            <Link
+                                href="https://github.com/Abelion512/lembaran/releases"
+                                target="_blank"
+                                className='inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-lg active:opacity-80'
+                            >
+                                <Download size={14} /> Download .exe
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className='ios-separator my-4'></div>
+
+                    <div className='flex items-start gap-4'>
+                        <div className='p-2 bg-purple-500/10 text-purple-500 rounded-lg shrink-0'>
+                            <Terminal size={20} />
+                        </div>
+                        <div>
+                            <h3 className='font-bold text-[15px] mb-1'>Opsi B: Install via Terminal</h3>
+                            <p className='text-xs text-[var(--text-secondary)] mb-2'>
+                                Jika Anda developer dan sudah punya <code>bun</code>. Clone repo ini lalu jalankan:
+                            </p>
+                            <BlokKode kode='bun install -g .' />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 className='text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4'>Langkah 2: Menjalankan CLI</h2>
+            <div className='ios-list-group mb-8'>
+                <div className='p-4'>
+                    <div className='flex items-start gap-4'>
+                        <div className='p-2 bg-green-500/10 text-green-500 rounded-lg shrink-0'>
+                            <Play size={20} />
+                        </div>
+                        <div>
+                            <h3 className='font-bold text-[15px] mb-1'>Mulai Aplikasi</h3>
+                            <p className='text-xs text-[var(--text-secondary)] mb-2'>
+                                Buka terminal (PowerShell/CMD) di mana saja, lalu ketik:
+                            </p>
+                            <BlokKode kode='lembaran mulai' />
+                            <p className='text-[11px] text-[var(--text-muted)] mt-2'>
+                                💡 Tip: Gunakan tombol Panah ↑/↓ untuk memilih menu, dan ENTER untuk konfirmasi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 className='text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4'>Referensi Perintah</h2>
+            <div className='ios-list-group'>
+                <div className='p-4 grid grid-cols-1 gap-3'>
+                    <div className='flex items-center justify-between'>
+                        <code className='text-xs font-bold bg-black/5 dark:bg-white/10 px-2 py-1 rounded'>lembaran pantau</code>
+                        <span className='text-xs text-[var(--text-secondary)]'>Cek status sistem</span>
+                    </div>
+                    <div className='ios-separator'></div>
+                    <div className='flex items-center justify-between'>
+                        <code className='text-xs font-bold bg-black/5 dark:bg-white/10 px-2 py-1 rounded'>lembaran jelajah</code>
+                        <span className='text-xs text-[var(--text-secondary)]'>Lihat daftar catatan</span>
+                    </div>
+                    <div className='ios-separator'></div>
+                    <div className='flex items-center justify-between'>
+                        <code className='text-xs font-bold bg-black/5 dark:bg-white/10 px-2 py-1 rounded'>lembaran kuncung</code>
+                        <span className='text-xs text-[var(--text-secondary)]'>Login / Buka Brankas</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className='mt-8 text-center'>
+                <Link href='https://github.com/Abelion512/lembaran' target='_blank' className='text-xs text-blue-500 font-medium hover:underline'>
+                    Lihat Source Code di GitHub
+                </Link>
             </div>
         </div>
     );

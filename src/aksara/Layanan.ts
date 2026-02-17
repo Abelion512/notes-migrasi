@@ -27,7 +27,7 @@ export const Layanan = {
     /**
      * Authenticate with the remote server for sync
      */
-    async authenticate(token: string): Promise<UserProfile | null> {
+    async authenticate(_token: string): Promise<UserProfile | null> {
         // TODO: Implement auth logic
         return null;
     },

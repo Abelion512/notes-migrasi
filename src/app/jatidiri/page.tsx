@@ -19,7 +19,7 @@ export default function ProfilePage() {
 
             // Generate mock activity based on note count for visual flavor
             const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-            const mockActivity = days.map((day, i) => {
+            const mockActivity = days.map((day, _i) => {
                 const count = Math.floor(Math.random() * (s.notes + 2));
                 return {
                     day,
@@ -44,7 +44,7 @@ export default function ProfilePage() {
                     {profile.name[0]}
                 </motion.div>
                 <h2 className="text-2xl font-bold mb-1">{profile.name}</h2>
-                <p className="text-[var(--text-secondary)] text-[15px] font-medium opacity-80 italic">"{profile.bio}"</p>
+                <p className="text-[var(--text-secondary)] text-[15px] font-medium opacity-80 italic">&ldquo;{profile.bio}&rdquo;</p>
 
                 <div className="flex gap-3 mt-8 w-full">
                     <div className="flex-1 bg-[var(--background)] rounded-2xl p-4 border border-[var(--separator)]/20 shadow-sm">

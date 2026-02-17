@@ -1,89 +1,72 @@
-# Rencana Implementasi: Desain Ulang Abelion Notes (Tingkat Enterprise)
+## Fase 1: Konsolidasi Agen & Instalasi Skill
 
-**Tujuan**: Membangun ulang Abelion Notes dari nol (scratch) agar menjadi aplikasi yang dinamis, skalabel, aman, dan siap produksi.
-**Filosofi**: *Local-First* (Utamakan Lokal), Enkripsi *End-to-End*, Estetika ala Apple, "Tanpa Hardcoding".
+Terjadi kebingungan antara `.agent` (tunggal) dan `.agents` (jamak). Folder `.agent` saat ini sudah ada di repo, namun symlink di root salah merujuk ke `.agents`. Kita akan standarisasi menggunakan `.agent`.
 
-## Peninjauan Pengguna Diperlukan
+### Langkah:
+1. Hapus direktori `skills/` dan folder `.agents` (jika ada) yang merujuk pada direktori yang salah.
+2. Konsolidasi semua skill dan instruksi ke dalam `.agent/skills/`.
+3. Instal ulang skill inti via `npx`: `find-skills`, `nextjs-app-router-patterns`, `nextjs-best-practices`, `security-review`, `typescript-advanced-types`.
 
-> [!IMPORTANT]
-> **Penghapusan Data**: Rencana ini melibatkan penghapusan direktori `src` untuk memulai dari awal yang bersih. Pastikan semua referensi kode lama tersimpan aman di `arsip_legacy`.
+---
 
-> [!WARNING]
-> **Arsitektur Ketat**: Kita akan menggunakan struktur yang terinspirasi dari *Feature-Sliced Design* (FSD) untuk menjamin skalabilitas jangka panjang.
+## Fase 2: CLI Puitis & Antarmuka Keamanan — `lembaran`
 
-## 1. Arsitektur & Teknologi Stack
+### Masalah & Solusi UX:
+Pengguna sering bingung antara Enter/Space di terminal. TUI akan diperkaya dengan instruksi eksplisit: `(Gunakan panah ↑↓ dan Tekan ENTER untuk memilih)`.
 
-- **Framework**: Next.js 15 (App Router) - Routing Dinamis & optimasi SSR/CSR.
-- **Styling**: Tailwind CSS v4 + Framer Motion (Tanpa file CSS blok terpisah).
-  - *Sistem Desain*: Didefinisikan dalam `tailwind.config.ts` dan Variabel CSS (Dapat diganti tema).
-- **Manajemen State**:
-  - **Lokal**: `zustand` (State UI, Sesi Pengguna).
-  - **Asinkron/Server**: `tanstack/react-query` (Pengambilan data, caching).
-- **Penyimpanan ("Brankas")**:
-  - **Utama**: IndexedDB (via pustaka `idb`) - Dinamis, Kapasitas besar.
-  - **Sinkronisasi**: Supabase (Realtime + Postgres) - Opsional, pluggable.
-  - **Enkripsi**: Web Crypto API (AES-GCM 256-bit) - Sisi Klien saja (Client-side).
-- **Infrastruktur**:
-  - **Docker**: `Dockerfile` standar dan `compose.yaml`.
-  - **CLI**: Skrip `bin/abelion` untuk manajemen tanpa antarmuka (headless).
+### Perubahan Vibe & Fitur Baru:
+Menggunakan istilah yang lebih progresif dan puitis sesuai tema "Aksara/Brankas":
 
-## 2. Struktur Direktori
+| Perintah Lama | Perintah Baru | Deskripsi Vibe |
+|---------------|---------------|----------------|
+| `ui`          | `mulai`       | Menjalankan TUI dengan instruksi UX lengkap (Default) |
+| `status`      | `pantau`      | Memantau kesehatan dan integritas sistem |
+| `list`        | `jelajah`     | Menjelajahi arsip catatan terenkripsi |
+| `hapus`       | `hangus`      | Memusnahkan catatan secara permanen |
+| `export`      | `petik`       | Memetik (export) data ke file lokal |
+| **(NEW) login** | **`kuncung`**  | Masuk/Membuka kunci brankas (Manual/Web) |
+| **(NEW) import**| **`tanam`**   | Menanamkan (import) data eksternal ke arsip |
 
-```
-src/
-├── app/                  # Next.js App Router (Halaman)
-├── components/
-│   ├── ui/               # Desain Atomik (Tombol, Input, Kartu) - Dapat digunakan kembali
-│   ├── shared/           # Fungsionalitas Berbagi (Modal, Navigasi Bawah)
-│   └── features/         # UI Khusus Fitur (Editor, Profil)
-├── lib/
-│   ├── storage/          # Mesin Inti "Brankas" (IndexedDB + Enkripsi)
-│   ├── sync/             # Mesin Sinkronisasi (Supabase)
-│   ├── hooks/            # Hooks Kustom (Logika React)
-│   └── utils/            # Fungsi Pembantu (Helpers)
-├── types/                # Antarmuka TypeScript (Definisi Tipe)
-└── styles/               # Gaya Global (Layer Tailwind)
-```
+### Alur Kriptografi & Registrasi (Visi Multi-platform):
+1. **Login (`kuncung`)**:
+   - Opsi 1: Masukkan kata sandi secara manual di terminal.
+   - Opsi 2: Login via Web (Mengarahkan pengguna ke URL web untuk autentikasi).
+2. **Registrasi & Mantra Pemulihan**:
+   - Jika pengguna mencoba membuat akun/password baru di CLI, sistem akan memberikan narasi puitis:
+     > *"Wahai Pengembang, penciptaan kunci abadi wajib dilakukan melalui Gerbang Web. Di sana, Mantra Pemulihan (12 Kata Aksara) akan dianugerahkan untuk menjaga kedaulatan datamu."*
+   - Arahan eksplisit ke URL registrasi web.
 
-## 3. Tahapan Implementasi
+### Teknis:
+1. Perbarui `package.json` dengan `"bin": { "lembaran": "./bin/abelion" }`.
+2. Modifikasi `bin/abelion` dan `TUI.ts` untuk mendukung perintah baru dan instruksi UX.
 
-### Fase 1: Fondasi (Tanpa UI)
-- [ ] **Infrastruktur**: Inisialisasi Next.js, Setup Docker, Konfigurasi Eslint/Prettier.
-- [x] **Mesin Inti (`lib/storage`)**:
-  - [x] Implementasi wrapper `IndexedDB` (Catatan, Folder, Pengaturan).
-  - [x] Implementasi logika `CryptoEngine` (AES-GCM, PBKDF2) yang diadopsi dari `brankas.js` legacy.
-  - Implementasi antarmuka `SyncEngine` (Supabase).
-- [ ] **Setup State**: Konfigurasi store `Zustand` dan provider `React Query`.
+---
 
-### Fase 2: Sistem Desain & Kerangka (Shell)
-- [x] **Konfigurasi Tailwind**: Definisikan warna "Glass OS", bayangan, dan blur sebagai kelas utilitas.
-- [x] **Tipografi**: Konfigurasi font `Geist` dan `Inter` secara dinamis.
-- [x] **Tata Letak**: Bangun `MobileLayout` dan `DesktopLayout` (Fokus Navigasi Bawah).
-  - *Syarat*: Hapus Sidebar, gunakan Navigasi Pill Bawah untuk semua tampilan.
+## Fase 3: Audit, Pembersihan & Optimasi
 
-### Fase 3: Fitur Inti (Dinamis)
-- [x] **CRUD Catatan**:
-  - Rendering Daftar Dinamis (Virtualisasi untuk performa tinggi).
-  - Logika Penyaringan/Pengurutan yang canggih.
-- [x] **Editor**:
-  - Bangun editor berbasis blok atau teks bersih (TipTap atau ContentEditable kustom).
-  - Implementasi Perintah Slash (/) secara dinamis.
-- [ ] **Folder**: Logika folder bertingkat (nested) menggunakan komponen rekursif.
+### Menghapus Redundansi (Library & File):
+1. **Library Bloat**: Hapus `dexie` (diganti `idb`) dan `argon2-browser` (diganti `@noble/hashes`) dari `package.json`.
+2. **Limbah Root**: 9 `build_log_*.txt`, 2 `.log`, 2 `.diff`, `SARAN*.md` (3 file), `REVIEW.md`, `CATATAN_PENGERJAAN.md`.
+3. **Legacy**: Direktori `arsip_legacy/` (63 file) yang sudah tidak terpakai.
 
-### Fase 4: Keamanan & Poles Akhir
-- [x] **UI Vault**: Layar kunci, input PIN, hook Biometrik.
-  - [x] **Logika Kunci**: Setup Password & Unlock dengan Validator terenkripsi.
-- [x] **Profil & Statistik**: Grafik Dinamis (Recharts/Visx) untuk "Aktivitas Mingguan".
-  - [x] **Realtime Data**: Integrasi `count()` dari IndexedDB.
-- [ ] **CLI**: Buat skrip untuk ekspor data via terminal (`npm run cli -- export`).
+### Audit Keamanan & Potensi Kerusakan:
+- **Integritas Segel**: `Arsip.ts` akan dikonsolodasikan agar menggunakan `stripHtml` dari `Penyaring.ts`.
+- **Visi Web/Native**: Memastikan `Gudang.ts` bersifat universal untuk APK Native nantinya.
+- **Hydration Safety**: Audit komponen UI agar tidak mengakses `window` sebelum mount.
 
-## 4. Rencana Verifikasi
+## Fase 4: Distribusi & Standalone
+- Tambahkan script `build:cli` ke `package.json`.
+- Kompilasi `lembaran.exe` (Standalone Binary).
+- Verifikasi eksekusi binary.
 
-### Pengujian Otomatis
-- `bun test` untuk logika Kriptografi/Penyimpanan.
-- Playwright untuk alur E2E (Buat Catatan -> Enkripsi -> Sinkronisasi).
+## Fase 5: Decoupling Arsitektur
+- Refactor `Gudang.ts` menggunakan Adapter Pattern.
+- Implementasi `FileAdapter` (JSON) untuk CLI/Node dan `BrowserAdapter` (IDB) untuk Web.
+- Konfigurasi `package.json` "browser" field untuk shimming module `fs`.
+- Verifikasi build Web dan CLI berjalan independen.
 
-### Verifikasi Manual
-- **Cek Skalabilitas**: Generate 1.000 catatan dummy dan lakukan scroll cepat (tes performa).
-- **Cek Keamanan**: Verifikasi bahwa data di IndexedDB benar-benar berupa string terenkripsi.
-- **Docker**: Jalankan `docker compose up` dan pastikan akses berjalan lancar.
+## Fase 6: Dokumentasi & Halaman Informasi
+- Pembuatan file root: `LICENSE` (MIT), `CONTRIBUTING.md`, `TERMS.md`, `PRIVACY.md`.
+- Halaman `/tentang` sebagai hub informasi legal dan versi.
+- Halaman `/changelog`, `/ketentuan`, `/privasi` merender konten Markdown dari root secara dinamis (Server Components).
+- Integrasi `llms.txt` untuk memastikan konteks proyek ramah terhadap AI lain.

@@ -3,30 +3,35 @@ import { program } from 'commander';
 import { TUI } from '../src/aksara/TUI';
 
 program
-  .name('abelion')
-  .description('Abelion Notes CLI - Management Tool')
+  .name('lembaran')
+  .description('Lembaran — CLI Pengelolaan Aksara Personal')
   .version('2.3.0-dev');
 
+// Default action: Jalankan TUI jika tidak ada subcommand
+program.action(async () => {
+  await TUI.jalankan();
+});
+
 program
-  .command('status')
-  .description('Check application and database status')
+  .command('pantau')
+  .description('Memantau kesehatan dan integritas sistem')
   .action(() => {
-    console.log('🏛️ Abelion Notes Status: Operational');
-    console.log('📦 Infrastructure: Clean Slate (FSD)');
-    console.log('🔒 Security: AES-GCM Standards Ready');
+    console.log('🏛️ Abelion Notes: Operational');
+    console.log('📦 Infrastruktur: Clean Slate (FSD)');
+    console.log('🔒 Keamanan: AES-GCM Standards Ready');
     console.log('💡 Saran: Gunakan aplikasi ini sebagai developer untuk manajemen kredensial yang efektif.');
   });
 
 program
-  .command('ui')
-  .description('Launch the interactive Management TUI')
+  .command('mulai')
+  .description('Menjalankan antarmuka pengelolaan (TUI)')
   .action(async () => {
     await TUI.jalankan();
   });
 
 program
-  .command('list')
-  .description('List all notes (metadata only)')
+  .command('jelajah')
+  .description('Menjelajahi arsip catatan terenkripsi')
   .action(() => {
     console.log('📂 DAFTAR ARSIP:');
     console.log('----------------');
@@ -36,18 +41,45 @@ program
   });
 
 program
-  .command('hapus <id>')
-  .description('Hapus catatan secara permanen berdasarkan ID')
+  .command('hangus <id>')
+  .description('Memusnahkan catatan secara permanen berdasarkan ID')
   .action((id) => {
     console.log(`⚠️  Menghapus catatan dengan ID: ${id}...`);
     console.log('✅ Catatan berhasil dihapus dari arsip lokal.');
   });
 
 program
-  .command('export')
-  .description('Export encrypted notes to a local file')
+  .command('petik')
+  .description('Memetik (export)  data ke file lokal')
   .action(() => {
-    console.log('🚧 Feature under construction: Integration with IndexedDB required.');
+    console.log('🚧 Fitur dalam konstruksi: Integrasi dengan IndexedDB diperlukan.');
+  });
+
+program
+  .command('kuncung')
+  .description('Masuk/Membuka kunci brankas (Manual/Web)')
+  .option('-w, --web', 'Login via web browser')
+  .action((options) => {
+    if (options.web) {
+      console.log('🌐 Membuka Gerbang Web untuk autentikasi...');
+      console.log('📍 URL: http://localhost:1400/');
+    } else {
+      console.log('🔐 Masukkan kata sandi brankas:');
+      console.log('[INFO] Fitur login manual dalam pengembangan.');
+    }
+  });
+
+program
+  .command('tanam')
+  .description('Menanamkan (import) data eksternal ke arsip')
+  .argument('[file]', 'Path file untuk diimport')
+  .action((file) => {
+    if (file) {
+      console.log(`📥 Mengimport data dari: ${file}`);
+    } else {
+      console.log('📥 Import data eksternal');
+    }
+    console.log('[INFO] Fitur import dalam pengembangan.');
   });
 
 program.parse();

@@ -7,8 +7,8 @@ Abelion Notes adalah platform arsip digital personal yang aman, berbasis local-f
 1. **Install Bun Runtime**: [bun.sh](https://bun.sh)
 2. **Clone & Setup**:
    ```bash
-   git clone https://github.com/Abelion-National-Archives/Abelion-Notes.git
-   cd Abelion-Notes
+   git clone https://github.com/Abelion512/lembaran.git
+   cd lembaran
    bun install
    ```
 3. **Run Web Interface**:
@@ -17,14 +17,15 @@ Abelion Notes adalah platform arsip digital personal yang aman, berbasis local-f
    ```
 4. **Run Management TUI**:
    ```bash
-   bun bin/abelion ui
+   lembaran mulai
+   # Atau akses fitur lain: lembaran pantau | jelajah | kuncung
    ```
 
 ## Features
 
 - **End-to-End Encryption**: Data dienkripsi menggunakan AES-GCM 256-bit sisi klien.
-- **Local-First Architecture**: Database utama menggunakan IndexedDB (via Dixie).
-- **Interactive TUI/CLI**: Alat manajemen terminal yang efisien untuk developer.
+- **Local-First Architecture**: Database utama menggunakan IndexedDB (via `idb`).
+- **Interactive TUI/CLI (`lembaran`)**: Alat manajemen terminal puitis untuk efisiensi developer.
 - **Credential Storage**: Template khusus untuk menyimpan username, password, dan URL secara aman.
 - **Gmail Camouflage**: Mode rahasia untuk menyamarkan layar kunci brankas.
 
@@ -53,11 +54,5 @@ MIT - Dikelola oleh Lembaga Arsip Digital Abelion.
 
 ## 🧠 Agent Skills
 
-Repositori ini mendukung sistem **Agent Skills** untuk efisiensi pengembangan menggunakan AI.
-
-1. **Setup Skills**:
-   ```bash
-   ./skills.sh
-   ```
-
-Tersedia skill untuk: Next.js App Router patterns, best practices, security reviews, dan advanced TypeScript.
+Repositori ini mendukung sistem **Agent Skills** standar industri (.agent/skills) untuk efisiensi pengembangan menggunakan AI.
+Skill terintegrasi: `find-skills`, `nextjs-app-router-patterns`, `nextjs-best-practices`, `security-review`, `typescript-advanced-types`.

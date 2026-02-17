@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, FilePlus, Settings, User, Command, X } from 'lucide-react';
+import { Search, FilePlus, Settings, User, Command } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const PaletPerintah = () => {

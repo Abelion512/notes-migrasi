@@ -5,7 +5,7 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react';
 interface Item {
     title: string;
     icon: React.ReactNode;
-    command: (props: any) => void;
+    command: (props: { editor: unknown; range: unknown }) => void;
 }
 
 interface DaftarPerintahProps {
@@ -68,8 +68,8 @@ export const DaftarPerintah = forwardRef((props: DaftarPerintahProps, ref) => {
                         key={index}
                         onClick={() => selectItem(index)}
                         className={`flex items-center gap-2 px-3 py-2 text-sm text-left rounded-lg transition-colors ${index === selectedIndex
-                                ? 'bg-[var(--primary)] text-white'
-                                : 'hover:bg-[var(--glass-bg)] text-[var(--text-primary)]'
+                            ? 'bg-[var(--primary)] text-white'
+                            : 'hover:bg-[var(--glass-bg)] text-[var(--text-primary)]'
                             }`}
                     >
                         <div className={`p-1 rounded ${index === selectedIndex ? 'bg-white/20' : 'bg-[var(--glass-border)]'}`}>

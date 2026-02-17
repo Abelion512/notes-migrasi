@@ -116,9 +116,9 @@ export const Arsip = {
             Brankas.encryptPacked(preview)
         ]);
 
-        let secureKredensial = note.kredensial;
+        let secureKredensial: typeof note.kredensial | string = note.kredensial;
         if (note.kredensial) {
-            secureKredensial = await Brankas.encryptPacked(JSON.stringify(note.kredensial)) as any;
+            secureKredensial = await Brankas.encryptPacked(JSON.stringify(note.kredensial));
         }
 
         const finalNote: Note = {
@@ -126,7 +126,7 @@ export const Arsip = {
             title: secureTitle,
             content: secureContent,
             preview: securePreview,
-            kredensial: secureKredensial,
+            kredensial: secureKredensial as Note['kredensial'],
             updatedAt: new Date().toISOString(),
             _hash: checkHash,
         };
@@ -150,7 +150,7 @@ export const Arsip = {
                     title: await Brankas.decryptPacked(n.title),
                     preview: await Brankas.decryptPacked(n.preview || '')
                 };
-            } catch (e) {
+            } catch (_e) {
                 return { ...n, title: '🔒 Terkunci', preview: '🔒 Terkunci' };
             }
         }));
