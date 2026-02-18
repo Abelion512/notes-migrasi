@@ -23,6 +23,8 @@ const DEFAULT_SETTINGS: AppSettings = {
     secretMode: "none",
     lastSyncAt: null,
     sessionTimeout: 1,
+    vimMode: false,
+    biometricEnabled: false,
 };
 
 const DEFAULT_PROFILE: UserProfile = {

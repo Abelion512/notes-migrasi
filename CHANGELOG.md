@@ -1,6 +1,16 @@
 # Changelog
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
+## [3.0.0] - 2026-02-18
+### Added
+- **Vim Mode**: Navigasi editor menggunakan shortcut H J K L (Normal/Insert Mode).
+- **Otentikasi Biometrik**: Dukungan UI dan simulasi WebAuthn (Touch/FaceID).
+- **Vault Terenkripsi (.lembaran)**: Ekspor cadangan yang dilindungi kunci brankas utama.
+- **Impor Markdown**: Alat pengunggah catatan massal dari file .md.
+- **Fuzzy Search CLI**: Pencarian cerdas pada perintah `jelajah`.
+- **Ukir CLI (Mini-Editor)**: Edit catatan langsung dari terminal.
+- **Peta Memori Pro**: Peningkatan visualisasi graph dengan zoom dan interaksi simpul.
+
 ## [2.9.0] - 2026-02-18
 ### Added
 - **Panic Key (Protokol Darurat)**: Penghapusan data instan jika kata sandi darurat dimasukkan.

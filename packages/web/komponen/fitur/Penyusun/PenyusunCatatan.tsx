@@ -8,12 +8,13 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { common, createLowlight } from 'lowlight';
 import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisMiring';
 import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    Bold, Italic, Heading1, List, Terminal, Sparkles, Loader2
+    Bold, Italic, Heading1, List, Terminal, Sparkles, Loader2, Command
 } from 'lucide-react';
 import { Pujangga } from '@lembaran/core/Pujangga';
 import { haptic } from '@lembaran/core/Indera';
+import { usePundi } from '@lembaran/core/Pundi';
 
 // Import highlight.js styles
 import 'highlight.js/styles/github-dark.css';
@@ -33,8 +34,10 @@ export const PenyusunCatatan = ({
     editable = true,
     placeholder = 'Mulai menulis kisah Anda...'
 }: PenyusunCatatanProps) => {
+    const { settings } = usePundi();
     const [isMonospace, setIsMonospace] = useState(false);
     const [isSummarizing, setIsSummarizing] = useState(false);
+    const [vimMode, setVimMode] = useState('INSERT');
 
     const editor = useEditor({
         extensions: [
@@ -56,6 +59,28 @@ export const PenyusunCatatan = ({
             attributes: {
                 class: `prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl dark:prose-invert my-4 px-1 focus:outline-none min-h-[calc(100vh-300px)] text-[var(--text-primary)] ${isMonospace ? 'font-mono' : 'font-sans'}`,
             },
+            handleKeyDown: (view, event) => {
+                if (!settings.vimMode) return false;
+
+                if (event.key === 'Escape') {
+                    setVimMode('NORMAL');
+                    haptic.light();
+                    return true;
+                }
+
+                if (vimMode === 'NORMAL') {
+                    if (event.key === 'i') {
+                        setVimMode('INSERT');
+                        return true;
+                    }
+                    if (event.key === 'h') { editor?.chain().focus().moveLeft().run(); return true; }
+                    if (event.key === 'l') { editor?.chain().focus().moveRight().run(); return true; }
+                    if (event.key === 'j') { editor?.chain().focus().moveDown().run(); return true; }
+                    if (event.key === 'k') { editor?.chain().focus().moveUp().run(); return true; }
+                    return true; // Block other keys in normal mode
+                }
+                return false;
+            }
         },
         immediatelyRender: false,
     });
@@ -87,6 +112,12 @@ export const PenyusunCatatan = ({
             {editable && (
                 <>
                     <div className="absolute top-[-45px] right-0 flex items-center gap-2 z-10">
+                        {settings.vimMode && (
+                            <div className="px-2 py-1 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[9px] font-black tracking-widest flex items-center gap-2">
+                                <Command size={10} />
+                                VIM: {vimMode}
+                            </div>
+                        )}
                         <button
                             onClick={() => setIsMonospace(!isMonospace)}
                             className={`p-1.5 rounded-md border transition-all ${isMonospace ? 'bg-blue-500/10 border-blue-500/30 text-blue-500' : 'bg-[var(--surface)] border-[var(--separator)]/30 text-[var(--text-secondary)] opacity-40 hover:opacity-100'}`}

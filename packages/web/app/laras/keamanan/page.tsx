@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, AlertTriangle, Clock } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, AlertTriangle, Clock, Fingerprint, Command } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';
 import { Arsip } from '@lembaran/core/Arsip';
@@ -12,10 +12,14 @@ export default function SecurityManagementPage() {
     const [panicInput, setPanicInput] = useState('');
     const [isPanicSaved, setIsPanicSaved] = useState(false);
 
-    const toggleSecretMode = () => {
+    const toggleSetting = (key: 'secretMode' | 'biometricEnabled' | 'vimMode') => {
         haptic.light();
-        const nextMode = settings.secretMode === 'none' ? 'gmail' : 'none';
-        updateSettings({ secretMode: nextMode });
+        if (key === 'secretMode') {
+            const nextMode = settings.secretMode === 'none' ? 'gmail' : 'none';
+            updateSettings({ secretMode: nextMode });
+        } else {
+            updateSettings({ [key]: !settings[key] });
+        }
     };
 
     const handleSavePanic = async () => {
@@ -27,11 +31,6 @@ export default function SecurityManagementPage() {
         setTimeout(() => setIsPanicSaved(false), 3000);
     };
 
-    const handleTimeoutChange = (minutes: number) => {
-        updateSettings({ sessionTimeout: minutes });
-        haptic.light();
-    };
-
     return (
         <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
             <Link href="/laras" className="flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit">
@@ -39,9 +38,9 @@ export default function SecurityManagementPage() {
                 <span className="text-[17px]">Pengaturan</span>
             </Link>
 
-            <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan</h1>
+            <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan & Akses</h1>
 
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Status & Sesi</h2>
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Otentikasi</h2>
             <div className="ios-list-group mb-10">
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
@@ -53,24 +52,44 @@ export default function SecurityManagementPage() {
                     <span className="text-[var(--text-secondary)] text-sm">Aktif</span>
                 </div>
                 <div className="ios-separator"></div>
-                <div className="ios-list-item">
+                <button
+                    onClick={() => toggleSetting('biometricEnabled')}
+                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
+                >
                     <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-orange-500 text-white flex items-center justify-center shadow-sm">
-                            <Clock size={18} />
+                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
+                            <Fingerprint size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Durasi Sesi</span>
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-medium text-[17px]">Biometrik (Touch/FaceID)</span>
+                            <span className="text-[11px] text-[var(--text-muted)]">Buka brankas tanpa password</span>
+                        </div>
                     </div>
-                    <select
-                        value={settings.sessionTimeout || 1}
-                        onChange={(e) => handleTimeoutChange(Number(e.target.value))}
-                        className="bg-transparent text-[var(--primary)] font-bold text-sm outline-none"
-                    >
-                        <option value={1}>1 Menit</option>
-                        <option value={5}>5 Menit</option>
-                        <option value={15}>15 Menit</option>
-                        <option value={60}>1 Jam</option>
-                    </select>
-                </div>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </div>
+                </button>
+            </div>
+
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Produktivitas</h2>
+            <div className="ios-list-group mb-10">
+                <button
+                    onClick={() => toggleSetting('vimMode')}
+                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-orange-600 text-white flex items-center justify-center shadow-sm">
+                            <Command size={18} />
+                        </div>
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-medium text-[17px]">Vim Mode</span>
+                            <span className="text-[11px] text-[var(--text-muted)]">Navigasi editor gaya Vim (H J K L)</span>
+                        </div>
+                    </div>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.vimMode ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.vimMode ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </div>
+                </button>
             </div>
 
             <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Protokol Darurat</h2>
@@ -102,7 +121,7 @@ export default function SecurityManagementPage() {
                     </div>
                 </div>
                 <button
-                    onClick={toggleSecretMode}
+                    onClick={() => toggleSetting('secretMode')}
                     className="w-full ios-list-item active:bg-[var(--surface-active)]"
                 >
                     <div className="flex items-center gap-3">
@@ -114,13 +133,8 @@ export default function SecurityManagementPage() {
                             <span className="text-[11px] text-[var(--text-muted)]">Samarkan brankas sebagai Gmail</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-[var(--primary)] text-sm font-semibold">
-                            {settings.secretMode === 'gmail' ? 'Aktif' : 'Mati'}
-                        </span>
-                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.secretMode === 'gmail' ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
-                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.secretMode === 'gmail' ? 'translate-x-6' : 'translate-x-0'}`} />
-                        </div>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.secretMode === 'gmail' ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.secretMode === 'gmail' ? 'translate-x-6' : 'translate-x-0'}`} />
                     </div>
                 </button>
             </div>

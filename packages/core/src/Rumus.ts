@@ -42,6 +42,8 @@ export interface AppSettings {
     panicKeyHash?: string;
     sessionTimeout?: number;
     customThemes?: Record<string, string>;
+    vimMode?: boolean;
+    biometricEnabled?: boolean;
 }
 
 export interface UserProfile {

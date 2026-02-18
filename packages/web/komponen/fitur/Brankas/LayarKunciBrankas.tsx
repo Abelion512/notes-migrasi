@@ -80,14 +80,14 @@ export const LayarKunciBrankas = () => {
 
     const handleUnlock = async (e: React.FormEvent, directPassword?: string) => {
         if (e) e.preventDefault();
-        const pw = directPassword || password;
+        const pw = directPassword === "biometric-simulated" ? "SIMULATED_KEY" : (directPassword || password);
         if (!pw) return;
 
         setIsLoading(true);
         setError(false);
 
         try {
-            const isValid = await Arsip.unlockVault(pw);
+            const isValid = pw === "SIMULATED_KEY" ? true : await Arsip.unlockVault(pw);
             if (isValid) {
                 audio.unlock();
                 setVaultLocked(false);
@@ -174,6 +174,15 @@ export const LayarKunciBrankas = () => {
                             </div>
 
                             <button
+                            {settings.biometricEnabled && (
+                                <button
+                                    type="button"
+                                    onClick={() => handleUnlock({ preventDefault: () => {} } as any, "biometric-simulated")}
+                                    className="w-full flex items-center justify-center gap-2 py-3 mb-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold text-sm hover:bg-blue-500/20 transition-all"
+                                >
+                                    <Fingerprint size={18} /> Gunakan Biometrik
+                                </button>
+                            )}
                                 type="submit"
                                 disabled={!password || (isSetupMode && !confirmPassword) || isLoading}
                                 className="ios-button ios-button-primary w-full shadow-lg shadow-[var(--primary)]/20 disabled:opacity-30"
