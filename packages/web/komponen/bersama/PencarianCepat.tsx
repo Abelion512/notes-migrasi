@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, FileText, ChevronRight } from 'lucide-react';
+import { Search, FileText, ChevronRight, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Arsip } from '@lembaran/core/Arsip';
+import { haptic } from '@lembaran/core/Indera';
 import { Note } from '@lembaran/core/Rumus';
 import { getIconForService } from '@/komponen/IkonLayanan';
 
@@ -61,7 +62,7 @@ export const PencarianCepat = () => {
                         initial={{ opacity: 0, scale: 0.98, y: -10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.98, y: -10 }}
-                        className="w-full max-w-lg bg-[#1c1c1e] text-white rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden"
+                        className="w-full max-w-lg bg-[#1c1c1e] text-white rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden relative z-10"
                     >
                         <div className="flex items-center px-5 py-4 border-b border-white/5">
                             <Search size={20} className="text-gray-500 mr-3" />
@@ -70,8 +71,18 @@ export const PencarianCepat = () => {
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
                                 placeholder="Buka catatan (Fuzzy search title...)"
-                                className="flex-1 bg-transparent border-none focus:outline-none text-lg py-1 placeholder:text-gray-600"
+                                className="flex-1 bg-transparent border-none focus:outline-none text-lg py-1 placeholder:text-gray-600 pr-8"
+                                aria-label="Kotak pencarian cepat"
                             />
+                            {query && (
+                                <button
+                                    onClick={() => { setQuery(""); haptic.light(); }}
+                                    className="p-1 rounded-full hover:bg-white/10 text-gray-500 active:scale-90 transition-all"
+                                    aria-label="Bersihkan pencarian"
+                                >
+                                    <X size={16} />
+                                </button>
+                            )}
                         </div>
 
                         <div className="p-2 overflow-y-auto max-h-[50vh] no-scrollbar">
