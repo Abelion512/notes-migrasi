@@ -11,6 +11,7 @@ interface LembaranState {
     updateSettings: (settings: Partial<AppSettings>) => void;
     updateProfile: (profile: Partial<UserProfile>) => void;
     setVaultLocked: (isLocked: boolean) => void;
+    addCustomTheme: (name: string, color: string) => void;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -20,10 +21,10 @@ const DEFAULT_SETTINGS: AppSettings = {
     encryptionEnabled: false,
     syncEnabled: false,
     secretMode: "none",
-    autoLockDelay: 1,
-    argonStrength: "standard",
-    biometricEnabled: false,
     lastSyncAt: null,
+    sessionTimeout: 1,
+    vimMode: false,
+    biometricEnabled: false,
 };
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -49,6 +50,14 @@ export const usePundi = create<LembaranState>()(
 
             setVaultLocked: (isLocked) =>
                 set({ isVaultLocked: isLocked }),
+
+            addCustomTheme: (name, color) =>
+                set((state) => ({
+                    settings: {
+                        ...state.settings,
+                        customThemes: { ...(state.settings.customThemes || {}), [name]: color }
+                    }
+                })),
         }),
         {
             name: 'lembaran-storage',

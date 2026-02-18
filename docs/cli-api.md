@@ -4,7 +4,9 @@
 
 ## Instalasi
 ```bash
-bun install -g .
+curl -fsSL https://lembaran.vercel.app/install.sh | bash
+# atau (dari root repositori)
+bun install -g ./packages/cli
 # atau
 ln -s ./bin/lembaran /usr/local/bin/lembaran
 ```

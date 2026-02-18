@@ -1,8 +1,11 @@
 {
   "name": "@lembaran/cli",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "lembaran": "./src/main.ts"
+  },
   "scripts": {
     "start": "bun ./src/main.ts"
   },
@@ -11,12 +14,5 @@
     "commander": "^14.0.3",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2"
-  },
-  "bin": {
-    "lembaran": "./src/main.ts",
-    "pantau": "./src/main.ts",
-    "jelajah": "./src/main.ts",
-    "kuncung": "./src/main.ts",
-    "mulai": "./src/main.ts"
   }
 }

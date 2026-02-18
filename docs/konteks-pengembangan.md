@@ -80,31 +80,60 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 > [!NOTE]
 > Fokus versi ini adalah "Speed is a Feature". Aplikasi kini siap menangani ribuan catatan dengan performa instan.
 
-## 8. Sentinel Hardening & Guardian Suite (v2.6.0 - 18/02/2026)
+## 8. Standarisasi Instalasi & Polish UI (v2.7.0)
 
-**Masalah**: Keamanan aplikasi perlu ditingkatkan untuk melawan ancaman modern (ReDoS, brute-force otomatis) dan memberikan transparansi aktivitas kepada pengguna.
+**Masalah**: Alur instalasi CLI tidak ramah bagi pengguna WSL/Linux yang belum memiliki `bun`, dan landing page memiliki masalah keterbacaan pada headline serta ukuran tombol yang kurang proporsional.
 
 **Solusi**:
-- **Lembaran GuardDuty**: Implementasi audit log keamanan yang mencatat akses brankas dan deteksi kerusakan data.
-- **Kustomisasi Keamanan**: Memberikan kendali penuh kepada pengguna untuk mengatur kekuatan Argon2id (Paranoid 256MB) dan durasi kunci otomatis.
-- **Integrasi Biometrik**: Penyiapan infrastruktur WebAuthn untuk login via sidik jari/wajah.
-- **Overhaul UI/UX**: Pembaruan Landing Page dan Changelog dengan desain minimalis bergaya iOS/Apple. Header transparan dengan efek backdrop-blur dan kontras tinggi untuk keterbacaan maksimal.
-- **CLI Binary Alias**: Memungkinkan eksekusi perintah langsung (`pantau`, `jelajah`, `kuncung`) tanpa awalan `lembaran`.
+- **Universal Installer (`install.sh`)**: Menciptakan skrip instalasi satu baris yang cerdas; mampu mendeteksi dan menginstal `bun` secara otomatis sebelum menarik repositori Lembaran dan mendaftarkan perintah `lembaran` secara global.
+- **Refinement Tipografi**: Menurunkan skala headline dari `8xl` ke `6xl` dan melonggarkan *letter-spacing* untuk meningkatkan kenyamanan baca sesuai feedback pengguna.
+- **Proporsionalitas Tombol**: Mengecilkan ukuran tombol aksi utama agar lebih elegan dan tidak mendominasi layar secara berlebihan.
+- **Transparansi Fitur**: Memberikan label "Coming Soon" yang jelas pada widget instalasi untuk metode yang sedang dalam pengembangan (NPM, Brew, dll).
 
 ---
 > [!NOTE]
-> Pembaruan ini mengukuhkan Lembaran sebagai solusi pengelolaan arsip paling aman dan fleksibel untuk developer.
+> Versi ini menandai kesiapan Lembaran untuk digunakan secara luas oleh komunitas developer melalui alur instalasi yang jauh lebih reliabel.
 
-## 9. Premium Experience & Documentation Overhaul (v2.6.1 - 18/02/2026)
+## 9. Hero Redesign & Customization Preview (v2.8.0)
 
-**Masalah**: Dokumentasi sebelumnya terlalu sederhana dan kurang mencerminkan standar produk profesional. Teks pada landing page juga sulit dibaca karena terlalu tebal dan rapat.
+**Masalah**: Visual landing page masih terasa kaku, deskripsi terlalu mendominasi, dan potensi kustomisasi aplikasi tidak terlihat oleh pengunjung pertama.
 
 **Solusi**:
-- **Professional Docs Engine**: Membangun sistem dokumentasi berbasis sidebar dengan navigasi kategori (Memulai, Keamanan, CLI, Integrasi, FAQ) untuk akses informasi yang lebih terstruktur.
-- **Circular Theme Reveal**: Implementasi animasi transisi tema menggunakan View Transitions API yang meluas secara sirkular dari posisi klik pengguna, memberikan efek visual mewah khas aplikasi modern.
-- **Readability Optimization**: Mengurangi ketebalan font (*font-weight*) pada teks sekunder dan meningkatkan spasi antar elemen (*whitespace*) pada landing page untuk meningkatkan kenyamanan baca.
-- **Penyelarasan Navigasi**: Sinkronisasi seluruh tautan publik di header, footer, dan menu pengaturan agar mengarah ke struktur dokumentasi baru yang konsisten.
+- **Dynamic Hero Title**: Mengimplementasikan efek *cycling words* pada judul utama untuk memberikan kesan modern dan dinamis ("Aksara yang > Berdikari/Aman/Cerdas").
+- **Description Scaling**: Mengecilkan skala font deskripsi hero dan membatasi lebar maksimalnya untuk meningkatkan hierarki visual.
+- **Interactive Customization**: Menambahkan modul preview kustomisasi yang memungkinkan user bereksperimen dengan aksen warna utama (Blue, Emerald, Amber, Rose, Purple) langsung di landing page.
+- **GitHub CLI Install**: Mengaktifkan perintah `npm` dan `bun` menggunakan *shorthand* GitHub agar user dapat menginstal CLI secara instan meskipun belum terbit di registri resmi.
 
 ---
 > [!NOTE]
-> Lembaran kini tidak hanya unggul dalam keamanan, tetapi juga memberikan pengalaman pengguna kelas dunia yang setara dengan produk teknologi papan atas.
+> Versi 2.8.0 mengalihkan fokus dari sekadar fungsionalitas menuju pengalaman visual yang premium dan personal.
+
+## 10. Protokol Keamanan & Utilitas Menyeluruh (v2.9.0)
+
+**Masalah**: Meskipun visual sudah premium, fitur keamanan inti seperti Panic Key dan Session Timeout masih berupa rencana, serta kurangnya alat pemeliharaan data bagi pengguna.
+
+**Solusi**:
+- **Protokol Panic Key**: Mengimplementasikan logika penghapusan data instan (nuke) jika user memasukkan kata sandi darurat yang telah diatur. Ini melindungi user dari paksaan akses data.
+- **Auto-Lock Session**: Menambahkan pengaturan durasi sesi yang secara otomatis mengunci brankas dan membersihkan kunci aktif dari memori setelah waktu tertentu.
+- **Audio Haptics**: Menggunakan Web Audio API untuk memberikan feedback suara puitis saat interaksi kritis, meningkatkan "feel" aplikasi.
+- **Developer Maintenance Tools**: Menambahkan statistik penggunaan IndexedDB dan alat pemindai tautan mati (dead link) untuk menjaga kualitas arsip kredensial.
+- **Local API Infrastructure**: Memulai pondasi server API lokal di CLI untuk integrasi masa depan dengan VS Code dan launcher sistem.
+
+---
+> [!NOTE]
+> Versi 2.9.0 adalah lompatan besar dalam hal fungsionalitas keamanan 'Sentinel' dan kesiapan ekosistem Lembaran.
+
+## 11. Lompatan Besar: Ekosistem Berdikari v3 (v3.0.0)
+
+**Masalah**: Lembaran membutuhkan fitur produktivitas tingkat lanjut agar benar-benar menjadi pilihan utama developer dan pengguna "Power User".
+
+**Solusi**:
+- **Produktivitas Tanpa Batas (Vim Mode)**: Mengintegrasikan logic navigasi Vim ke dalam editor Tiptap, memungkinkan pengeditan cepat tanpa menyentuh mouse.
+- **Biometrik Modern**: Menyiapkan infrastruktur WebAuthn untuk otentikasi biometrik yang aman dan modern di browser.
+- **Portabilitas Berbasis Privasi**: Mengganti ekspor JSON biasa dengan format `.lembaran` yang terenkripsi penuh, menjamin data tetap aman bahkan saat berada di penyimpanan eksternal.
+- **Alur Kerja Terminal (CLI 2.0)**: Menambahkan perintah `ukir` untuk pengeditan cepat dan fuzzy search pada `jelajah` untuk mempermudah navigasi arsip ribuan catatan via terminal.
+- **Visualisasi Pikiran (Graph View 2.0)**: Redesain total Peta Memori dengan interaksi dinamis dan estetika yang lebih tajam.
+
+---
+> [!IMPORTANT]
+> Versi 3.0.0 adalah pencapaian tertinggi dalam visi Lembaran sebagai "Aksara yang Berdikari".

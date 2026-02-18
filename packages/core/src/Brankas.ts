@@ -7,30 +7,20 @@ import { argon2id } from '@noble/hashes/argon2.js';
 
 const ALGO_ENC = 'AES-GCM';
 
-export type ArgonStrength = 'standard' | 'strong' | 'paranoid';
-
-const ARGON_PARAMS = {
-    standard: { t: 2, m: 19 * 1024, p: 1 }, // 19MB, 2 iterations
-    strong: { t: 4, m: 64 * 1024, p: 2 },   // 64MB, 4 iterations
-    paranoid: { t: 8, m: 256 * 1024, p: 4 } // 256MB, 8 iterations
-};
-
 export class Brankas {
     private static key: CryptoKey | null = null;
 
     /**
      * Derives a CryptoKey from a password and salt using Argon2id
      */
-    static async deriveKey(password: string, salt: Uint8Array, strength: ArgonStrength = 'standard'): Promise<CryptoKey> {
+    static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
         try {
-            const params = ARGON_PARAMS[strength] || ARGON_PARAMS.standard;
-
-            // Argon2id implementation
+            // Argon2id parameters (OWASP recommended: 19MB RAM, 2 iterations, 1 parallelism)
             const hash = argon2id(password, salt, {
-                t: params.t,
-                m: params.m,
+                t: 2,
+                m: 19 * 1024, // 19MB in KB
                 dkLen: 32, // 256-bit
-                p: params.p,
+                p: 1, // parallelism
             });
 
             return crypto.subtle.importKey(

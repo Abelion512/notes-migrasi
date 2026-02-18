@@ -1,28 +1,34 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, Timer, Zap, History, ChevronRight, Fingerprint } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, AlertTriangle, Clock, Fingerprint, Command } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';
+import { Arsip } from '@lembaran/core/Arsip';
 
 export default function SecurityManagementPage() {
     const { settings, updateSettings } = usePundi();
+    const [panicInput, setPanicInput] = useState('');
+    const [isPanicSaved, setIsPanicSaved] = useState(false);
 
-    const toggleSecretMode = () => {
+    const toggleSetting = (key: 'secretMode' | 'biometricEnabled' | 'vimMode') => {
         haptic.light();
-        const nextMode = settings.secretMode === 'none' ? 'gmail' : 'none';
-        updateSettings({ secretMode: nextMode });
+        if (key === 'secretMode') {
+            const nextMode = settings.secretMode === 'none' ? 'gmail' : 'none';
+            updateSettings({ secretMode: nextMode });
+        } else {
+            updateSettings({ [key]: !settings[key] });
+        }
     };
 
-    const updateAutoLock = (val: number) => {
-        haptic.light();
-        updateSettings({ autoLockDelay: val });
-    };
-
-    const updateArgon = (val: 'standard' | 'strong' | 'paranoid') => {
-        haptic.light();
-        updateSettings({ argonStrength: val });
+    const handleSavePanic = async () => {
+        if (!panicInput) return;
+        await Arsip.setPanicKey(panicInput);
+        setIsPanicSaved(true);
+        setPanicInput('');
+        haptic.success();
+        setTimeout(() => setIsPanicSaved(false), 3000);
     };
 
     return (
@@ -32,157 +38,90 @@ export default function SecurityManagementPage() {
                 <span className="text-[17px]">Pengaturan</span>
             </Link>
 
-            <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan</h1>
+            <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan & Akses</h1>
 
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Audit & Aktivitas</h2>
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Biometrik</h2>
-            <div className="ios-list-group mb-10">
-                <button
-                    onClick={() => {
-                        haptic.light();
-                        updateSettings({ biometricEnabled: !settings.biometricEnabled });
-                    }}
-                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
-                            <Fingerprint size={18} />
-                        </div>
-                        <div className="flex flex-col items-start text-left">
-                            <span className="font-medium text-[17px]">Gunakan Biometrik</span>
-                            <span className="text-[10px] text-[var(--text-muted)]">Buka brankas via TouchID/FaceID</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-[var(--primary)] text-sm font-semibold">
-                            {settings.biometricEnabled ? "Aktif" : "Mati"}
-                        </span>
-                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? "bg-green-500" : "bg-[var(--separator)]"}`}>
-                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? "translate-x-6" : "translate-x-0"}`} />
-                        </div>
-                    </div>
-                </button>
-            </div>
-            <div className="ios-list-group mb-10">
-                <Link href="/laras/keamanan/log" className="ios-list-item active:bg-[var(--surface-active)]">
-                    <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
-                            <History size={18} />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="font-medium text-[17px]">Log Keamanan</span>
-                            <span className="text-[10px] text-[var(--text-muted)]">Riwayat audit brankas</span>
-                        </div>
-                    </div>
-                    <ChevronRight size={18} className="text-[var(--text-muted)]" />
-                </Link>
-            </div>
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Enkripsi & Brankas</h2>
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Biometrik</h2>
-            <div className="ios-list-group mb-10">
-                <button
-                    onClick={() => {
-                        haptic.light();
-                        updateSettings({ biometricEnabled: !settings.biometricEnabled });
-                    }}
-                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
-                            <Fingerprint size={18} />
-                        </div>
-                        <div className="flex flex-col items-start text-left">
-                            <span className="font-medium text-[17px]">Gunakan Biometrik</span>
-                            <span className="text-[10px] text-[var(--text-muted)]">Buka brankas via TouchID/FaceID</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-[var(--primary)] text-sm font-semibold">
-                            {settings.biometricEnabled ? "Aktif" : "Mati"}
-                        </span>
-                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? "bg-green-500" : "bg-[var(--separator)]"}`}>
-                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? "translate-x-6" : "translate-x-0"}`} />
-                        </div>
-                    </div>
-                </button>
-            </div>
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Otentikasi</h2>
             <div className="ios-list-group mb-10">
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
-                            <Zap size={18} />
+                        <div className="p-1.5 rounded-md bg-green-500 text-white flex items-center justify-center shadow-sm">
+                            <ShieldCheck size={18} />
                         </div>
-                        <div className="flex flex-col">
-                            <span className="font-medium text-[17px]">Kekuatan Argon2id</span>
-                            <span className="text-[10px] text-[var(--text-muted)]">Kekuatan kunci kriptografi</span>
-                        </div>
+                        <span className="font-medium text-[17px]">Enkripsi Argon2id</span>
                     </div>
-                    <select
-                        value={settings.argonStrength || 'standard'}
-                        onChange={(e) => updateArgon(e.target.value as any)}
-                        className="bg-transparent text-[var(--primary)] text-sm font-semibold outline-none text-right cursor-pointer"
-                    >
-                        <option value="standard">Standar</option>
-                        <option value="strong">Kuat</option>
-                        <option value="paranoid">Paranoid</option>
-                    </select>
+                    <span className="text-[var(--text-secondary)] text-sm">Aktif</span>
                 </div>
                 <div className="ios-separator"></div>
-                <div className="ios-list-item">
-                    <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-orange-500 text-white flex items-center justify-center shadow-sm">
-                            <Timer size={18} />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="font-medium text-[17px]">Kunci Otomatis</span>
-                            <span className="text-[10px] text-[var(--text-muted)]">Saat tab tidak aktif</span>
-                        </div>
-                    </div>
-                    <select
-                        value={settings.autoLockDelay || 1}
-                        onChange={(e) => updateAutoLock(parseInt(e.target.value))}
-                        className="bg-transparent text-[var(--primary)] text-sm font-semibold outline-none text-right cursor-pointer"
-                    >
-                        <option value={1}>1 Menit</option>
-                        <option value={5}>5 Menit</option>
-                        <option value={15}>15 Menit</option>
-                        <option value={60}>1 Jam</option>
-                    </select>
-                </div>
-            </div>
-
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Penyamaran</h2>
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Biometrik</h2>
-            <div className="ios-list-group mb-10">
                 <button
-                    onClick={() => {
-                        haptic.light();
-                        updateSettings({ biometricEnabled: !settings.biometricEnabled });
-                    }}
+                    onClick={() => toggleSetting('biometricEnabled')}
                     className="w-full ios-list-item active:bg-[var(--surface-active)]"
                 >
                     <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
+                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
                             <Fingerprint size={18} />
                         </div>
                         <div className="flex flex-col items-start text-left">
-                            <span className="font-medium text-[17px]">Gunakan Biometrik</span>
-                            <span className="text-[10px] text-[var(--text-muted)]">Buka brankas via TouchID/FaceID</span>
+                            <span className="font-medium text-[17px]">Biometrik (Touch/FaceID)</span>
+                            <span className="text-[11px] text-[var(--text-muted)]">Buka brankas tanpa password</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-[var(--primary)] text-sm font-semibold">
-                            {settings.biometricEnabled ? "Aktif" : "Mati"}
-                        </span>
-                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? "bg-green-500" : "bg-[var(--separator)]"}`}>
-                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? "translate-x-6" : "translate-x-0"}`} />
-                        </div>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
                     </div>
                 </button>
             </div>
+
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Produktivitas</h2>
             <div className="ios-list-group mb-10">
                 <button
-                    onClick={toggleSecretMode}
+                    onClick={() => toggleSetting('vimMode')}
+                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-orange-600 text-white flex items-center justify-center shadow-sm">
+                            <Command size={18} />
+                        </div>
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-medium text-[17px]">Vim Mode</span>
+                            <span className="text-[11px] text-[var(--text-muted)]">Navigasi editor gaya Vim (H J K L)</span>
+                        </div>
+                    </div>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.vimMode ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.vimMode ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </div>
+                </button>
+            </div>
+
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Protokol Darurat</h2>
+            <div className="ios-list-group mb-10">
+                <div className="p-4 bg-red-500/5 border-b border-white/5">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="p-1.5 rounded-md bg-red-500 text-white flex items-center justify-center shadow-sm">
+                            <AlertTriangle size={18} />
+                        </div>
+                        <span className="font-bold text-[17px]">Panic Key</span>
+                    </div>
+                    <p className="text-[11px] text-[var(--text-muted)] mb-4 leading-relaxed">
+                        Jika kata sandi ini dimasukkan di layar login, seluruh data brankas dan pengaturan akan <strong>dihapus secara permanen</strong> seketika.
+                    </p>
+                    <div className="flex gap-2">
+                        <input
+                            type="password"
+                            placeholder="Set Panic Key..."
+                            value={panicInput}
+                            onChange={(e) => setPanicInput(e.target.value)}
+                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-red-500/50 transition-all"
+                        />
+                        <button
+                            onClick={handleSavePanic}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isPanicSaved ? 'bg-green-500 text-white' : 'bg-red-500 text-white hover:bg-red-600'}`}
+                        >
+                            {isPanicSaved ? 'Tersimpan' : 'Set'}
+                        </button>
+                    </div>
+                </div>
+                <button
+                    onClick={() => toggleSetting('secretMode')}
                     className="w-full ios-list-item active:bg-[var(--surface-active)]"
                 >
                     <div className="flex items-center gap-3">
@@ -194,13 +133,8 @@ export default function SecurityManagementPage() {
                             <span className="text-[11px] text-[var(--text-muted)]">Samarkan brankas sebagai Gmail</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-[var(--primary)] text-sm font-semibold">
-                            {settings.secretMode === 'gmail' ? 'Aktif' : 'Mati'}
-                        </span>
-                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.secretMode === 'gmail' ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
-                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.secretMode === 'gmail' ? 'translate-x-6' : 'translate-x-0'}`} />
-                        </div>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.secretMode === 'gmail' ? 'bg-green-500' : 'bg-[var(--separator)]'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.secretMode === 'gmail' ? 'translate-x-6' : 'translate-x-0'}`} />
                     </div>
                 </button>
             </div>
@@ -208,14 +142,12 @@ export default function SecurityManagementPage() {
             <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5">
                 <h3 className="flex items-center gap-2 text-blue-500 font-bold text-xs uppercase tracking-widest mb-3">
                     <Key size={14} />
-                    Informasi Keamanan
+                    Informasi Brankas
                 </h3>
                 <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                    Arsip Anda dilindungi dengan enkripsi AES-256-GCM.
+                    Arsip Anda dilindungi dengan enkripsi AES-256-GCM. Kata sandi diubah menjadi kunci kriptografi menggunakan algoritma Argon2id secara lokal di perangkat Anda.
                     <br /><br />
-                    <strong>Kekuatan Argon:</strong> Tingkat "Paranoid" memberikan perlindungan tertinggi terhadap serangan brute-force, namun membutuhkan waktu pemrosesan dan RAM lebih besar (256MB) saat membuka brankas.
-                    <br /><br />
-                    <strong>Kunci Otomatis:</strong> Brankas akan otomatis terkunci jika tab aplikasi tidak aktif dalam jangka waktu yang ditentukan untuk menjaga kerahasiaan data Anda.
+                    <strong>Multi-Vault:</strong> Versi terbaru mendukung manajemen beberapa brankas melalui menu inisialisasi di CLI.
                 </p>
             </div>
         </div>

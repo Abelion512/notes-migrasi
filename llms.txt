@@ -1,5 +1,5 @@
 # Lembaran
-> Brankas Aksara Personal yang Berdikari (v2.6.0)
+> Brankas Aksara Personal yang Berdikari (v3.0.0)
 
 ## Agent Context
 - [.Jules/SPEC.md]: Aturan operasional dan spesifikasi Jules.
