@@ -79,3 +79,18 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Fokus versi ini adalah "Speed is a Feature". Aplikasi kini siap menangani ribuan catatan dengan performa instan.
+
+## 8. Sentinel Hardening & Guardian Suite (v2.6.0 - 18/02/2026)
+
+**Masalah**: Keamanan aplikasi perlu ditingkatkan untuk melawan ancaman modern (ReDoS, brute-force otomatis) dan memberikan transparansi aktivitas kepada pengguna.
+
+**Solusi**:
+- **Lembaran GuardDuty**: Implementasi audit log keamanan yang mencatat akses brankas dan deteksi kerusakan data.
+- **Kustomisasi Keamanan**: Memberikan kendali penuh kepada pengguna untuk mengatur kekuatan Argon2id (Paranoid 256MB) dan durasi kunci otomatis.
+- **Integrasi Biometrik**: Penyiapan infrastruktur WebAuthn untuk login via sidik jari/wajah.
+- **Overhaul UI/UX**: Pembaruan Landing Page dan Changelog dengan desain minimalis bergaya iOS/Apple. Header transparan dengan efek backdrop-blur dan kontras tinggi untuk keterbacaan maksimal.
+- **CLI Binary Alias**: Memungkinkan eksekusi perintah langsung (`pantau`, `jelajah`, `kuncung`) tanpa awalan `lembaran`.
+
+---
+> [!NOTE]
+> Pembaruan ini mengukuhkan Lembaran sebagai solusi pengelolaan arsip paling aman dan fleksibel untuk developer.
