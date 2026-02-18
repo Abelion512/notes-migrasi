@@ -6,7 +6,7 @@ import { Copy, Check, Terminal } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 
 const COMMANDS = {
-    curl: 'curl -fsSL https://lembaran.ai/install.sh | sh',
+    curl: 'curl -fsSL https://lembaran.vercel.app/install.sh | sh',
     npm: 'npm install -g lembaran',
     bun: 'bun add -g lembaran',
     brew: 'brew install lembaran512/tap/lembaran',

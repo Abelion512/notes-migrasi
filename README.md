@@ -4,18 +4,24 @@ Lembaran adalah platform arsip digital personal yang aman, berbasis local-first,
 
 ## Quick Start
 
-1. **Install Bun Runtime**: [bun.sh](https://bun.sh)
-2. **Clone & Setup**:
+1. **Install Lembaran via Terminal** (Rekomendasi):
+   ```bash
+   curl -fsSL https://lembaran.vercel.app/install.sh | bash
+   ```
+
+2. **Manual Setup (Developer)**:
+   **Install Bun Runtime**: [bun.sh](https://bun.sh)
+3. **Clone & Setup**:
    ```bash
    git clone https://github.com/Abelion512/lembaran.git
    cd lembaran
    bun install
    ```
-3. **Run Web Interface**:
+4. **Run Web Interface**:
    ```bash
    bun run dev
    ```
-4. **Run Management TUI**:
+5. **Run Management TUI**:
    ```bash
    lembaran mulai
    # Atau akses fitur lain: lembaran pantau | jelajah | kuncung
