@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
 async function getChangelog() {
-    const filePath = path.join(process.cwd(), 'CHANGELOG.md');
+    const filePath = path.resolve(process.cwd(), '../../CHANGELOG.md');
     try {
         const fileContent = fs.readFileSync(filePath, 'utf8');
         return marked(fileContent);

@@ -39,6 +39,8 @@ export interface AppSettings {
     syncEnabled: boolean;
     lastSyncAt: string | null;
     secretMode: "none" | "gmail";
+    autoLockDelay: number; // in minutes
+    argonStrength: "standard" | "strong" | "paranoid";
 }
 
 export interface UserProfile {

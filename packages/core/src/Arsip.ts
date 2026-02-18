@@ -1,9 +1,10 @@
 import { Gudang } from './Gudang';
-import { Brankas } from './Brankas';
+import { Brankas, ArgonStrength } from './Brankas';
 import { Note, EntityId } from './Rumus';
 import { v4 as uuidv4 } from 'uuid';
 import { Integritas } from './Integritas';
 import { Pujangga } from './Pujangga';
+import { usePundi } from './Pundi';
 
 export const Arsip = {
     async isVaultInitialized(): Promise<boolean> {
@@ -15,7 +16,9 @@ export const Arsip = {
         const salt = crypto.getRandomValues(new Uint8Array(16));
         const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
 
-        const key = await Brankas.deriveKey(password, salt);
+        const strength = usePundi.getState().settings.argonStrength || 'standard';
+
+        const key = await Brankas.deriveKey(password, salt, strength);
         const validator = 'LEMBARAN_SECURED_V2';
         const encryptedValidator = await Brankas.encrypt(validator, key);
 
@@ -23,6 +26,7 @@ export const Arsip = {
         const base64Data = btoa(String.fromCharCode(...new Uint8Array(encryptedValidator.data)));
 
         await Gudang.set('meta', 'auth_salt', saltHex);
+        await Gudang.set('meta', 'auth_strength', strength);
         await Gudang.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
 
         Brankas.setActiveKey(key);
@@ -32,6 +36,7 @@ export const Arsip = {
         try {
             const saltHex = await Gudang.get('meta', 'auth_salt') as string;
             const packedValidator = await Gudang.get('meta', 'auth_validator') as string;
+            const strength = await Gudang.get('meta', 'auth_strength') as ArgonStrength || 'standard';
 
             if (!saltHex || !packedValidator) return false;
 
@@ -44,7 +49,7 @@ export const Arsip = {
                 bytes[i] = binaryString.charCodeAt(i);
             }
 
-            const key = await Brankas.deriveKey(password, salt);
+            const key = await Brankas.deriveKey(password, salt, strength);
             const decrypted = await Brankas.decrypt(bytes.buffer, iv, key);
 
             if (decrypted === 'LEMBARAN_SECURED_V2') {

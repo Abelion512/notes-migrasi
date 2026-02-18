@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ShieldCheck, Lock, Key, Ghost } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, Timer, Zap } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';
 
@@ -15,6 +15,16 @@ export default function SecurityManagementPage() {
         updateSettings({ secretMode: nextMode });
     };
 
+    const updateAutoLock = (val: number) => {
+        haptic.light();
+        updateSettings({ autoLockDelay: val });
+    };
+
+    const updateArgon = (val: 'standard' | 'strong' | 'paranoid') => {
+        haptic.light();
+        updateSettings({ argonStrength: val });
+    };
+
     return (
         <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
             <Link href="/laras" className="flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit">
@@ -24,25 +34,49 @@ export default function SecurityManagementPage() {
 
             <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan</h1>
 
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Enkripsi & Brankas</h2>
             <div className="ios-list-group mb-10">
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-md bg-green-500 text-white flex items-center justify-center shadow-sm">
-                            <ShieldCheck size={18} />
+                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
+                            <Zap size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Enkripsi Argon2id</span>
+                        <div className="flex flex-col">
+                            <span className="font-medium text-[17px]">Kekuatan Argon2id</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Kekuatan kunci kriptografi</span>
+                        </div>
                     </div>
-                    <span className="text-[var(--text-secondary)] text-sm">Aktif</span>
+                    <select
+                        value={settings.argonStrength || 'standard'}
+                        onChange={(e) => updateArgon(e.target.value as any)}
+                        className="bg-transparent text-[var(--primary)] text-sm font-semibold outline-none text-right cursor-pointer"
+                    >
+                        <option value="standard">Standar</option>
+                        <option value="strong">Kuat</option>
+                        <option value="paranoid">Paranoid</option>
+                    </select>
                 </div>
                 <div className="ios-separator"></div>
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
                         <div className="p-1.5 rounded-md bg-orange-500 text-white flex items-center justify-center shadow-sm">
-                            <Lock size={18} />
+                            <Timer size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Kunci Otomatis</span>
+                        <div className="flex flex-col">
+                            <span className="font-medium text-[17px]">Kunci Otomatis</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Saat tab tidak aktif</span>
+                        </div>
                     </div>
-                    <span className="text-[var(--text-secondary)] text-sm">1 Menit</span>
+                    <select
+                        value={settings.autoLockDelay || 1}
+                        onChange={(e) => updateAutoLock(parseInt(e.target.value))}
+                        className="bg-transparent text-[var(--primary)] text-sm font-semibold outline-none text-right cursor-pointer"
+                    >
+                        <option value={1}>1 Menit</option>
+                        <option value={5}>5 Menit</option>
+                        <option value={15}>15 Menit</option>
+                        <option value={60}>1 Jam</option>
+                    </select>
                 </div>
             </div>
 
@@ -75,12 +109,14 @@ export default function SecurityManagementPage() {
             <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5">
                 <h3 className="flex items-center gap-2 text-blue-500 font-bold text-xs uppercase tracking-widest mb-3">
                     <Key size={14} />
-                    Informasi Brankas
+                    Informasi Keamanan
                 </h3>
                 <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                    Arsip Anda dilindungi dengan enkripsi AES-256-GCM. Kata sandi diubah menjadi kunci kriptografi menggunakan algoritma Argon2id secara lokal di perangkat Anda.
+                    Arsip Anda dilindungi dengan enkripsi AES-256-GCM.
                     <br /><br />
-                    <strong>Mode Rahasia:</strong> Jika diaktifkan, layar kunci brankas akan berubah menjadi halaman login Google/Gmail palsu untuk melindungi privasi Anda di depan umum.
+                    <strong>Kekuatan Argon:</strong> Tingkat "Paranoid" memberikan perlindungan tertinggi terhadap serangan brute-force, namun membutuhkan waktu pemrosesan dan RAM lebih besar (256MB) saat membuka brankas.
+                    <br /><br />
+                    <strong>Kunci Otomatis:</strong> Brankas akan otomatis terkunci jika tab aplikasi tidak aktif dalam jangka waktu yang ditentukan untuk menjaga kerahasiaan data Anda.
                 </p>
             </div>
         </div>
