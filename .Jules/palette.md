@@ -9,3 +9,7 @@
 ## 2026-02-18 - [Brand Icon Consistency & Smart Detection]
 **Learning:** Custom SVG icons for major services (Google, Microsoft) provide better brand recognition than generic Lucide icons. Implementing a simple fuzzy matching algorithm (Levenshtein) in service detection improves UX by tolerating minor typos during data entry.
 **Action:** Use custom SVGs for high-traffic brands and always implement typo-tolerance for lookup/selection features.
+
+## 2026-02-18 - [Brand Icon Fidelity & Specific Casing]
+**Learning:** Approximate brand icons can frustrate users who expect precision. High-fidelity SVGs that match official guidelines are worth the effort for brand recognition. Additionally, brand-specific casing (e.g., lowercase 'n8n') must be handled across the entire UI lifecycle (input, suggestion, display) to avoid regressions.
+**Action:** Use official brand resource SVG paths whenever possible. Implement a brand-aware formatting utility for service names to maintain consistency.

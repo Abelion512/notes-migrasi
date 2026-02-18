@@ -27,7 +27,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "bubble": "bubble.io",
     "calendar": "calendar.google.com",
     "chatgpt": "chatgpt.com",
-    "claude": "anthropic.com",
+    "claude": "claude.ai",
     "claude.ai": "claude.ai",
     "clickup": "clickup.com",
     "context7": "context7.com",
@@ -206,6 +206,7 @@ const extractDomain = (input: string) => {
     let minDistance = 3; // Max distance allowed
 
     for (const key in MAP_LAYANAN) {
+        // Only check for strings of similar length to avoid weird matches
         if (Math.abs(lower.length - key.length) > 2) continue;
 
         const distance = getLevenshteinDistance(lower, key);
@@ -221,97 +222,146 @@ const extractDomain = (input: string) => {
     return null;
 };
 
+// ============================================================================
+// HIGH FIDELITY BRAND LOGOS
+// ============================================================================
+
 const GmailIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M45 16.2V38C45 39.6569 43.6569 41 42 41H35V16.2L24 24.5L13 16.2V41H6C4.34315 41 3 39.6569 3 38V16.2L24 32L45 16.2Z" fill="#EA4335"/>
-        <path d="M45 16.2V38C45 39.6569 43.6569 41 42 41H35V16.2L24 24.5L13 16.2V41H6C4.34315 41 3 39.6569 3 38V16.2L24 32L45 16.2Z" fill="url(#paint0_linear)"/>
-        <path d="M42 7H39V16.2L45 11.7V10C45 8.34315 43.6569 7 42 7Z" fill="#FBBC04"/>
-        <path d="M9 7H6C4.34315 7 3 8.34315 3 10V11.7L9 16.2V7Z" fill="#4285F4"/>
-        <path d="M35 7H13V16.2L24 24.5L35 16.2V7Z" fill="#EA4335"/>
-        <path d="M35 7H13V16.2L24 24.5L35 16.2V7Z" fill="url(#paint1_linear)"/>
-        <defs>
-            <linearGradient id="paint0_linear" x1="24" y1="16.2" x2="24" y2="41" gradientUnits="userSpaceOnUse">
-                <stop stopColor="white" stopOpacity="0.1"/>
-                <stop offset="1" stopColor="black" stopOpacity="0.1"/>
-            </linearGradient>
-            <linearGradient id="paint1_linear" x1="24" y1="7" x2="24" y2="24.5" gradientUnits="userSpaceOnUse">
-                <stop stopColor="white" stopOpacity="0.1"/>
-                <stop offset="1" stopColor="black" stopOpacity="0.1"/>
-            </linearGradient>
-        </defs>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" fill="#EA4335" />
+        <path d="M0 5.457V1.636C0 .732.732 0 1.636 0h3.819v9.091L0 5.457z" fill="#4285F4" />
+        <path d="M18.545 0h3.82C23.268 0 24 .732 24 1.636v3.82l-5.455 3.637V0z" fill="#34A853" />
+        <path d="M5.455 9.091L0 5.458V19.364c0 .904.732 1.636 1.636 1.636h3.82V9.091z" fill="#FBBC05" />
     </svg>
 );
 
 const DriveIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
-        <path d="m6.6 66.85 15.45 26.83 15.45-26.83z" fill="#0066da" transform="translate(-6.6 -22.38)"/>
-        <path d="m43.7 66.85 15.45 26.83 54.8-93.68-15.45-26.83z" fill="#00ac47" transform="translate(-6.6 -22.38)"/>
-        <path d="m43.7 66.85-26.35-45.51-15.45 26.83 26.35 45.51z" fill="#ea4335" transform="translate(-6.6 -22.38)"/>
-        <path d="m74.35 21.34-54.8 0 15.45 26.83 54.8 0z" fill="#ffba00" transform="translate(-6.6 -22.38)"/>
-    </svg>
-);
-
-const OneDriveIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.5 19C15.01 19 13 16.99 13 14.5C13 14.36 13.01 14.22 13.02 14.09C12.38 14.35 11.69 14.5 10.97 14.5C8.78 14.5 7 12.72 7 10.53C7 10.42 7 10.32 7.01 10.22C5.3 10.61 4 12.15 4 14C4 16.21 5.79 18 8 18H17.5C19.43 18 21 16.43 21 14.5C21 12.57 19.43 11 17.5 11C17.34 11 17.18 11.01 17.03 11.04C16.54 8.73 14.48 7 12 7C10.74 7 9.61 7.46 8.74 8.21C8.19 8.07 7.6 8 7 8C4.79 8 3 9.79 3 12C3 14.21 4.79 16 7 16H17.5C18.33 16 19 15.33 19 14.5C19 13.67 18.33 13 17.5 13C17.42 13 17.34 13.01 17.27 13.02C17.11 11.31 15.7 10 14 10C13.43 10 12.91 10.16 12.47 10.44C11.66 9.58 10.5 9.04 9.21 9.04C6.89 9.04 5 10.93 5 13.25C5 13.36 5.01 13.47 5.02 13.57C3.86 14.07 3.04 15.22 3.04 16.57C3.04 18.47 4.58 20.01 6.47 20.01H17.5C20 20.01 22.04 17.97 22.04 15.47C22.04 12.97 20 10.93 17.5 10.93" fill="#0078D4"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.09 4.536L3.273 15H0l5.818-10.464z" fill="#4285F4" />
+        <path d="M14.91 4.536L20.727 15H24l-5.818-10.464z" fill="#FBBC05" />
+        <path d="M9.09 4.536h5.82L20.727 15H3.273z" fill="#34A853" />
+        <path d="M3.273 15l2.909 5.036L12 24l5.818-3.964L20.727 15z" fill="#4285F4" opacity="0.6" />
     </svg>
 );
 
 const SheetsIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M42 22H26V6H42V22ZM22 22H6V6H22V22ZM42 42H26V26H42V42ZM22 42H6V26H22V42Z" fill="#0F9D58"/>
-        <path d="M42 22H26V6M22 22H6M42 42H26V26M22 42H6" stroke="white" strokeWidth="2"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 3v18h18V3H3zm16 16H5V5h14v14z" fill="#0F9D58" />
+        <path d="M7 7h10v3H7zm0 4h10v3H7zm0 4h10v3H7z" fill="#0B8043" />
+        <rect x="7" y="7" width="5" height="3" fill="white" opacity="0.3" />
+        <rect x="12" y="7" width="5" height="3" fill="white" opacity="0.3" />
+        <rect x="7" y="11" width="5" height="3" fill="white" opacity="0.3" />
+        <rect x="12" y="11" width="5" height="3" fill="white" opacity="0.3" />
+        <rect x="7" y="15" width="5" height="3" fill="white" opacity="0.3" />
+        <rect x="12" y="15" width="5" height="3" fill="white" opacity="0.3" />
     </svg>
 );
 
 const DocsIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M37 45H11C9.34315 45 8 43.6569 8 42V6C8 4.34315 9.34315 3 11 3H29L40 14V42C40 43.6569 38.6569 45 37 45Z" fill="#4285F4"/>
-        <path d="M29 3V14H40L29 3Z" fill="#A1C2FA"/>
-        <path d="M16 21H32V23H16V21ZM16 27H32V29H16V27ZM16 33H26V35H16V33Z" fill="white"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" />
+        <path d="M14 2v6h6" fill="#1967D2" />
+        <path d="M8 12h8v1H8v-1zm0 2h8v1H8v-1zm0 2h5v1H8v-1z" fill="white" />
+    </svg>
+);
+
+const OneDriveIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.5 9a6.5 6.5 0 0 0-6.42 5.42A4 4 0 0 0 4 22h13a5 5 0 0 0 1.5-9.78A6.5 6.5 0 0 0 9.5 9z" fill="#0364B8" />
+        <path d="M16.5 12.22A6.5 6.5 0 0 0 9.5 9a6.47 6.47 0 0 0-3.84 1.28 5.98 5.98 0 0 1 10.84 1.94z" fill="#0078D4" opacity="0.7" />
     </svg>
 );
 
 const ClaudeIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L4 12L12 22L20 12L12 2Z" fill="#D97757"/>
-        <circle cx="12" cy="12" r="3" fill="white" opacity="0.2"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="#DA7756" />
+        <path d="M8 7h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="white" />
+        <path d="M10 10h4v1h-4v-1zm0 2h4v1h-4v-1zm0 2h3v1h-3v-1z" fill="#DA7756" />
     </svg>
 );
 
 const TikTokIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 4V14.5C16 16.99 13.99 19 11.5 19C9.01 19 7 16.99 7 14.5C7 12.01 9.01 10 11.5 10C11.67 10 11.84 10.01 12 10.03V6.01C11.84 6 11.67 6 11.5 6C6.81 6 3 9.81 3 14.5C3 19.19 6.81 23 11.5 23C16.19 23 20 19.19 20 14.5V4H16Z" fill="#25F4EE"/>
-        <path d="M21 2H17V12.5C17 14.99 14.99 17 12.5 17C10.01 17 8 14.99 8 12.5C8 10.01 10.01 8 12.5 8C12.67 8 12.84 8.01 13 8.03V4.01C12.84 4 12.67 4 12.5 4C7.81 4 4 7.81 4 12.5C4 17.19 7.81 21 12.5 21C17.19 21 21 17.19 21 12.5V2Z" fill="#FE2C55"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" fill="#25F4EE" transform="translate(-0.5, -0.5)" />
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" fill="#FE2C55" transform="translate(0.5, 0.5)" />
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" fill="#000000" />
     </svg>
 );
 
 const WeChatIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8.5 2C4.36 2 1 4.91 1 8.5C1 10.5 2.1 12.3 3.8 13.5L3.2 16L5.8 14.7C6.6 14.9 7.5 15 8.5 15C12.64 15 16 12.09 16 8.5C16 4.91 12.64 2 8.5 2Z" fill="#7BB32E"/>
-        <path d="M16.5 8C13.46 8 11 10.01 11 12.5C11 13.88 11.76 15.11 12.93 15.94L12.5 17.67L14.3 16.77C15 16.92 15.73 17 16.5 17C19.54 17 22 14.99 22 12.5C22 10.01 19.54 8 16.5 8Z" fill="#7BB32E" opacity="0.8"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348z" fill="#1AAD19" />
+        <path d="M17.065 8.86c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.86z" fill="#1AAD19" opacity="0.8" />
+    </svg>
+);
+
+const QwenIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="#6495ED" />
+        <path d="M6 8h4v8H6zm0 0h4l4-4h4v12h-4l-4-4H6z" fill="white" />
+        <path d="M14 4h4v12h-4z" fill="#C9C0D3" />
+    </svg>
+);
+
+const N8NIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.82 8 12 11.82 4.18 8 12 4.18zM4 9.48l7 3.5v7.84l-7-3.5V9.48zm16 0v7.84l-7 3.5v-7.84l7-3.5z" fill="#EA4B71" />
+        <circle cx="12" cy="8" r="1.5" fill="#040506" />
+        <circle cx="6" cy="12" r="1.5" fill="#040506" />
+        <circle cx="18" cy="12" r="1.5" fill="#040506" />
+        <circle cx="12" cy="16" r="1.5" fill="#040506" />
     </svg>
 );
 
 const AntigravityIcon = ({ size }: { size: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="#4285F4" strokeWidth="2"/>
-        <path d="M12 6V18M6 12H18" stroke="#EA4335" strokeWidth="2"/>
-        <circle cx="12" cy="12" r="3" fill="#FBBC05"/>
+        <circle cx="12" cy="12" r="10" stroke="#F97316" strokeWidth="2"/>
+        <path d="M12 6V18M6 12H18" stroke="#F97316" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="3" fill="#F97316"/>
     </svg>
 );
 
-const QwenIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L4 7V17L12 22L20 17V7L12 2Z" fill="#4F46E5"/>
-        <path d="M12 6L8 10V14L12 18L16 14V10L12 6Z" fill="white" opacity="0.5"/>
+const MidtransIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" fill="#00AAD2" />
+        <path d="M7 6h10l-5 12z" fill="#00558D" opacity="0.5" />
     </svg>
 );
 
-const N8nIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="#FF6D5B"/>
-        <circle cx="12" cy="12" r="4" fill="white"/>
+const DicodingIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" fill="#FE173A" />
+        <path d="M8 8l8 4-8 4V8z" fill="white" />
+    </svg>
+);
+
+const DibimbingIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="#2D5F9F" />
+        <path d="M6 8h12v2H6zm0 3h12v2H6zm0 3h8v2H6z" fill="white" />
+        <circle cx="17" cy="16" r="2" fill="#FF6B35" />
+    </svg>
+);
+
+const OpenRouterIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#7C3AED" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+
+const GroqIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 4c3.314 0 6 2.686 6 6s-2.686 6-6 6-6-2.686-6-6 2.686-6 6-6z" fill="#F55036" />
+    </svg>
+);
+
+const AnthropicIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" fill="#FAF9F5" />
+        <path d="M8 4l4 16M12 4l4 16M6 12h12" stroke="#141413" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="8" cy="4" r="1" fill="#D97757" />
+        <circle cx="12" cy="4" r="1" fill="#6A9BCC" />
+        <circle cx="16" cy="4" r="1" fill="#788C5D" />
     </svg>
 );
 
@@ -327,22 +377,34 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
 
     const getFallback = (searchString: string) => {
         const s = searchString.toLowerCase();
+
+        // Exact brand match first
         if (s.includes("gmail") || s.includes("google mail")) return <GmailIcon size={size} />;
-        if (s.includes("mail")) return <Mail size={size} className="text-[#ea4335]" />;
-        if (s.includes("drive")) return <DriveIcon size={size} />;
-        if (s.includes("sheet") || s.includes("excel")) return <SheetsIcon size={size} />;
-        if (s.includes("docs") || s.includes("doc")) return <DocsIcon size={size} />;
+        if (s.includes("google drive") || s.includes("gdrive")) return <DriveIcon size={size} />;
+        if (s.includes("google sheet") || s.includes("gsheet")) return <SheetsIcon size={size} />;
+        if (s.includes("google docs") || s.includes("gdoc")) return <DocsIcon size={size} />;
         if (s.includes("onedrive")) return <OneDriveIcon size={size} />;
         if (s.includes("tiktok")) return <TikTokIcon size={size} />;
         if (s.includes("wechat")) return <WeChatIcon size={size} />;
         if (s.includes("qwen")) return <QwenIcon size={size} />;
-        if (s.includes("n8n")) return <N8nIcon size={size} />;
-        if (s.includes("claude")) return <ClaudeIcon size={size} />;
-        if (s.includes("anthropic")) return <Bot size={size} className="text-[#d97757]" />;
+        if (s.includes("n8n")) return <N8NIcon size={size} />;
+        if (s.includes("claude.ai")) return <ClaudeIcon size={size} />;
+        if (s.includes("anthropic")) return <AnthropicIcon size={size} />;
+        if (s.includes("midtrans")) return <MidtransIcon size={size} />;
+        if (s.includes("dicoding")) return <DicodingIcon size={size} />;
+        if (s.includes("dibimbing")) return <DibimbingIcon size={size} />;
+        if (s.includes("openrouter")) return <OpenRouterIcon size={size} />;
+        if (s.includes("groq")) return <GroqIcon size={size} />;
+        if (s.includes("antigravity")) return <AntigravityIcon size={size} />;
+
+        // Category/Broad match fallback
+        if (s.includes("mail")) return <Mail size={size} className="text-[#ea4335]" />;
+        if (s.includes("drive")) return <DriveIcon size={size} />;
+        if (s.includes("sheet") || s.includes("excel")) return <SheetsIcon size={size} />;
+        if (s.includes("doc")) return <DocsIcon size={size} />;
         if (s.includes("calendar")) return <Calendar size={size} className="text-[#ea4335]" />;
         if (s.includes("youtube") || s.includes("yt")) return <Play size={size} className="text-[#ff0000]" />;
         if (s.includes("stitch")) return <Layout size={size} className="text-purple-500" />;
-        if (s.includes("antigravity")) return <AntigravityIcon size={size} />;
         if (s.includes("github")) return <Github size={size} className="text-gray-900 dark:text-white" />;
         if (s.includes("bot") || s.includes("ai")) return <Bot size={size} className="text-[#4285f4]" />;
         if (s.includes("credentials") || s.includes("login")) return <Key size={size} className="text-yellow-600" />;
@@ -356,14 +418,18 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
         searchContext.includes("drive") ||
         searchContext.includes("doc") ||
         searchContext.includes("sheet") ||
-        searchContext.includes("calendar") ||
-        searchContext.includes("stitch") ||
         searchContext.includes("onedrive") ||
         searchContext.includes("claude") ||
+        searchContext.includes("anthropic") ||
         searchContext.includes("tiktok") ||
         searchContext.includes("wechat") ||
         searchContext.includes("qwen") ||
         searchContext.includes("n8n") ||
+        searchContext.includes("midtrans") ||
+        searchContext.includes("dicoding") ||
+        searchContext.includes("dibimbing") ||
+        searchContext.includes("openrouter") ||
+        searchContext.includes("groq") ||
         searchContext.includes("antigravity");
 
     if (needsSpecificIcon) {
