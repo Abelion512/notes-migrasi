@@ -14,7 +14,9 @@ const decryptionCache = new Map<string, string>();
 
 const Highlight = React.memo(({ text, query }: { text: string, query: string }) => {
     if (!query.trim()) return <>{text}</>;
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    // Escaping special regex characters to prevent ReDoS and crashes
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
     return (
         <>
             {parts.map((part, i) =>

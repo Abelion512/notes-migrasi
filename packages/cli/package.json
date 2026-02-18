@@ -11,5 +11,12 @@
     "commander": "^14.0.3",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2"
+  },
+  "bin": {
+    "lembaran": "./src/main.ts",
+    "pantau": "./src/main.ts",
+    "jelajah": "./src/main.ts",
+    "kuncung": "./src/main.ts",
+    "mulai": "./src/main.ts"
   }
 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
 async function getContent() {
-    const filePath = path.join(process.cwd(), 'TERMS.md');
+    const filePath = path.resolve(process.cwd(), '../../TERMS.md');
     try {
         const fileContent = fs.readFileSync(filePath, 'utf8');
         return marked(fileContent);

@@ -1,4 +1,6 @@
 export * from './Arsip';
+export * from './InderaKeamanan';
+export * from './Biometrik';
 export * from './Brankas';
 export * from './Gudang';
 export * from './GunakanTunda';

@@ -79,3 +79,32 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Fokus versi ini adalah "Speed is a Feature". Aplikasi kini siap menangani ribuan catatan dengan performa instan.
+
+## 8. Sentinel Hardening & Guardian Suite (v2.6.0 - 18/02/2026)
+
+**Masalah**: Keamanan aplikasi perlu ditingkatkan untuk melawan ancaman modern (ReDoS, brute-force otomatis) dan memberikan transparansi aktivitas kepada pengguna.
+
+**Solusi**:
+- **Lembaran GuardDuty**: Implementasi audit log keamanan yang mencatat akses brankas dan deteksi kerusakan data.
+- **Kustomisasi Keamanan**: Memberikan kendali penuh kepada pengguna untuk mengatur kekuatan Argon2id (Paranoid 256MB) dan durasi kunci otomatis.
+- **Integrasi Biometrik**: Penyiapan infrastruktur WebAuthn untuk login via sidik jari/wajah.
+- **Overhaul UI/UX**: Pembaruan Landing Page dan Changelog dengan desain minimalis bergaya iOS/Apple. Header transparan dengan efek backdrop-blur dan kontras tinggi untuk keterbacaan maksimal.
+- **CLI Binary Alias**: Memungkinkan eksekusi perintah langsung (`pantau`, `jelajah`, `kuncung`) tanpa awalan `lembaran`.
+
+---
+> [!NOTE]
+> Pembaruan ini mengukuhkan Lembaran sebagai solusi pengelolaan arsip paling aman dan fleksibel untuk developer.
+
+## 9. Premium Experience & Documentation Overhaul (v2.6.1 - 18/02/2026)
+
+**Masalah**: Dokumentasi sebelumnya terlalu sederhana dan kurang mencerminkan standar produk profesional. Teks pada landing page juga sulit dibaca karena terlalu tebal dan rapat.
+
+**Solusi**:
+- **Professional Docs Engine**: Membangun sistem dokumentasi berbasis sidebar dengan navigasi kategori (Memulai, Keamanan, CLI, Integrasi, FAQ) untuk akses informasi yang lebih terstruktur.
+- **Circular Theme Reveal**: Implementasi animasi transisi tema menggunakan View Transitions API yang meluas secara sirkular dari posisi klik pengguna, memberikan efek visual mewah khas aplikasi modern.
+- **Readability Optimization**: Mengurangi ketebalan font (*font-weight*) pada teks sekunder dan meningkatkan spasi antar elemen (*whitespace*) pada landing page untuk meningkatkan kenyamanan baca.
+- **Penyelarasan Navigasi**: Sinkronisasi seluruh tautan publik di header, footer, dan menu pengaturan agar mengarah ke struktur dokumentasi baru yang konsisten.
+
+---
+> [!NOTE]
+> Lembaran kini tidak hanya unggul dalam keamanan, tetapi juga memberikan pengalaman pengguna kelas dunia yang setara dengan produk teknologi papan atas.

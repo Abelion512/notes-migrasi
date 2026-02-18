@@ -9,6 +9,7 @@ interface SchemaStructure {
     folders: Record<string, LembaranSchema['folders']['value']>;
     kv: Record<string, LembaranSchema['kv']['value']>;
     meta: Record<string, LembaranSchema['meta']['value']>;
+    logs: Record<string, LembaranSchema['logs']['value']>;
 }
 
 export class FileAdapter implements StorageAdapter {
@@ -45,7 +46,8 @@ export class FileAdapter implements StorageAdapter {
                 notes: {},
                 folders: {},
                 kv: {},
-                meta: {}
+                meta: {},
+                logs: {}
             };
         }
         return this.data!;
