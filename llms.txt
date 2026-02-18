@@ -1,24 +1,21 @@
 # Lembaran
 > Brankas Aksara Personal yang Berdikari (v2.6.0)
 
+## Agent Context
+- [.Jules/SPEC.md]: Aturan operasional dan spesifikasi Jules.
+- [.Jules/MCP_CAPABILITIES.md]: Detail teknis alat MCP (Neon, Supabase, Stitch, dll).
+- [.Jules/palette.md]: Brand identity and icon system documentation.
+
 ## Core Workspaces
-- [packages/core]: Shared logic, encryption (AES-GCM/Argon2id), and storage adapters.
-- [packages/cli]: Interactive terminal interface (TUI) and puitis commands.
-- [packages/web]: Next.js application (Landing page at / and Dashboard at /arsip).
+- [packages/core]: Shared logic, encryption (AES-GCM/Argon2id), dan storage adapters.
+- [packages/cli]: Interactive terminal interface (TUI).
+- [packages/web]: Next.js application (Dashboard at /arsip).
 
 ## Key Files
-- [packages/core/src/Arsip.ts]: High-level encryption and storage manager.
-- [packages/core/src/Brankas.ts]: Cryptographic engine.
-- [packages/cli/src/main.ts]: CLI entry point.
-- [packages/web/app/page.tsx]: Premium landing page.
-- [packages/web/app/arsip/page.tsx]: Main application dashboard.
+- [packages/core/src/Arsip.ts]: Manajer enkripsi tingkat tinggi.
+- [packages/core/src/Brankas.ts]: Mesin kriptografi.
+- [AGENTS.md]: Panduan pengembangan utama.
 
-## Documentation
-- [CHANGELOG.md]: History of changes (Latest: v2.6.0).
-- [docs/walkthrough.md]: Monorepo architecture & features overview.
-- [AGENTS.md]: Development guidelines and core principles.
-
-## Key Concepts
+## Concepts
 - Berdikari: Local-first data sovereignty.
 - Sentinel Security: Client-side encryption.
-- Monorepo: Unified workspace for Core, CLI, and Web.
