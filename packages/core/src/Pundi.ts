@@ -49,9 +49,15 @@ export const usePundi = create<LembaranState>()(
                 set((state) => ({ profile: { ...state.profile, ...newProfile } })),
 
             setVaultLocked: (isLocked) =>
-            addCustomTheme: (name, color) =>
-                set((state) => ({ settings: { ...state.settings, customThemes: { ...(state.settings.customThemes || {}), [name]: color } } })),
                 set({ isVaultLocked: isLocked }),
+
+            addCustomTheme: (name, color) =>
+                set((state) => ({
+                    settings: {
+                        ...state.settings,
+                        customThemes: { ...(state.settings.customThemes || {}), [name]: color }
+                    }
+                })),
         }),
         {
             name: 'lembaran-storage',

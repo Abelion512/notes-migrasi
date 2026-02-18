@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import {
-    User, Lock, Link as LinkIcon, Eye, EyeOff, Copy, Check, Sparkles, Wand2, RefreshCw, Settings2
+    User, Lock, Link as LinkIcon, Copy, Check, Sparkles, Wand2,
+    Settings2, RefreshCw, Eye, EyeOff
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 
@@ -35,6 +36,7 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
         return score;
     };
     const strength = getPasswordStrength(data.password || "");
+
     const updateField = (field: keyof KredensialData, value: string) => {
         onChange({ ...data, [field]: value });
     };
@@ -68,7 +70,6 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
             if (!text) return;
 
             const newData: KredensialData = { ...data };
-
             const userMatch = text.match(/(?:username|user|email|id|pengguna):\s*([^\n\r,]+)/i);
             const passMatch = text.match(/(?:password|pass|sandi|pwd):\s*([^\n\r,]+)/i);
             const urlMatch = text.match(/(?:url|link|site|tautan):\s*([^\n\r\s,]+)/i);
@@ -77,39 +78,9 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
             if (passMatch) newData.password = passMatch[1].trim();
             if (urlMatch) newData.url = urlMatch[1].trim();
 
-            if (!userMatch && !passMatch) {
-                if (text.includes(':') && !text.includes('://') && text.split(':').length === 2) {
-                    const [u, p] = text.split(':');
-                    newData.username = u.trim();
-                    newData.password = p.trim();
-                } else if (text.includes('\n')) {
-                    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                    if (lines.length >= 2) {
-                        if (lines[0].includes('.') && (lines[0].includes('http') || !lines[0].includes(' '))) {
-                            newData.url = lines[0];
-                            newData.username = lines[1];
-                            if (lines[2]) newData.password = lines[2];
-                        } else {
-                            newData.username = lines[0];
-                            newData.password = lines[1];
-                            if (lines[2]) newData.url = lines[2];
-                        }
-                    }
-                }
-            }
-
-            if (!newData.url && (text.startsWith('http') || (text.includes('.') && !text.includes(' ')))) {
-                newData.url = text.trim();
-            }
-            if (!newData.username && text.includes('@') && !text.includes(' ')) {
-                newData.username = text.trim();
-            }
-
             onChange(newData);
             haptic.success();
-        } catch (err) {
-            console.error('Smart Paste failed', err);
-        } finally {
+        } catch (err) {} finally {
             setTimeout(() => setIsPasting(false), 500);
         }
     };
@@ -127,15 +98,13 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                         onClick={() => setShowPassGen(!showPassGen)}
                         className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${showPassGen ? 'bg-blue-500 text-white border-blue-500' : 'border-blue-500/20 text-blue-500 hover:bg-blue-500/5'} transition-all`}
                     >
-                        <Settings2 size={10} />
-                        Pembangkit
+                        <Settings2 size={10} /> Pembangkit
                     </button>
                     <button
                         onClick={handleSmartPaste}
                         className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-500/20 text-blue-500 hover:bg-blue-500/5 transition-all ${isPasting ? 'animate-pulse' : ''}`}
                     >
-                        <Wand2 size={10} />
-                        Tempel Pintar
+                        <Wand2 size={10} /> Tempel Pintar
                     </button>
                 </div>
             </div>
@@ -143,90 +112,48 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
             {showPassGen && (
                 <div className="mx-1 p-3 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center justify-between gap-4 animate-in zoom-in-95 duration-200">
                     <div className="flex flex-col gap-1 flex-1">
-                        <span className="text-[9px] font-black uppercase text-blue-500/60">Panjang Sandi: {genLength}</span>
+                        <span className="text-[9px] font-black uppercase text-blue-500/60">Panjang: {genLength}</span>
                         <input
                             type="range" min="8" max="32" value={genLength}
                             onChange={(e) => setGenLength(parseInt(e.target.value))}
                             className="w-full h-1 bg-blue-500/20 rounded-lg appearance-none cursor-pointer accent-blue-500"
                         />
                     </div>
-                    <button
-                        onClick={generatePassword}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-xl text-[11px] font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition-transform flex items-center gap-2"
-                    >
+                    <button onClick={generatePassword} className="px-4 py-2 bg-blue-500 text-white rounded-xl text-[11px] font-bold shadow-lg active:scale-95 transition-transform flex items-center gap-2">
                         <RefreshCw size={12} /> Acak
                     </button>
                 </div>
             )}
 
             <div className="ios-list-group border border-[var(--separator)]/20 shadow-sm overflow-hidden w-full mb-0">
-                <div className="flex items-center px-3 gap-2 sm:gap-3 group">
-                    <User size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
-                    <input
-                        type="text"
-                        value={data.username || ''}
-                        onChange={(e) => updateField('username', e.target.value)}
-                        placeholder="Nama Pengguna / Email"
-                        className={inputClass}
-                    />
-                    <button
-                        onClick={() => handleCopy(data.username, 'user')}
-                        className="p-1.5 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500 flex-shrink-0"
-                    >
-                        {copiedField === 'user' ? <Check size={14} /> : <Copy size={14} />}
-                    </button>
+                <div className="flex items-center px-3 gap-2 group">
+                    <User size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                    <input type="text" value={data.username || ''} onChange={(e) => updateField('username', e.target.value)} placeholder="Username / Email" className={inputClass} />
+                    <button onClick={() => handleCopy(data.username, 'user')} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500">{copiedField === 'user' ? <Check size={14} /> : <Copy size={14} />}</button>
                 </div>
                 <div className="ios-separator"></div>
 
-                <div className="flex items-center px-3 gap-2 sm:gap-3 group">
-                    <Lock size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        value={data.password || ''}
-                        onChange={(e) => updateField('password', e.target.value)}
-                        placeholder="Kata Sandi"
-                </div>
-                {data.password && (
-                    <div className="px-3 pb-2 flex gap-1">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= strength ? (strength <= 2 ? "bg-red-500" : strength <= 4 ? "bg-yellow-500" : "bg-green-500") : "bg-white/5"}`} />
-                        ))}
+                <div className="flex flex-col">
+                    <div className="flex items-center px-3 gap-2 group">
+                        <Lock size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                        <input type={showPassword ? "text" : "password"} value={data.password || ''} onChange={(e) => updateField('password', e.target.value)} placeholder="Password" className={inputClass} />
+                        <button onClick={() => setShowPassword(!showPassword)} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity">{showPassword ? <EyeOff size={14} /> : <Eye size={14} />}</button>
+                        <button onClick={() => handleCopy(data.password, 'pass')} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500">{copiedField === 'pass' ? <Check size={14} /> : <Copy size={14} />}</button>
                     </div>
-                )}
-                        className={inputClass}
-                    />
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                        <button
-                            onClick={() => { setShowPassword(!showPassword); haptic.light(); }}
-                            className="p-1.5 opacity-20 hover:opacity-100 transition-opacity"
-                        >
-                            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                        </button>
-                        <button
-                            onClick={() => handleCopy(data.password, 'pass')}
-                            className="p-1.5 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500"
-                        >
-                            {copiedField === 'pass' ? <Check size={14} /> : <Copy size={14} />}
-                        </button>
-                    </div>
+                    {data.password && (
+                        <div className="px-10 pb-2 flex gap-1">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <div key={i} className={`h-0.5 flex-1 rounded-full transition-colors ${i <= strength ? (strength <= 2 ? "bg-red-500" : strength <= 4 ? "bg-yellow-500" : "bg-green-500") : "bg-white/5"}`} />
+                            ))}
+                        </div>
+                    )}
                 </div>
                 <div className="ios-separator"></div>
 
-                <div className="flex items-center px-3 gap-2 sm:gap-3 group">
-                    <LinkIcon size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
-                    <input
-                        type="text"
-                        value={data.url || ''}
-                        onChange={(e) => updateField('url', e.target.value)}
-                        placeholder="URL Layanan / Tautan"
-                        className={inputClass}
-                    />
-                    <button
-                        onClick={() => handleCopy(data.url, 'url')}
-                        className="p-1.5 opacity-20 hover:opacity-100 active:opacity-40 transition-opacity text-blue-500 flex-shrink-0"
-                    >
-                        {copiedField === 'url' ? <Check size={14} /> : <Copy size={14} />}
-                    </button>
+                <div className="flex items-center px-3 gap-2 group">
+                    <LinkIcon size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                    <input type="text" value={data.url || ''} onChange={(e) => updateField('url', e.target.value)} placeholder="URL" className={inputClass} />
+                    <button onClick={() => handleCopy(data.url, 'url')} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500">{copiedField === 'url' ? <Check size={14} /> : <Copy size={14} />}</button>
                 </div>
             </div>
         </div>
