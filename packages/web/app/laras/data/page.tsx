@@ -7,7 +7,6 @@ import { Arsip } from '@lembaran/core/Arsip';
 import { Brankas } from '@lembaran/core/Brankas';
 import { haptic } from '@lembaran/core/Indera';
 import { saveAs } from 'file-saver';
-import JSZip from 'jszip';
 
 export default function DataManagementPage() {
     const [isExporting, setIsExporting] = useState(false);
@@ -55,7 +54,8 @@ export default function DataManagementPage() {
                         folderId: null,
                         isPinned: false,
                         isFavorite: false,
-                        tags: ['Imported', 'Markdown']
+                        tags: ['Imported', 'Markdown'],
+                        createdAt: new Date().toISOString()
                     });
                 }
             }
