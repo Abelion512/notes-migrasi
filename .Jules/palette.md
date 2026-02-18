@@ -13,3 +13,7 @@
 ## 2026-02-18 - [Brand Icon Fidelity & Specific Casing]
 **Learning:** Approximate brand icons can frustrate users who expect precision. High-fidelity SVGs that match official guidelines are worth the effort for brand recognition. Additionally, brand-specific casing (e.g., lowercase 'n8n') must be handled across the entire UI lifecycle (input, suggestion, display) to avoid regressions.
 **Action:** Use official brand resource SVG paths whenever possible. Implement a brand-aware formatting utility for service names to maintain consistency.
+
+## 2026-02-18 - High-Fidelity Icon Trust
+**Learning:** In a security-focused application like Abelion, brand icon fidelity (especially for high-trust services like Google and Claude) directly impacts perceived data sovereignty and app quality. Users find even slightly inaccurate geometry or colors "off-putting" in a premium UI.
+**Action:** Prioritize exact brand SVG paths and multi-color segments over simplified monochromatic icons for core ecosystem services.

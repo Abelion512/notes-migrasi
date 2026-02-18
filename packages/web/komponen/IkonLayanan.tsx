@@ -26,6 +26,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "brevo": "brevo.com",
     "bubble": "bubble.io",
     "calendar": "calendar.google.com",
+    "capcut": "capcut.com",
     "chatgpt": "chatgpt.com",
     "claude": "claude.ai",
     "claude.ai": "claude.ai",
@@ -45,6 +46,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "excel": "excel.office.com",
     "facebook": "facebook.com",
     "firebase": "firebase.google.com",
+    "fomz": "fomz.app",
     "gdocs": "docs.google.com",
     "gdrive": "drive.google.com",
     "gemini": "gemini.google.com",
@@ -105,6 +107,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "pabbly connect": "pabbly.com/connect",
     "paypal": "paypal.com",
     "perplexity": "perplexity.ai",
+    "pinterest": "pinterest.com",
     "pipedrive": "pipedrive.com",
     "postgres": "postgresql.org",
     "postgresql": "postgresql.org",
@@ -146,6 +149,7 @@ export const MAP_LAYANAN: Record<string, string> = {
     "webflow": "webflow.com",
     "wechat": "wechat.com",
     "whatsapp": "whatsapp.com",
+    "wink": "wink.com",
     "woocommerce": "woocommerce.com",
     "wordpress": "wordpress.org",
     "x": "x.com",
@@ -201,82 +205,68 @@ const extractDomain = (input: string) => {
         }
     }
 
-    // 4. Smart Detection: Fuzzy match for typos
-    let bestMatch = null;
-    let minDistance = 3; // Max distance allowed
-
+    // 4. Fuzzy match (allow small typos)
     for (const key in MAP_LAYANAN) {
-        // Only check for strings of similar length to avoid weird matches
-        if (Math.abs(lower.length - key.length) > 2) continue;
-
-        const distance = getLevenshteinDistance(lower, key);
-        if (distance < minDistance) {
-            minDistance = distance;
-            bestMatch = MAP_LAYANAN[key];
+        if (key.length > 3 && getLevenshteinDistance(lower, key) === 1) {
+            return MAP_LAYANAN[key];
         }
     }
-    if (bestMatch) return bestMatch;
-
-    if (lower.includes(".") && !lower.includes(" ")) return lower;
 
     return null;
 };
 
-// ============================================================================
-// HIGH FIDELITY BRAND LOGOS
-// ============================================================================
+// --- High Fidelity Brand Icons ---
 
 const GmailIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" fill="#EA4335" />
-        <path d="M0 5.457V1.636C0 .732.732 0 1.636 0h3.819v9.091L0 5.457z" fill="#4285F4" />
-        <path d="M18.545 0h3.82C23.268 0 24 .732 24 1.636v3.82l-5.455 3.637V0z" fill="#34A853" />
-        <path d="M5.455 9.091L0 5.458V19.364c0 .904.732 1.636 1.636 1.636h3.82V9.091z" fill="#FBBC05" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.5 6V18C1.5 19.1046 2.39543 20 3.5 20H5.5V9.5L12 14.5L18.5 9.5V20H20.5C21.6046 20 22.5 19.1046 22.5 18V6C22.5 4.89543 21.6046 4 20.5 4H18.5L12 9L5.5 4H3.5C2.39543 4 1.5 4.89543 1.5 6Z" fill="#EA4335" />
+        <path d="M5.5 20V9.5L1.5 6.5V18C1.5 19.1046 2.39543 20 3.5 20H5.5Z" fill="#FBBC05" />
+        <path d="M18.5 9.5V20H20.5C21.6046 20 22.5 19.1046 22.5 18V6.5L18.5 9.5Z" fill="#34A853" />
+        <path d="M18.5 4V9.5L12 14.5L5.5 9.5V4L12 9L18.5 4Z" fill="#C5221F" />
+        <path d="M5.5 4L1.5 1V6.5L5.5 9.5V4Z" fill="#4285F4" />
     </svg>
 );
 
 const DriveIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9.09 4.536L3.273 15H0l5.818-10.464z" fill="#4285F4" />
-        <path d="M14.91 4.536L20.727 15H24l-5.818-10.464z" fill="#FBBC05" />
-        <path d="M9.09 4.536h5.82L20.727 15H3.273z" fill="#34A853" />
-        <path d="M3.273 15l2.909 5.036L12 24l5.818-3.964L20.727 15z" fill="#4285F4" opacity="0.6" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.52 2.47L15.48 2.47L23.44 16.47L20.01 22.42L6.01 22.42L0.56 12.92L8.52 2.47Z" fill="white" />
+        <path d="M15.48 2.47L8.52 2.47L0.56 16.47L3.99 22.42L15.48 22.42L15.48 2.47Z" fill="#FFC107" />
+        <path d="M23.44 16.47L16.59 4.62L13.17 10.57L20.01 22.42L23.44 16.47Z" fill="#2196F3" />
+        <path d="M17.01 16.47L6.99 16.47L3.57 22.42L20.43 22.42L17.01 16.47Z" fill="#4CAF50" />
     </svg>
 );
 
 const SheetsIcon = ({ size }: { size: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 3v18h18V3H3zm16 16H5V5h14v14z" fill="#0F9D58" />
-        <path d="M7 7h10v3H7zm0 4h10v3H7zm0 4h10v3H7z" fill="#0B8043" />
-        <rect x="7" y="7" width="5" height="3" fill="white" opacity="0.3" />
-        <rect x="12" y="7" width="5" height="3" fill="white" opacity="0.3" />
-        <rect x="7" y="11" width="5" height="3" fill="white" opacity="0.3" />
-        <rect x="12" y="11" width="5" height="3" fill="white" opacity="0.3" />
-        <rect x="7" y="15" width="5" height="3" fill="white" opacity="0.3" />
-        <rect x="12" y="15" width="5" height="3" fill="white" opacity="0.3" />
+        <rect width="24" height="24" rx="4" fill="#0F9D58" />
+        <path d="M8 8h8v2H8V8zm0 3h8v2H8v-2zm0 3h8v2H8v-2z" fill="white" />
+        <rect x="8" y="8" width="3" height="2" fill="#0B8043" opacity="0.4" />
+        <rect x="8" y="11" width="3" height="2" fill="#0B8043" opacity="0.4" />
+        <rect x="8" y="14" width="3" height="2" fill="#0B8043" opacity="0.4" />
     </svg>
 );
 
 const DocsIcon = ({ size }: { size: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" />
-        <path d="M14 2v6h6" fill="#1967D2" />
-        <path d="M8 12h8v1H8v-1zm0 2h8v1H8v-1zm0 2h5v1H8v-1z" fill="white" />
+        <path d="M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" fill="#4285F4" />
+        <path d="M9 7h6v2H9V7zm0 4h6v2H9v-2zm0 4h4v2H9v-2z" fill="white" />
     </svg>
 );
 
 const OneDriveIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9.5 9a6.5 6.5 0 0 0-6.42 5.42A4 4 0 0 0 4 22h13a5 5 0 0 0 1.5-9.78A6.5 6.5 0 0 0 9.5 9z" fill="#0364B8" />
-        <path d="M16.5 12.22A6.5 6.5 0 0 0 9.5 9a6.47 6.47 0 0 0-3.84 1.28 5.98 5.98 0 0 1 10.84 1.94z" fill="#0078D4" opacity="0.7" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 14.5C6 12.0147 8.01472 10 10.5 10C10.7418 10 10.9752 10.0153 11.2031 10.0448C12.1868 7.07187 14.996 5 18.3 5C22.4421 5 25.8 8.35786 25.8 12.5C25.8 12.8719 25.773 13.2374 25.7207 13.5947C26.5062 14.3553 27 15.4199 27 16.6C27 19.03 25.03 21 22.6 21H6V14.5Z" fill="#0078D4" transform="translate(-4, -1) scale(0.8)" />
+        <path d="M17.5 19C20.5376 19 23 16.5376 23 13.5C23 10.4624 20.5376 8 17.5 8C17.2618 8 17.0284 8.01525 16.8 8.04481C15.8163 5.07187 13.0071 3 9.7 3C5.55786 3 2.2 6.35786 2.2 10.5C2.2 10.8719 2.227 11.2374 2.27926 11.5947C1.4938 12.3553 1 13.4199 1 14.6C1 17.03 2.97 19 5.4 19H17.5Z" fill="#0078D4" />
+        <path opacity="0.4" d="M17.5 19C20.5376 19 23 16.5376 23 13.5C23 10.4624 20.5376 8 17.5 8C17.2618 8 17.0284 8.01525 16.8 8.04481C15.8163 5.07187 13.0071 3 9.7 3C5.55786 3 2.2 6.35786 2.2 10.5C2.2 10.8719 2.227 11.2374 2.27926 11.5947C1.4938 12.3553 1 13.4199 1 14.6C1 17.03 2.97 19 5.4 19H17.5Z" fill="white" />
     </svg>
 );
 
 const ClaudeIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <rect width="24" height="24" rx="4" fill="#DA7756" />
-        <path d="M8 7h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="white" />
-        <path d="M10 10h4v1h-4v-1zm0 2h4v1h-4v-1zm0 2h3v1h-3v-1z" fill="#DA7756" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#D97757" />
+        <path d="M12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5ZM12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7ZM10.5 10C9.67157 10 9 10.6716 9 11.5V12.5C9 13.3284 9.67157 14 10.5 14H13.5C14.3284 14 15 13.3284 15 12.5V11.5C15 10.6716 14.3284 10 13.5 10H10.5Z" fill="#FAF9F5" />
+        <rect x="10" y="11" width="1.5" height="2" rx="0.5" fill="#D97757" />
+        <rect x="12.5" y="11" width="1.5" height="2" rx="0.5" fill="#D97757" />
     </svg>
 );
 
@@ -285,6 +275,39 @@ const TikTokIcon = ({ size }: { size: number }) => (
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" fill="#25F4EE" transform="translate(-0.5, -0.5)" />
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" fill="#FE2C55" transform="translate(0.5, 0.5)" />
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" fill="#000000" />
+    </svg>
+);
+
+const PinterestIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="12" fill="#E60023" />
+        <path d="M12 2C6.48 2 2 6.48 2 12C2 16.23 4.63 19.85 8.39 21.32C8.3 20.53 8.23 19.33 8.41 18.57C8.58 17.88 9.49 14 9.49 14C9.49 14 9.21 13.44 9.21 12.61C9.21 11.29 9.97 10.3 10.92 10.3C11.73 10.3 12.12 10.91 12.12 11.64C12.12 12.45 11.6 13.67 11.33 14.83C11.11 15.79 11.82 16.57 12.76 16.57C14.47 16.57 15.78 14.77 15.78 12.17C15.78 9.95 14.18 8.39 11.9 8.39C9.26 8.39 7.73 10.37 7.73 12.39C7.73 13.19 8.04 14.04 8.42 14.51C8.49 14.59 8.5 14.66 8.48 14.75C8.42 15 8.3 15.48 8.27 15.61C8.24 15.75 8.15 15.78 8 15.71C7.05 15.27 6.45 13.88 6.45 12.35C6.45 9.38 8.6 6.7 12.24 6.7C15.16 6.7 17.43 8.78 17.43 11.58C17.43 14.48 15.6 16.81 13.06 16.81C12.21 16.81 11.4 16.37 11.13 15.85L10.45 18.43C10.2 19.39 9.57 20.58 9.15 21.28C10.05 21.75 11.05 22C12.1 22C17.62 22 22.1 17.52 22.1 12C22.1 6.48 17.62 2 12.1 2H12Z" fill="white" />
+    </svg>
+);
+
+const CapCutIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="white" />
+        <path d="M17 7L12 12L7 7M17 17L12 12L7 17" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="12" cy="12" r="2" fill="black" />
+    </svg>
+);
+
+const WinkIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="black" />
+        <path d="M6 12C6 12 8 15 12 15C16 15 18 12 18 12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <path d="M8 8V9M16 8V9" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <path d="M19 5L17.5 6.5L19 8L20.5 6.5L19 5Z" fill="#FFD700" />
+    </svg>
+);
+
+const FomzIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="#333" strokeWidth="1" />
+        <circle cx="12" cy="12" r="8" fill="#111" />
+        <path d="M12 6L13.5 10.5H18L14.5 13L16 17.5L12 15L8 17.5L9.5 13L6 10.5H10.5L12 6Z" fill="white" opacity="0.8" />
+        <text x="12" y="16" fontSize="4" fill="white" textAnchor="middle" fontFamily="sans-serif">Fomz</text>
     </svg>
 );
 
@@ -396,6 +419,10 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
         if (s.includes("openrouter")) return <OpenRouterIcon size={size} />;
         if (s.includes("groq")) return <GroqIcon size={size} />;
         if (s.includes("antigravity")) return <AntigravityIcon size={size} />;
+        if (s.includes("pinterest")) return <PinterestIcon size={size} />;
+        if (s.includes("capcut")) return <CapCutIcon size={size} />;
+        if (s.includes("wink")) return <WinkIcon size={size} />;
+        if (s.includes("fomz")) return <FomzIcon size={size} />;
 
         // Category/Broad match fallback
         if (s.includes("mail")) return <Mail size={size} className="text-[#ea4335]" />;
@@ -430,7 +457,11 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
         searchContext.includes("dibimbing") ||
         searchContext.includes("openrouter") ||
         searchContext.includes("groq") ||
-        searchContext.includes("antigravity");
+        searchContext.includes("antigravity") ||
+        searchContext.includes("pinterest") ||
+        searchContext.includes("capcut") ||
+        searchContext.includes("wink") ||
+        searchContext.includes("fomz");
 
     if (needsSpecificIcon) {
         return getFallback(searchContext);
