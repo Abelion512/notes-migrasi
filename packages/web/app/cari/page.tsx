@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Arsip, Brankas, Note } from '@lembaran/core';
+import { Arsip, Brankas, Note, haptic } from '@lembaran/core';
 import Link from 'next/link';
-import { Search as SearchIcon, ChevronRight, Sparkles } from 'lucide-react';
+import { Search as SearchIcon, ChevronRight, Sparkles, X } from 'lucide-react';
 import { stripHtml, truncate } from '@lembaran/core/Penyaring';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 import { useGunakanTunda } from '@lembaran/core/GunakanTunda';
@@ -124,8 +124,18 @@ export default function SearchPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Cari judul atau isi..."
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-[var(--surface)] border-none focus:ring-2 focus:ring-blue-500/50 focus:outline-none shadow-sm text-[17px] placeholder:opacity-40 transition-all"
+                    className="w-full pl-12 pr-12 py-4 rounded-2xl bg-[var(--surface)] border-none focus:ring-2 focus:ring-blue-500/50 focus:outline-none shadow-sm text-[17px] placeholder:opacity-40 transition-all"
+                    aria-label="Kotak pencarian"
                 />
+                {query && (
+                    <button
+                        onClick={() => { setQuery(""); haptic.light(); }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[var(--separator)]/10 text-[var(--text-secondary)] active:scale-90 transition-all"
+                        aria-label="Bersihkan pencarian"
+                    >
+                        <X size={18} />
+                    </button>
+                )}
             </div>
 
             <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
