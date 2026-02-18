@@ -2,7 +2,7 @@ import { openDB, IDBPDatabase } from 'idb';
 import { StorageAdapter, LembaranSchema } from './types';
 
 const DB_NAME = 'lembaran_next';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export class BrowserAdapter implements StorageAdapter {
     private dbInstance: IDBPDatabase<LembaranSchema> | null = null;
@@ -26,6 +26,9 @@ export class BrowserAdapter implements StorageAdapter {
                 if (!db.objectStoreNames.contains('meta')) {
                     db.createObjectStore('meta');
                 }
+                if (!db.objectStoreNames.contains('logs')) {
+                    db.createObjectStore('logs', { keyPath: 'id' });
+                }
             },
         });
 
@@ -40,7 +43,7 @@ export class BrowserAdapter implements StorageAdapter {
 
     async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
         const db = await this.initDB();
-        if (store === 'notes' || store === 'folders') {
+        if (store === 'notes' || store === 'folders' || store === 'logs') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return db.put(store as any, value);
         }

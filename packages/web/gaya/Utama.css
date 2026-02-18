@@ -41,6 +41,7 @@
 @layer base {
     body {
         background-color: var(--background);
+        transition: background-color 0.5s ease, color 0.5s ease;
         color: var(--text-primary);
         font-family: var(--font-display);
         @apply antialiased select-none;
@@ -61,6 +62,7 @@
     /* iOS Inset Grouped List */
     .ios-list-group {
         background-color: var(--surface);
+        transition: background-color 0.5s ease;
         border-radius: 12px;
         overflow: hidden;
         margin-bottom: 24px;
@@ -208,4 +210,37 @@ select:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--text-primary) !important;
   -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset !important;
   transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* View Transitions: Circular Theme Expansion */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+  animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+[data-theme='dark']::view-transition-old(root) {
+  z-index: 9999;
+}
+
+[data-theme='dark']::view-transition-new(root) {
+  z-index: 1;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0% at var(--click-x, 50%) var(--click-y, 50%));
+  }
+  to {
+    clip-path: circle(150% at var(--click-x, 50%) var(--click-y, 50%));
+  }
 }

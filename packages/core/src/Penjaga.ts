@@ -7,16 +7,19 @@ import { Brankas } from './Brankas';
 export const usePenjaga = () => {
     const isVaultLocked = usePundi(s => s.isVaultLocked);
     const setVaultLocked = usePundi(s => s.setVaultLocked);
+    const autoLockDelay = usePundi(s => s.settings.autoLockDelay);
 
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden' && !isVaultLocked) {
-                // Auto-lock when tab is hidden (Optional: could add a delay)
-                // For high security, we lock immediately or after 1 min
+                // Auto-lock when tab is hidden
+                // Use user-defined delay (convert minutes to ms)
+                const delayMs = (autoLockDelay || 1) * 60000;
+
                 const lockTimeout = setTimeout(() => {
                     Brankas.clearKey();
                     setVaultLocked(true);
-                }, 60000); // 1 minute delay
+                }, delayMs);
 
                 const cancelLock = () => {
                     if (document.visibilityState === 'visible') {
@@ -30,5 +33,5 @@ export const usePenjaga = () => {
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [isVaultLocked, setVaultLocked]);
+    }, [isVaultLocked, setVaultLocked, autoLockDelay]);
 };
