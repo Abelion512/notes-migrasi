@@ -1,143 +1,138 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ArrowRight, Github, Book, Download,
-    Globe, Zap, Shield, Sparkles, Terminal
+    ArrowRight, Github, Book, History, Download,
+    Globe, Zap, Shield, Sparkles
 } from 'lucide-react';
 import { CliInstallation } from '@/komponen/landing/CliInstallation';
 import { ComparisonTable } from '@/komponen/landing/ComparisonTable';
 import { NativeShowcase } from '@/komponen/landing/NativeShowcase';
+import { CustomizationPreview } from '@/komponen/landing/CustomizationPreview';
+import { CustomizationPreview } from '@/komponen/landing/CustomizationPreview';
 import { ThemeToggle } from '@/komponen/landing/ThemeToggle';
-import { haptic } from '@lembaran/core/Indera';
+
+const WORDS = ['Berdikari', 'Aman', 'Cerdas', 'Pribadi', 'Instan'];
 
 export default function LandingPage() {
+    const [wordIndex, setWordIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setWordIndex((prev) => (prev + 1) % WORDS.length);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <div className="flex flex-col min-h-screen bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-300">
+        <div className="flex flex-col min-h-screen bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-500 overflow-x-hidden">
             {/* Header / Nav */}
-            <header className="fixed top-0 left-0 right-0 z-[100] px-6 py-5 flex items-center justify-between backdrop-blur-xl bg-[var(--background)]/40 border-b border-[var(--separator)]/5">
-                <div className="flex items-center gap-4 select-none">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white font-bold text-xl shadow-xl shadow-blue-500/20">
+            <header className="fixed top-0 left-0 right-0 z-50 p-6 flex items-center justify-between backdrop-blur-md bg-[var(--background)]/80 border-b border-white/5">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20">
                         L
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-[17px] font-bold tracking-tight leading-none text-[var(--text-primary)]">Lembaran</span>
-                        <span className="text-[10px] font-bold text-blue-500/60 uppercase tracking-[0.2em] mt-1">Sovereign Archive</span>
-                    </div>
+                    <span className="text-xl font-bold tracking-tight">Lembaran</span>
                 </div>
-
-                <div className="flex items-center gap-3 sm:gap-8">
-                    <nav className="hidden lg:flex items-center gap-10 text-[12px] font-bold uppercase tracking-[0.15em] text-[var(--text-secondary)]/70">
-                        <Link href="/changelog" className="hover:text-blue-500 transition-colors">Riwayat</Link>
+                <div className="flex items-center gap-4">
+                    <nav className="hidden md:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
+                        <Link href="/versi" className="hover:text-blue-500 transition-colors">Changelog</Link>
                         <a href="https://github.com/Abelion512/lembaran" target="_blank" className="hover:text-blue-500 transition-colors">GitHub</a>
-                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Dokumentasi</Link>
+                        <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Docs</Link>
                     </nav>
-                    <div className="w-px h-5 bg-[var(--separator)]/20 mx-2 hidden lg:block"></div>
+                    <div className="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
                     <ThemeToggle />
-                    <Link
-                        href="/arsip"
-                        onClick={() => haptic.medium()}
-                        className="px-6 py-3 bg-blue-500 text-white rounded-full font-bold text-[13px] hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 active:scale-95"
-                    >
+                    <Link href="/arsip" className="px-5 py-2.5 bg-blue-500 text-white rounded-full font-bold text-sm hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
                         Buka Arsip
                     </Link>
                 </div>
             </header>
 
-            <main className="pt-40">
+            <main className="pt-40 pb-24">
                 {/* Hero Section */}
-                <section className="px-6 py-20 md:py-32 text-center max-w-6xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                        <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-bold uppercase tracking-widest">
-                            <Sparkles size={14} />
-                            <span>Era Kedaulatan Data Personal</span>
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 leading-tight">
-                            Aksara yang <br />
-                            <span className="text-blue-500">Berdikari.</span>
-                        </h1>
+                <section className="px-6 text-center relative">
+                    {/* Background decoration */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-20 pointer-events-none">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-500/30 blur-[120px] rounded-full" />
+                    </div>
 
-                        <p className="text-[19px] md:text-[24px] text-[var(--text-secondary)]/80 max-w-3xl mx-auto mb-16 leading-[1.6] font-medium tracking-tight px-4">
-                            Brankas arsip digital yang mengutamakan kedaulatan penuh pengguna.
-                            Enkripsi lokal AES-256-GCM dengan pengalaman pengguna secepat kilat.
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <div className="mb-12 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-blue-500/5 border border-blue-500/10 text-blue-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                            <Sparkles size={14} />
+                            <span>Kecerdasan Personal Lokal-First</span>
+                        </div>
+
+                        <div className="flex flex-col items-center justify-center gap-2 mb-8">
+                            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                                <span className="text-gray-400">Aksara yang</span>
+                                <div className="inline-flex items-center gap-3">
+                                    <ArrowRight className="text-blue-500/50 hidden md:block" size={40} />
+                                    <div className="relative h-[1.2em] flex items-center overflow-hidden">
+                                        <AnimatePresence mode="wait">
+                                            <motion.span
+                                                key={WORDS[wordIndex]}
+                                                initial={{ y: 40, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                exit={{ y: -40, opacity: 0 }}
+                                                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                                className="text-blue-500 whitespace-nowrap"
+                                            >
+                                                {WORDS[wordIndex]}.
+                                            </motion.span>
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                            </h1>
+                        </div>
+
+                        <p className="text-sm md:text-lg text-gray-500 max-w-xl mx-auto mb-16 leading-relaxed font-medium px-4">
+                            Brankas aksara personal yang mengutamakan
+                            privasi absolut, performa instan, dan kecerdasan buatan on-device.
                         </p>
 
-                        <div className="flex flex-wrap items-center justify-center gap-4">
-                            <Link href="/arsip" className="px-6 py-3 bg-[var(--text-primary)] text-[var(--background)] rounded-xl font-bold flex items-center gap-3 hover:scale-105 transition-all shadow-2xl">
-                                Mulai Menulis <ArrowRight size={20} />
+                        <div className="flex flex-wrap items-center justify-center gap-6 mb-24">
+                            <Link href="/arsip" className="px-8 py-3.5 bg-[var(--text-primary)] text-[var(--background)] rounded-xl font-bold flex items-center gap-3 hover:scale-105 hover:shadow-2xl transition-all">
+                                Mulai Menulis <ArrowRight size={18} />
                             </Link>
-                            <a href="#native" className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all">
-                                <Download size={20} /> Unduh App
+                            <a href="#native" className="px-8 py-3.5 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all">
+                                <Download size={18} /> Unduh App
                             </a>
                         </div>
                     </motion.div>
-                </section>
 
-                {/* Features Highlights */}
-                <section className="px-6 py-32 max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                         <div className="p-10 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10 shadow-sm hover:shadow-xl transition-all">
-                            <div className="w-16 h-16 rounded-3xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-8">
-                                <Shield size={32} />
-                            </div>
-                            <h3 className="text-2xl font-bold mb-4 tracking-tight">Zero-Knowledge</h3>
-                            <p className="text-[16px] text-[var(--text-secondary)] leading-relaxed font-medium">Seluruh data dienkripsi dengan Argon2id langsung di browser Anda. Kami tidak bisa melihat apa pun.</p>
-                         </div>
-                         <div className="p-10 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10 shadow-sm hover:shadow-xl transition-all">
-                            <div className="w-16 h-16 rounded-3xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-8">
-                                <Zap size={32} />
-                            </div>
-                            <h3 className="text-2xl font-bold mb-4 tracking-tight">Bolt Performance</h3>
-                            <p className="text-[16px] text-[var(--text-secondary)] leading-relaxed font-medium">Pengindeksan latar belakang cerdas memungkinkan pencarian isi catatan terenkripsi secara instan.</p>
-                         </div>
-                         <div className="p-10 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10 shadow-sm hover:shadow-xl transition-all">
-                            <div className="w-16 h-16 rounded-3xl bg-purple-500/10 text-purple-500 flex items-center justify-center mb-8">
-                                <Terminal size={32} />
-                            </div>
-                            <h3 className="text-2xl font-bold mb-4 tracking-tight">Developer TUI</h3>
-                            <p className="text-[16px] text-[var(--text-secondary)] leading-relaxed font-medium">Dilengkapi CLI puitis v2.6.1 untuk manajemen data tingkat tinggi langsung dari terminal.</p>
-                         </div>
-                    </div>
-                </section>
-
-                {/* CLI Section */}
-                <section className="py-24 bg-white/[0.02] border-y border-white/5">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight mb-4 uppercase">Instalasi CLI</h2>
-                        <p className="text-gray-500 font-medium">Akses Lembaran langsung dari terminal favorit Anda.</p>
+                    {/* CLI Mockup */}
+                    <div className="relative z-10">
+                        <div className="absolute inset-0 bg-blue-500/5 blur-[100px] -z-10" />
+                        <CliInstallation />
                     </div>
                 </section>
 
                 {/* Comparison Table */}
-                <div className="py-32">
-                    <ComparisonTable />
-                </div>
+                <ComparisonTable />
+
+                {/* Customization Preview */}
+                <CustomizationPreview />
 
                 {/* Native Showcase */}
-                <section id="native" className="pb-40 px-6 max-w-7xl mx-auto">
+                <section id="native">
                     <NativeShowcase />
                 </section>
             </main>
 
             {/* Footer */}
-            <footer className="p-20 border-t border-[var(--separator)]/10 bg-[var(--surface)]/20">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-16 text-[var(--text-muted)]">
-                    <div className="flex flex-col gap-6 max-w-sm text-center md:text-left">
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
-                            <div className="w-8 h-8 rounded-xl bg-blue-500/20" />
-                            <span className="font-bold text-[17px] tracking-tight text-[var(--text-primary)]">Lembaran v2.6.1</span>
-                        </div>
-                        <p className="text-sm font-medium leading-relaxed">
-                            Membangun masa depan di mana privasi data bukan lagi sebuah kemewahan, melainkan hak asasi digital.
-                        </p>
+            <footer className="p-12 border-t border-white/5 bg-white/[0.01]">
+                <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-gray-500 text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-gray-500/20" />
+                        <span>© 2025 Lembaran Open Source.</span>
                     </div>
-                    <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-bold">
+                    <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-black opacity-50">
                         <Link href="/privasi" className="hover:text-blue-500 transition-colors">Privasi</Link>
                         <Link href="/ketentuan" className="hover:text-blue-500 transition-colors">Ketentuan</Link>
                         <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Bantuan</Link>

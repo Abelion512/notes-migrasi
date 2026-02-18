@@ -1,6 +1,15 @@
 # Changelog
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
+## [2.8.0] - 2026-02-18
+### Added
+- **Hero Section Dinamis**: Judul dengan efek siklus kata dan layout gaya Claude Code.
+- **Preview Kustomisasi**: Komponen interaktif untuk melihat adaptasi tema warna secara real-time.
+- **Instalasi GitHub**: Dukungan perintah `npm` dan `bun` via shorthand GitHub.
+### Changed
+- **Refinement Deskripsi**: Ukuran font deskripsi diperkecil agar lebih proporsional.
+- **Klarifikasi Biometrik**: Penjelasan status "Planned" untuk transparansi roadmap.
+
 ## [2.7.0] - 2026-02-18
 ### Added
 - **Skrip Instalasi Cerdas**: `install.sh` untuk instalasi otomatis Bun dan Lembaran CLI di WSL/Linux.

@@ -39,9 +39,6 @@ export interface AppSettings {
     syncEnabled: boolean;
     lastSyncAt: string | null;
     secretMode: "none" | "gmail";
-    autoLockDelay: number; // in minutes
-    argonStrength: "standard" | "strong" | "paranoid";
-    biometricEnabled: boolean;
 }
 
 export interface UserProfile {
@@ -50,12 +47,4 @@ export interface UserProfile {
     avatarUrl: string;
     level: number;
     xp: number;
-}
-
-export interface SecurityLog {
-    id: string;
-    event: string;
-    level: "info" | "warn" | "error";
-    timestamp: string;
-    details?: string;
 }

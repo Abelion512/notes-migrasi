@@ -20,9 +20,6 @@ const DEFAULT_SETTINGS: AppSettings = {
     encryptionEnabled: false,
     syncEnabled: false,
     secretMode: "none",
-    autoLockDelay: 1,
-    argonStrength: "standard",
-    biometricEnabled: false,
     lastSyncAt: null,
 };
 

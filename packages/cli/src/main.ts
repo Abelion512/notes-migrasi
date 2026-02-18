@@ -9,7 +9,7 @@ import prompts from 'prompts';
 program
   .name('lembaran')
   .description('Lembaran — CLI Pengelolaan Aksara Personal')
-  .version('2.7.0');
+  .version('2.8.0');
 
 // Default action: Jalankan TUI jika tidak ada subcommand
 program.action(async () => {

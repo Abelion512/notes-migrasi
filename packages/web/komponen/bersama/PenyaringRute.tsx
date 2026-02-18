@@ -10,13 +10,7 @@ import { PencarianCepat } from '@/komponen/bersama/PencarianCepat';
 export const PenyaringRute = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const isLandingPage = pathname === '/';
-
-    // Sentinel: Allow public access to documentation and information pages
-    const isPublicDocs = pathname.startsWith('/bantuan') ||
-                        pathname === '/changelog' ||
-                        pathname === '/privasi' ||
-                        pathname === '/ketentuan' ||
-                        pathname === '/tentang';
+    const isPublicDocs = pathname.startsWith('/bantuan/publik');
 
     if (isLandingPage || isPublicDocs) {
         return <div className="flex-1 flex flex-col w-full">{children}</div>;

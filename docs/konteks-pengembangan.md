@@ -93,3 +93,17 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Versi ini menandai kesiapan Lembaran untuk digunakan secara luas oleh komunitas developer melalui alur instalasi yang jauh lebih reliabel.
+
+## 9. Hero Redesign & Customization Preview (v2.8.0)
+
+**Masalah**: Visual landing page masih terasa kaku, deskripsi terlalu mendominasi, dan potensi kustomisasi aplikasi tidak terlihat oleh pengunjung pertama.
+
+**Solusi**:
+- **Dynamic Hero Title**: Mengimplementasikan efek *cycling words* pada judul utama untuk memberikan kesan modern dan dinamis ("Aksara yang > Berdikari/Aman/Cerdas").
+- **Description Scaling**: Mengecilkan skala font deskripsi hero dan membatasi lebar maksimalnya untuk meningkatkan hierarki visual.
+- **Interactive Customization**: Menambahkan modul preview kustomisasi yang memungkinkan user bereksperimen dengan aksen warna utama (Blue, Emerald, Amber, Rose, Purple) langsung di landing page.
+- **GitHub CLI Install**: Mengaktifkan perintah `npm` dan `bun` menggunakan *shorthand* GitHub agar user dapat menginstal CLI secara instan meskipun belum terbit di registri resmi.
+
+---
+> [!NOTE]
+> Versi 2.8.0 mengalihkan fokus dari sekadar fungsionalitas menuju pengalaman visual yang premium dan personal.

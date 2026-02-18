@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, Globe, Smartphone, Check, AlertCircle } from 'lucide-react';
+import { Terminal, Globe, Smartphone, Check, AlertCircle, Fingerprint } from 'lucide-react';
 
 const COMPARISON_DATA = [
     {
@@ -10,6 +10,12 @@ const COMPARISON_DATA = [
         cli: 'Terminal / SSH',
         web: 'Browser (Anywhere)',
         app: 'Desktop (Native)'
+    },
+    {
+        feature: 'Biometrik',
+        cli: '❌ Password Only',
+        web: 'Planned (WebAuthn)',
+        app: 'Yes (TouchID/FaceID)'
     },
     {
         feature: 'Kelebihan',
@@ -35,7 +41,7 @@ export const ComparisonTable = () => {
     return (
         <div className="w-full max-w-5xl mx-auto mt-24 px-4">
             <h2 className="text-3xl font-bold mb-12 text-center tracking-tight">Pilih Konfigurasi Anda</h2>
-            <div className="overflow-x-auto rounded-[2rem] border border-white/10 bg-white/5 backdrop-blur-sm">
+            <div className="overflow-x-auto rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-sm">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-white/10 bg-white/5">
@@ -64,9 +70,15 @@ export const ComparisonTable = () => {
                         {COMPARISON_DATA.map((row, i) => (
                             <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                                 <td className="p-6 font-bold text-gray-400 text-sm">{row.feature}</td>
-                                <td className="p-6 text-gray-200">{row.cli}</td>
-                                <td className="p-6 text-gray-200">{row.web}</td>
-                                <td className="p-6 text-gray-200">{row.app}</td>
+                                <td className="p-6 text-gray-200">
+                                    {row.cli}
+                                </td>
+                                <td className="p-6 text-gray-200">
+                                    {row.web}
+                                </td>
+                                <td className="p-6 text-gray-200">
+                                    {row.app}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -79,12 +91,12 @@ export const ComparisonTable = () => {
                     <p className="text-sm text-gray-400">Gunakan CLI untuk automasi script dan manajemen server jarak jauh.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-                    <p className="text-xs font-bold text-emerald-500 uppercase mb-2">Junior Recommendation</p>
-                    <p className="text-sm text-gray-400">Versi web cocok untuk penggunaan harian dan sinkronisasi lintas perangkat.</p>
+                    <p className="text-xs font-bold text-emerald-500 uppercase mb-2">Biometrik Web</p>
+                    <p className="text-sm text-gray-400">Dukungan sidik jari di browser (WebAuthn) sedang dalam tahap pengembangan.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-purple-500/5 border border-purple-500/10">
-                    <p className="text-xs font-bold text-purple-500 uppercase mb-2">Explorer Guide</p>
-                    <p className="text-sm text-gray-400">Instal Native App untuk pengalaman paling lancar dengan fitur sistem penuh.</p>
+                    <p className="text-xs font-bold text-purple-500 uppercase mb-2">Native Advantage</p>
+                    <p className="text-sm text-gray-400">Instal Native App untuk dukungan penuh sidik jari dan pengenalan wajah sistem.</p>
                 </div>
             </div>
         </div>
