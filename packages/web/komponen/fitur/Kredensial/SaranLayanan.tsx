@@ -9,6 +9,13 @@ interface SaranLayananProps {
     onSelect: (name: string, domain: string) => void;
 }
 
+const displayLabel = (key: string) => {
+    if (key === 'n8n') return 'n8n';
+    if (key === 'v0') return 'v0';
+    if (key === 's3') return 'S3';
+    return key.charAt(0).toUpperCase() + key.slice(1);
+};
+
 export const SaranLayanan = ({ input, onSelect }: SaranLayananProps) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -92,7 +99,7 @@ export const SaranLayanan = ({ input, onSelect }: SaranLayananProps) => {
                             {getIconForService(key, 20)}
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-[14px] font-bold capitalize text-[var(--text-primary)] truncate">{key}</span>
+                            <span className="text-[14px] font-bold text-[var(--text-primary)] truncate">{displayLabel(key)}</span>
                             <span className="text-[10px] opacity-40 truncate">{domain}</span>
                         </div>
                     </button>
