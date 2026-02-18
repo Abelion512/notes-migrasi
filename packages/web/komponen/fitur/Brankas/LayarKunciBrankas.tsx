@@ -80,6 +80,8 @@ export const LayarKunciBrankas = () => {
             if (isValid) {
                 setVaultLocked(false);
             } else {
+                // Sentinel: Rate limiting delay to slow down brute-force attacks
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 setError("Kata sandi salah");
             }
         } catch (err) {
