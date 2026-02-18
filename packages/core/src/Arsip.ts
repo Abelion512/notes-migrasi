@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Integritas } from './Integritas';
 import { Pujangga } from './Pujangga';
 import { usePundi } from './Pundi';
+import { InderaKeamanan } from './InderaKeamanan';
 
 export const Arsip = {
     async isVaultInitialized(): Promise<boolean> {
@@ -30,6 +31,7 @@ export const Arsip = {
         await Gudang.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
 
         Brankas.setActiveKey(key);
+        await InderaKeamanan.catat('Setup Brankas', 'info', `Kekuatan Argon: ${strength}`);
     },
 
     async unlockVault(password: string): Promise<boolean> {
@@ -54,11 +56,15 @@ export const Arsip = {
 
             if (decrypted === 'LEMBARAN_SECURED_V2') {
                 Brankas.setActiveKey(key);
+                await InderaKeamanan.catat('Buka Brankas', 'info', 'Akses Berhasil');
                 return true;
             }
+
+            await InderaKeamanan.catat('Gagal Buka Brankas', 'warn', 'Kata sandi salah');
             return false;
         } catch (e) {
             console.error('Unlock failed', e);
+            await InderaKeamanan.catat('Percobaan Akses Ilegal', 'error', e instanceof Error ? e.message : 'Error tidak dikenal');
             return false;
         }
     },
@@ -154,6 +160,7 @@ export const Arsip = {
             if (note._hash) {
                 const actualHash = await Integritas.hitungHash(decryptedNote);
                 if (actualHash !== note._hash) {
+                    await InderaKeamanan.catat('Segel Digital Rusak', 'error', `Note ID: ${note.id}`);
                     decryptedNote.content = `⚠️ PERINGATAN: Segel digital rusak!\n\n` + decryptedNote.content;
                 }
             }
@@ -161,6 +168,7 @@ export const Arsip = {
             return decryptedNote;
         } catch (err) {
             console.error('Decryption failed', err);
+            await InderaKeamanan.catat('Gagal Dekripsi Catatan', 'error', `Note ID: ${note.id}`);
             return { ...note, content: '⚠️ Gagal Dekripsi Data' };
         }
     },

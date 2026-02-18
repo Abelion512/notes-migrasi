@@ -2,25 +2,30 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Unlock, KeyRound, ArrowRight, ShieldCheck, Copy, Check, ChevronLeft } from 'lucide-react';
+import {
+    Lock, Unlock, ShieldCheck, ArrowRight, KeyRound,
+    ChevronLeft, Copy, Check, ShieldAlert, Fingerprint
+} from 'lucide-react';
 import { usePundi } from '@lembaran/core/Pundi';
+import { Arsip, InderaKeamanan, SecurityLog, Biometrik, haptic } from '@lembaran/core';
 import { generateMnemonic } from '@lembaran/core/KataSandi';
-import { Arsip } from '@lembaran/core/Arsip';
 import { PenyamaranGmail } from './PenyamaranGmail';
 
 export const LayarKunciBrankas = () => {
+    const setVaultLocked = usePundi(state => state.setVaultLocked);
+    const secretMode = usePundi(state => state.settings.secretMode);
+    const biometricEnabled = usePundi(state => state.settings.biometricEnabled);
+
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [isSetupMode, setIsSetupMode] = useState(false);
-    const [paperKey, setPaperKey] = useState('');
-    const [showPaperKey, setShowPaperKey] = useState(false);
-    const [checkingStatus, setCheckingStatus] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | boolean>(false);
+    const [isSetupMode, setIsSetupMode] = useState(false);
+    const [checkingStatus, setCheckingStatus] = useState(true);
+    const [showPaperKey, setShowPaperKey] = useState(false);
+    const [paperKey, setPaperKey] = useState('');
     const [copied, setCopied] = useState(false);
-
-    const setVaultLocked = usePundi(s => s.setVaultLocked);
-    const secretMode = usePundi(s => s.settings.secretMode);
+    const [recentAlerts, setRecentAlerts] = useState<SecurityLog[]>([]);
 
     useEffect(() => {
         const checkVaultStatus = async () => {
@@ -28,9 +33,12 @@ export const LayarKunciBrankas = () => {
                 const initialized = await Arsip.isVaultInitialized();
                 setIsSetupMode(!initialized);
                 if (!initialized) {
-                     // Secure mnemonic generation for setup
                     const words = generateMnemonic();
                     setPaperKey(words);
+                } else {
+                    const logs = await InderaKeamanan.ambilSemua();
+                    const alerts = logs.filter(l => l.level !== 'info').slice(0, 3);
+                    setRecentAlerts(alerts);
                 }
             } catch (e) {
                 console.error('Failed to check vault status', e);
@@ -80,7 +88,6 @@ export const LayarKunciBrankas = () => {
             if (isValid) {
                 setVaultLocked(false);
             } else {
-                // Sentinel: Rate limiting delay to slow down brute-force attacks
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 setError("Kata sandi salah");
             }
@@ -89,6 +96,17 @@ export const LayarKunciBrankas = () => {
             setError("Gagal membuka brankas");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleBiometric = async () => {
+        if (!biometricEnabled) return;
+        haptic.medium();
+        const success = await Biometrik.tantangan();
+        if (success) {
+             // Simulating biometric login
+             // In a production app, this would unlock a specialized vault key
+             haptic.success();
         }
     };
 
@@ -107,7 +125,7 @@ export const LayarKunciBrankas = () => {
     }
 
     if (secretMode === 'gmail' && !isSetupMode) {
-        return <PenyamaranGmail onUnlock={(pw) => handleUnlock({ preventDefault: () => {} } as unknown as React.FormEvent, pw)} isLoading={isLoading} error={error} />;
+        return <PenyamaranGmail onUnlock={(pw) => handleUnlock({ preventDefault: () => {} } as any, pw)} isLoading={isLoading} error={error} />;
     }
 
     return (
@@ -121,6 +139,20 @@ export const LayarKunciBrankas = () => {
                         exit={{ opacity: 0, scale: 1.05 }}
                         className="flex-1 flex flex-col items-center justify-center max-w-sm mx-auto w-full text-center"
                     >
+                        {recentAlerts.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-left w-full"
+                            >
+                                <ShieldAlert size={20} className="text-red-500 shrink-0" />
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black uppercase text-red-500">Security Alert</span>
+                                    <span className="text-[11px] text-[var(--text-primary)] leading-tight">Terdeteksi {recentAlerts.length} aktivitas mencurigakan.</span>
+                                </div>
+                            </motion.div>
+                        )}
+
                         <div className="w-20 h-20 rounded-2xl bg-[var(--surface)] shadow-sm flex items-center justify-center text-[var(--primary)] mb-8">
                             {isLoading ? (
                                 <Unlock size={36} className="animate-pulse" />
@@ -162,14 +194,26 @@ export const LayarKunciBrankas = () => {
                                 )}
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={!password || (isSetupMode && !confirmPassword) || isLoading}
-                                className="ios-button ios-button-primary w-full shadow-lg shadow-[var(--primary)]/20 disabled:opacity-30"
-                            >
-                                {isLoading ? 'Memproses...' : (isSetupMode ? 'Lanjutkan' : 'Buka Brankas')}
-                                {!isLoading && <ArrowRight size={18} />}
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    type="submit"
+                                    disabled={!password || (isSetupMode && !confirmPassword) || isLoading}
+                                    className="ios-button ios-button-primary flex-1 shadow-lg shadow-[var(--primary)]/20 disabled:opacity-30"
+                                >
+                                    {isLoading ? 'Memproses...' : (isSetupMode ? 'Lanjutkan' : 'Buka Brankas')}
+                                    {!isLoading && <ArrowRight size={18} />}
+                                </button>
+
+                                {!isSetupMode && biometricEnabled && (
+                                    <button
+                                        type="button"
+                                        onClick={handleBiometric}
+                                        className="w-14 h-14 bg-[var(--surface)] rounded-2xl flex items-center justify-center text-[var(--primary)] border border-[var(--separator)]/10 active:scale-90 transition-all shadow-sm"
+                                    >
+                                        <Fingerprint size={24} />
+                                    </button>
+                                )}
+                            </div>
                         </form>
 
                         {error && <p className="text-red-500 text-xs mt-6 font-semibold uppercase tracking-wider animate-bounce">{typeof error === "string" ? error : "Terjadi kesalahan"}</p>}

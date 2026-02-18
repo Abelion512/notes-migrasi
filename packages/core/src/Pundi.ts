@@ -22,6 +22,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     secretMode: "none",
     autoLockDelay: 1,
     argonStrength: "standard",
+    biometricEnabled: false,
     lastSyncAt: null,
 };
 

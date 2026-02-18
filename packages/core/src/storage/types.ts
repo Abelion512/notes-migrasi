@@ -1,4 +1,4 @@
-import { Note, Folder, AppSettings, UserProfile } from '../Rumus';
+import { Note, Folder, AppSettings, UserProfile, SecurityLog } from '../Rumus';
 import { DBSchema } from 'idb';
 
 export interface LembaranSchema extends DBSchema {
@@ -18,6 +18,10 @@ export interface LembaranSchema extends DBSchema {
     meta: {
         key: string;
         value: unknown;
+    };
+    logs: {
+        key: string;
+        value: SecurityLog;
     };
 }
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, Timer, Zap } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, Timer, Zap, History, ChevronRight, Fingerprint } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';
 
@@ -34,7 +34,78 @@ export default function SecurityManagementPage() {
 
             <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan</h1>
 
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Audit & Aktivitas</h2>
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Biometrik</h2>
+            <div className="ios-list-group mb-10">
+                <button
+                    onClick={() => {
+                        haptic.light();
+                        updateSettings({ biometricEnabled: !settings.biometricEnabled });
+                    }}
+                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
+                            <Fingerprint size={18} />
+                        </div>
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-medium text-[17px]">Gunakan Biometrik</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Buka brankas via TouchID/FaceID</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                         <span className="text-[var(--primary)] text-sm font-semibold">
+                            {settings.biometricEnabled ? "Aktif" : "Mati"}
+                        </span>
+                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? "bg-green-500" : "bg-[var(--separator)]"}`}>
+                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? "translate-x-6" : "translate-x-0"}`} />
+                        </div>
+                    </div>
+                </button>
+            </div>
+            <div className="ios-list-group mb-10">
+                <Link href="/laras/keamanan/log" className="ios-list-item active:bg-[var(--surface-active)]">
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
+                            <History size={18} />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-medium text-[17px]">Log Keamanan</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Riwayat audit brankas</span>
+                        </div>
+                    </div>
+                    <ChevronRight size={18} className="text-[var(--text-muted)]" />
+                </Link>
+            </div>
             <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Enkripsi & Brankas</h2>
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Biometrik</h2>
+            <div className="ios-list-group mb-10">
+                <button
+                    onClick={() => {
+                        haptic.light();
+                        updateSettings({ biometricEnabled: !settings.biometricEnabled });
+                    }}
+                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
+                            <Fingerprint size={18} />
+                        </div>
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-medium text-[17px]">Gunakan Biometrik</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Buka brankas via TouchID/FaceID</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                         <span className="text-[var(--primary)] text-sm font-semibold">
+                            {settings.biometricEnabled ? "Aktif" : "Mati"}
+                        </span>
+                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? "bg-green-500" : "bg-[var(--separator)]"}`}>
+                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? "translate-x-6" : "translate-x-0"}`} />
+                        </div>
+                    </div>
+                </button>
+            </div>
             <div className="ios-list-group mb-10">
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
@@ -81,6 +152,34 @@ export default function SecurityManagementPage() {
             </div>
 
             <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Penyamaran</h2>
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Biometrik</h2>
+            <div className="ios-list-group mb-10">
+                <button
+                    onClick={() => {
+                        haptic.light();
+                        updateSettings({ biometricEnabled: !settings.biometricEnabled });
+                    }}
+                    className="w-full ios-list-item active:bg-[var(--surface-active)]"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
+                            <Fingerprint size={18} />
+                        </div>
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-medium text-[17px]">Gunakan Biometrik</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Buka brankas via TouchID/FaceID</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                         <span className="text-[var(--primary)] text-sm font-semibold">
+                            {settings.biometricEnabled ? "Aktif" : "Mati"}
+                        </span>
+                        <div className={`w-12 h-6 rounded-full p-1 transition-colors ${settings.biometricEnabled ? "bg-green-500" : "bg-[var(--separator)]"}`}>
+                            <div className={`w-4 h-4 bg-white rounded-full transition-transform ${settings.biometricEnabled ? "translate-x-6" : "translate-x-0"}`} />
+                        </div>
+                    </div>
+                </button>
+            </div>
             <div className="ios-list-group mb-10">
                 <button
                     onClick={toggleSecretMode}
