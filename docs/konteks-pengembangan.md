@@ -79,3 +79,17 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Fokus versi ini adalah "Speed is a Feature". Aplikasi kini siap menangani ribuan catatan dengan performa instan.
+
+## 8. Standarisasi Instalasi & Polish UI (v2.7.0)
+
+**Masalah**: Alur instalasi CLI tidak ramah bagi pengguna WSL/Linux yang belum memiliki `bun`, dan landing page memiliki masalah keterbacaan pada headline serta ukuran tombol yang kurang proporsional.
+
+**Solusi**:
+- **Universal Installer (`install.sh`)**: Menciptakan skrip instalasi satu baris yang cerdas; mampu mendeteksi dan menginstal `bun` secara otomatis sebelum menarik repositori Lembaran dan mendaftarkan perintah `lembaran` secara global.
+- **Refinement Tipografi**: Menurunkan skala headline dari `8xl` ke `6xl` dan melonggarkan *letter-spacing* untuk meningkatkan kenyamanan baca sesuai feedback pengguna.
+- **Proporsionalitas Tombol**: Mengecilkan ukuran tombol aksi utama agar lebih elegan dan tidak mendominasi layar secara berlebihan.
+- **Transparansi Fitur**: Memberikan label "Coming Soon" yang jelas pada widget instalasi untuk metode yang sedang dalam pengembangan (NPM, Brew, dll).
+
+---
+> [!NOTE]
+> Versi ini menandai kesiapan Lembaran untuk digunakan secara luas oleh komunitas developer melalui alur instalasi yang jauh lebih reliabel.

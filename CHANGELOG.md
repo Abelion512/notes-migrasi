@@ -1,6 +1,15 @@
 # Changelog
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
+## [2.7.0] - 2026-02-18
+### Added
+- **Skrip Instalasi Cerdas**: `install.sh` untuk instalasi otomatis Bun dan Lembaran CLI di WSL/Linux.
+- **Status "Coming Soon"**: Indikator status untuk metode instalasi yang belum aktif di landing page.
+### Changed
+- **Tipografi Hero**: Headline lebih elegan (6xl) dengan jarak huruf yang lebih lega.
+- **Ukuran Tombol**: Tombol landing page lebih proporsional dan modern.
+- **Konfigurasi Bin**: Mendaftarkan perintah `lembaran` secara global melalui package metadata.
+
 
 ## [2.6.0] - 2026-02-18
 ### Added
