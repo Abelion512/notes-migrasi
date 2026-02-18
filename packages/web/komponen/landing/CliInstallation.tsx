@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Terminal } from 'lucide-react';
+import { Copy, Check, Terminal, Lock } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 
 const COMMANDS = {
-    curl: 'curl -fsSL https://lembaran.vercel.app/install.sh | sh',
-    npm: 'npm install -g lembaran',
-    bun: 'bun add -g lembaran',
-    brew: 'brew install lembaran512/tap/lembaran',
-    paru: 'paru -S lembaran-bin'
+    curl: 'curl -fsSL https://lembaran.vercel.app/install.sh | bash',
+    npm: 'Coming Soon',
+    bun: 'Coming Soon',
+    brew: 'Coming Soon',
+    paru: 'Coming Soon'
 };
 
 export const CliInstallation = () => {
@@ -22,21 +22,21 @@ export const CliInstallation = () => {
         if (typeof navigator !== 'undefined') {
             const ua = navigator.userAgent.toLowerCase();
             if (ua.includes('mac')) {
-                setActiveTab('brew');
-            } else if (ua.includes('linux')) {
-                // Check if likely Arch (paru) or generic (curl)
-                // For now just stick to curl as safest default, but could be smarter
-                setActiveTab('curl');
+                // setActiveTab('brew'); // Set to curl for now as brew is coming soon
             }
         }
     }, []);
 
     const handleCopy = () => {
+        if (COMMANDS[activeTab] === 'Coming Soon') return;
+
         navigator.clipboard.writeText(COMMANDS[activeTab]);
         setCopied(true);
         haptic.success();
         setTimeout(() => setCopied(false), 2000);
     };
+
+    const isComingSoon = COMMANDS[activeTab] === 'Coming Soon';
 
     return (
         <div className="w-full max-w-2xl mx-auto mt-12 px-4">
@@ -59,16 +59,18 @@ export const CliInstallation = () => {
                     ))}
                 </div>
                 <div className="p-8 relative group">
-                    <div className="flex items-center gap-4 bg-black/40 p-5 rounded-2xl border border-white/5 font-mono text-sm sm:text-base overflow-x-auto no-scrollbar">
-                        <Terminal size={18} className="text-blue-500 shrink-0" />
-                        <span className="text-gray-200 whitespace-nowrap">{COMMANDS[activeTab]}</span>
+                    <div className={`flex items-center gap-4 bg-black/40 p-5 rounded-2xl border border-white/5 font-mono text-sm sm:text-base overflow-x-auto no-scrollbar ${isComingSoon ? 'opacity-50' : ''}`}>
+                        {isComingSoon ? <Lock size={18} className="text-gray-500 shrink-0" /> : <Terminal size={18} className="text-blue-500 shrink-0" />}
+                        <span className={`whitespace-nowrap ${isComingSoon ? 'text-gray-500 italic' : 'text-gray-200'}`}>{COMMANDS[activeTab]}</span>
                     </div>
-                    <button
-                        onClick={handleCopy}
-                        className="absolute right-12 top-1/2 -translate-y-1/2 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all active:scale-95"
-                    >
-                        {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} className="text-gray-400" />}
-                    </button>
+                    {!isComingSoon && (
+                        <button
+                            onClick={handleCopy}
+                            className="absolute right-12 top-1/2 -translate-y-1/2 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all active:scale-95"
+                        >
+                            {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} className="text-gray-400" />}
+                        </button>
+                    )}
                 </div>
             </div>
             <p className="mt-4 text-gray-500 text-xs font-medium uppercase tracking-[0.2em]">

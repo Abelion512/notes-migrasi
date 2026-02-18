@@ -45,11 +45,11 @@ export default function LandingPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-black uppercase tracking-widest">
+                        <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-bold uppercase tracking-widest">
                             <Sparkles size={14} />
                             <span>Kecerdasan Personal Lokal-First</span>
                         </div>
-                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
+                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 leading-tight">
                             Aksara yang <br />
                             <span className="text-blue-500">Berdikari.</span>
                         </h1>
@@ -59,10 +59,10 @@ export default function LandingPage() {
                         </p>
 
                         <div className="flex flex-wrap items-center justify-center gap-4">
-                            <Link href="/arsip" className="px-10 py-5 bg-[var(--text-primary)] text-[var(--background)] rounded-2xl font-black flex items-center gap-3 hover:scale-105 transition-all shadow-2xl">
+                            <Link href="/arsip" className="px-6 py-3 bg-[var(--text-primary)] text-[var(--background)] rounded-xl font-bold flex items-center gap-3 hover:scale-105 transition-all shadow-2xl">
                                 Mulai Menulis <ArrowRight size={20} />
                             </Link>
-                            <a href="#native" className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl font-black flex items-center gap-3 hover:bg-white/10 transition-all">
+                            <a href="#native" className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all">
                                 <Download size={20} /> Unduh App
                             </a>
                         </div>
@@ -72,7 +72,7 @@ export default function LandingPage() {
                 {/* CLI Section */}
                 <section className="py-24 bg-white/[0.02] border-y border-white/5">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-black tracking-tight mb-4 uppercase">Instalasi CLI</h2>
+                        <h2 className="text-3xl font-bold tracking-tight mb-4 uppercase">Instalasi CLI</h2>
                         <p className="text-gray-500 font-medium">Akses Lembaran langsung dari terminal favorit Anda.</p>
                     </div>
                     <CliInstallation />
@@ -94,7 +94,7 @@ export default function LandingPage() {
                         <div className="w-6 h-6 rounded bg-gray-500/20" />
                         <span>© 2025 Lembaran Open Source.</span>
                     </div>
-                    <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-black">
+                    <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-bold">
                         <Link href="/privasi" className="hover:text-blue-500 transition-colors">Privasi</Link>
                         <Link href="/ketentuan" className="hover:text-blue-500 transition-colors">Ketentuan</Link>
                         <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Bantuan</Link>
