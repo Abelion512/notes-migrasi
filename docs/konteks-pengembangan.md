@@ -94,3 +94,17 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Pembaruan ini mengukuhkan Lembaran sebagai solusi pengelolaan arsip paling aman dan fleksibel untuk developer.
+
+## 9. Premium Experience & Documentation Overhaul (v2.6.1 - 18/02/2026)
+
+**Masalah**: Dokumentasi sebelumnya terlalu sederhana dan kurang mencerminkan standar produk profesional. Teks pada landing page juga sulit dibaca karena terlalu tebal dan rapat.
+
+**Solusi**:
+- **Professional Docs Engine**: Membangun sistem dokumentasi berbasis sidebar dengan navigasi kategori (Memulai, Keamanan, CLI, Integrasi, FAQ) untuk akses informasi yang lebih terstruktur.
+- **Circular Theme Reveal**: Implementasi animasi transisi tema menggunakan View Transitions API yang meluas secara sirkular dari posisi klik pengguna, memberikan efek visual mewah khas aplikasi modern.
+- **Readability Optimization**: Mengurangi ketebalan font (*font-weight*) pada teks sekunder dan meningkatkan spasi antar elemen (*whitespace*) pada landing page untuk meningkatkan kenyamanan baca.
+- **Penyelarasan Navigasi**: Sinkronisasi seluruh tautan publik di header, footer, dan menu pengaturan agar mengarah ke struktur dokumentasi baru yang konsisten.
+
+---
+> [!NOTE]
+> Lembaran kini tidak hanya unggul dalam keamanan, tetapi juga memberikan pengalaman pengguna kelas dunia yang setara dengan produk teknologi papan atas.

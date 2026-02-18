@@ -5,7 +5,7 @@ import prompts from 'prompts';
 export class TUI {
     static async jalankan() {
         console.clear();
-        console.log(pc.blue(pc.bold('=== LEMBARAN CLI v2.6.0 ===')));
+        console.log(pc.blue(pc.bold('=== LEMBARAN CLI v2.6.1 ===')));
 
         const isInit = await Arsip.isVaultInitialized();
         if (!isInit) {

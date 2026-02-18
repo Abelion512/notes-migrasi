@@ -13,7 +13,6 @@ export const PenyaringRute = ({ children }: { children: React.ReactNode }) => {
 
     // Sentinel: Allow public access to documentation and information pages
     const isPublicDocs = pathname.startsWith('/bantuan') ||
-                        pathname === '/bantuan' ||
                         pathname === '/changelog' ||
                         pathname === '/privasi' ||
                         pathname === '/ketentuan' ||
