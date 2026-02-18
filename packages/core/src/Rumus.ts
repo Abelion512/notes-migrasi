@@ -39,6 +39,9 @@ export interface AppSettings {
     syncEnabled: boolean;
     lastSyncAt: string | null;
     secretMode: "none" | "gmail";
+    panicKeyHash?: string;
+    sessionTimeout?: number;
+    customThemes?: Record<string, string>;
 }
 
 export interface UserProfile {

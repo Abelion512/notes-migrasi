@@ -24,6 +24,17 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
     const [showPassGen, setShowPassGen] = useState(false);
     const [genLength, setGenLength] = useState(16);
 
+    const getPasswordStrength = (p: string) => {
+        if (!p) return 0;
+        let score = 0;
+        if (p.length > 8) score++;
+        if (p.length > 12) score++;
+        if (/[A-Z]/.test(p)) score++;
+        if (/[0-9]/.test(p)) score++;
+        if (/[^A-Za-z0-9]/.test(p)) score++;
+        return score;
+    };
+    const strength = getPasswordStrength(data.password || "");
     const updateField = (field: keyof KredensialData, value: string) => {
         onChange({ ...data, [field]: value });
     };
@@ -174,6 +185,14 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                         value={data.password || ''}
                         onChange={(e) => updateField('password', e.target.value)}
                         placeholder="Kata Sandi"
+                </div>
+                {data.password && (
+                    <div className="px-3 pb-2 flex gap-1">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= strength ? (strength <= 2 ? "bg-red-500" : strength <= 4 ? "bg-yellow-500" : "bg-green-500") : "bg-white/5"}`} />
+                        ))}
+                    </div>
+                )}
                         className={inputClass}
                     />
                     <div className="flex items-center gap-1 flex-shrink-0">

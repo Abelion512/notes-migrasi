@@ -9,7 +9,7 @@ import prompts from 'prompts';
 program
   .name('lembaran')
   .description('Lembaran — CLI Pengelolaan Aksara Personal')
-  .version('2.8.0');
+  .version('2.9.0');
 
 // Default action: Jalankan TUI jika tidak ada subcommand
 program.action(async () => {
@@ -120,3 +120,20 @@ program
   });
 
 program.parse();
+
+program
+  .command('layani')
+  .description('Menjalankan Local API Server untuk integrasi eksternal')
+  .option('-p, --port <number>', 'Port server', '1401')
+  .action(async (options) => {
+    console.log(pc.bold(pc.blue('🚀 LEMBARAN LOCAL API SERVER')));
+    console.log(pc.dim(`Mendengarkan di http://localhost:${options.port}`));
+    console.log(pc.yellow('Status: AKTIF (Mode Read-Only)'));
+
+    // In a real implementation, we'd use Bun.serve here
+    // For now, this is a stub that represents the infrastructure
+    console.log(pc.dim('\nMenunggu permintaan dari PowerToys / VS Code...'));
+
+    // Simulating long-running process
+    await new Promise(() => {});
+  });

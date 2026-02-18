@@ -23,6 +23,16 @@ export const LayarKunciBrankas = () => {
     const secretMode = usePundi(s => s.settings.secretMode);
 
     useEffect(() => {
+        if (!isVaultLocked && settings.sessionTimeout) {
+            const timeout = setTimeout(() => {
+                setVaultLocked(true);
+                audio.lock();
+                haptic.medium();
+            }, settings.sessionTimeout * 60 * 1000);
+            return () => clearTimeout(timeout);
+        }
+    }, [isVaultLocked, settings.sessionTimeout, setVaultLocked]);
+    useEffect(() => {
         const checkVaultStatus = async () => {
             try {
                 const initialized = await Arsip.isVaultInitialized();
@@ -58,6 +68,7 @@ export const LayarKunciBrankas = () => {
         setIsLoading(true);
         try {
             await Arsip.setupVault(password);
+            audio.unlock();
             setVaultLocked(false);
         } catch (err) {
             console.error(err);
@@ -78,7 +89,9 @@ export const LayarKunciBrankas = () => {
         try {
             const isValid = await Arsip.unlockVault(pw);
             if (isValid) {
+                audio.unlock();
                 setVaultLocked(false);
+                audio.lock();
             } else {
                 setError("Kata sandi salah");
             }

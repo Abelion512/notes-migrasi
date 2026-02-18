@@ -11,7 +11,6 @@ import { CliInstallation } from '@/komponen/landing/CliInstallation';
 import { ComparisonTable } from '@/komponen/landing/ComparisonTable';
 import { NativeShowcase } from '@/komponen/landing/NativeShowcase';
 import { CustomizationPreview } from '@/komponen/landing/CustomizationPreview';
-import { CustomizationPreview } from '@/komponen/landing/CustomizationPreview';
 import { ThemeToggle } from '@/komponen/landing/ThemeToggle';
 
 const WORDS = ['Berdikari', 'Aman', 'Cerdas', 'Pribadi', 'Instan'];

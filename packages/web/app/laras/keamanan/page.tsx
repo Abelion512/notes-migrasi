@@ -1,18 +1,35 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ShieldCheck, Lock, Key, Ghost } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, AlertTriangle, Clock } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';
+import { Arsip } from '@lembaran/core/Arsip';
 
 export default function SecurityManagementPage() {
     const { settings, updateSettings } = usePundi();
+    const [panicInput, setPanicInput] = useState('');
+    const [isPanicSaved, setIsPanicSaved] = useState(false);
 
     const toggleSecretMode = () => {
         haptic.light();
         const nextMode = settings.secretMode === 'none' ? 'gmail' : 'none';
         updateSettings({ secretMode: nextMode });
+    };
+
+    const handleSavePanic = async () => {
+        if (!panicInput) return;
+        await Arsip.setPanicKey(panicInput);
+        setIsPanicSaved(true);
+        setPanicInput('');
+        haptic.success();
+        setTimeout(() => setIsPanicSaved(false), 3000);
+    };
+
+    const handleTimeoutChange = (minutes: number) => {
+        updateSettings({ sessionTimeout: minutes });
+        haptic.light();
     };
 
     return (
@@ -24,6 +41,7 @@ export default function SecurityManagementPage() {
 
             <h1 className="text-3xl font-bold mb-8 tracking-tight">Keamanan</h1>
 
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Status & Sesi</h2>
             <div className="ios-list-group mb-10">
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
@@ -38,16 +56,51 @@ export default function SecurityManagementPage() {
                 <div className="ios-list-item">
                     <div className="flex items-center gap-3">
                         <div className="p-1.5 rounded-md bg-orange-500 text-white flex items-center justify-center shadow-sm">
-                            <Lock size={18} />
+                            <Clock size={18} />
                         </div>
-                        <span className="font-medium text-[17px]">Kunci Otomatis</span>
+                        <span className="font-medium text-[17px]">Durasi Sesi</span>
                     </div>
-                    <span className="text-[var(--text-secondary)] text-sm">1 Menit</span>
+                    <select
+                        value={settings.sessionTimeout || 1}
+                        onChange={(e) => handleTimeoutChange(Number(e.target.value))}
+                        className="bg-transparent text-[var(--primary)] font-bold text-sm outline-none"
+                    >
+                        <option value={1}>1 Menit</option>
+                        <option value={5}>5 Menit</option>
+                        <option value={15}>15 Menit</option>
+                        <option value={60}>1 Jam</option>
+                    </select>
                 </div>
             </div>
 
-            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Penyamaran</h2>
+            <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 ml-4">Protokol Darurat</h2>
             <div className="ios-list-group mb-10">
+                <div className="p-4 bg-red-500/5 border-b border-white/5">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="p-1.5 rounded-md bg-red-500 text-white flex items-center justify-center shadow-sm">
+                            <AlertTriangle size={18} />
+                        </div>
+                        <span className="font-bold text-[17px]">Panic Key</span>
+                    </div>
+                    <p className="text-[11px] text-[var(--text-muted)] mb-4 leading-relaxed">
+                        Jika kata sandi ini dimasukkan di layar login, seluruh data brankas dan pengaturan akan <strong>dihapus secara permanen</strong> seketika.
+                    </p>
+                    <div className="flex gap-2">
+                        <input
+                            type="password"
+                            placeholder="Set Panic Key..."
+                            value={panicInput}
+                            onChange={(e) => setPanicInput(e.target.value)}
+                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-red-500/50 transition-all"
+                        />
+                        <button
+                            onClick={handleSavePanic}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isPanicSaved ? 'bg-green-500 text-white' : 'bg-red-500 text-white hover:bg-red-600'}`}
+                        >
+                            {isPanicSaved ? 'Tersimpan' : 'Set'}
+                        </button>
+                    </div>
+                </div>
                 <button
                     onClick={toggleSecretMode}
                     className="w-full ios-list-item active:bg-[var(--surface-active)]"
@@ -80,7 +133,7 @@ export default function SecurityManagementPage() {
                 <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
                     Arsip Anda dilindungi dengan enkripsi AES-256-GCM. Kata sandi diubah menjadi kunci kriptografi menggunakan algoritma Argon2id secara lokal di perangkat Anda.
                     <br /><br />
-                    <strong>Mode Rahasia:</strong> Jika diaktifkan, layar kunci brankas akan berubah menjadi halaman login Google/Gmail palsu untuk melindungi privasi Anda di depan umum.
+                    <strong>Multi-Vault:</strong> Versi terbaru mendukung manajemen beberapa brankas melalui menu inisialisasi di CLI.
                 </p>
             </div>
         </div>

@@ -30,6 +30,16 @@ export const Arsip = {
 
     async unlockVault(password: string): Promise<boolean> {
         try {
+            // Panic Key Check
+            const panicHash = await Gudang.get('meta', 'panic_hash') as string;
+            if (panicHash) {
+                const currentHash = await Integritas.hitungHash({ p: password });
+                if (currentHash === panicHash) {
+                    await this.destroyAllData();
+                    return false;
+                }
+            }
+
             const saltHex = await Gudang.get('meta', 'auth_salt') as string;
             const packedValidator = await Gudang.get('meta', 'auth_validator') as string;
 
@@ -58,12 +68,28 @@ export const Arsip = {
         }
     },
 
+    async setPanicKey(password: string): Promise<void> {
+        const hash = await Integritas.hitungHash({ p: password });
+        await Gudang.set('meta', 'panic_hash', hash);
+    },
+
+    async destroyAllData(): Promise<void> {
+        await Promise.all([
+            Gudang.clear('notes'),
+            Gudang.clear('folders'),
+            Gudang.clear('meta')
+        ]);
+        if (typeof window !== 'undefined') {
+            window.localStorage.clear();
+            window.location.href = '/';
+        }
+    },
+
     async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
         if (Brankas.isLocked()) {
             throw new Error('Vault is locked. Cannot save data.');
         }
 
-        // Smart Title & Tags Automation
         let title = note.title;
         if (!title || title === 'Tanpa Judul') {
             title = await Pujangga.sarankanJudul(note.content);
@@ -172,18 +198,12 @@ export const Arsip = {
     },
 
     async getStats() {
-        if (Brankas.isLocked()) {
-             // Try to count without active key for summary (encrypted counts don't need key)
-             try {
-                const notesCount = await Gudang.count('notes');
-                const foldersCount = await Gudang.count('folders');
-                return { notes: notesCount, folders: foldersCount };
-             } catch {
-                return { notes: 0, folders: 0 };
-             }
+        try {
+            const notesCount = await Gudang.count('notes');
+            const foldersCount = await Gudang.count('folders');
+            return { notes: notesCount, folders: foldersCount };
+        } catch {
+            return { notes: 0, folders: 0 };
         }
-        const notesCount = await Gudang.count('notes');
-        const foldersCount = await Gudang.count('folders');
-        return { notes: notesCount, folders: foldersCount };
     }
 };

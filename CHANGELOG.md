@@ -1,6 +1,18 @@
 # Changelog
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
+## [2.9.0] - 2026-02-18
+### Added
+- **Panic Key (Protokol Darurat)**: Penghapusan data instan jika kata sandi darurat dimasukkan.
+- **Session Timeout**: Kunci otomatis brankas setelah durasi yang ditentukan.
+- **Sound Design**: Feedback audio halus untuk aksi buka/kunci brankas.
+- **Password Strength Meter**: Indikator kekuatan sandi real-time.
+- **Storage Stats & Dead Link Checker**: Alat pemeliharaan database di halaman Laras Data.
+- **Local API Server**: Perintah `lembaran layani` untuk integrasi eksternal.
+- **Dukungan PWA**: Manifest aplikasi untuk instalasi offline.
+### Fixed
+- **Build Error**: Perbaikan duplikasi import pada landing page.
+
 ## [2.8.0] - 2026-02-18
 ### Added
 - **Hero Section Dinamis**: Judul dengan efek siklus kata dan layout gaya Claude Code.

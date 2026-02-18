@@ -107,3 +107,18 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!NOTE]
 > Versi 2.8.0 mengalihkan fokus dari sekadar fungsionalitas menuju pengalaman visual yang premium dan personal.
+
+## 10. Protokol Keamanan & Utilitas Menyeluruh (v2.9.0)
+
+**Masalah**: Meskipun visual sudah premium, fitur keamanan inti seperti Panic Key dan Session Timeout masih berupa rencana, serta kurangnya alat pemeliharaan data bagi pengguna.
+
+**Solusi**:
+- **Protokol Panic Key**: Mengimplementasikan logika penghapusan data instan (nuke) jika user memasukkan kata sandi darurat yang telah diatur. Ini melindungi user dari paksaan akses data.
+- **Auto-Lock Session**: Menambahkan pengaturan durasi sesi yang secara otomatis mengunci brankas dan membersihkan kunci aktif dari memori setelah waktu tertentu.
+- **Audio Haptics**: Menggunakan Web Audio API untuk memberikan feedback suara puitis saat interaksi kritis, meningkatkan "feel" aplikasi.
+- **Developer Maintenance Tools**: Menambahkan statistik penggunaan IndexedDB dan alat pemindai tautan mati (dead link) untuk menjaga kualitas arsip kredensial.
+- **Local API Infrastructure**: Memulai pondasi server API lokal di CLI untuk integrasi masa depan dengan VS Code dan launcher sistem.
+
+---
+> [!NOTE]
+> Versi 2.9.0 adalah lompatan besar dalam hal fungsionalitas keamanan 'Sentinel' dan kesiapan ekosistem Lembaran.
