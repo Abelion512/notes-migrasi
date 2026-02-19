@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ArrowRight, Github, Book, History, Download,
-    Globe, Zap, Shield, Sparkles
+    ArrowRight, Download,
+    Sparkles
 } from 'lucide-react';
 import { CliInstallation } from '@/komponen/landing/CliInstallation';
 import { ComparisonTable } from '@/komponen/landing/ComparisonTable';

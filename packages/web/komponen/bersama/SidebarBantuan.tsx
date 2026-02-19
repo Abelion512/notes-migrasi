@@ -3,8 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-    Book, Shield, Terminal, Zap,
-    Database, Github, ArrowLeft,
+    Book, Shield, Zap,
+    Database, Github,
     Command, Download, PlayCircle
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';

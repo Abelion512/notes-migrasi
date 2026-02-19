@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import {
-    ChevronLeft, Terminal, Shield, Zap, Book,
+    Terminal, Shield, Zap, Book,
     Command, Download, Play, Copy, Check,
-    ArrowRight, Github, Lock, Database, Globe
+    ArrowRight, Github, Lock, Database
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { ThemeToggle } from '@/komponen/landing/ThemeToggle';

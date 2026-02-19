@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Copy, Check, Terminal, Lock } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 
@@ -35,7 +35,7 @@ export const CliInstallation = () => {
                     {Object.keys(COMMANDS).map((tab) => (
                         <button
                             key={tab}
-                            onClick={() => { setActiveTab(tab as any); haptic.light(); }}
+                            onClick={() => { setActiveTab(tab as keyof typeof COMMANDS); haptic.light(); }}
                             className={`px-6 py-4 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'}`}
                         >
                             {tab}

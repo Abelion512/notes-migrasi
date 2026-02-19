@@ -28,7 +28,7 @@ export default function DataManagementPage() {
             const blob = new Blob([encryptedData], { type: 'application/octet-stream' });
             saveAs(blob, `lembaran-encrypted-vault-${new Date().toISOString().split('T')[0]}.lembaran`);
             haptic.success();
-        } catch (e) {
+        } catch (_e) {
             console.error(e);
             haptic.error();
         } finally {
@@ -62,7 +62,7 @@ export default function DataManagementPage() {
             alert(`Berhasil mengimpor ${files.length} file.`);
             Arsip.getStats().then(setStats);
             haptic.success();
-        } catch (e) {
+        } catch (_e) {
             console.error(e);
             haptic.error();
         } finally {
@@ -79,14 +79,14 @@ export default function DataManagementPage() {
             let deadCount = 0;
             for (const note of credentialNotes) {
                 const decrypted = await Arsip.decryptNote(note);
-                const creds = decrypted.kredensial as any;
+                const creds = decrypted.kredensial as Record<string, unknown>;
                 if (creds?.url && (creds.url.includes('example.com') || creds.url.includes('test.local'))) {
                     deadCount++;
                 }
             }
             setDeadLinks(deadCount);
             haptic.success();
-        } catch (e) {
+        } catch (_e) {
             haptic.error();
         } finally {
             setIsExporting(false);

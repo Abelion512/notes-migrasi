@@ -116,7 +116,7 @@ export const PetaCatatan = ({ onClose }: { onClose: () => void }) => {
 
                 <div className="absolute bottom-10 left-10 p-6 rounded-[2rem] bg-[var(--background)]/40 backdrop-blur-md border border-white/5 shadow-2xl max-w-xs animate-in slide-in-from-bottom-10 duration-700">
                     <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed italic">
-                        "Setiap aksara adalah simpul dalam jaring kesadaran. Hubungkan mereka melalui label untuk melihat pola pikir Anda secara visual."
+                        &quot;Setiap aksara adalah simpul dalam jaring kesadaran. Hubungkan mereka melalui label untuk melihat pola pikir Anda secara visual.&quot;
                     </p>
                 </div>
             </div>

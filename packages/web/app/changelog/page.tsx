@@ -18,6 +18,7 @@ async function getChangelog() {
                 return marked(fileContent);
             }
         } catch (e) {
+            void e;
             continue;
         }
     }

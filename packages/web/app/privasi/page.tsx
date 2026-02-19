@@ -17,6 +17,7 @@ async function getContent() {
                 return marked(fileContent);
             }
         } catch (e) {
+            void e;
             continue;
         }
     }
