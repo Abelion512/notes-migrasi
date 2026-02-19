@@ -117,7 +117,7 @@ export default function NoteListPage() {
     };
 
     const handleBulkDelete = async () => {
-        if (!confirm(`Hapus ${selectedIds.length} catatan secara permanen?`)) return;
+        if (!confirm(`Hapus .* aksara secara permanen?`)) return;
         haptic.heavy();
         for (const id of selectedIds) {
             await Arsip.deleteNote(id);
@@ -179,7 +179,7 @@ export default function NoteListPage() {
                     <div className="p-5"><KerangkaCatatan /></div>
                 ) : notes.length === 0 ? (
                     <div className="mt-12">
-                        <IlustrasiKosong pesan="Brankas Kosong" />
+                        <IlustrasiKosong pesan="Gudang Kosong" />
                     </div>
                 ) : (
                     dimensions.height > 0 && (

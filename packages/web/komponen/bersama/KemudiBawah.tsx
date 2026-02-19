@@ -11,9 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@lembaran/core/Indera';
 
 const NAV_ITEMS = [
-    { icon: Home, label: 'Arsip', path: '/arsip' },
-    { icon: Search, label: 'Cari', path: '/cari' },
-    { icon: Plus, label: 'Tambah', path: '/tambah', isFab: true },
+    { icon: Home, label: 'Gudang', path: '/arsip' },
+    { icon: Search, label: 'Jelajah', path: '/cari' },
+    { icon: Plus, label: 'Ukir', path: '/tambah', isFab: true },
     { icon: User, label: 'Jatidiri', path: '/jatidiri' },
     { icon: Settings, label: 'Laras', path: '/laras' },
 ];

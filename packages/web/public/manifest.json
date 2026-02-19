@@ -8,7 +8,7 @@
   "theme_color": "#135bec",
   "icons": [
     {
-      "src": "/Logo_Abelion.png",
+      "src": "/image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

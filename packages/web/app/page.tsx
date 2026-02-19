@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ArrowRight, Download,
@@ -30,8 +31,8 @@ export default function LandingPage() {
             {/* Header / Nav */}
             <header className="fixed top-0 left-0 right-0 z-50 p-6 flex items-center justify-between backdrop-blur-md bg-[var(--background)]/80 border-b border-white/5">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20">
-                        L
+                    <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
+                        <Image src="/image.png" alt="Lembaran Logo" width={40} height={40} className="object-cover" />
                     </div>
                     <span className="text-xl font-bold tracking-tight">Lembaran</span>
                 </div>
@@ -127,7 +128,9 @@ export default function LandingPage() {
             <footer className="p-12 border-t border-white/5 bg-white/[0.01]">
                 <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-gray-500 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-gray-500/20" />
+                        <div className="w-6 h-6 rounded overflow-hidden">
+                            <Image src="/image.png" alt="Lembaran Logo" width={24} height={24} className="grayscale opacity-50" />
+                        </div>
                         <span>© 2025 Lembaran Open Source.</span>
                     </div>
                     <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-black opacity-50">

@@ -10,6 +10,10 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
     title: "Lembaran",
     description: "Brankas Aksara Personal yang Berdikari",
+    icons: {
+        icon: "/image.png",
+        apple: "/image.png",
+    },
     appleWebApp: {
         capable: true,
         statusBarStyle: "default",

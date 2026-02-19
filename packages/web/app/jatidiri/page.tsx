@@ -112,7 +112,7 @@ export default function ProfilePage() {
                 <div className="ios-separator"></div>
                 <div className="ios-list-item">
                     <span className="font-medium text-[15px]">Level</span>
-                    <span className="text-[var(--text-secondary)]">Arsiparis Muda (Lvl {profile.level})</span>
+                    <span className="text-[var(--text-secondary)]">Penjaga Aksara (Lvl {profile.level})</span>
                 </div>
             </div>
         </div>

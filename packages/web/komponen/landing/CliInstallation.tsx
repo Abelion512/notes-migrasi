@@ -1,71 +1,74 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Terminal, Copy, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Terminal, Lock } from 'lucide-react';
-import { haptic } from '@lembaran/core/Indera';
 
 const COMMANDS = {
-    curl: 'curl -fsSL https://lembaran.vercel.app/install.sh | bash',
     npm: 'npm install -g Abelion512/lembaran',
+    yarn: 'yarn global add Abelion512/lembaran',
     bun: 'bun install -g Abelion512/lembaran',
-    brew: 'Coming Soon',
-    paru: 'Coming Soon'
 };
 
 export const CliInstallation = () => {
-    const [activeTab, setActiveTab] = useState<keyof typeof COMMANDS>('curl');
+    const [method, setMethod] = useState<keyof typeof COMMANDS>('bun');
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        if (COMMANDS[activeTab] === 'Coming Soon') return;
-
-        navigator.clipboard.writeText(COMMANDS[activeTab]);
+        navigator.clipboard.writeText(COMMANDS[method]);
         setCopied(true);
-        haptic.success();
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const isComingSoon = COMMANDS[activeTab] === 'Coming Soon';
-
     return (
-        <div className="w-full max-w-2xl mx-auto mt-12 px-4">
-            <div className="glass-card overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl bg-white/5 backdrop-blur-md">
-                <div className="flex border-b border-white/10 overflow-x-auto no-scrollbar">
-                    {Object.keys(COMMANDS).map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => { setActiveTab(tab as keyof typeof COMMANDS); haptic.light(); }}
-                            className={`px-6 py-4 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'}`}
-                        >
-                            {tab}
-                            {activeTab === tab && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"
-                                />
-                            )}
-                        </button>
-                    ))}
-                </div>
-                <div className="p-8 relative group">
-                    <div className={`flex items-center gap-4 bg-black/40 p-5 rounded-2xl border border-white/5 font-mono text-sm sm:text-base overflow-x-auto no-scrollbar transition-all ${isComingSoon ? 'opacity-30 grayscale' : 'opacity-100'}`}>
-                        {isComingSoon ? <Lock size={18} className="text-gray-500 shrink-0" /> : <Terminal size={18} className="text-blue-500 shrink-0" />}
-                        <span className={`whitespace-nowrap ${isComingSoon ? 'text-gray-500 italic' : 'text-gray-200'}`}>{COMMANDS[activeTab]}</span>
+        <div className="hidden md:block max-w-2xl mx-auto px-6">
+            <div className="glass-card overflow-hidden">
+                <div className="px-4 py-3 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="flex gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                            <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                            <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                        </div>
+                        <div className="ml-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                            <Terminal size={12} />
+                            <span>Terminal Installation</span>
+                        </div>
                     </div>
-                    {!isComingSoon && (
-                        <button
-                            onClick={handleCopy}
-                            className="absolute right-12 top-1/2 -translate-y-1/2 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all active:scale-95 group-hover:scale-110"
-                        >
-                            {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} className="text-gray-400" />}
-                        </button>
-                    )}
+                    <div className="flex bg-black/20 p-1 rounded-lg">
+                        {(['npm', 'yarn', 'bun'] as const).map((m) => (
+                            <button
+                                key={m}
+                                onClick={() => setMethod(m)}
+                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${
+                                    method === m ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'
+                                }`}
+                            >
+                                {m.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <div className="p-8 font-mono text-sm relative group">
+                    <div className="flex items-center gap-4 text-gray-400">
+                        <span className="text-blue-500 shrink-0 select-none">❯</span>
+                        <code className="break-all">{COMMANDS[method]}</code>
+                    </div>
+                    <button
+                        onClick={handleCopy}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-white/5 border border-white/10 opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10 active:scale-90"
+                    >
+                        {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                    </button>
                 </div>
             </div>
-            <p className="mt-4 text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] text-center opacity-50">
-                Kompatibel dengan macOS, Linux, dan Windows (WSL)
-            </p>
+            <div className="mt-4 flex items-center justify-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 opacity-50">
+                <span>Ringan: ~2MB</span>
+                <span className="w-1 h-1 rounded-full bg-gray-500" />
+                <span>Instan: Shorthand Commands</span>
+                <span className="w-1 h-1 rounded-full bg-gray-500" />
+                <span>Aman: Sandboxed</span>
+            </div>
         </div>
     );
 };

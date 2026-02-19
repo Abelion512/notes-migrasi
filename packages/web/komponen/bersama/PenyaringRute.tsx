@@ -14,6 +14,7 @@ export const PenyaringRute = ({ children }: { children: React.ReactNode }) => {
     const rutePublik = [
         '/',
         '/bantuan',
+        '/versi',
 
         '/ketentuan',
         '/privasi',

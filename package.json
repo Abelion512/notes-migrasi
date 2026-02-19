@@ -1,5 +1,5 @@
 {
-  "name": "lembaran-monorepo",
+  "name": "lembaran",
   "version": "3.0.0",
   "private": true,
   "workspaces": [

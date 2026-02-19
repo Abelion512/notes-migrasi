@@ -5,7 +5,6 @@ import { usePundi } from '@lembaran/core/Pundi';
 
 export const PengaturSuasana = () => {
     const themeSetting = usePundi(state => state.settings.theme);
-    const prevTheme = useRef(themeSetting);
 
     useEffect(() => {
         const applyTheme = () => {
@@ -16,14 +15,7 @@ export const PengaturSuasana = () => {
             }
 
             const doc = document.documentElement;
-
-            if (prevTheme.current !== themeSetting) {
-                doc.classList.add('theme-transitioning');
-                setTimeout(() => doc.classList.remove('theme-transitioning'), 400);
-            }
-
             doc.setAttribute('data-theme', theme);
-            prevTheme.current = themeSetting;
         };
 
         applyTheme();
