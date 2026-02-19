@@ -48,44 +48,23 @@ export default function DocumentationPage() {
                 <div className="flex items-center gap-4">
                     <ThemeToggle />
                     <Link href="/arsip" className="px-4 py-2 bg-blue-500 text-white rounded-full font-bold text-xs">
-                        Buka Arsip
+                        Ke Aplikasi
                     </Link>
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto w-full px-6 py-12 lg:py-24 space-y-24">
-                {/* Hero / Overview */}
+            <main className="max-w-4xl mx-auto w-full px-6 lg:px-12 py-12 lg:py-24 space-y-32">
+                {/* Overview */}
                 <section id="overview" className="scroll-mt-24">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase tracking-widest mb-6">
-                        <Book size={12} />
-                        <span>Panduan Pengguna</span>
+                        <Book size={12} /> Dokumentasi Resmi
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">Aksara yang <span className="text-blue-500">Berdikari.</span></h1>
-                    <p className="text-lg text-[var(--text-secondary)] font-medium leading-relaxed mb-12">
-                        Selamat datang di dokumentasi resmi Lembaran. Pelajari bagaimana kami melindungi data Anda dengan enkripsi kelas militer namun tetap memberikan pengalaman menulis yang instan.
+                    <h1 className="text-4xl lg:text-6xl font-black tracking-tighter mb-8 leading-[0.9]">
+                        Brankas Aksara yang <span className="text-blue-500">Berdikari.</span>
+                    </h1>
+                    <p className="text-lg text-[var(--text-secondary)] font-medium leading-relaxed max-w-2xl">
+                        Lembaran adalah sistem manajemen catatan dan kredensial local-first yang memprioritaskan privasi absolut, performa tinggi, dan pengalaman pengguna yang puitis.
                     </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="p-8 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10 shadow-sm">
-                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-6">
-                                <Shield size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold mb-3">Keamanan Absolut</h3>
-                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-medium">
-                                Semua data dienkripsi menggunakan <strong>Argon2id</strong> untuk derivasi kunci dan <strong>AES-GCM 256-bit</strong> untuk penyimpanan.
-                            </p>
-                        </div>
-
-                        <div className="p-8 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10 shadow-sm">
-                            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-6">
-                                <Zap size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold mb-3">Performa Instan</h3>
-                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-medium">
-                                Dibangun di atas <strong>Next.js 15+</strong> dan <strong>Bun</strong>. Navigasi dan pencarian terjadi dalam milidetik.
-                            </p>
-                        </div>
-                    </div>
                 </section>
 
                 {/* Keamanan */}
@@ -93,7 +72,7 @@ export default function DocumentationPage() {
                     <h2 className="text-2xl font-black tracking-tight mb-8 uppercase flex items-center gap-3">
                         <Lock size={20} className="text-blue-500" /> Arsitektur Keamanan
                     </h2>
-                    <div className="ios-list-group overflow-hidden">
+                    <div className="ios-list-group overflow-hidden bg-[var(--surface)] border border-[var(--separator)]/10">
                         <div className="p-8">
                             <p className="text-sm text-[var(--text-secondary)] mb-6 font-medium leading-relaxed">
                                 Lembaran menggunakan pendekatan <strong>Zero-Knowledge Architecture</strong>. Kami tidak memiliki akses ke kunci enkripsi atau data Anda.
@@ -114,6 +93,27 @@ export default function DocumentationPage() {
                                     </div>
                                 </li>
                             </ul>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Performa */}
+                <section id="performa" className="scroll-mt-24">
+                    <h2 className="text-2xl font-black tracking-tight mb-8 uppercase flex items-center gap-3">
+                        <Zap size={20} className="text-yellow-500" /> Performa Tinggi
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-8 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10">
+                            <h3 className="text-lg font-bold mb-2">Virtual List</h3>
+                            <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-medium">
+                                Menggunakan react-window untuk merender ribuan catatan tanpa lag, menjaga penggunaan memori tetap efisien.
+                            </p>
+                        </div>
+                        <div className="p-8 rounded-[2.5rem] bg-[var(--surface)] border border-[var(--separator)]/10">
+                            <h3 className="text-lg font-bold mb-2">Smart Indexing</h3>
+                            <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-medium">
+                                Pencarian instan (Smart Find) bekerja di latar belakang, memproses konten terenkripsi secara aman.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -165,7 +165,7 @@ export default function DocumentationPage() {
                         <p className="text-sm text-[var(--text-secondary)] mb-6 font-medium">
                             Setelah terpasang, Anda bisa memulai antarmuka terminal interaktif (TUI) dengan perintah:
                         </p>
-                        <BlokKode kode="lembaran mulai" />
+                        <BlokKode kode="lembaran" />
                         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="p-4 rounded-2xl bg-[var(--background)] border border-[var(--separator)]/5">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-2">Navigasi</p>
@@ -184,14 +184,15 @@ export default function DocumentationPage() {
                     <h2 className="text-2xl font-black tracking-tight mb-8 uppercase flex items-center gap-3">
                         <Command size={20} className="text-blue-500" /> Referensi Perintah
                     </h2>
-                    <div className="ios-list-group overflow-hidden">
+                    <div className="ios-list-group overflow-hidden bg-[var(--surface)] border border-[var(--separator)]/10">
                         <div className="divide-y divide-[var(--separator)]/10">
                             {[
                                 { cmd: 'lembaran pantau', desc: 'Memeriksa status sistem dan kesehatan database.' },
                                 { cmd: 'lembaran jelajah', desc: 'Membuka penjelajah catatan dengan fitur pencarian fuzzy.' },
-                                { cmd: 'lembaran kuncung', desc: 'Melakukan otentikasi dan membuka brankas utama.' },
+                                { cmd: 'lembaran ukir <id>', desc: 'Mengedit catatan langsung melalui mini-editor terminal.' },
                                 { cmd: 'lembaran tanam', desc: 'Mengimpor catatan dari file Markdown secara massal.' },
                                 { cmd: 'lembaran petik', desc: 'Mengekspor brankas ke format .lembaran terenkripsi.' },
+                                { cmd: 'lembaran layani', desc: 'Menjalankan Local API Server untuk integrasi.' },
                             ].map((item) => (
                                 <div key={item.cmd} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/5 transition-colors">
                                     <code className="text-xs font-black text-blue-500 bg-blue-500/5 px-3 py-1.5 rounded-lg w-fit">{item.cmd}</code>

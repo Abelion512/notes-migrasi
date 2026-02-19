@@ -93,7 +93,7 @@ dev_output.log
 
 # CLI Artifacts
 lembaran.exe
-.abelion-db.json
+.lembaran-db.json
 packages/web/.next
 packages/web/out
 packages/cli/dist

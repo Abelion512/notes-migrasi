@@ -16,13 +16,20 @@ program.action(async () => {
 });
 
 program
+  .command('mulai')
+  .description('Menjalankan Antarmuka Terminal Interaktif (TUI)')
+  .action(async () => {
+    await TUI.jalankan();
+  });
+
+program
   .command('pantau')
   .description('Memantau kesehatan dan integritas sistem')
   .action(async () => {
     console.log(pc.bold('📊 STATUS SISTEM LEMBARAN:'));
     const isInit = await Arsip.isVaultInitialized();
     console.log(`${isInit ? pc.green('✅') : pc.yellow('⚠️')} Brankas: ${isInit ? 'Terinisialisasi' : 'Belum Disiapkan'}`);
-    console.log(pc.green('✅ Security Engine: AES-GCM & Argon2id'));
+    console.log(pc.green('✅ Security Engine: AES-GCM \u0026 Argon2id'));
     console.log(pc.blue('ℹ️  Storage: Local-First (FileAdapter Active)'));
   });
 

@@ -1,32 +1,11 @@
-import fs from 'fs';
-import path from 'path';
 import { marked } from 'marked';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-
-async function getChangelog() {
-    const paths = [
-        path.join(process.cwd(), 'CHANGELOG.md'),
-        path.join(process.cwd(), '..', '..', 'CHANGELOG.md'),
-        path.join(process.cwd(), 'packages', 'web', 'CHANGELOG.md'),
-    ];
-
-    for (const filePath of paths) {
-        try {
-            if (fs.existsSync(filePath)) {
-                const fileContent = fs.readFileSync(filePath, 'utf8');
-                return marked(fileContent);
-            }
-        } catch (e) {
-            void e;
-            continue;
-        }
-    }
-    return '<p>Changelog tidak ditemukan.</p>';
-}
+import { bacaBerkas } from '@/lib/bacaBerkas';
 
 export default async function ChangelogPage() {
-    const htmlContent = await getChangelog();
+    const content = bacaBerkas('CHANGELOG.md');
+    const htmlContent = content ? marked(content) : '<p>Changelog tidak ditemukan.</p>';
 
     return (
         <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-20 overflow-y-auto no-scrollbar'>

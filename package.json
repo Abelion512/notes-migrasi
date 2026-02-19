@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "bin": {
+    "lembaran": "./packages/cli/src/main.ts"
+  },
   "scripts": {
     "dev": "bun --filter @lembaran/web dev",
     "build": "bun --filter @lembaran/web build",

@@ -1,31 +1,11 @@
-import fs from 'fs';
-import path from 'path';
 import { marked } from 'marked';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-
-async function getContent() {
-    const paths = [
-        path.join(process.cwd(), 'PRIVACY.md'),
-        path.join(process.cwd(), '..', '..', 'PRIVACY.md'),
-    ];
-
-    for (const filePath of paths) {
-        try {
-            if (fs.existsSync(filePath)) {
-                const fileContent = fs.readFileSync(filePath, 'utf8');
-                return marked(fileContent);
-            }
-        } catch (e) {
-            void e;
-            continue;
-        }
-    }
-    return '<p>Dokumen tidak ditemukan.</p>';
-}
+import { bacaBerkas } from '@/lib/bacaBerkas';
 
 export default async function PrivacyPage() {
-    const htmlContent = await getContent();
+    const content = bacaBerkas('PRIVACY.md');
+    const htmlContent = content ? marked(content) : '<p>Dokumen tidak ditemukan.</p>';
 
     return (
         <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-20 overflow-y-auto no-scrollbar'>
