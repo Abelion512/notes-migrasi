@@ -1,25 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Trash2, Database, Package, Activity, Globe, Lock, Upload } from 'lucide-react';
+import { ChevronLeft, Download, Upload, Shield, Trash2 } from 'lucide-react';
 import { Arsip } from '@lembaran/core/Arsip';
 import { Brankas } from '@lembaran/core/Brankas';
 import { haptic } from '@lembaran/core/Indera';
 import { saveAs } from 'file-saver';
 
-export default function DataManagementPage() {
+export default function DataLarasPage() {
     const [isExporting, setIsExporting] = useState(false);
-    const [stats, setStats] = useState({ notes: 0, folders: 0 });
-    const [deadLinks, setDeadLinks] = useState<number | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [_deadLinks, setDeadLinks] = useState<number | null>(null);
 
-    useEffect(() => {
-        Arsip.getStats().then(setStats);
-    }, []);
-
-    const handleExportEncrypted = async () => {
-        haptic.medium();
+    const handleExportVault = async () => {
         setIsExporting(true);
         try {
             const rawNotes = await Arsip.getAllNotes();
@@ -29,7 +22,7 @@ export default function DataManagementPage() {
             saveAs(blob, `lembaran-encrypted-vault-${new Date().toISOString().split('T')[0]}.lembaran`);
             haptic.success();
         } catch (_e) {
-            console.error(e);
+            console.error(_e);
             haptic.error();
         } finally {
             setIsExporting(false);
@@ -40,30 +33,29 @@ export default function DataManagementPage() {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
-        haptic.medium();
         setIsExporting(true);
         try {
+            let count = 0;
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 if (file.name.endsWith('.md')) {
                     const content = await file.text();
                     await Arsip.saveNote({
-                        id: '',
+                        id: crypto.randomUUID(),
                         title: file.name.replace('.md', ''),
                         content: content,
+                        tags: ['import'],
                         folderId: null,
                         isPinned: false,
                         isFavorite: false,
-                        tags: ['Imported', 'Markdown'],
                         createdAt: new Date().toISOString()
                     });
+                    count++;
                 }
             }
-            alert(`Berhasil mengimpor ${files.length} file.`);
-            Arsip.getStats().then(setStats);
+            alert(`Berhasil mengimpor ${count} catatan.`);
             haptic.success();
         } catch (_e) {
-            console.error(e);
             haptic.error();
         } finally {
             setIsExporting(false);
@@ -71,7 +63,6 @@ export default function DataManagementPage() {
     };
 
     const handleCheckDeadLinks = async () => {
-        haptic.medium();
         setIsExporting(true);
         try {
             const notes = await Arsip.getAllNotes();
@@ -80,7 +71,8 @@ export default function DataManagementPage() {
             for (const note of credentialNotes) {
                 const decrypted = await Arsip.decryptNote(note);
                 const creds = decrypted.kredensial as Record<string, unknown>;
-                if (creds?.url && (creds.url.includes('example.com') || creds.url.includes('test.local'))) {
+                const url = creds?.url;
+                if (typeof url === 'string' && (url.includes('example.com') || url.includes('test.local'))) {
                     deadCount++;
                 }
             }
@@ -93,89 +85,57 @@ export default function DataManagementPage() {
         }
     };
 
-    const handleWipeData = async () => {
-        haptic.heavy();
-        if (confirm('⚠️ PERINGATAN: Ini akan menghapus SELURUH catatan dan pengaturan Anda secara permanen.')) {
-            await Arsip.destroyAllData();
-        }
-    };
-
     return (
-        <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-32 overflow-y-auto no-scrollbar">
+        <div className="flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-20">
             <Link href="/laras" className="flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit">
                 <ChevronLeft size={24} />
-                <span className="text-[17px]">Pengaturan</span>
+                <span className="text-[17px]">Setelan</span>
             </Link>
 
-            <h1 className="text-3xl font-bold mb-8 tracking-tight text-[var(--text-primary)]">Data & Arsip</h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-8">Data & Penyimpanan</h1>
 
-            <div className="mb-6">
-                <p className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2.5">Statistik Penyimpanan</p>
+            <div className="space-y-6">
                 <div className="ios-list-group">
-                    <div className="ios-list-item">
+                    <button onClick={handleExportVault} disabled={isExporting} className="w-full ios-list-item">
                         <div className="flex items-center gap-3">
-                            <div className="p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-sm">
-                                <Activity size={18} />
+                            <div className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center">
+                                <Download size={18} />
                             </div>
-                            <span className="font-medium text-[17px]">Total Catatan</span>
+                            <span className="font-semibold">Ekspor Vault (.lembaran)</span>
                         </div>
-                        <span className="text-[var(--text-secondary)] font-bold">{stats.notes}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="mb-6">
-                <p className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2.5">Impor Data</p>
-                <div className="ios-list-group">
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isExporting}
-                        className="ios-list-item w-full"
-                    >
+                    </button>
+                    <div className="ios-separator"></div>
+                    <label className="w-full ios-list-item cursor-pointer">
                         <div className="flex items-center gap-3">
-                            <div className="p-1.5 rounded-md bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+                            <div className="w-8 h-8 rounded-lg bg-purple-500 text-white flex items-center justify-center">
                                 <Upload size={18} />
                             </div>
-                            <span className="font-medium text-[17px]">Impor dari Markdown (.md)</span>
+                            <span className="font-semibold">Impor Markdown (.md)</span>
                         </div>
-                    </button>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleImportMarkdown}
-                        multiple
-                        accept=".md"
-                        className="hidden"
-                    />
+                        <input type="file" multiple accept=".md" onChange={handleImportMarkdown} className="hidden" />
+                    </label>
                 </div>
-            </div>
 
-            <div className="mb-8">
-                <p className="px-3 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2.5">Cadangan Aman</p>
+                <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2.5 ml-4">Pemeliharaan</h2>
                 <div className="ios-list-group">
-                    <button
-                        onClick={handleExportEncrypted}
-                        disabled={isExporting}
-                        className="ios-list-item w-full"
-                    >
+                    <button onClick={handleCheckDeadLinks} className="w-full ios-list-item">
                         <div className="flex items-center gap-3">
-                            <div className="p-1.5 rounded-md bg-purple-500 text-white flex items-center justify-center shadow-sm">
-                                <Lock size={18} />
+                            <div className="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center">
+                                <Shield size={18} />
                             </div>
-                            <span className="font-medium text-[17px]">Ekspor Vault (.lembaran)</span>
+                            <span className="font-semibold">Cek Link Mati (Credential)</span>
+                        </div>
+                    </button>
+                    <div className="ios-separator"></div>
+                    <button className="w-full ios-list-item text-red-500">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center">
+                                <Trash2 size={18} />
+                            </div>
+                            <span className="font-bold">Hapus Semua Data</span>
                         </div>
                     </button>
                 </div>
-                <p className="px-4 text-[10px] text-[var(--text-muted)]">File backup ini terenkripsi penuh. Hanya bisa dibuka dengan password brankas Anda.</p>
-            </div>
-
-            <div className="mb-6 text-center">
-                <button
-                    onClick={handleWipeData}
-                    className="text-red-500 text-xs font-bold uppercase tracking-widest p-4 hover:opacity-50 transition-opacity"
-                >
-                    Hapus Seluruh Data Permanen
-                </button>
             </div>
         </div>
     );
