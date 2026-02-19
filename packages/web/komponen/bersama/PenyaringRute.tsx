@@ -9,11 +9,21 @@ import { PencarianCepat } from '@/komponen/bersama/PencarianCepat';
 
 export const PenyaringRute = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
-    const isLandingPage = pathname === '/';
-    const isPublicDocs = pathname.startsWith('/bantuan/publik');
 
-    if (isLandingPage || isPublicDocs) {
-        return <div className="flex-1 flex flex-col w-full">{children}</div>;
+    // Rute yang dapat diakses tanpa membuka brankas
+    const rutePublik = [
+        '/',
+        '/bantuan',
+        '/changelog',
+        '/ketentuan',
+        '/privasi',
+        '/tentang'
+    ];
+
+    const isPublik = rutePublik.includes(pathname) || pathname.startsWith('/bantuan/');
+
+    if (isPublik) {
+        return <div className="flex-1 flex flex-col w-full min-h-screen bg-[var(--background)]">{children}</div>;
     }
 
     return (

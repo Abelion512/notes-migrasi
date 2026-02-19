@@ -8,7 +8,7 @@ import { haptic } from '@lembaran/core/Indera';
 const COMMANDS = {
     curl: 'curl -fsSL https://lembaran.vercel.app/install.sh | bash',
     npm: 'npm install -g Abelion512/lembaran',
-    bun: 'bun add -g Abelion512/lembaran',
+    bun: 'bun install -g Abelion512/lembaran',
     brew: 'Coming Soon',
     paru: 'Coming Soon'
 };

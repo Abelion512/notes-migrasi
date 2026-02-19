@@ -5,6 +5,7 @@ import { haptic } from '@lembaran/core/Indera';
 import { Moon, Shield, Database, BookOpen, ChevronRight, LogOut, User, Info } from 'lucide-react';
 import { usePundi } from '@lembaran/core/Pundi';
 import { Brankas } from '@lembaran/core/Brankas';
+import packageJson from '../../package.json';
 
 export default function SettingsPage() {
     const setVaultLocked = usePundi(s => s.setVaultLocked);
@@ -109,7 +110,7 @@ export default function SettingsPage() {
 
                 <div className="p-8 text-center opacity-40">
                     <div className="font-bold text-xs uppercase tracking-[0.2em] mb-1">Lembaran</div>
-                    <div className="text-[10px] font-medium">Build 2026.02.16 • Version 2.3.0 (Developer Edition)</div>
+                    <div className="text-[10px] font-medium">Build 2026.02.18 • Version {packageJson.version} (Developer Edition)</div>
                 </div>
             </div>
         </div>

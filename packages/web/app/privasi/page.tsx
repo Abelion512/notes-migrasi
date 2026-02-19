@@ -5,13 +5,22 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
 async function getContent() {
-    const filePath = path.join(process.cwd(), 'PRIVACY.md');
-    try {
-        const fileContent = fs.readFileSync(filePath, 'utf8');
-        return marked(fileContent);
-    } catch (e) {
-        return '<p>Dokumen tidak ditemukan.</p>';
+    const paths = [
+        path.join(process.cwd(), 'PRIVACY.md'),
+        path.join(process.cwd(), '..', '..', 'PRIVACY.md'),
+    ];
+
+    for (const filePath of paths) {
+        try {
+            if (fs.existsSync(filePath)) {
+                const fileContent = fs.readFileSync(filePath, 'utf8');
+                return marked(fileContent);
+            }
+        } catch (e) {
+            continue;
+        }
     }
+    return '<p>Dokumen tidak ditemukan.</p>';
 }
 
 export default async function PrivacyPage() {

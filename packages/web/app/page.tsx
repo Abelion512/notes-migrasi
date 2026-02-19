@@ -37,9 +37,9 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-4">
                     <nav className="hidden md:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
-                        <Link href="/versi" className="hover:text-blue-500 transition-colors">Changelog</Link>
+                        <Link href="/changelog" className="hover:text-blue-500 transition-colors">Changelog</Link>
                         <a href="https://github.com/Abelion512/lembaran" target="_blank" className="hover:text-blue-500 transition-colors">GitHub</a>
-                        <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Docs</Link>
+                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Docs</Link>
                     </nav>
                     <div className="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
                     <ThemeToggle />
@@ -71,7 +71,6 @@ export default function LandingPage() {
                             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                                 <span className="text-gray-400">Aksara yang</span>
                                 <div className="inline-flex items-center gap-3">
-                                    <ArrowRight className="text-blue-500/50 hidden md:block" size={40} />
                                     <div className="relative h-[1.2em] flex items-center overflow-hidden">
                                         <AnimatePresence mode="wait">
                                             <motion.span
@@ -134,7 +133,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-8 uppercase tracking-widest text-[10px] font-black opacity-50">
                         <Link href="/privasi" className="hover:text-blue-500 transition-colors">Privasi</Link>
                         <Link href="/ketentuan" className="hover:text-blue-500 transition-colors">Ketentuan</Link>
-                        <Link href="/bantuan/publik" className="hover:text-blue-500 transition-colors">Bantuan</Link>
+                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Bantuan</Link>
                     </div>
                 </div>
             </footer>

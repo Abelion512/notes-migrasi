@@ -5,13 +5,23 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
 async function getChangelog() {
-    const filePath = path.join(process.cwd(), 'CHANGELOG.md');
-    try {
-        const fileContent = fs.readFileSync(filePath, 'utf8');
-        return marked(fileContent);
-    } catch (e) {
-        return '<p>Changelog tidak ditemukan.</p>';
+    const paths = [
+        path.join(process.cwd(), 'CHANGELOG.md'),
+        path.join(process.cwd(), '..', '..', 'CHANGELOG.md'),
+        path.join(process.cwd(), 'packages', 'web', 'CHANGELOG.md'),
+    ];
+
+    for (const filePath of paths) {
+        try {
+            if (fs.existsSync(filePath)) {
+                const fileContent = fs.readFileSync(filePath, 'utf8');
+                return marked(fileContent);
+            }
+        } catch (e) {
+            continue;
+        }
     }
+    return '<p>Changelog tidak ditemukan.</p>';
 }
 
 export default async function ChangelogPage() {

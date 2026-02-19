@@ -1,11 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronLeft, FileText, ScrollText, Shield, Github, Heart } from 'lucide-react';
 import packageJson from '../../package.json';
+import { haptic } from '@lembaran/core/Indera';
 
 export default function TentangPage() {
     return (
         <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-10 overflow-y-auto no-scrollbar'>
-            <Link href='/bantuan' className='flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit'>
+            <Link
+                href='/laras'
+                onClick={() => haptic.light()}
+                className='flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit'
+            >
                 <ChevronLeft size={24} />
                 <span className='text-[17px]'>Kembali</span>
             </Link>
