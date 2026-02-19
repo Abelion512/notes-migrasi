@@ -10,7 +10,7 @@ export function bacaBerkas(namaBerkas: string): string | null {
         path.join(cwd, '..', '..', namaBerkas),
         path.join(cwd, 'packages', 'web', namaBerkas),
         // Tambahan untuk Vercel standalone
-        path.join(cwd, '.next', 'standalone', namaBerkas),
+        path.join(cwd, '.next', 'standalone', namaBerkas), path.join(cwd, '.next', 'standalone', 'packages', 'web', namaBerkas), path.join(cwd, 'public', namaBerkas),
         path.join(cwd, '..', '..', '..', namaBerkas),
     ];
 

@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePundi } from '@lembaran/core/Pundi';
 
 export const PengaturSuasana = () => {
     const themeSetting = usePundi(state => state.settings.theme);
+    const prevTheme = useRef(themeSetting);
 
     useEffect(() => {
         const applyTheme = () => {
@@ -14,12 +15,19 @@ export const PengaturSuasana = () => {
                 theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
 
-            document.documentElement.setAttribute('data-theme', theme);
+            const doc = document.documentElement;
+
+            if (prevTheme.current !== themeSetting) {
+                doc.classList.add('theme-transitioning');
+                setTimeout(() => doc.classList.remove('theme-transitioning'), 400);
+            }
+
+            doc.setAttribute('data-theme', theme);
+            prevTheme.current = themeSetting;
         };
 
         applyTheme();
 
-        // Listen for system changes if set to auto
         if (themeSetting === 'auto') {
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
             const listener = () => applyTheme();

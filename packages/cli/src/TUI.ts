@@ -8,14 +8,85 @@ export class TUI {
     static async jalankan() {
         console.clear();
         console.log(pc.blue(pc.bold('=== LEMBARAN CLI v3.0.0 ===')));
-        console.log(pc.dim('Brankas Aksara Personal yang Berdikari\n'));
+        console.log(pc.dim('Brankas Aksara Personal yang Berdikari'));
+        console.log(pc.dim('Ketik "bantuan" untuk daftar perintah atau "keluar" untuk berhenti.\n'));
 
         const isInit = await Arsip.isVaultInitialized();
         if (!isInit) {
             await this.inisialisasiBrankas();
-        } else {
-            await this.menuUtama();
         }
+
+        await this.shellLoop();
+    }
+
+    private static async shellLoop() {
+        while (true) {
+            const res = await prompts({
+                type: 'text',
+                name: 'cmd',
+                message: pc.cyan('aksara') + pc.dim(' ❯'),
+                format: val => val.trim().toLowerCase()
+            });
+
+            if (!res.cmd || res.cmd === 'keluar' || res.cmd === 'exit') {
+                console.log(pc.dim('Sampai jumpa di lain waktu.'));
+                process.exit(0);
+            }
+
+            const [command, ...args] = res.cmd.split(' ');
+
+            try {
+                switch (command) {
+                    case 'bantuan':
+                    case 'help':
+                        this.tampilkanBantuan();
+                        break;
+                    case 'mulai':
+                    case 'menu':
+                        await this.menuUtama();
+                        break;
+                    case 'pantau':
+                        await this.aksiPantau();
+                        break;
+                    case 'jelajah':
+                        await this.aksiJelajah(args[0]);
+                        break;
+                    case 'ukir':
+                        await this.aksiUkir(args[0]);
+                        break;
+                    case 'tanam':
+                        await this.aksiTanam();
+                        break;
+                    case 'petik':
+                        await this.aksiPetik();
+                        break;
+                    case 'layani':
+                        await this.aksiLayani();
+                        break;
+                    case 'bersih':
+                    case 'clear':
+                        console.clear();
+                        break;
+                    default:
+                        console.log(pc.red(`❌ Perintah "${command}" tidak dikenal. Ketik "bantuan" untuk bantuan.`));
+                }
+            } catch (err: any) {
+                console.log(pc.red(`❌ Terjadi kesalahan: ${err.message}`));
+            }
+        }
+    }
+
+    private static tampilkanBantuan() {
+        console.log(pc.bold('\n📜 DAFTAR PERINTAH:'));
+        console.log(`  ${pc.blue('mulai')}    - Masuk ke menu interaktif (Legacy Mode)`);
+        console.log(`  ${pc.blue('pantau')}   - Memeriksa kesehatan sistem`);
+        console.log(`  ${pc.blue('jelajah')}  - Mencari catatan (Fuzzy Search)`);
+        console.log(`  ${pc.blue('ukir')}     - Membuat atau mengedit catatan`);
+        console.log(`  ${pc.blue('tanam')}    - Mengimpor file Markdown`);
+        console.log(`  ${pc.blue('petik')}    - Mengekspor brankas`);
+        console.log(`  ${pc.blue('layani')}   - Menjalankan API Server`);
+        console.log(`  ${pc.blue('bersih')}   - Membersihkan layar`);
+        console.log(`  ${pc.blue('keluar')}   - Keluar dari aplikasi\n`);
     }
 
     private static async inisialisasiBrankas() {
@@ -29,7 +100,6 @@ export class TUI {
 
         await Arsip.initializeVault(res.pw);
         console.log(pc.green('✅ Brankas berhasil dibuat!'));
-        await this.menuUtama();
     }
 
     private static async unlock() {
@@ -47,36 +117,27 @@ export class TUI {
         const res = await prompts({
             type: 'select',
             name: 'aksi',
-            message: 'Pilih aksi:',
+            message: 'Pilih aksi: (Gunakan panah ↑↓ dan Tekan ENTER untuk memilih)',
             choices: [
-                { title: '📝 Ukir Catatan Cepat', value: 'ukir' },
-                { title: '📂 Jelajah Arsip (Fuzzy)', value: 'jelajah' },
-                { title: '📊 Pantau Status Sistem', value: 'pantau' },
-                { title: '🌱 Tanam (Impor Markdown)', value: 'tanam' },
-                { title: '📦 Petik (Ekspor Vault)', value: 'petik' },
-                { title: '🚀 Layani (API Server)', value: 'layani' },
-                { title: '🚪 Keluar', value: 'keluar' }
+                { title: '📊 Pantau Status', value: 'pantau' },
+                { title: '📂 Jelajah Arsip', value: 'jelajah' },
+                { title: '📝 Ukir Catatan', value: 'ukir' },
+                { title: '🌱 Tanam (Impor)', value: 'tanam' },
+                { title: '📦 Petik (Ekspor)', value: 'petik' },
+                { title: '🚀 Layani Server', value: 'layani' },
+                { title: '🔙 Kembali ke Shell', value: 'kembali' }
             ]
         });
 
-        if (!res.aksi || res.aksi === 'keluar') process.exit(0);
-
-        if (['ukir', 'jelajah', 'tanam', 'petik'].includes(res.aksi)) {
-            const ok = await this.unlock();
-            if (!ok) {
-                console.log(pc.red('❌ Gagal membuka brankas.'));
-                return this.menuUtama();
-            }
-        }
+        if (!res.aksi || res.aksi === 'kembali') return;
 
         switch (res.aksi) {
-            case 'ukir': await this.aksiUkir(); break;
-            case 'jelajah': await this.aksiJelajah(); break;
             case 'pantau': await this.aksiPantau(); break;
+            case 'jelajah': await this.aksiJelajah(); break;
+            case 'ukir': await this.aksiUkir(); break;
             case 'tanam': await this.aksiTanam(); break;
             case 'petik': await this.aksiPetik(); break;
             case 'layani': await this.aksiLayani(); break;
-            default: await this.menuUtama();
         }
     }
 
@@ -86,14 +147,20 @@ export class TUI {
         console.log(pc.green('✅ Database: Aktif'));
         console.log(pc.blue(`📂 Total Catatan: ${count}`));
         console.log(pc.dim('---------------------------'));
-        await this.menuUtama();
     }
 
-    private static async aksiJelajah() {
-        const queryRes = await prompts({ type: 'text', name: 'q', message: 'Cari catatan:' });
+    private static async aksiJelajah(query?: string) {
+        if (!(await this.unlock())) return;
+
+        let q = query;
+        if (!q) {
+            const queryRes = await prompts({ type: 'text', name: 'q', message: 'Cari catatan:' });
+            q = queryRes.q;
+        }
+
         let notes = await Arsip.getAllNotes();
-        if (queryRes.q) {
-            notes = notes.filter(n => n.title.toLowerCase().includes(queryRes.q.toLowerCase()));
+        if (q) {
+            notes = notes.filter(n => n.title.toLowerCase().includes(q!.toLowerCase()));
         }
 
         if (notes.length === 0) {
@@ -112,35 +179,51 @@ export class TUI {
                 console.log(pc.dim('====================\n'));
             }
         }
-        await this.menuUtama();
     }
 
-    private static async aksiUkir() {
-        const res = await prompts([
-            { type: 'text', name: 'judul', message: 'Judul:' },
-            { type: 'text', name: 'konten', message: 'Konten:' }
-        ]);
-        if (res.konten) {
-            await Arsip.saveNote({ title: res.judul || 'Tanpa Judul', content: res.konten });
-            console.log(pc.green('✅ Catatan berhasil diukir.'));
+    private static async aksiUkir(id?: string) {
+        if (!(await this.unlock())) return;
+
+        if (id) {
+            const note = await Arsip.getNoteById(id);
+            if (!note) {
+                console.log(pc.red('❌ Catatan tidak ditemukan.'));
+                return;
+            }
+            const res = await prompts({
+                type: 'text',
+                name: 'konten',
+                message: `Edit [${note.title}]:`,
+                initial: note.content
+            });
+            if (res.konten) {
+                await Arsip.saveNote({ ...note, content: res.konten });
+                console.log(pc.green('✅ Berhasil diupdate.'));
+            }
+        } else {
+            const res = await prompts([
+                { type: 'text', name: 'judul', message: 'Judul:' },
+                { type: 'text', name: 'konten', message: 'Konten:' }
+            ]);
+            if (res.konten) {
+                await Arsip.saveNote({ title: res.judul || 'Tanpa Judul', content: res.konten });
+                console.log(pc.green('✅ Catatan berhasil diukir.'));
+            }
         }
-        await this.menuUtama();
     }
 
     private static async aksiTanam() {
         console.log(pc.dim('Fitur Tanam: Letakkan file .md di folder saat ini.'));
-        // Simulasi karena TUI terbatas dalam pemilihan file lokal secara kompleks
         console.log(pc.yellow('Gunakan "lembaran tanam" secara langsung untuk performa terbaik.'));
-        await this.menuUtama();
     }
 
     private static async aksiPetik() {
+        if (!(await this.unlock())) return;
         const notes = await Arsip.getAllNotes();
         const data = JSON.stringify(notes);
         const encrypted = await Brankas.encryptPacked(data);
         await fs.writeFile('vault-export.lembaran', encrypted);
         console.log(pc.green('✅ Vault berhasil dipetik ke vault-export.lembaran'));
-        await this.menuUtama();
     }
 
     private static async aksiLayani() {

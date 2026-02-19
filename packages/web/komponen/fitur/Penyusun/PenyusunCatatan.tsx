@@ -76,10 +76,27 @@ export const PenyusunCatatan = ({
                     const selection = window.getSelection();
                     if (!selection) return true;
 
+                    // Navigation
                     if (event.key === 'h') { selection.modify('move', 'backward', 'character'); return true; }
                     if (event.key === 'l') { selection.modify('move', 'forward', 'character'); return true; }
                     if (event.key === 'j') { selection.modify('move', 'forward', 'line'); return true; }
                     if (event.key === 'k') { selection.modify('move', 'backward', 'line'); return true; }
+
+                    // Basic Vim Operations
+                    if (event.key === 'x') {
+                        // Delete current character
+                        editor?.chain().focus().deleteRange({ from: view.state.selection.from, to: view.state.selection.from + 1 }).run();
+                        return true;
+                    }
+                    if (event.key === 'w') { selection.modify('move', 'forward', 'word'); return true; }
+                    if (event.key === 'b') { selection.modify('move', 'backward', 'word'); return true; }
+                    if (event.key === '0') { selection.modify('move', 'backward', 'lineboundary'); return true; }
+                    if (event.key === '$') { selection.modify('move', 'forward', 'lineboundary'); return true; }
+                    if (event.key === 'G') { selection.modify('move', 'forward', 'documentboundary'); return true; }
+                    if (event.key === 'g' && event.shiftKey === false) {
+                        // Simplified gg
+                        selection.modify('move', 'backward', 'documentboundary'); return true;
+                    }
 
                     return true;
                 }
@@ -111,7 +128,7 @@ export const PenyusunCatatan = ({
             {editable && (
                 <div className="absolute top-[-45px] right-0 flex items-center gap-2 z-10">
                     {settings.vimMode && (
-                        <div className="px-2 py-1 rounded-md bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[9px] font-black tracking-widest flex items-center gap-2">
+                        <div className={`px-2 py-1 rounded-md border transition-all ${vimMode === 'NORMAL' ? 'bg-orange-500 text-white border-orange-600' : 'bg-orange-500/10 border-orange-500/20 text-orange-500'} text-[9px] font-black tracking-widest flex items-center gap-2`}>
                             <Command size={10} />
                             VIM: {vimMode}
                         </div>

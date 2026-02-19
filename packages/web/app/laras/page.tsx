@@ -19,7 +19,7 @@ export default function SettingsPage() {
     return (
         <div className="flex-1 flex flex-col min-min-h-0 bg-[var(--background)] pb-32">
             <header className="snappy-header">
-                <h1 className="text-xl font-extrabold tracking-tight">Setelan</h1>
+                <h1 className="text-xl font-extrabold tracking-tight">Laras</h1>
             </header>
 
             <div className="max-w-2xl mx-auto w-full px-5 py-6">
@@ -30,7 +30,7 @@ export default function SettingsPage() {
                                 <User size={20} />
                             </div>
                             <div className="flex flex-col">
-                                <span className="font-bold text-[17px]">Profil Anda</span>
+                                <span className="font-bold text-[17px]">Jatidiri</span>
                                 <span className="text-[11px] text-[var(--text-muted)]">XP, Level, dan Jatidiri</span>
                             </div>
                         </div>
@@ -58,7 +58,7 @@ export default function SettingsPage() {
                             <div className="w-8 h-8 rounded-lg bg-green-500 text-white flex items-center justify-center">
                                 <Shield size={18} />
                             </div>
-                            <span className="font-semibold">Keamanan Vault</span>
+                            <span className="font-semibold">Keamanan Brankas</span>
                         </div>
                         <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                     </Link>
@@ -78,7 +78,7 @@ export default function SettingsPage() {
                             <div className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center">
                                 <BookOpen size={18} />
                             </div>
-                            <span className="font-semibold">Dokumentasi</span>
+                            <span className="font-semibold">Bantuan</span>
                         </div>
                         <ChevronRight size={16} className="text-[var(--text-secondary)]" />
                     </Link>
@@ -103,7 +103,7 @@ export default function SettingsPage() {
                             <div className="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center">
                                 <LogOut size={18} />
                             </div>
-                            <span className="font-bold">Kunci Vault Sekarang</span>
+                            <span className="font-bold">Gembok Brankas</span>
                         </div>
                     </button>
                 </div>

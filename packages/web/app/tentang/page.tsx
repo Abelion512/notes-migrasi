@@ -26,7 +26,7 @@ export default function TentangPage() {
             </div>
 
             <div className='ios-list-group mb-8'>
-                <Link href='/changelog' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
+                <Link href='/versi' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
                     <div className='flex items-center gap-3'>
                         <div className='p-1.5 rounded-md bg-orange-500 text-white flex items-center justify-center'>
                             <FileText size={16} />
