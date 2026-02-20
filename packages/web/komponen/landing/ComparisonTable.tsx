@@ -87,7 +87,7 @@ export const ComparisonTable = () => {
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-2xl bg-blue-500/5 border border-blue-500/10">
-                    <p className="text-xs font-bold text-blue-500 uppercase mb-2">Master Tip</p>
+                    <p className="text-xs font-bold text-blue-500 uppercase mb-2">Saran Maestro</p>
                     <p className="text-sm text-gray-400">Gunakan CLI untuk automasi script dan manajemen server jarak jauh.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
@@ -95,7 +95,7 @@ export const ComparisonTable = () => {
                     <p className="text-sm text-gray-400">Dukungan sidik jari di browser (WebAuthn) sedang dalam tahap pengembangan.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-purple-500/5 border border-purple-500/10">
-                    <p className="text-xs font-bold text-purple-500 uppercase mb-2">Native Advantage</p>
+                    <p className="text-xs font-bold text-purple-500 uppercase mb-2">Keunggulan Native</p>
                     <p className="text-sm text-gray-400">Instal Native App untuk dukungan penuh sidik jari dan pengenalan wajah sistem.</p>
                 </div>
             </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-    Book, Shield, Zap,
+    Book, Shield, Zap, Rocket,
     Database, Github,
     Command, Download, PlayCircle,
     ChevronRight, ExternalLink,
@@ -17,6 +17,7 @@ const SECTIONS = [
         title: 'Pengenalan',
         items: [
             { id: '', label: 'Ringkasan', icon: Book },
+            { id: 'publik', label: 'Mulai Berdikari', icon: Rocket },
             { id: 'keamanan', label: 'Keamanan', icon: Shield },
             { id: 'performa', label: 'Performa', icon: Zap },
         ]
@@ -52,11 +53,11 @@ export const SidebarBantuan = () => {
                 </Link>
 
                 <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 rounded-2xl bg-blue-500 flex items-center justify-center text-white font-black shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
                         <Book size={20} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-sm tracking-tighter uppercase leading-none">Dokumentasi</span>
+                        <span className="font-bold text-sm tracking-tighter uppercase leading-none">Dokumentasi</span>
                         <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Pusat Bantuan</span>
                     </div>
                 </div>
@@ -65,7 +66,7 @@ export const SidebarBantuan = () => {
             <div className="mt-12 space-y-10">
                 {SECTIONS.map((section) => (
                     <div key={section.title}>
-                        <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-5 ml-4">
+                        <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-5 ml-4">
                             {section.title}
                         </h3>
                         <div className="space-y-1">
@@ -96,7 +97,7 @@ export const SidebarBantuan = () => {
                 <a
                     href="https://github.com/Abelion512/lembaran"
                     target="_blank"
-                    className="flex items-center justify-between px-5 py-4 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-black hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex items-center justify-between px-5 py-4 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                     <div className="flex items-center gap-3">
                         <Github size={16} />

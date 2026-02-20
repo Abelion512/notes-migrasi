@@ -45,7 +45,7 @@ export default function LandingPage() {
                     <div className="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
                     <ThemeToggle />
                     <Link href="/arsip" className="px-5 py-2.5 bg-blue-500 text-white rounded-full font-bold text-sm hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
-                        Buka Arsip
+                        Buka Brankas
                     </Link>
                 </div>
             </header>

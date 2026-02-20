@@ -1,4 +1,3 @@
-# Keamanan & Privasi Data
 
 Di Lembaran, keamanan bukan sekadar fitur tambahan, melainkan fondasi utama. Kami menerapkan prinsip **Zero-Knowledge** dan **Integritas Kriptografis** yang terinspirasi dari teknologi blockchain.
 

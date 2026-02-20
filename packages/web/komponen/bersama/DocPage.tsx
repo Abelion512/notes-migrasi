@@ -44,7 +44,7 @@ export const DocPage = ({ title, description, children }: DocPageProps) => {
 
             <main className="max-w-4xl w-full px-6 py-12 sm:py-20 lg:px-20">
                 <div className="mb-16">
-                    <h1 className="text-4xl sm:text-6xl font-black tracking-tighter mb-6">{title}</h1>
+                    <h1 className="text-4xl sm:text-6xl font-light tracking-tight mb-6">{title}</h1>
                     <p className="text-xl text-[var(--text-secondary)] font-medium leading-relaxed max-w-2xl">{description}</p>
                 </div>
 
@@ -53,7 +53,7 @@ export const DocPage = ({ title, description, children }: DocPageProps) => {
                 </div>
 
                 <footer className="mt-40 pt-12 border-t border-[var(--separator)]/10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">
+                    <p className="text-[10px] font-light uppercase tracking-[0.3em] text-[var(--text-muted)]">
                         © 2026 Lembaran Documentation Engine.
                     </p>
                 </footer>

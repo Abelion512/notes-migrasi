@@ -32,7 +32,7 @@ export const CliInstallation = () => {
                         </div>
                         <div className="ml-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
                             <Terminal size={12} />
-                            <span>Terminal Installation</span>
+                            <span>Pasang via Terminal</span>
                         </div>
                     </div>
                     <div className="flex bg-black/20 p-1 rounded-lg">

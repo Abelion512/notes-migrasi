@@ -3,8 +3,9 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
+    "sinkron-aset": "cp -r ../../docs ./public/ && cp ../../CHANGELOG.md ./public/ || true",
     "dev": "next dev -p 1400",
-    "build": "next build",
+    "build": "bun run sinkron-aset && next build",
     "start": "next start -p 1400",
     "lint": "eslint ."
   },
