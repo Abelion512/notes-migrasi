@@ -26,3 +26,13 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 - `bun run test:perf`: Stress-test 1000 catatan.
 
 *Detail teknis kapabilitas Jules tersedia di `.Jules/MCP_CAPABILITIES.md`.*
+
+## 📚 Sistem Dokumentasi Dinamis (v3.1.0)
+Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
+- **Sumber Data**: Berkas `.md` di direktori `docs/` root.
+- **Sinkronisasi**: Menjalankan `bun run sinkron-aset` sebelum build akan menyalin dokumen ke `public/docs` untuk akses produksi.
+- **Tipografi**: Gunakan font-weight 300 (Thin) dan tracking-wide untuk menjaga estetika premium.
+
+## 🛠️ Peningkatan CLI
+- Perintah `ukir` mendukung multi-baris via `prompts`.
+- Perintah `tanam` mendukung pemindaian direktori otomatis.

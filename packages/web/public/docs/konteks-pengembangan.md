@@ -137,3 +137,18 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 ---
 > [!IMPORTANT]
 > Versi 3.0.0 adalah pencapaian tertinggi dalam visi Lembaran sebagai "Aksara yang Berdikari".
+
+## 12. Penguatan Infrastruktur & Dokumentasi Dinamis (v3.1.0)
+
+**Masalah**: Kesalahan resolusi path pada file statis (Changelog & Docs) sering terjadi di lingkungan produksi (Vercel Standalone), dan sistem bantuan masih bersifat statis (hardcoded) yang menyulitkan pemeliharaan.
+
+**Solusi**:
+- **Robust Path Resolver**: Mengimplementasikan `bacaBerkas.ts` dengan sistem fallback berlapis untuk memastikan file selalu ditemukan di Local, Docker, maupun Vercel.
+- **Dynamic Doc Engine**: Mengubah seluruh halaman bantuan menjadi dinamis menggunakan `DocRenderer` yang memparsing Markdown secara real-time.
+- **CLI Editor Upgrade**: Meningkatkan perintah `ukir` untuk mendukung input multi-baris dan `tanam` untuk impor massal file .md.
+- **Refinement Tipografi**: Menerapkan estetika *Thin & Spacious* (font-weight 300) pada seluruh elemen dokumentasi untuk kesan yang lebih premium.
+
+---
+> [!NOTE]
+> **Mengapa Lompat ke Versi 3?**
+> Versi 3 menandai era **Ekosistem Berdikari**. Perubahan dari v2 ke v3 bukan sekadar update fitur, melainkan perombakan total arsitektur menjadi **Monorepo** yang menyatukan Core logic, CLI TUI, dan Web GUI. Versi ini juga memperkenalkan fitur "Sentinel" tingkat tinggi seperti Argon2id, Vim Mode, dan infrastruktur Biometrik yang menjadikannya standar baru bagi aplikasi kedaulatan data.
